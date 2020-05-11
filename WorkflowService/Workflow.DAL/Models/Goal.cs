@@ -14,7 +14,8 @@ namespace Workflow.DAL.Models
         public int ScopeId { get; set; }
         public Scope Scope { get; set; }
 
-        public int? ParentGoal { get; set; }
+        public int? ParentGoalId { get; set; }
+        public Goal ParentGoal { get; set; }
         public List<Goal> ChildGoals { get; set; }
 
         public DateTime CreationDate { get; set; }
@@ -28,6 +29,9 @@ namespace Workflow.DAL.Models
 
         public string PerformerId { get; set; }
         public ApplicationUser Performer { get; set; }
+
+        public int? AttachmentId { get; set; }
+        public Attachment Attachment { get; set; }
 
         public bool IsRemoved { get; set; }
 

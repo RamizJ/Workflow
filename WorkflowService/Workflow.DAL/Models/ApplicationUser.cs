@@ -9,13 +9,15 @@ namespace Workflow.DAL.Models
         public string MiddleName { get; set; }
         public string LastName { get; set; }
 
-        public string Phone { get; set; }
-
         public bool IsRemoved { get; set; }
 
         public List<TeamUser> TeamUsers { get; set; }
 
         private List<Metadata> Metadata { get; set; }
+
+        public int? PositionId { get; set; }
+        public Position Position { get; set; }
+        public string PositionCustom { get; set; }
 
         public string Fio => GetFio(FirstName, MiddleName, LastName);
 

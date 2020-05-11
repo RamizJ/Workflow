@@ -1,0 +1,101 @@
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Workflow.DAL.Models;
+
+namespace Workflow.DAL
+{
+    public class DataContext : IdentityDbContext<ApplicationUser>
+    {
+        public DbSet<Scope> Scopes { get; set; }
+        public DbSet<Team> Teams { get; set; }
+        public DbSet<TeamUser> TeamUsers { get; set; }
+        public DbSet<Goal> Goals { get; set; }
+        public DbSet<Attachment> Attachments { get; set; }
+        public DbSet<Metadata> Metadata { get; set; }
+        public DbSet<Position> Positions { get; set; }
+
+
+        public DataContext(DbContextOptions options) : base(options)
+        { }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            SetupApplicationUser(builder);
+            SetupTeamUser(builder);
+            SetupTeam(builder);
+            SetupScope(builder);
+            SetupGoal(builder);
+            SetupAttachment(builder);
+            SetupMetadata(builder);
+            SetupPosition(builder);
+
+            base.OnModelCreating(builder);
+        }
+
+        private void SetupApplicationUser(ModelBuilder builder)
+        {
+            var entity = builder.Entity<ApplicationUser>();
+            entity.Property(x => x.Id).ValueGeneratedOnAdd();
+            entity.Property(x => x.FirstName).IsRequired().HasMaxLength(50);
+            entity.Property(x => x.MiddleName).HasMaxLength(50);
+            entity.Property(x => x.LastName).IsRequired().HasMaxLength(50);
+            entity.Property(x => x.PositionCustom).HasMaxLength(100);
+            entity.HasIndex(x => x.UserName).IsUnique();
+        }
+
+        private void SetupTeamUser(ModelBuilder builder)
+        {
+            builder.Entity<TeamUser>()
+                .HasKey(tu => new {tu.TeamId, tu.UserId});
+
+            builder.Entity<TeamUser>()
+                .HasOne(tu => tu.Team)
+                .WithMany(t => t.TeamUsers)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<TeamUser>()
+                .HasOne(tu => tu.User)
+                .WithMany(u => u.TeamUsers)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+
+        private void SetupTeam(ModelBuilder builder)
+        {
+            var entity = builder.Entity<Team>();
+            entity.Property(t => t.Name).HasMaxLength(100);
+        }
+
+        private void SetupScope(ModelBuilder builder)
+        {
+            var entity = builder.Entity<Scope>();
+            entity.Property(t => t.Name).HasMaxLength(100);
+        }
+
+        private void SetupGoal(ModelBuilder builder)
+        {
+            var entity = builder.Entity<Goal>();
+            entity.Property(t => t.CreatorId).IsRequired();
+            entity.Property(t => t.CreationDate).IsRequired();
+            entity.Property(t => t.Title).IsRequired();
+        }
+
+        private void SetupAttachment(ModelBuilder builder)
+        {
+            var entity = builder.Entity<Attachment>();
+            entity.Property(x => x.FileName).IsRequired().HasMaxLength(100);
+            entity.Property(x => x.CreationDate).IsRequired();
+        }
+
+        private void SetupMetadata(ModelBuilder builder)
+        {
+            var entity = builder.Entity<Metadata>();
+            entity.Property(x => x.Key).HasMaxLength(50);
+        }
+
+        private void SetupPosition(ModelBuilder builder)
+        {
+            var entity = builder.Entity<Position>();
+            entity.Property(x => x.Name).HasMaxLength(100).IsRequired();
+        }
+    }
+}

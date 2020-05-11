@@ -4,5 +4,11 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Workflow.DAL\Workflow.DAL.csproj" />
+    <ProjectReference Include="..\Workflow.Share\Workflow.Share.csproj" />
+    <ProjectReference Include="..\Workflow.VM\Workflow.VM.csproj" />
+  </ItemGroup>
+
 
 </Project>

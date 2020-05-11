@@ -13,10 +13,13 @@ namespace Workflow.DAL.Models
 
         public DateTime CreationDate { get; set; }
 
-        public int TeamId { get; set; }
+        public int? TeamId { get; set; }
         public Team Team { get; set; }
 
         public List<Goal> Goals { get; set; }
+
+        public int? GroupId { get; set; }
+        public Group Group { get; set; }
 
         public bool IsRemoved { get; set; }
 
