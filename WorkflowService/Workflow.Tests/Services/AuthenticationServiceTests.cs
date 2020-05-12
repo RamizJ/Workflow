@@ -58,6 +58,19 @@ namespace Workflow.Tests.Services
             Assert.ThrowsAsync<ArgumentException>(async () => await _authenticationService.Login(userInput));
         }
 
+        [Test]
+        public async Task LoginWithUserNotFoundTest()
+        {
+            //Arrange
+            var userInput = new VmAuthInput { UserName = "unknown", Password = "pwd" };
+
+            //Act
+            var output = await _authenticationService.Login(userInput);
+
+            //Assert
+            Assert.IsNull(output);
+        }
+
 
         [Test]
         public async Task LoginTest()

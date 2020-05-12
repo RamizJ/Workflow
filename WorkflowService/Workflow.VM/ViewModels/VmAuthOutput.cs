@@ -1,17 +1,15 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-
-namespace Workflow.VM.ViewModels
+﻿namespace Workflow.VM.ViewModels
 {
     public class VmAuthOutput
     {
         public VmUser User { get; set; }
 
-        public JwtSecurityToken Token { get; set; }
+        public string Token { get; set; }
 
         public VmAuthOutput()
         { }
 
-        public VmAuthOutput(VmUser user, JwtSecurityToken token)
+        public VmAuthOutput(VmUser user, string token)
         {
             User = user;
             Token = token;

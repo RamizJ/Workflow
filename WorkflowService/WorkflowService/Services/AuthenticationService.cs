@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Workflow.DAL.Models;
 using Workflow.VM.ViewModelConverters;
@@ -65,7 +64,8 @@ namespace WorkflowService.Services
 
             var vmUser = _vmConverter.ToViewModel(user);
             vmUser.Roles = await _userManager.GetRolesAsync(user);
-            return new VmAuthOutput(vmUser, token);
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+            return new VmAuthOutput(vmUser, tokenString);
         }
 
         public Task Logout()
