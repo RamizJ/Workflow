@@ -4,11 +4,10 @@ using System.Text;
 
 namespace Workflow.DAL.Models
 {
-    public class Metadata
+    public class Position
     {
         public int Id { get; set; }
-
-        public string Key { get; set; }
-        public string Value { get; set; }
+        public string Name { get; set; }
+        public bool IsRemoved { get; set; }
     }
 }

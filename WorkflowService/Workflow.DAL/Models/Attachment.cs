@@ -13,7 +13,5 @@ namespace Workflow.DAL.Models
 
         public int FileDataId { get; set; }
         public FileData FileData { get; set; }
-
-        private List<Metadata> Metadata { get; set; }
     }
 }
