@@ -11,9 +11,8 @@ namespace Workflow.DAL.Models
 
         public bool IsRemoved { get; set; }
 
-        public List<TeamUser> TeamUsers { get; set; }
-
-        private List<Metadata> Metadata { get; set; }
+        public List<TeamUser> TeamUsers { get; set; } = new List<TeamUser>();
+        public List<GoalObserver> GoalObserver { get; set; } = new List<GoalObserver>();
 
         public int? PositionId { get; set; }
         public Position Position { get; set; }

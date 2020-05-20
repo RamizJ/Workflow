@@ -1,3 +1,4 @@
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,9 +12,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Newtonsoft.Json.Converters;
 using Workflow.DAL;
 using Workflow.DAL.Models;
+using WorkflowService.Services;
+using WorkflowService.Services.Abstract;
 using static WorkflowService.ConfigKeys;
+
+#pragma warning disable 1591    //Disable xml documentation for this file
 
 namespace WorkflowService
 {
@@ -79,13 +86,31 @@ namespace WorkflowService
             services.AddControllers().AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                options.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
+
+            services.AddSwaggerGen(setup =>
+            {
+                setup.SwaggerDoc("v1", new OpenApiInfo {Title = "Workflow API", Version = "v1"});
+                setup.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+
+                var filePath = Path.Combine(System.AppContext.BaseDirectory, "WorkflowService.xml");
+                setup.IncludeXmlComments(filePath);
+            });
+            services.AddSwaggerGenNewtonsoftSupport();
             services.AddCors();
 
             services.AddSignalR(options =>
             {
                 options.EnableDetailedErrors = true;
             });
+
+            services.AddTransient<IDefaultDataInitializationService, DefaultDataInitializationService>();
+            services.AddTransient<IAuthenticationService, AuthenticationService>();
+            services.AddTransient<IScopesService, ScopesService>();
+            services.AddTransient<IUsersService, UsersService>();
+            services.AddTransient<ITeamsService, TeamsService>();
+            services.AddTransient<IGoalsService, GoalsService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -93,6 +118,12 @@ namespace WorkflowService
         {
             if (env.IsDevelopment()) 
                 app.UseDeveloperExceptionPage();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("./v1/swagger.json", "Workflow API V1");
+            });
 
             app.UseRouting();
             SetupRewriter(app);

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Workflow.DAL.Models
+namespace Workflow.VM.ViewModels
 {
-    public class Group
+    public class VmGroup
     {
         public int Id { get; set; }
 
@@ -11,8 +11,7 @@ namespace Workflow.DAL.Models
         public string Description { get; set; }
 
         public int? ParentGroupId { get; set; }
-        public Group ParentGroup { get; set; }
-        public List<Group> ChildGroups { get; set; }
+        public List<int> ChildGroups { get; set; }
 
         public DateTime CreationDate { get; set; }
         public bool IsRemoved { get; set; }

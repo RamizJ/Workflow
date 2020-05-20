@@ -2,6 +2,7 @@
 
 namespace WorkflowService.Services
 {
+    /// <inheritdoc />
     public class GoalsService : IGoalsService
     {
     }

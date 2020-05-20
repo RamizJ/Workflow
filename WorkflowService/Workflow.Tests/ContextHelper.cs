@@ -37,7 +37,9 @@ namespace Workflow.Tests
         public static DataContext CreateContext(SqliteConnection connection, bool isLogEnabled)
         {
             var options = GetSqliteOptions(connection, isLogEnabled);
-            return new DataContext(options);
+            var context = new DataContext(options);
+            context.Database.EnsureCreated();
+            return context;
         }
 
         public static UserManager<ApplicationUser> CreateUserManager(DataContext context)
@@ -48,12 +50,15 @@ namespace Workflow.Tests
             return userManager;
         }
 
+        public static RoleManager<IdentityRole> CreateRoleManager(DataContext context)
+        {
+            var roleStore = new RoleStore<IdentityRole>(context);
+            var roleManager = new RoleManager<IdentityRole>(roleStore, null, null, null, null);
+            return roleManager;
+        }
+
         public static ILoggerFactory GetLoggerFactory()
         {
-            //var a = new ConsoleLoggerProvider((category, level) =>
-            //    category == DbLoggerCategory.Database.Command.Name &&
-            //    level == LogLevel.Information, true);
-
             return LoggerFactory.Create(builder => builder.AddConsole());
         }
     }

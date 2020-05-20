@@ -10,8 +10,8 @@ namespace Workflow.DAL
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamUser> TeamUsers { get; set; }
         public DbSet<Goal> Goals { get; set; }
+        public DbSet<GoalObserver> Goal { get; set; }
         public DbSet<Attachment> Attachments { get; set; }
-        public DbSet<Metadata> Metadata { get; set; }
         public DbSet<Position> Positions { get; set; }
 
 
@@ -22,11 +22,11 @@ namespace Workflow.DAL
         {
             SetupApplicationUser(builder);
             SetupTeamUser(builder);
+            SetupGoalObserver(builder);
             SetupTeam(builder);
             SetupScope(builder);
             SetupGoal(builder);
             SetupAttachment(builder);
-            SetupMetadata(builder);
             SetupPosition(builder);
 
             base.OnModelCreating(builder);
@@ -74,9 +74,25 @@ namespace Workflow.DAL
         private void SetupGoal(ModelBuilder builder)
         {
             var entity = builder.Entity<Goal>();
-            entity.Property(t => t.CreatorId).IsRequired();
+            //entity.Property(t => t.OwnerId).IsRequired();
             entity.Property(t => t.CreationDate).IsRequired();
             entity.Property(t => t.Title).IsRequired();
+        }
+
+        private void SetupGoalObserver(ModelBuilder builder)
+        {
+            builder.Entity<GoalObserver>()
+                .HasKey(go => new { go.GoalId, go.ObserverId });
+
+            builder.Entity<GoalObserver>()
+                .HasOne(go => go.Goal)
+                .WithMany(g => g.Observers)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<GoalObserver>()
+                .HasOne(go => go.Observer)
+                .WithMany(o => o.GoalObserver)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         private void SetupAttachment(ModelBuilder builder)
@@ -84,12 +100,6 @@ namespace Workflow.DAL
             var entity = builder.Entity<Attachment>();
             entity.Property(x => x.FileName).IsRequired().HasMaxLength(100);
             entity.Property(x => x.CreationDate).IsRequired();
-        }
-
-        private void SetupMetadata(ModelBuilder builder)
-        {
-            var entity = builder.Entity<Metadata>();
-            entity.Property(x => x.Key).HasMaxLength(50);
         }
 
         private void SetupPosition(ModelBuilder builder)

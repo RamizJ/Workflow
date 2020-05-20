@@ -11,7 +11,5 @@ namespace Workflow.DAL.Models
 
         public int? GroupId { get; set; }
         public Group Group { get; set; }
-
-        private List<Metadata> Metadata { get; set; }
     }
 }

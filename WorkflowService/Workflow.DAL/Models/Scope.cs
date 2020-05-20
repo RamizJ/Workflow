@@ -7,6 +7,7 @@ namespace Workflow.DAL.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
 
         public string OwnerId { get; set; }
         public ApplicationUser Owner { get; set; }
@@ -22,7 +23,5 @@ namespace Workflow.DAL.Models
         public Group Group { get; set; }
 
         public bool IsRemoved { get; set; }
-
-        private List<Metadata> Metadata { get; set; }
     }
 }

@@ -38,6 +38,8 @@ namespace Workflow.Tests.Services
         [TearDown]
         public void TearDown()
         {
+            _dataContext.Database.EnsureDeleted();
+            _dataContext.Dispose();
             _dbConnection.Close();
         }
 

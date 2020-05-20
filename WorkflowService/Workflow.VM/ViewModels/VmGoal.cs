@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Workflow.DAL.Models;
 
-namespace Workflow.DAL.Models
+namespace Workflow.VM.ViewModels
 {
-    public class Goal
+    public class VmGoal
     {
         public int Id { get; set; }
 
@@ -12,39 +16,21 @@ namespace Workflow.DAL.Models
         public string Description { get; set; }
 
         public int ScopeId { get; set; }
-        public Scope Scope { get; set; }
-
         public int? ParentGoalId { get; set; }
-        public Goal ParentGoal { get; set; }
-        public List<Goal> ChildGoals { get; set; }
 
         public DateTime CreationDate { get; set; }
         private DateTime ExpectedCompletedDate { get; set; }
         private TimeSpan EstimatedPerformingTime { get; set; }
 
+        [EnumDataType(typeof(GoalState))]
+        [JsonConverter(typeof(StringEnumConverter))]
         public GoalState GoalState { get; set; }
 
         public string OwnerId { get; set; }
-        public ApplicationUser Owner { get; set; }
-
         public string PerformerId { get; set; }
-        public ApplicationUser Performer { get; set; }
-
-        public List<GoalObserver> Observers { get; set; }
+        public List<string> Observers { get; set; }
 
         public int? AttachmentId { get; set; }
-        public Attachment Attachment { get; set; }
-
         public bool IsRemoved { get; set; }
-    }
-
-    public enum GoalState
-    {
-        New,
-        Perform,
-        Delay,
-        TestingInProcess,
-        Succeed,
-        Rejected
     }
 }
