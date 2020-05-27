@@ -7,27 +7,109 @@
         <member name="T:WorkflowService.Common.SortType">
             <inheritdoc />
         </member>
-        <member name="T:WorkflowService.Controllers.Abstract.IGoalsController">
+        <member name="T:WorkflowService.Controllers.AuthenticationController">
             <summary>
-            API for working with goals
+            API аутентификации пользователей в системе
             </summary>
         </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IGoalsController.Get(System.Int32)">
+        <member name="M:WorkflowService.Controllers.AuthenticationController.#ctor(WorkflowService.Services.Abstract.IAuthenticationService)">
             <summary>
-            Get goal
-            </summary>
-            <param name="id">goal id</param>
-            <returns>goal data. Returned only if available for authenticated user</returns>
+            Constructor
+            </summary>ы
+            <param name="service"></param>
         </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IGoalsController.GetAll">
+        <member name="M:WorkflowService.Controllers.AuthenticationController.Login(Workflow.VM.ViewModels.VmAuthInput)">
             <summary>
-            Get all goals
+            Вход в систему
             </summary>
-            <returns>Collection of goals</returns>
+            <param name="input">Данные аутентификации</param>
+            <returns>JWT-токен и данные пользователя</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IGoalsController.GetPage(System.Int32,System.Int32,System.String,System.String,WorkflowService.Common.SortType,System.String)">
+        <member name="M:WorkflowService.Controllers.AuthenticationController.Logout">
             <summary>
-            Get goals with pagination, filtering and sorting
+            Выход пользователя из системы
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:WorkflowService.Controllers.GoalsController">
+            <summary>
+            API работы с задачами
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.Get(System.Int32)">
+            <summary>
+            Получить задачу по идентификатору, если она доступна пользователю
+            </summary>
+            <param name="id">Идентификатор задачи</param>
+            <returns>Задача</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.GetAll">
+            <summary>
+            Получить все задачи доступные пользователю
+            </summary>
+            <returns>Коллеция задач</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.GetPage(System.Int32,System.Int32,System.String,System.String[],WorkflowService.Common.SortType,System.String[])">
+            <summary>
+            Постраничная загрузка задач с фильтрацией и сортировкой
+            </summary>
+            <param name="pageNumber">Номер страницы</param>
+            <param name="pageSize">Размер страницы</param>
+            <param name="filter">Строка фильтрации</param>
+            <param name="filterFields">Поля фильтрации. Если не указаны, то фильтрация производится по всем полям</param>
+            <param name="sort">Тип сортировки</param>
+            <param name="sortedFields">Поля сортировки</param>
+            <returns>Коллеция задач</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.GetRange(System.Int32[])">
+            <summary>
+            Получение задач по идентификаторам. Возвращаются только задачи доступные пользователю
+            </summary>
+            <param name="ids">Идентификаторы задач</param>
+            <returns>Коллекция задач</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.Create(Workflow.VM.ViewModels.VmGoal)">
+            <summary>
+            Создание задачи
+            </summary>
+            <param name="goal">Новая задача</param>
+            <returns>Задача с обновленным идентификатором</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.Update(Workflow.VM.ViewModels.VmGoal)">
+            <summary>
+            Обновление задачи
+            </summary>
+            <param name="goal">Обновленная задача</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.Delete(System.Int32)">
+            <summary>
+            Удаление задачи
+            </summary>
+            <param name="id">Идентификатор задачи</param>
+            <returns></returns>
+        </member>
+        <member name="T:WorkflowService.Controllers.GroupsController">
+            <summary>
+            API for working with groups
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.Get(System.Int32)">
+            <summary>
+            Get group
+            </summary>
+            <param name="id">group id</param>
+            <returns>group data. Returned only if available for authenticated user</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.GetAll">
+            <summary>
+            Get all groups
+            </summary>
+            <returns>Collection of groups</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.GetPage(System.Int32,System.Int32,System.String,System.String,WorkflowService.Common.SortType,System.String)">
+            <summary>
+            Get groups with pagination, filtering and sorting
             </summary>
             <param name="pageNumber">Page number</param>
             <param name="pageSize">Page size</param>
@@ -35,101 +117,62 @@
             <param name="filterFields">Fields by which result rows will be filtered. Serparator is "|"</param>
             <param name="sort">Sort type. 0 - Unspecified, 1 - Ascending, 2 - Descending</param>
             <param name="sortedFields">Fields by which result rows will be sorted. Serparator is "|"</param>
-            <returns>Collection of goals</returns>
+            <returns>Collection of scopes</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IGoalsController.GetRange(System.Int32[])">
-            <summary>
-            Get goals collection by ids
-            </summary>
-            <param name="goalIds"></param>
-            <returns></returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IGoalsController.Create(Workflow.VM.ViewModels.VmGoal)">
-            <summary>
-            Create goal
-            </summary>
-            <param name="goal">New goal</param>
-            <returns>goal data with updated goal id</returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IGoalsController.Update(Workflow.VM.ViewModels.VmGoal)">
-            <summary>
-            Update goal
-            </summary>
-            <param name="goal">Updated goal</param>
-            <returns>Nothin</returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IGoalsController.Delete(System.Int32)">
-            <summary>
-            Delete goal
-            </summary>
-            <param name="id">goal id</param>
-            <returns></returns>
-        </member>
-        <member name="T:WorkflowService.Controllers.Abstract.IGroupsController">
-            <summary>
-            API for working with groups
-            </summary>
-        </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IGroupsController.Get(System.Int32)">
-            <summary>
-            Get group
-            </summary>
-            <param name="id">group id</param>
-            <returns>group data. Returned only if available for authenticated user</returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IGroupsController.GetAll">
-            <summary>
-            Get all groups
-            </summary>
-            <returns>Collection of groups</returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IGroupsController.GetRange(System.Int32[])">
+        <member name="M:WorkflowService.Controllers.GroupsController.GetRange(System.Int32[])">
             <summary>
             Get groups collection by ids
             </summary>
-            <param name="groupIds"></param>
+            <param name="ids"></param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IGroupsController.Create(Workflow.VM.ViewModels.VmGroup)">
+        <member name="M:WorkflowService.Controllers.GroupsController.Create(Workflow.VM.ViewModels.VmGroup)">
             <summary>
             Create group
             </summary>
             <param name="group">New group</param>
             <returns>group data with updated group id</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IGroupsController.Update(Workflow.VM.ViewModels.VmGroup)">
+        <member name="M:WorkflowService.Controllers.GroupsController.Update(Workflow.VM.ViewModels.VmGroup)">
             <summary>
             Update group
             </summary>
             <param name="group">Updated group</param>
             <returns>Nothin</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IGroupsController.Delete(System.Int32)">
+        <member name="M:WorkflowService.Controllers.GroupsController.Delete(System.Int32)">
             <summary>
             Delete group
             </summary>
             <param name="id">group id</param>
             <returns></returns>
         </member>
-        <member name="T:WorkflowService.Controllers.Abstract.IScopesController">
+        <member name="T:WorkflowService.Controllers.ScopesController">
             <summary>
             API for working with scopes of goals
             </summary>
         </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IScopesController.Get(System.Int32)">
+        <member name="M:WorkflowService.Controllers.ScopesController.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},WorkflowService.Services.Abstract.IScopesService)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="userManager"></param>
+            <param name="scopesService"></param>
+        </member>
+        <member name="M:WorkflowService.Controllers.ScopesController.Get(System.Int32)">
             <summary>
             Get scope of goals
             </summary>
             <param name="id">Scope id</param>
             <returns>Scope data. Returned only if available for authenticated user</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IScopesController.GetAll">
+        <member name="M:WorkflowService.Controllers.ScopesController.GetAll">
             <summary>
             Get all scopes of goals
             </summary>
             <returns>Collection of scopes</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IScopesController.GetRange(System.Int32,System.Int32,System.String,System.String,WorkflowService.Common.SortType,System.String)">
+        <member name="M:WorkflowService.Controllers.ScopesController.GetPage(System.Int32,System.Int32,System.String,System.String[],WorkflowService.Common.SortType,System.String[])">
             <summary>
             Get scopes of goals with pagination, filtering and sorting
             </summary>
@@ -141,46 +184,53 @@
             <param name="sortedFields">Fields by which result rows will be sorted. Serparator is "|"</param>
             <returns>Collection of scopes</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IScopesController.Create(Workflow.VM.ViewModels.VmScope)">
+        <member name="M:WorkflowService.Controllers.ScopesController.GetRange(System.Int32[])">
+            <summary>
+            Get scopes collection by ids
+            </summary>
+            <param name="ids"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ScopesController.Create(Workflow.VM.ViewModels.VmScope)">
             <summary>
             Create scope
             </summary>
             <param name="scope">New scope</param>
             <returns>Scope data with updated scope id</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IScopesController.Update(Workflow.VM.ViewModels.VmScope)">
+        <member name="M:WorkflowService.Controllers.ScopesController.Update(Workflow.VM.ViewModels.VmScope)">
             <summary>
             Update scope
             </summary>
             <param name="scope">Updated scope</param>
             <returns>Nothin</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IScopesController.Delete(System.Int32)">
+        <member name="M:WorkflowService.Controllers.ScopesController.Delete(System.Int32)">
             <summary>
             Delete scope
             </summary>
             <param name="id">Scope id</param>
             <returns></returns>
         </member>
-        <member name="T:WorkflowService.Controllers.Abstract.ITeamsController">
+        <member name="T:WorkflowService.Controllers.TeamsController">
             <summary>
             API for working with teams
             </summary>
         </member>
-        <member name="M:WorkflowService.Controllers.Abstract.ITeamsController.Get(System.Int32)">
+        <member name="M:WorkflowService.Controllers.TeamsController.Get(System.Int32)">
             <summary>
             Get team
             </summary>
             <param name="id">team id</param>
             <returns>team data. Returned only if available for authenticated user</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.Abstract.ITeamsController.GetAll">
+        <member name="M:WorkflowService.Controllers.TeamsController.GetAll">
             <summary>
             Get all teams
             </summary>
             <returns>Collection of teams</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.Abstract.ITeamsController.GetPage(System.Int32,System.Int32,System.String,System.String,WorkflowService.Common.SortType,System.String)">
+        <member name="M:WorkflowService.Controllers.TeamsController.GetPage(System.Int32,System.Int32,System.String,System.String,WorkflowService.Common.SortType,System.String)">
             <summary>
             Get teams with pagination, filtering and sorting
             </summary>
@@ -192,228 +242,112 @@
             <param name="sortedFields">Fields by which result rows will be sorted. Serparator is "|"</param>
             <returns>Collection of teams</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.Abstract.ITeamsController.GetRange(System.Int32[])">
+        <member name="M:WorkflowService.Controllers.TeamsController.GetRange(System.Int32[])">
             <summary>
             Get teams collection by ids
             </summary>
-            <param name="teamIds"></param>
+            <param name="ids"></param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Controllers.Abstract.ITeamsController.Create(Workflow.VM.ViewModels.VmTeam)">
+        <member name="M:WorkflowService.Controllers.TeamsController.GetUserTeams(System.String)">
+            <summary>
+            Get user teams
+            </summary>
+            <param name="userId">User id</param>
+            <returns>Collection users of team</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.Create(Workflow.VM.ViewModels.VmTeam)">
             <summary>
             Create team
             </summary>
             <param name="team">New team</param>
             <returns>team data with updated team id</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.Abstract.ITeamsController.Update(Workflow.VM.ViewModels.VmTeam)">
+        <member name="M:WorkflowService.Controllers.TeamsController.Update(Workflow.VM.ViewModels.VmTeam)">
             <summary>
             Update team
             </summary>
             <param name="team">Updated team</param>
-            <returns>Nothin</returns>
+            <returns></returns>
         </member>
-        <member name="M:WorkflowService.Controllers.Abstract.ITeamsController.Delete(System.Int32)">
+        <member name="M:WorkflowService.Controllers.TeamsController.Delete(System.Int32)">
             <summary>
             Delete team
             </summary>
             <param name="id">team id</param>
             <returns></returns>
         </member>
-        <member name="T:WorkflowService.Controllers.Abstract.IUsersController">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IUsersController.Get(System.String)">
-            <summary>
-            
-            </summary>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IUsersController.GetAll">
-            <summary>
-            
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IUsersController.GetPage(System.Int32,System.Int32,System.String,System.String,WorkflowService.Common.SortType,System.String)">
-            <summary>
-            
-            </summary>
-            <param name="pageNumber">Number of page</param>
-            <param name="pageSize">Size of page</param>
-            <param name="filter"></param>
-            <param name="filterFields"></param>
-            <param name="sort"></param>
-            <param name="sortedFields"></param>
-            <returns></returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IUsersController.GetRange(System.String[])">
-            <summary>
-            Get users collection by ids
-            </summary>
-            <param name="userIds"></param>
-            <returns></returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IUsersController.Create(Workflow.VM.ViewModels.VmUser)">
-            <summary>
-            
-            </summary>
-            <param name="user"></param>
-            <returns></returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IUsersController.Update(Workflow.VM.ViewModels.VmUser)">
-            <summary>
-            
-            </summary>
-            <param name="user"></param>
-            <returns></returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.Abstract.IUsersController.Delete(System.String)">
-            <summary>
-            
-            </summary>
-            <param name="userId"></param>
-            <returns></returns>
-        </member>
-        <member name="T:WorkflowService.Controllers.AuthenticationController">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:WorkflowService.Controllers.AuthenticationController.#ctor(WorkflowService.Services.Abstract.IAuthenticationService)">
-            <summary>
-            Constructor
-            </summary>
-            <param name="service"></param>
-        </member>
-        <member name="M:WorkflowService.Controllers.AuthenticationController.Login(Workflow.VM.ViewModels.VmAuthInput)">
-            <summary>
-            Login to the system
-            </summary>
-            <param name="input">Authentication data</param>
-            <returns>Token and user info</returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.AuthenticationController.Logout">
-            <summary>
-            Logout from the system
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:WorkflowService.Controllers.GoalsController">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IGoalsController" />
-        </member>
-        <member name="M:WorkflowService.Controllers.GoalsController.Get(System.Int32)">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IGoalsController" />
-        </member>
-        <member name="M:WorkflowService.Controllers.GoalsController.GetAll">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IGoalsController" />
-        </member>
-        <member name="M:WorkflowService.Controllers.GoalsController.GetPage(System.Int32,System.Int32,System.String,System.String,WorkflowService.Common.SortType,System.String)">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IGoalsController" />
-        </member>
-        <member name="M:WorkflowService.Controllers.GoalsController.GetRange(System.Int32[])">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IGoalsController" />
-        </member>
-        <member name="M:WorkflowService.Controllers.GoalsController.Create(Workflow.VM.ViewModels.VmGoal)">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IGoalsController" />
-        </member>
-        <member name="M:WorkflowService.Controllers.GoalsController.Update(Workflow.VM.ViewModels.VmGoal)">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IGoalsController" />
-        </member>
-        <member name="M:WorkflowService.Controllers.GoalsController.Delete(System.Int32)">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IGoalsController" />
-        </member>
-        <member name="T:WorkflowService.Controllers.GroupsController">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IGroupsController"/>
-        </member>
-        <member name="M:WorkflowService.Controllers.GroupsController.Get(System.Int32)">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IGroupsController"/>
-        </member>
-        <member name="M:WorkflowService.Controllers.GroupsController.GetAll">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IGroupsController"/>
-        </member>
-        <member name="M:WorkflowService.Controllers.GroupsController.GetRange(System.Int32[])">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IGroupsController"/>
-        </member>
-        <member name="M:WorkflowService.Controllers.GroupsController.Create(Workflow.VM.ViewModels.VmGroup)">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IGroupsController"/>
-        </member>
-        <member name="M:WorkflowService.Controllers.GroupsController.Update(Workflow.VM.ViewModels.VmGroup)">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IGroupsController"/>
-        </member>
-        <member name="M:WorkflowService.Controllers.GroupsController.Delete(System.Int32)">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IGroupsController"/>
-        </member>
-        <member name="T:WorkflowService.Controllers.ScopesController">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IScopesController"/>
-        </member>
-        <member name="M:WorkflowService.Controllers.ScopesController.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},WorkflowService.Services.Abstract.IScopesService)">
-            <summary>
-            Constructor
-            </summary>
-            <param name="userManager"></param>
-            <param name="scopesService"></param>
-        </member>
-        <member name="M:WorkflowService.Controllers.ScopesController.Get(System.Int32)">
-            <inheritdoc cref="M:WorkflowService.Controllers.Abstract.IScopesController.Get(System.Int32)"/>
-        </member>
-        <member name="T:WorkflowService.Controllers.TeamsController">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.ITeamsController"/>
-        </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.Get(System.Int32)">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.ITeamsController"/>
-        </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.GetAll">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.ITeamsController"/>
-        </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.GetPage(System.Int32,System.Int32,System.String,System.String,WorkflowService.Common.SortType,System.String)">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.ITeamsController"/>
-        </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.GetRange(System.Int32[])">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.ITeamsController"/>
-        </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.Create(Workflow.VM.ViewModels.VmTeam)">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.ITeamsController"/>
-        </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.Update(Workflow.VM.ViewModels.VmTeam)">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.ITeamsController"/>
-        </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.Delete(System.Int32)">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.ITeamsController"/>
-        </member>
         <member name="T:WorkflowService.Controllers.UsersController">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IUsersController" />
+            <summary>
+            API работы с пользователями системы
+            </summary>
         </member>
         <member name="M:WorkflowService.Controllers.UsersController.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},WorkflowService.Services.Abstract.IUsersService)">
             <summary>
-            Constructor
+            Конструктор 
             </summary>
             <param name="userManager"></param>
             <param name="usersService"></param>
         </member>
         <member name="M:WorkflowService.Controllers.UsersController.Get(System.String)">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IUsersController" />
+            <summary>
+            Получение пользователя по идентификатору
+            </summary>
+            <param name="id">Идентификатор пользователя</param>
+            <returns></returns>
         </member>
         <member name="M:WorkflowService.Controllers.UsersController.GetAll">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IUsersController" />
+            <summary>
+            Получение всех пользователей
+            </summary>
+            <returns></returns>
         </member>
-        <member name="M:WorkflowService.Controllers.UsersController.GetPage(System.Int32,System.Int32,System.String,System.String,WorkflowService.Common.SortType,System.String)">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IUsersController" />
+        <member name="M:WorkflowService.Controllers.UsersController.GetPage(System.Int32,System.Int32,System.String,System.String[],WorkflowService.Common.SortType,System.String[])">
+            <summary>
+            Постраничная загрузка пользователей с фильтрацией и сортировкой
+            </summary>
+            <param name="pageNumber">Номер страницы</param>
+            <param name="pageSize">Размер страницы</param>
+            <param name="filter">Фильтрация по всем полям если не указаны конкретные поля для фильтрации</param>
+            <param name="filterFields">Поля фильтрации</param>
+            <param name="sort">Тип сортировки</param>
+            <param name="sortFields">Поля сортировки. Сортировка производится по порядку указанных полей</param>
+            <returns>Коллекция пользователей</returns>
         </member>
         <member name="M:WorkflowService.Controllers.UsersController.GetRange(System.String[])">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IUsersController" />
+            <summary>
+            Получение коллекции пользователей по идентификаторам
+            </summary>
+            <param name="ids">Идентификаторы пользователей</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.GetTeamUsers(System.Int32)">
+            <summary>
+            Получение участников команды
+            </summary>
+            <param name="teamId">Идентификатор команды</param>
+            <returns>Коллекция участников команды</returns>
         </member>
         <member name="M:WorkflowService.Controllers.UsersController.Create(Workflow.VM.ViewModels.VmUser)">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IUsersController" />
+            <summary>
+            Добавление нового пользователя
+            </summary>
+            <param name="user">Параметры пользователя</param>
+            <returns></returns>
         </member>
         <member name="M:WorkflowService.Controllers.UsersController.Update(Workflow.VM.ViewModels.VmUser)">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IUsersController" />
+            <summary>
+            Обновление пользователя
+            </summary>
+            <param name="user">Параметры пользователя</param>
+            <returns></returns>
         </member>
         <member name="M:WorkflowService.Controllers.UsersController.Delete(System.String)">
-            <inheritdoc cref="T:WorkflowService.Controllers.Abstract.IUsersController" />
+            <summary>
+            Удаление пользователя
+            </summary>
+            <param name="id">Идентификатор пользователя</param>
+            <returns></returns>
         </member>
         <member name="T:WorkflowService.Services.Abstract.IScopesService">
             <summary>
@@ -428,11 +362,32 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Services.Abstract.IScopesService.GetScopes(Workflow.DAL.Models.ApplicationUser)">
+        <member name="M:WorkflowService.Services.Abstract.IScopesService.GetAll(Workflow.DAL.Models.ApplicationUser)">
             <summary>
             
             </summary>
             <param name="user"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.IScopesService.GetPage(Workflow.DAL.Models.ApplicationUser,System.Int32,System.Int32,System.String,System.String[],WorkflowService.Common.SortType,System.String[])">
+            <summary>
+            
+            </summary>
+            <param name="user"></param>
+            <param name="pageNumber"></param>
+            <param name="pageSize"></param>
+            <param name="filter"></param>
+            <param name="filterFields"></param>
+            <param name="sort"></param>
+            <param name="sortedFields"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.IScopesService.GetRange(Workflow.DAL.Models.ApplicationUser,System.Int32[])">
+            <summary>
+            
+            </summary>
+            <param name="user"></param>
+            <param name="ids"></param>
             <returns></returns>
         </member>
         <member name="M:WorkflowService.Services.Abstract.IScopesService.CreateScope(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmScope)">
@@ -459,19 +414,6 @@
             <param name="scopeId"></param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Services.Abstract.IScopesService.GetScopes(Workflow.DAL.Models.ApplicationUser,System.Int32,System.Int32,System.String,System.String,WorkflowService.Common.SortType,System.String)">
-            <summary>
-            
-            </summary>
-            <param name="user"></param>
-            <param name="pageNumber"></param>
-            <param name="pageSize"></param>
-            <param name="filter"></param>
-            <param name="filteredFields"></param>
-            <param name="sort"></param>
-            <param name="sortedFields"></param>
-            <returns></returns>
-        </member>
         <member name="T:WorkflowService.Services.GoalsService">
             <inheritdoc />
         </member>
@@ -487,10 +429,13 @@
         <member name="M:WorkflowService.Services.ScopesService.GetScope(Workflow.DAL.Models.ApplicationUser,System.Int32)">
             <inheritdoc />
         </member>
-        <member name="M:WorkflowService.Services.ScopesService.GetScopes(Workflow.DAL.Models.ApplicationUser)">
+        <member name="M:WorkflowService.Services.ScopesService.GetAll(Workflow.DAL.Models.ApplicationUser)">
             <inheritdoc />
         </member>
-        <member name="M:WorkflowService.Services.ScopesService.GetScopes(Workflow.DAL.Models.ApplicationUser,System.Int32,System.Int32,System.String,System.String,WorkflowService.Common.SortType,System.String)">
+        <member name="M:WorkflowService.Services.ScopesService.GetPage(Workflow.DAL.Models.ApplicationUser,System.Int32,System.Int32,System.String,System.String[],WorkflowService.Common.SortType,System.String[])">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.ScopesService.GetRange(Workflow.DAL.Models.ApplicationUser,System.Int32[])">
             <inheritdoc />
         </member>
         <member name="M:WorkflowService.Services.ScopesService.CreateScope(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmScope)">

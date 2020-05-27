@@ -24,7 +24,29 @@ namespace WorkflowService.Services.Abstract
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        Task<IEnumerable<VmScope>> GetScopes(ApplicationUser user);
+        Task<IEnumerable<VmScope>> GetAll(ApplicationUser user);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="filter"></param>
+        /// <param name="filterFields"></param>
+        /// <param name="sort"></param>
+        /// <param name="sortedFields"></param>
+        /// <returns></returns>
+        Task<IEnumerable<VmScope>> GetPage(ApplicationUser user, int pageNumber, int pageSize,
+            string filter, string[] filterFields, SortType sort, string[] sortedFields);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        Task<IEnumerable<VmScope>> GetRange(ApplicationUser user, int[] ids);
 
         /// <summary>
         /// 
@@ -40,7 +62,7 @@ namespace WorkflowService.Services.Abstract
         /// <param name="user"></param>
         /// <param name="scope"></param>
         /// <returns></returns>
-        Task UpdateScope(ApplicationUser user, VmScope scope);
+        Task<VmScope> UpdateScope(ApplicationUser user, VmScope scope);
 
         /// <summary>
         /// 
@@ -49,19 +71,5 @@ namespace WorkflowService.Services.Abstract
         /// <param name="scopeId"></param>
         /// <returns></returns>
         Task<VmScope> DeleteScope(ApplicationUser user, int scopeId);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="user"></param>
-        /// <param name="pageNumber"></param>
-        /// <param name="pageSize"></param>
-        /// <param name="filter"></param>
-        /// <param name="filteredFields"></param>
-        /// <param name="sort"></param>
-        /// <param name="sortedFields"></param>
-        /// <returns></returns>
-        Task<IEnumerable<VmScope>> GetScopes(ApplicationUser user, int pageNumber, int pageSize, 
-            string filter, string filteredFields, SortType sort, string sortedFields);
     }
 }

@@ -36,13 +36,7 @@ namespace WorkflowService.Services
             if(user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var scope = await _dataContext.Scopes
-                .Include(s => s.Owner)
-                .Include(s => s.Team)
-                .Include(s => s.Group)
-                .Where(s => s.Id == id &&
-                            (s.OwnerId == user.Id ||
-                             s.Team.TeamUsers.Any(tu => tu.UserId == user.Id)))
+            var scope = await GetScopesQuery(user)
                 .Select(s => _vmConverter.ToViewModel(s))
                 .FirstOrDefaultAsync();
 
@@ -50,17 +44,12 @@ namespace WorkflowService.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<VmScope>> GetScopes(ApplicationUser user)
+        public async Task<IEnumerable<VmScope>> GetAll(ApplicationUser user)
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var scopes = await _dataContext.Scopes
-                .Include(s => s.Owner)
-                .Include(s => s.Team)
-                .Include(s => s.Group)
-                .Where(s => s.OwnerId == user.Id ||
-                            s.Team.TeamUsers.Any(tu => tu.UserId == user.Id))
+            var scopes = await GetScopesQuery(user)
                 .Select(s => _vmConverter.ToViewModel(s))
                 .ToArrayAsync();
 
@@ -68,8 +57,39 @@ namespace WorkflowService.Services
         }
 
         /// <inheritdoc />
-        public Task<IEnumerable<VmScope>> GetScopes(ApplicationUser user, int pageNumber, int pageSize, string filter, string filteredFields, SortType sort,
-            string sortedFields)
+        public async Task<IEnumerable<VmScope>> GetPage(ApplicationUser user, int pageNumber, int pageSize, 
+            string filter, string[] filteredFields, 
+            SortType sort, string[] sortedFields)
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+
+            var query = GetScopesQuery(user);
+            
+            if (!string.IsNullOrEmpty(filter))
+            {
+                var words = filter.Split(" ");
+                foreach (var word in words)
+                {
+                    query = query
+                        .Where(s => s.Name.Contains(word)
+                                    || s.Group.Name.Contains(word)
+                                    || s.Team.Name.Contains(word)
+                                    || s.Owner.FirstName.Contains(word)
+                                    || s.Owner.MiddleName.Contains(word)
+                                    || s.Owner.LastName.Contains(word));
+                }
+            }
+
+            return await query
+                .Skip(pageNumber * pageSize)
+                .Take(pageSize)
+                .Select(s => _vmConverter.ToViewModel(s))
+                .ToArrayAsync();
+        }
+
+        /// <inheritdoc />
+        public Task<IEnumerable<VmScope>> GetRange(ApplicationUser user, int[] ids)
         {
             throw new NotImplementedException();
         }
@@ -81,7 +101,7 @@ namespace WorkflowService.Services
         }
 
         /// <inheritdoc />
-        public Task UpdateScope(ApplicationUser user, VmScope scope)
+        public Task<VmScope> UpdateScope(ApplicationUser user, VmScope scope)
         {
             throw new System.NotImplementedException();
         }
@@ -90,6 +110,19 @@ namespace WorkflowService.Services
         public Task<VmScope> DeleteScope(ApplicationUser user, int scopeId)
         {
             throw new System.NotImplementedException();
+        }
+
+
+        private IQueryable<Scope> GetScopesQuery(ApplicationUser user)
+        {
+            var scopes = _dataContext.Scopes
+                .Include(s => s.Owner)
+                .Include(s => s.Team)
+                .Include(s => s.Group)
+                .Where(s => s.OwnerId == user.Id ||
+                            s.Team.TeamUsers.Any(tu => tu.UserId == user.Id));
+
+            return scopes;
         }
     }
 }
