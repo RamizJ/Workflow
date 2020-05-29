@@ -18,13 +18,14 @@ namespace WorkflowService.Services.Abstract
         /// <param name="id"></param>
         /// <returns></returns>
         Task<VmScope> GetScope(ApplicationUser user, int id);
-        
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="withRemoved"></param>
         /// <returns></returns>
-        Task<IEnumerable<VmScope>> GetAll(ApplicationUser user);
+        Task<IEnumerable<VmScope>> GetAll(ApplicationUser user, bool withRemoved);
 
         /// <summary>
         /// 
@@ -34,11 +35,11 @@ namespace WorkflowService.Services.Abstract
         /// <param name="pageSize"></param>
         /// <param name="filter"></param>
         /// <param name="filterFields"></param>
-        /// <param name="sort"></param>
-        /// <param name="sortedFields"></param>
+        /// <param name="sortFields"></param>
+        /// <param name="withRemoved"></param>
         /// <returns></returns>
         Task<IEnumerable<VmScope>> GetPage(ApplicationUser user, int pageNumber, int pageSize,
-            string filter, string[] filterFields, SortType sort, string[] sortedFields);
+            string filter, FieldFilter[] filterFields, FieldSort[] sortFields, bool withRemoved);
 
         /// <summary>
         /// 

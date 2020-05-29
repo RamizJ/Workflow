@@ -15,14 +15,10 @@ namespace WorkflowService.Services
     /// <inheritdoc />
     public class ScopesService : IScopesService
     {
-        private readonly DataContext _dataContext;
-        private readonly VmScopeConverter _vmConverter;
-
-
         /// <summary>
-        /// Database context
+        /// Конструктор
         /// </summary>
-        /// <param name="dataContext"></param>
+        /// <param name="dataContext">Контекст БД</param>
         public ScopesService(DataContext dataContext)
         {
             _dataContext = dataContext;
@@ -37,19 +33,23 @@ namespace WorkflowService.Services
                 throw new ArgumentNullException(nameof(user));
 
             var scope = await GetScopesQuery(user)
-                .Select(s => _vmConverter.ToViewModel(s))
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(s => s.Id == id);
 
-            return scope;
+            return _vmConverter.ToViewModel(scope);
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<VmScope>> GetAll(ApplicationUser user)
+        public async Task<IEnumerable<VmScope>> GetAll(ApplicationUser user, bool withRemoved)
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var scopes = await GetScopesQuery(user)
+            var query = GetScopesQuery(user);
+
+            if (!withRemoved)
+                query = query.Where(s => s.IsRemoved == false);
+
+            var scopes = await query
                 .Select(s => _vmConverter.ToViewModel(s))
                 .ToArrayAsync();
 
@@ -57,29 +57,22 @@ namespace WorkflowService.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<VmScope>> GetPage(ApplicationUser user, int pageNumber, int pageSize, 
-            string filter, string[] filteredFields, 
-            SortType sort, string[] sortedFields)
+        public async Task<IEnumerable<VmScope>> GetPage(ApplicationUser user, 
+            int pageNumber, int pageSize, 
+            string filter, FieldFilter[] filterFields, FieldSort[] sortFields,
+            bool withRemoved)
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
             var query = GetScopesQuery(user);
-            
-            if (!string.IsNullOrEmpty(filter))
-            {
-                var words = filter.Split(" ");
-                foreach (var word in words)
-                {
-                    query = query
-                        .Where(s => s.Name.Contains(word)
-                                    || s.Group.Name.Contains(word)
-                                    || s.Team.Name.Contains(word)
-                                    || s.Owner.FirstName.Contains(word)
-                                    || s.Owner.MiddleName.Contains(word)
-                                    || s.Owner.LastName.Contains(word));
-                }
-            }
+
+            if(!withRemoved)
+                query = query.Where(s => s.IsRemoved == false);
+
+            query = Filter(filter, query);
+            query = FilterByFields(filterFields, query);
+            query = SortByFields(sortFields, query);
 
             return await query
                 .Skip(pageNumber * pageSize)
@@ -89,27 +82,65 @@ namespace WorkflowService.Services
         }
 
         /// <inheritdoc />
-        public Task<IEnumerable<VmScope>> GetRange(ApplicationUser user, int[] ids)
+        public async Task<IEnumerable<VmScope>> GetRange(ApplicationUser user, int[] ids)
         {
-            throw new NotImplementedException();
+            if (ids == null || ids.Length == 0)
+                return null;
+            
+            return await GetScopesQuery(user)
+                .Where(s => ids.Any(id => s.Id == id))
+                .Select(s => _vmConverter.ToViewModel(s))
+                .ToArrayAsync();
         }
 
         /// <inheritdoc />
-        public Task<VmScope> CreateScope(ApplicationUser user, VmScope scope)
+        public async Task<VmScope> CreateScope(ApplicationUser user, VmScope scope)
         {
-            throw new System.NotImplementedException();
+            var model = _vmConverter.ToModel(scope);
+            model.OwnerId = user.Id;
+            model.Owner = user;
+
+            await _dataContext.Scopes.AddAsync(model);
+            await _dataContext.SaveChangesAsync();
+
+            return _vmConverter.ToViewModel(model);
         }
 
         /// <inheritdoc />
-        public Task<VmScope> UpdateScope(ApplicationUser user, VmScope scope)
+        public async Task<VmScope> UpdateScope(ApplicationUser user, VmScope scope)
         {
-            throw new System.NotImplementedException();
+            if (scope == null)
+                return null;
+
+            var model = _vmConverter.ToModel(scope);
+
+            var isExistForUser = await GetScopesQuery(user)
+                .AnyAsync(s => s.Id == scope.Id);
+
+            if (isExistForUser)
+            {
+                _dataContext.Entry(model).State = EntityState.Modified;
+                await _dataContext.SaveChangesAsync();
+                return _vmConverter.ToViewModel(model);
+            }
+
+            return null;
         }
 
         /// <inheritdoc />
-        public Task<VmScope> DeleteScope(ApplicationUser user, int scopeId)
+        public async Task<VmScope> DeleteScope(ApplicationUser user, int scopeId)
         {
-            throw new System.NotImplementedException();
+            var model = await GetScopesQuery(user)
+                .FirstOrDefaultAsync(s => s.Id == scopeId);
+
+            if (model != null)
+            {
+                model.IsRemoved = true;
+                _dataContext.Scopes.Update(model);
+                return _vmConverter.ToViewModel(model);
+            }
+
+            return null;
         }
 
 
@@ -124,5 +155,143 @@ namespace WorkflowService.Services
 
             return scopes;
         }
+
+        private static IQueryable<Scope> Filter(string filter, IQueryable<Scope> query)
+        {
+            if (string.IsNullOrEmpty(filter)) return query;
+
+            var words = filter.Split(" ");
+            foreach (var word in words)
+            {
+                query = query
+                    .Where(s => s.Name.Contains(word)
+                                || s.Group.Name.Contains(word)
+                                || s.Team.Name.Contains(word)
+                                || s.Owner.FirstName.Contains(word)
+                                || s.Owner.MiddleName.Contains(word)
+                                || s.Owner.LastName.Contains(word));
+            }
+
+            return query;
+        }
+
+        private static IQueryable<Scope> FilterByFields(FieldFilter[] filterFields, IQueryable<Scope> query)
+        {
+            if (filterFields == null) return query;
+
+            foreach (var field in filterFields)
+            {
+                if(field == null)
+                    continue;
+
+                var strValue = field.Value?.ToString()?.ToLower();
+                if (field.Is(nameof(VmScope.Name)))
+                {
+                    query = query.Where(s => s.Name.ToLower().Contains(strValue));
+                }
+                else if (field.Is(nameof(VmScope.GroupName)))
+                {
+                    query = query.Where(s => s.Group.Name.ToLower().Contains(strValue));
+                }
+                else if (field.Is(nameof(VmScope.TeamName)))
+                {
+                    query = query.Where(s => s.Team.Name.ToLower().Contains(strValue));
+                }
+                else if (field.Is(nameof(VmScope.OwnerFio)))
+                {
+                    var names = strValue?.Split();
+                    if(names == null || names.Length == 0)
+                        continue;
+
+                    foreach (var name in names)
+                    {
+                        query = query.Where(s => s.Owner.FirstName.ToLower().Contains(name)
+                                                 || s.Owner.MiddleName.ToLower().Contains(name)
+                                                 || s.Owner.LastName.ToLower().Contains(name));
+                    }
+                }
+            }
+
+            return query;
+        }
+
+        private IQueryable<Scope> SortByFields(FieldSort[] sortFields, IQueryable<Scope> query)
+        {
+            if (sortFields == null) return query;
+
+            IOrderedQueryable<Scope> orderedQuery = null;
+            foreach (var field in sortFields)
+            {
+                if (field == null)
+                    continue;
+
+                if (field.Is(nameof(VmScope.Name)))
+                {
+                    if (orderedQuery == null)
+                    {
+                        orderedQuery = field.SortType == SortType.Ascending
+                            ? query.OrderBy(s => s.Name)
+                            : query.OrderByDescending(s => s.Name);
+                    }
+                    else
+                    {
+                        orderedQuery = field.SortType == SortType.Ascending
+                            ? orderedQuery.ThenBy(s => s.Name)
+                            : orderedQuery.ThenByDescending(s => s.Name);
+                    }
+                }
+                else if (field.Is(nameof(VmScope.GroupName)))
+                {
+                    if (orderedQuery == null)
+                    {
+                        orderedQuery = field.SortType == SortType.Ascending
+                            ? query.OrderBy(s => s.Group.Name)
+                            : query.OrderByDescending(s => s.Group.Name);
+                    }
+                    else
+                    {
+                        orderedQuery = field.SortType == SortType.Ascending
+                            ? orderedQuery.ThenBy(s => s.Group.Name)
+                            : orderedQuery.ThenByDescending(s => s.Group.Name);
+                    }
+                }
+                else if (field.Is(nameof(VmScope.TeamName)))
+                {
+                    if (orderedQuery == null)
+                    {
+                        orderedQuery = field.SortType == SortType.Ascending
+                            ? query.OrderBy(s => s.Team.Name)
+                            : query.OrderByDescending(s => s.Team.Name);
+                    }
+                    else
+                    {
+                        orderedQuery = field.SortType == SortType.Ascending
+                            ? orderedQuery.ThenBy(s => s.Team.Name)
+                            : orderedQuery.ThenByDescending(s => s.Team.Name);
+                    }
+                }
+                else if (field.Is(nameof(VmScope.OwnerFio)))
+                {
+                    if (orderedQuery == null)
+                    {
+                        orderedQuery = field.SortType == SortType.Ascending
+                            ? query.OrderBy(s => s.Owner.LastName).ThenBy(s => s.Owner.FirstName).ThenBy(s => s.Owner.MiddleName)
+                            : query.OrderByDescending(s => s.Team.Name).ThenBy(s => s.Owner.FirstName).ThenBy(s => s.Owner.MiddleName);
+                    }
+                    else
+                    {
+                        orderedQuery = field.SortType == SortType.Ascending
+                            ? orderedQuery.ThenBy(s => s.Owner.LastName).ThenBy(s => s.Owner.FirstName).ThenBy(s => s.Owner.MiddleName)
+                            : orderedQuery.ThenByDescending(s => s.Team.Name).ThenBy(s => s.Owner.FirstName).ThenBy(s => s.Owner.MiddleName);
+                    }
+                }
+            }
+
+            return orderedQuery ?? query;
+        }
+
+
+        private readonly DataContext _dataContext;
+        private readonly VmScopeConverter _vmConverter;
     }
 }

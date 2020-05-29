@@ -58,7 +58,7 @@
             <param name="filter">Строка фильтрации</param>
             <param name="filterFields">Поля фильтрации. Если не указаны, то фильтрация производится по всем полям</param>
             <param name="sort">Тип сортировки</param>
-            <param name="sortedFields">Поля сортировки</param>
+            <param name="sortFields">Поля сортировки</param>
             <returns>Коллеция задач</returns>
         </member>
         <member name="M:WorkflowService.Controllers.GoalsController.GetRange(System.Int32[])">
@@ -116,7 +116,7 @@
             <param name="filter">Filter string</param>
             <param name="filterFields">Fields by which result rows will be filtered. Serparator is "|"</param>
             <param name="sort">Sort type. 0 - Unspecified, 1 - Ascending, 2 - Descending</param>
-            <param name="sortedFields">Fields by which result rows will be sorted. Serparator is "|"</param>
+            <param name="sortFields">Fields by which result rows will be sorted. Serparator is "|"</param>
             <returns>Collection of scopes</returns>
         </member>
         <member name="M:WorkflowService.Controllers.GroupsController.GetRange(System.Int32[])">
@@ -181,7 +181,7 @@
             <param name="filter">Filter string</param>
             <param name="filterFields">Fields by which result rows will be filtered. Serparator is "|"</param>
             <param name="sort">Sort type. 0 - Unspecified, 1 - Ascending, 2 - Descending</param>
-            <param name="sortedFields">Fields by which result rows will be sorted. Serparator is "|"</param>
+            <param name="sortFields">Fields by which result rows will be sorted. Serparator is "|"</param>
             <returns>Collection of scopes</returns>
         </member>
         <member name="M:WorkflowService.Controllers.ScopesController.GetRange(System.Int32[])">
@@ -239,7 +239,7 @@
             <param name="filter">Filter string</param>
             <param name="filterFields">Fields by which result rows will be filtered. Serparator is "|"</param>
             <param name="sort">Sort type. 0 - Unspecified, 1 - Ascending, 2 - Descending</param>
-            <param name="sortedFields">Fields by which result rows will be sorted. Serparator is "|"</param>
+            <param name="sortFields">Fields by which result rows will be sorted. Serparator is "|"</param>
             <returns>Collection of teams</returns>
         </member>
         <member name="M:WorkflowService.Controllers.TeamsController.GetRange(System.Int32[])">
@@ -379,7 +379,7 @@
             <param name="filter"></param>
             <param name="filterFields"></param>
             <param name="sort"></param>
-            <param name="sortedFields"></param>
+            <param name="sortFields"></param>
             <returns></returns>
         </member>
         <member name="M:WorkflowService.Services.Abstract.IScopesService.GetRange(Workflow.DAL.Models.ApplicationUser,System.Int32[])">

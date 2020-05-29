@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +10,7 @@ using WorkflowService.Services.Abstract;
 namespace WorkflowService.Controllers
 {
     /// <summary>
-    /// API for working with scopes of goals
+    /// API для работы с множествами задач
     /// </summary>
     [ApiController, Route("api/[controller]/[action]")]
     public class ScopesController : ControllerBase
@@ -20,7 +19,7 @@ namespace WorkflowService.Controllers
         private readonly IScopesService _scopesService;
 
         /// <summary>
-        /// Constructor
+        /// Конструктор
         /// </summary>
         /// <param name="userManager"></param>
         /// <param name="scopesService"></param>
@@ -32,10 +31,10 @@ namespace WorkflowService.Controllers
 
 
         /// <summary>
-        /// Get scope of goals
+        /// Получение множества задач по идентификатору
         /// </summary>
-        /// <param name="id">Scope id</param>
-        /// <returns>Scope data. Returned only if available for authenticated user</returns>
+        /// <param name="id">Идентификатор области задач</param>
+        /// <returns>Множество задач. Только если доступно пользователю</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<VmScope>> Get(int id)
         {
@@ -45,41 +44,42 @@ namespace WorkflowService.Controllers
 
 
         /// <summary>
-        /// Get all scopes of goals
+        /// Получение всех множеств задач
         /// </summary>
-        /// <returns>Collection of scopes</returns>
+        /// <param name="withRemoved">Вместе с удаленными</param>
+        /// <returns>Коллекция множеств задач</returns>
         [HttpGet]
-        public async Task<IEnumerable<VmScope>> GetAll()
+        public async Task<IEnumerable<VmScope>> GetAll([FromQuery]bool withRemoved = false)
         {
             var user = await _userManager.GetUserAsync(User);
-            return await _scopesService.GetAll(user);
+            return await _scopesService.GetAll(user, withRemoved);
         }
 
         /// <summary>
-        /// Get scopes of goals with pagination, filtering and sorting
+        /// Получение множеств задач
         /// </summary>
-        /// <param name="pageNumber">Page number</param>
-        /// <param name="pageSize">Page size</param>
-        /// <param name="filter">Filter string</param>
-        /// <param name="filterFields">Fields by which result rows will be filtered. Serparator is "|"</param>
-        /// <param name="sort">Sort type. 0 - Unspecified, 1 - Ascending, 2 - Descending</param>
-        /// <param name="sortedFields">Fields by which result rows will be sorted. Serparator is "|"</param>
-        /// <returns>Collection of scopes</returns>
+        /// <param name="pageNumber">Номер страницы</param>
+        /// <param name="pageSize">Размер страницы</param>
+        /// <param name="filter">Фильтр по всем полям</param>
+        /// <param name="filterFields">Конкретные поля фильтрации</param>
+        /// <param name="sortFields">Поля сортировки</param>
+        /// <param name="withRemoved">Вместе с удаленными</param>
+        /// <returns>Коллекция множеств задач</returns>
         [HttpGet]
         public async Task<IEnumerable<VmScope>> GetPage([FromQuery] int pageNumber, [FromQuery] int pageSize,
-            [FromQuery] string filter, [FromQuery] string[] filterFields,
-            [FromQuery] SortType sort, [FromQuery] string[] sortedFields)
+            [FromQuery] string filter, [FromQuery] FieldFilter[] filterFields, 
+            [FromQuery] FieldSort[] sortFields, [FromQuery]bool withRemoved = false)
         {
             var user = await _userManager.GetUserAsync(User);
             return await _scopesService.GetPage(user, pageNumber, pageSize,
-                filter, filterFields, sort, sortedFields);
+                filter, filterFields, sortFields, withRemoved);
         }
 
         /// <summary>
-        /// Get scopes collection by ids
+        /// Получение множеств задач по идентификаторам
         /// </summary>
-        /// <param name="ids"></param>
-        /// <returns></returns>
+        /// <param name="ids">Идентификаторы множеств</param>
+        /// <returns>Коллекция множеств</returns>
         [HttpGet]
         public async Task<IEnumerable<VmScope>> GetRange(int[] ids)
         {
@@ -88,10 +88,10 @@ namespace WorkflowService.Controllers
         }
 
         /// <summary>
-        /// Create scope
+        /// Создание множества задач
         /// </summary>
-        /// <param name="scope">New scope</param>
-        /// <returns>Scope data with updated scope id</returns>
+        /// <param name="scope">Параметры множества</param>
+        /// <returns>Созданное множество</returns>
         [HttpPost]
         public async Task<ActionResult<VmScope>> Create([FromBody] VmScope scope)
         {
@@ -100,10 +100,10 @@ namespace WorkflowService.Controllers
         }
 
         /// <summary>
-        /// Update scope
+        /// Обновление множества задач
         /// </summary>
         /// <param name="scope">Updated scope</param>
-        /// <returns>Nothin</returns>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Update([FromBody]VmScope scope)
         {
@@ -116,10 +116,10 @@ namespace WorkflowService.Controllers
         }
 
         /// <summary>
-        /// Delete scope
+        /// Удаление множества задач
         /// </summary>
-        /// <param name="id">Scope id</param>
-        /// <returns></returns>
+        /// <param name="id">Идентификатор множества</param>
+        /// <returns>Удаленное множество</returns>
         [HttpDelete("{id}")]
         public async Task<ActionResult<VmScope>> Delete(int id)
         {
