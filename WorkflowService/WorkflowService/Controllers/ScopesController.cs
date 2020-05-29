@@ -96,7 +96,7 @@ namespace WorkflowService.Controllers
         public async Task<ActionResult<VmScope>> Create([FromBody] VmScope scope)
         {
             var user = await _userManager.GetUserAsync(User);
-            return await _scopesService.CreateScope(user, scope);
+            return await _scopesService.Create(user, scope);
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace WorkflowService.Controllers
         public async Task<IActionResult> Update([FromBody]VmScope scope)
         {
             var user = await _userManager.GetUserAsync(User);
-            var updatedScope = await _scopesService.UpdateScope(user, scope);
+            var updatedScope = await _scopesService.Update(user, scope);
             if (updatedScope == null)
                 return NotFound();
 
@@ -124,7 +124,7 @@ namespace WorkflowService.Controllers
         public async Task<ActionResult<VmScope>> Delete(int id)
         {
             var user = await _userManager.GetUserAsync(User);
-            var deletedScope = await _scopesService.DeleteScope(user, id);
+            var deletedScope = await _scopesService.Delete(user, id);
             if (deletedScope == null)
                 return NotFound();
 

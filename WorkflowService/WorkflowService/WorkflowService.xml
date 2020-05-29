@@ -390,7 +390,7 @@
             <param name="ids"></param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Services.Abstract.IScopesService.CreateScope(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmScope)">
+        <member name="M:WorkflowService.Services.Abstract.IScopesService.Create(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmScope)">
             <summary>
             
             </summary>
@@ -398,7 +398,7 @@
             <param name="scope"></param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Services.Abstract.IScopesService.UpdateScope(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmScope)">
+        <member name="M:WorkflowService.Services.Abstract.IScopesService.Update(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmScope)">
             <summary>
             
             </summary>
@@ -406,7 +406,7 @@
             <param name="scope"></param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Services.Abstract.IScopesService.DeleteScope(Workflow.DAL.Models.ApplicationUser,System.Int32)">
+        <member name="M:WorkflowService.Services.Abstract.IScopesService.Delete(Workflow.DAL.Models.ApplicationUser,System.Int32)">
             <summary>
             
             </summary>
@@ -438,13 +438,13 @@
         <member name="M:WorkflowService.Services.ScopesService.GetRange(Workflow.DAL.Models.ApplicationUser,System.Int32[])">
             <inheritdoc />
         </member>
-        <member name="M:WorkflowService.Services.ScopesService.CreateScope(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmScope)">
+        <member name="M:WorkflowService.Services.ScopesService.Create(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmScope)">
             <inheritdoc />
         </member>
-        <member name="M:WorkflowService.Services.ScopesService.UpdateScope(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmScope)">
+        <member name="M:WorkflowService.Services.ScopesService.Update(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmScope)">
             <inheritdoc />
         </member>
-        <member name="M:WorkflowService.Services.ScopesService.DeleteScope(Workflow.DAL.Models.ApplicationUser,System.Int32)">
+        <member name="M:WorkflowService.Services.ScopesService.Delete(Workflow.DAL.Models.ApplicationUser,System.Int32)">
             <inheritdoc />
         </member>
     </members>

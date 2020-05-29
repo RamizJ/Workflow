@@ -32,23 +32,19 @@ namespace WorkflowService.Services
             if(user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var scope = await GetScopesQuery(user)
+            var scope = await GetScopesQuery(user, true)
                 .FirstOrDefaultAsync(s => s.Id == id);
 
             return _vmConverter.ToViewModel(scope);
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<VmScope>> GetAll(ApplicationUser user, bool withRemoved)
+        public async Task<IEnumerable<VmScope>> GetAll(ApplicationUser user, bool withRemoved = false)
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var query = GetScopesQuery(user);
-
-            if (!withRemoved)
-                query = query.Where(s => s.IsRemoved == false);
-
+            var query = GetScopesQuery(user, withRemoved);
             var scopes = await query
                 .Select(s => _vmConverter.ToViewModel(s))
                 .ToArrayAsync();
@@ -60,16 +56,12 @@ namespace WorkflowService.Services
         public async Task<IEnumerable<VmScope>> GetPage(ApplicationUser user, 
             int pageNumber, int pageSize, 
             string filter, FieldFilter[] filterFields, FieldSort[] sortFields,
-            bool withRemoved)
+            bool withRemoved = false)
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var query = GetScopesQuery(user);
-
-            if(!withRemoved)
-                query = query.Where(s => s.IsRemoved == false);
-
+            var query = GetScopesQuery(user, withRemoved);
             query = Filter(filter, query);
             query = FilterByFields(filterFields, query);
             query = SortByFields(sortFields, query);
@@ -87,18 +79,24 @@ namespace WorkflowService.Services
             if (ids == null || ids.Length == 0)
                 return null;
             
-            return await GetScopesQuery(user)
+            return await GetScopesQuery(user, true)
                 .Where(s => ids.Any(id => s.Id == id))
                 .Select(s => _vmConverter.ToViewModel(s))
                 .ToArrayAsync();
         }
 
         /// <inheritdoc />
-        public async Task<VmScope> CreateScope(ApplicationUser user, VmScope scope)
+        public async Task<VmScope> Create(ApplicationUser user, VmScope scope)
         {
+            if(scope == null)
+                throw new ArgumentNullException(nameof(scope));
+
+            if(string.IsNullOrWhiteSpace(scope.Name))
+                throw new InvalidOperationException("Scope name cannot be empty");
+
             var model = _vmConverter.ToModel(scope);
+            model.Id = 0;
             model.OwnerId = user.Id;
-            model.Owner = user;
 
             await _dataContext.Scopes.AddAsync(model);
             await _dataContext.SaveChangesAsync();
@@ -107,14 +105,17 @@ namespace WorkflowService.Services
         }
 
         /// <inheritdoc />
-        public async Task<VmScope> UpdateScope(ApplicationUser user, VmScope scope)
+        public async Task<VmScope> Update(ApplicationUser user, VmScope scope)
         {
             if (scope == null)
                 return null;
 
+            if (string.IsNullOrWhiteSpace(scope.Name))
+                throw new InvalidOperationException("Scope name cannot be empty");
+
             var model = _vmConverter.ToModel(scope);
 
-            var isExistForUser = await GetScopesQuery(user)
+            var isExistForUser = await GetScopesQuery(user, true)
                 .AnyAsync(s => s.Id == scope.Id);
 
             if (isExistForUser)
@@ -128,9 +129,9 @@ namespace WorkflowService.Services
         }
 
         /// <inheritdoc />
-        public async Task<VmScope> DeleteScope(ApplicationUser user, int scopeId)
+        public async Task<VmScope> Delete(ApplicationUser user, int scopeId)
         {
-            var model = await GetScopesQuery(user)
+            var model = await GetScopesQuery(user, true)
                 .FirstOrDefaultAsync(s => s.Id == scopeId);
 
             if (model != null)
@@ -144,16 +145,19 @@ namespace WorkflowService.Services
         }
 
 
-        private IQueryable<Scope> GetScopesQuery(ApplicationUser user)
+        private IQueryable<Scope> GetScopesQuery(ApplicationUser user, bool withRemoved)
         {
-            var scopes = _dataContext.Scopes
+            var query = _dataContext.Scopes
                 .Include(s => s.Owner)
                 .Include(s => s.Team)
                 .Include(s => s.Group)
-                .Where(s => s.OwnerId == user.Id ||
-                            s.Team.TeamUsers.Any(tu => tu.UserId == user.Id));
+                .Where(s => s.OwnerId == user.Id
+                            || s.Team.TeamUsers.Any(tu => tu.UserId == user.Id));
 
-            return scopes;
+            if (!withRemoved)
+                query = query.Where(s => s.IsRemoved == false);
+
+            return query;
         }
 
         private static IQueryable<Scope> Filter(string filter, IQueryable<Scope> query)

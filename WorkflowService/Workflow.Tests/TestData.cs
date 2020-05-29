@@ -48,6 +48,8 @@ namespace Workflow.Tests
                 .TheNext(4).With((s, i) => s.Name = $"Scope2{i}")
                 .TheFirst(3).With(s => s.GroupId = Groups[0].Id).With(s => s.TeamId = Teams[0].Id)
                 .TheNext(7).With(s => s.GroupId = Groups[1].Id).With(s => s.TeamId = Teams[1].Id)
+                .TheFirst(9).With(s => s.IsRemoved = false)
+                .TheLast(1).With(s => s.IsRemoved = true)
                 .Build();
 
             TeamUsers = Builder<TeamUser>.CreateListOfSize(1)

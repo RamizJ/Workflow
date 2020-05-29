@@ -25,7 +25,7 @@ namespace WorkflowService.Services.Abstract
         /// <param name="user"></param>
         /// <param name="withRemoved"></param>
         /// <returns></returns>
-        Task<IEnumerable<VmScope>> GetAll(ApplicationUser user, bool withRemoved);
+        Task<IEnumerable<VmScope>> GetAll(ApplicationUser user, bool withRemoved = false);
 
         /// <summary>
         /// 
@@ -39,7 +39,7 @@ namespace WorkflowService.Services.Abstract
         /// <param name="withRemoved"></param>
         /// <returns></returns>
         Task<IEnumerable<VmScope>> GetPage(ApplicationUser user, int pageNumber, int pageSize,
-            string filter, FieldFilter[] filterFields, FieldSort[] sortFields, bool withRemoved);
+            string filter, FieldFilter[] filterFields, FieldSort[] sortFields, bool withRemoved = false);
 
         /// <summary>
         /// 
@@ -55,7 +55,7 @@ namespace WorkflowService.Services.Abstract
         /// <param name="user"></param>
         /// <param name="scope"></param>
         /// <returns></returns>
-        Task<VmScope> CreateScope(ApplicationUser user, VmScope scope);
+        Task<VmScope> Create(ApplicationUser user, VmScope scope);
 
         /// <summary>
         /// 
@@ -63,7 +63,7 @@ namespace WorkflowService.Services.Abstract
         /// <param name="user"></param>
         /// <param name="scope"></param>
         /// <returns></returns>
-        Task<VmScope> UpdateScope(ApplicationUser user, VmScope scope);
+        Task<VmScope> Update(ApplicationUser user, VmScope scope);
 
         /// <summary>
         /// 
@@ -71,6 +71,6 @@ namespace WorkflowService.Services.Abstract
         /// <param name="user"></param>
         /// <param name="scopeId"></param>
         /// <returns></returns>
-        Task<VmScope> DeleteScope(ApplicationUser user, int scopeId);
+        Task<VmScope> Delete(ApplicationUser user, int scopeId);
     }
 }
