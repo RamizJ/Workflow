@@ -249,7 +249,7 @@
             <param name="ids"></param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.GetUserTeams(System.String)">
+        <member name="M:WorkflowService.Controllers.TeamsController.GetTeams(System.String)">
             <summary>
             Get user teams
             </summary>
@@ -287,7 +287,7 @@
             Конструктор 
             </summary>
             <param name="userManager"></param>
-            <param name="usersService"></param>
+            <param name="service"></param>
         </member>
         <member name="M:WorkflowService.Controllers.UsersController.Get(System.String)">
             <summary>
@@ -354,7 +354,7 @@
             
             </summary>
         </member>
-        <member name="M:WorkflowService.Services.Abstract.IScopesService.GetScope(Workflow.DAL.Models.ApplicationUser,System.Int32)">
+        <member name="M:WorkflowService.Services.Abstract.IScopesService.Get(Workflow.DAL.Models.ApplicationUser,System.Int32)">
             <summary>
             
             </summary>
@@ -426,7 +426,7 @@
             </summary>
             <param name="dataContext"></param>
         </member>
-        <member name="M:WorkflowService.Services.ScopesService.GetScope(Workflow.DAL.Models.ApplicationUser,System.Int32)">
+        <member name="M:WorkflowService.Services.ScopesService.Get(Workflow.DAL.Models.ApplicationUser,System.Int32)">
             <inheritdoc />
         </member>
         <member name="M:WorkflowService.Services.ScopesService.GetAll(Workflow.DAL.Models.ApplicationUser)">

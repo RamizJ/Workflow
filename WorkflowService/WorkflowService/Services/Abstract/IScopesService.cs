@@ -17,7 +17,7 @@ namespace WorkflowService.Services.Abstract
         /// <param name="user"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<VmScope> GetScope(ApplicationUser user, int id);
+        Task<VmScope> Get(ApplicationUser user, int id);
 
         /// <summary>
         /// 

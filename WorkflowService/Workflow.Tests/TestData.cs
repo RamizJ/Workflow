@@ -19,16 +19,23 @@ namespace Workflow.Tests
 
         public void Initialize(DataContext context, UserManager<ApplicationUser> userManager)
         {
-            Users = Builder<ApplicationUser>.CreateListOfSize(3)
+            Users = Builder<ApplicationUser>.CreateListOfSize(10)
                 .All()
                 .With((x,i) => x.UserName = $"User {i}")
                 .With((x, i) => x.NormalizedUserName = x.UserName.ToUpper())
                 .With((x, i) => x.Email = $"Email {i}")
                 .With((x, i) => x.NormalizedEmail = x.Email.ToUpper())
-                .With((x, i) => x.FirstName = $"FirstName{i}")
-                .With((x, i) => x.LastName = $"LastName{i}")
-                .With((x, i) => x.MiddleName = $"MiddleName{i}")
                 .With((x, i) => x.PositionId = null)
+                .TheFirst(6)
+                .With((x, i) => x.FirstName = $"FirstName1{i}")
+                .With((x, i) => x.LastName = $"LastName1{i}")
+                .With((x, i) => x.MiddleName = $"MiddleName1{i}")
+                .TheNext(4)
+                .With((x, i) => x.FirstName = $"FirstName2{i}")
+                .With((x, i) => x.LastName = $"LastName2{i}")
+                .With((x, i) => x.MiddleName = $"MiddleName2{i}")
+                .TheFirst(9).With(x => x.IsRemoved = false)
+                .TheNext(1).With(x => x.IsRemoved = true)
                 .Build().ToList();
 
             Groups = Builder<Group>.CreateListOfSize(2)

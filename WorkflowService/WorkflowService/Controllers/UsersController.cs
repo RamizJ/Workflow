@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,17 +16,17 @@ namespace WorkflowService.Controllers
     public class UsersController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IUsersService _usersService;
+        private readonly IUsersService _service;
 
         /// <summary>
         /// Конструктор 
         /// </summary>
         /// <param name="userManager"></param>
-        /// <param name="usersService"></param>
-        public UsersController(UserManager<ApplicationUser> userManager, IUsersService usersService)
+        /// <param name="service"></param>
+        public UsersController(UserManager<ApplicationUser> userManager, IUsersService service)
         {
             _userManager = userManager;
-            _usersService = usersService;
+            _service = service;
         }
 
         /// <summary>
@@ -36,10 +35,11 @@ namespace WorkflowService.Controllers
         /// <param name="id">Идентификатор пользователя</param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(string id)
+        public async Task<ActionResult<VmUser>> Get(string id)
         {
-            var users = await _usersService.GetUsers();
-            return Ok(users);
+            var currentUser = await _userManager.GetUserAsync(User);
+            var user = await _service.Get(currentUser, id);
+            return Ok(user);
         }
 
         /// <summary>
@@ -47,9 +47,10 @@ namespace WorkflowService.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery]bool withRemoved = false)
         {
-            var users = await _usersService.GetUsers();
+            var currentUser = await _userManager.GetUserAsync(User);
+            var users = await _service.GetAll(currentUser, withRemoved);
             return Ok(users);
         }
 
@@ -60,16 +61,18 @@ namespace WorkflowService.Controllers
         /// <param name="pageSize">Размер страницы</param>
         /// <param name="filter">Фильтрация по всем полям если не указаны конкретные поля для фильтрации</param>
         /// <param name="filterFields">Поля фильтрации</param>
-        /// <param name="sort">Тип сортировки</param>
         /// <param name="sortFields">Поля сортировки. Сортировка производится по порядку указанных полей</param>
+        /// <param name="withRemoved">Вместе с удаленными</param>
         /// <returns>Коллекция пользователей</returns>
         [HttpGet]
-        public async Task<IActionResult> GetPage([FromQuery]int pageNumber, [FromQuery]int pageSize,
-            [FromQuery]string filter, [FromQuery]string[] filterFields,
-            [FromQuery]SortType sort, [FromQuery]string[] sortFields)
+        public async Task<IEnumerable<VmUser>> GetPage([FromQuery]int pageNumber, [FromQuery]int pageSize,
+            [FromQuery]string filter, [FromQuery]FieldFilter[] filterFields, [FromQuery]FieldSort[] sortFields,
+            bool withRemoved = false)
         {
-            var users = await _usersService.GetUsers();
-            return Ok(users);
+            var currentUser = await _userManager.GetUserAsync(User);
+            var users = await _service.GetPage(currentUser, pageNumber, pageSize, 
+                filter, filterFields, sortFields, withRemoved);
+            return users;
         }
 
         /// <summary>
@@ -78,20 +81,10 @@ namespace WorkflowService.Controllers
         /// <param name="ids">Идентификаторы пользователей</param>
         /// <returns></returns>
         [HttpGet]
-        public Task<IEnumerable<VmUser>> GetRange([FromQuery]string[] ids)
+        public async Task<IEnumerable<VmUser>> GetRange([FromQuery]string[] ids)
         {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Получение участников команды
-        /// </summary>
-        /// <param name="teamId">Идентификатор команды</param>
-        /// <returns>Коллекция участников команды</returns>
-        [HttpGet]
-        public Task<IEnumerable<VmUser>> GetTeamUsers(int teamId)
-        {
-            throw new NotImplementedException();
+            var currentUser = await _userManager.GetUserAsync(User);
+            return await _service.GetRange(currentUser, ids);
         }
 
         /// <summary>
@@ -102,7 +95,8 @@ namespace WorkflowService.Controllers
         [HttpPost]
         public async Task<VmUser> Create([FromBody]VmUser user)
         {
-            throw new NotImplementedException();
+            var currentUser = await _userManager.GetUserAsync(User);
+            return await _service.Create(currentUser, user);
         }
 
         /// <summary>
@@ -113,6 +107,11 @@ namespace WorkflowService.Controllers
         [HttpPut]
         public async Task<ActionResult> Update(VmUser user)
         {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var updatedUser = await _service.Update(currentUser, user);
+            if (updatedUser == null)
+                return NotFound();
+
             return NoContent();
         }
 
@@ -124,7 +123,12 @@ namespace WorkflowService.Controllers
         [HttpDelete]
         public async Task<ActionResult<VmScope>> Delete(string id)
         {
-            return BadRequest();
+            var currentUser = await _userManager.GetUserAsync(User);
+            var deletedUser = await _service.Delete(currentUser, id);
+            if (deletedUser == null)
+                return NotFound();
+
+            return Ok(deletedUser);
         }
     }
 }

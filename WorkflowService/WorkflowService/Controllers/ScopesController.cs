@@ -10,14 +10,11 @@ using WorkflowService.Services.Abstract;
 namespace WorkflowService.Controllers
 {
     /// <summary>
-    /// API для работы с множествами задач
+    /// API-методы работы с множествами задач
     /// </summary>
     [ApiController, Route("api/[controller]/[action]")]
     public class ScopesController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IScopesService _scopesService;
-
         /// <summary>
         /// Конструктор
         /// </summary>
@@ -38,25 +35,12 @@ namespace WorkflowService.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<VmScope>> Get(int id)
         {
-            var user = await _userManager.GetUserAsync(User);
-            return Ok(await _scopesService.GetScope(user, id));
-        }
-
-
-        /// <summary>
-        /// Получение всех множеств задач
-        /// </summary>
-        /// <param name="withRemoved">Вместе с удаленными</param>
-        /// <returns>Коллекция множеств задач</returns>
-        [HttpGet]
-        public async Task<IEnumerable<VmScope>> GetAll([FromQuery]bool withRemoved = false)
-        {
-            var user = await _userManager.GetUserAsync(User);
-            return await _scopesService.GetAll(user, withRemoved);
+            var currentUser = await _userManager.GetUserAsync(User);
+            return Ok(await _scopesService.Get(currentUser, id));
         }
 
         /// <summary>
-        /// Получение множеств задач
+        /// Постраничная загрузка множеств задач с фильтрацией и сортировкой
         /// </summary>
         /// <param name="pageNumber">Номер страницы</param>
         /// <param name="pageSize">Размер страницы</param>
@@ -67,11 +51,11 @@ namespace WorkflowService.Controllers
         /// <returns>Коллекция множеств задач</returns>
         [HttpGet]
         public async Task<IEnumerable<VmScope>> GetPage([FromQuery] int pageNumber, [FromQuery] int pageSize,
-            [FromQuery] string filter, [FromQuery] FieldFilter[] filterFields, 
-            [FromQuery] FieldSort[] sortFields, [FromQuery]bool withRemoved = false)
+            [FromQuery] string filter = null, [FromQuery] FieldFilter[] filterFields = null, 
+            [FromQuery] FieldSort[] sortFields = null, [FromQuery]bool withRemoved = false)
         {
-            var user = await _userManager.GetUserAsync(User);
-            return await _scopesService.GetPage(user, pageNumber, pageSize,
+            var currentUser = await _userManager.GetUserAsync(User);
+            return await _scopesService.GetPage(currentUser, pageNumber, pageSize,
                 filter, filterFields, sortFields, withRemoved);
         }
 
@@ -83,8 +67,8 @@ namespace WorkflowService.Controllers
         [HttpGet]
         public async Task<IEnumerable<VmScope>> GetRange(int[] ids)
         {
-            var user = await _userManager.GetUserAsync(User);
-            return await _scopesService.GetRange(user, ids);
+            var currentUser = await _userManager.GetUserAsync(User);
+            return await _scopesService.GetRange(currentUser, ids);
         }
 
         /// <summary>
@@ -95,8 +79,8 @@ namespace WorkflowService.Controllers
         [HttpPost]
         public async Task<ActionResult<VmScope>> Create([FromBody] VmScope scope)
         {
-            var user = await _userManager.GetUserAsync(User);
-            return await _scopesService.Create(user, scope);
+            var currentUser = await _userManager.GetUserAsync(User);
+            return await _scopesService.Create(currentUser, scope);
         }
 
         /// <summary>
@@ -107,8 +91,8 @@ namespace WorkflowService.Controllers
         [HttpPost]
         public async Task<IActionResult> Update([FromBody]VmScope scope)
         {
-            var user = await _userManager.GetUserAsync(User);
-            var updatedScope = await _scopesService.Update(user, scope);
+            var currentUser = await _userManager.GetUserAsync(User);
+            var updatedScope = await _scopesService.Update(currentUser, scope);
             if (updatedScope == null)
                 return NotFound();
 
@@ -123,12 +107,16 @@ namespace WorkflowService.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<VmScope>> Delete(int id)
         {
-            var user = await _userManager.GetUserAsync(User);
-            var deletedScope = await _scopesService.Delete(user, id);
+            var currentUser = await _userManager.GetUserAsync(User);
+            var deletedScope = await _scopesService.Delete(currentUser, id);
             if (deletedScope == null)
                 return NotFound();
 
             return Ok(deletedScope);
         }
+
+
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IScopesService _scopesService;
     }
 }

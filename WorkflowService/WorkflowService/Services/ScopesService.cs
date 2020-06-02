@@ -27,12 +27,12 @@ namespace WorkflowService.Services
 
 
         /// <inheritdoc />
-        public async Task<VmScope> GetScope(ApplicationUser user, int id)
+        public async Task<VmScope> Get(ApplicationUser user, int id)
         {
             if(user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var scope = await GetScopesQuery(user, true)
+            var scope = await GetQuery(user, true)
                 .FirstOrDefaultAsync(s => s.Id == id);
 
             return _vmConverter.ToViewModel(scope);
@@ -44,7 +44,7 @@ namespace WorkflowService.Services
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var query = GetScopesQuery(user, withRemoved);
+            var query = GetQuery(user, withRemoved);
             var scopes = await query
                 .Select(s => _vmConverter.ToViewModel(s))
                 .ToArrayAsync();
@@ -61,7 +61,7 @@ namespace WorkflowService.Services
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var query = GetScopesQuery(user, withRemoved);
+            var query = GetQuery(user, withRemoved);
             query = Filter(filter, query);
             query = FilterByFields(filterFields, query);
             query = SortByFields(sortFields, query);
@@ -79,7 +79,7 @@ namespace WorkflowService.Services
             if (ids == null || ids.Length == 0)
                 return null;
             
-            return await GetScopesQuery(user, true)
+            return await GetQuery(user, true)
                 .Where(s => ids.Any(id => s.Id == id))
                 .Select(s => _vmConverter.ToViewModel(s))
                 .ToArrayAsync();
@@ -115,7 +115,7 @@ namespace WorkflowService.Services
 
             var model = _vmConverter.ToModel(scope);
 
-            var isExistForUser = await GetScopesQuery(user, true)
+            var isExistForUser = await GetQuery(user, true)
                 .AnyAsync(s => s.Id == scope.Id);
 
             if (isExistForUser)
@@ -131,13 +131,14 @@ namespace WorkflowService.Services
         /// <inheritdoc />
         public async Task<VmScope> Delete(ApplicationUser user, int scopeId)
         {
-            var model = await GetScopesQuery(user, true)
+            var model = await GetQuery(user, true)
                 .FirstOrDefaultAsync(s => s.Id == scopeId);
 
             if (model != null)
             {
                 model.IsRemoved = true;
                 _dataContext.Scopes.Update(model);
+                await _dataContext.SaveChangesAsync();
                 return _vmConverter.ToViewModel(model);
             }
 
@@ -145,7 +146,7 @@ namespace WorkflowService.Services
         }
 
 
-        private IQueryable<Scope> GetScopesQuery(ApplicationUser user, bool withRemoved)
+        private IQueryable<Scope> GetQuery(ApplicationUser user, bool withRemoved)
         {
             var query = _dataContext.Scopes
                 .Include(s => s.Owner)

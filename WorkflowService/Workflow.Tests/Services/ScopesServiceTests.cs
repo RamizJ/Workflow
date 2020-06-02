@@ -44,7 +44,7 @@ namespace Workflow.Tests.Services
             //Arrange
 
             //Act
-            var vmScope = await _service.GetScope(_testData.Users[userIndex], _testData.Scopes[scopeIndex].Id);
+            var vmScope = await _service.Get(_testData.Users[userIndex], _testData.Scopes[scopeIndex].Id);
 
             //Assert
             Assert.AreEqual(expectedScopeId, vmScope?.Id);

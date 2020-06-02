@@ -1,54 +1,61 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Workflow.DAL.Models;
 using Workflow.VM.ViewModels;
 using WorkflowService.Common;
+using WorkflowService.Services.Abstract;
 
 namespace WorkflowService.Controllers
 {
     /// <summary>
-    /// API работы с задачами
+    /// API-методы работы с задачами
     /// </summary>
     [ApiController, Route("api/[controller]/[action]")]
     public class GoalsController : ControllerBase
     {
+        /// <summary>
+        /// Конструктор
+        /// </summary>
+        public GoalsController(UserManager<ApplicationUser> userManager, IGoalsService goalsService)
+        {
+            _userManager = userManager;
+            _goalsService = goalsService;
+        }
+
         /// <summary>
         /// Получить задачу по идентификатору, если она доступна пользователю
         /// </summary>
         /// <param name="id">Идентификатор задачи</param>
         /// <returns>Задача</returns>
         [HttpGet("{id}")]
-        public Task<ActionResult<VmGoal>> Get(int id)
+        public async Task<ActionResult<VmGoal>> Get(int id)
         {
-            throw new System.NotImplementedException();
-        }
-
-        /// <summary>
-        /// Получить все задачи доступные пользователю
-        /// </summary>
-        /// <returns>Коллеция задач</returns>
-        [HttpGet]
-        public Task<IEnumerable<VmGoal>> GetAll()
-        {
-            throw new System.NotImplementedException();
+            var user = await _userManager.GetUserAsync(User);
+            return Ok(await _goalsService.Get(user, id));
         }
 
         /// <summary>
         /// Постраничная загрузка задач с фильтрацией и сортировкой
         /// </summary>
+        /// <param name="scopeId">Идентификатор проекта</param>
         /// <param name="pageNumber">Номер страницы</param>
         /// <param name="pageSize">Размер страницы</param>
-        /// <param name="filter">Строка фильтрации</param>
-        /// <param name="filterFields">Поля фильтрации. Если не указаны, то фильтрация производится по всем полям</param>
-        /// <param name="sort">Тип сортировки</param>
-        /// <param name="sortedFields">Поля сортировки</param>
+        /// <param name="filter">Фильтр по всем полям</param>
+        /// <param name="filterFields">Конкретные поля фильтрации</param>
+        /// <param name="sortFields">Поля сортировки</param>
+        /// <param name="withRemoved">Вместе с удаленными</param>
         /// <returns>Коллеция задач</returns>
         [HttpGet]
-        public Task<IEnumerable<VmGoal>> GetPage([FromQuery]int pageNumber, [FromQuery]int pageSize, 
-            [FromQuery]string filter, [FromQuery]string[] filterFields, 
-            [FromQuery]SortType sort, [FromQuery]string[] sortedFields)
+        public async Task<IEnumerable<VmGoal>> GetPage([FromQuery]int scopeId, 
+            [FromQuery]int pageNumber, [FromQuery]int pageSize, 
+            [FromQuery]string filter = null, [FromQuery]FieldFilter[] filterFields = null, 
+            [FromQuery]FieldSort[] sortFields = null, [FromQuery] bool withRemoved = false)
         {
-            throw new System.NotImplementedException();
+            var currentUser = await _userManager.GetUserAsync(User);
+            return await _goalsService.GetPage(currentUser, scopeId, 
+                pageNumber, pageSize, filter, filterFields, sortFields, withRemoved);
         }
 
         /// <summary>
@@ -57,42 +64,58 @@ namespace WorkflowService.Controllers
         /// <param name="ids">Идентификаторы задач</param>
         /// <returns>Коллекция задач</returns>
         [HttpGet]
-        public Task<IEnumerable<VmGoal>> GetRange([FromQuery]int[] ids)
+        public async Task<IEnumerable<VmGoal>> GetRange([FromQuery]int[] ids)
         {
-            throw new System.NotImplementedException();
+            var currentUser = await _userManager.GetUserAsync(User);
+            return await _goalsService.GetRange(currentUser, ids);
         }
 
         /// <summary>
         /// Создание задачи
         /// </summary>
-        /// <param name="goal">Новая задача</param>
-        /// <returns>Задача с обновленным идентификатором</returns>
+        /// <param name="goal">Создаваемая задача</param>
+        /// <returns>Созданная задача</returns>
         [HttpPost]
-        public Task<ActionResult<VmGoal>> Create([FromBody]VmGoal goal)
+        public async Task<ActionResult<VmGoal>> Create([FromBody]VmGoal goal)
         {
-            throw new System.NotImplementedException();
+            var currentUser = await _userManager.GetUserAsync(User);
+            return await _goalsService.Create(currentUser, goal);
         }
 
         /// <summary>
         /// Обновление задачи
         /// </summary>
-        /// <param name="goal">Обновленная задача</param>
+        /// <param name="goal">Обновляемая задача</param>
         /// <returns></returns>
         [HttpPut]
-        public Task<IActionResult> Update([FromBody]VmGoal goal)
+        public async Task<IActionResult> Update([FromBody]VmGoal goal)
         {
-            throw new System.NotImplementedException();
+            var currentUser = await _userManager.GetUserAsync(User);
+            var updatedScope = await _goalsService.Update(currentUser, goal);
+            if (updatedScope == null)
+                return NotFound();
+
+            return NoContent();
         }
 
         /// <summary>
         /// Удаление задачи
         /// </summary>
-        /// <param name="id">Идентификатор задачи</param>
+        /// <param name="id">Идентификатор удаляемой задачи</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public Task<ActionResult<VmGoal>> Delete(int id)
+        public async Task<ActionResult<VmGoal>> Delete(int id)
         {
-            throw new System.NotImplementedException();
+            var currentUser = await _userManager.GetUserAsync(User);
+            var deletedScope = await _goalsService.Delete(currentUser, id);
+            if (deletedScope == null)
+                return NotFound();
+
+            return Ok(deletedScope);
         }
+
+
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IGoalsService _goalsService;
     }
 }
