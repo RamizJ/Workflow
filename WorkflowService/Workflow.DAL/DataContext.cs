@@ -7,10 +7,11 @@ namespace Workflow.DAL
     public class DataContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<Scope> Scopes { get; set; }
+        public DbSet<Group> Groups { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamUser> TeamUsers { get; set; }
         public DbSet<Goal> Goals { get; set; }
-        public DbSet<GoalObserver> Goal { get; set; }
+        public DbSet<GoalObserver> GoalObservers { get; set; }
         public DbSet<Attachment> Attachments { get; set; }
         public DbSet<Position> Positions { get; set; }
 
@@ -21,6 +22,7 @@ namespace Workflow.DAL
         protected override void OnModelCreating(ModelBuilder builder)
         {
             SetupApplicationUser(builder);
+            SetupGroup(builder);
             SetupTeamUser(builder);
             SetupGoalObserver(builder);
             SetupTeam(builder);
@@ -32,6 +34,9 @@ namespace Workflow.DAL
             base.OnModelCreating(builder);
         }
 
+        private void SetupGroup(ModelBuilder builder)
+        { }
+
         private void SetupApplicationUser(ModelBuilder builder)
         {
             var entity = builder.Entity<ApplicationUser>();
@@ -42,7 +47,6 @@ namespace Workflow.DAL
             entity.Property(x => x.PositionCustom).HasMaxLength(100);
             entity.HasIndex(x => x.UserName).IsUnique();
         }
-
         private void SetupTeamUser(ModelBuilder builder)
         {
             builder.Entity<TeamUser>()

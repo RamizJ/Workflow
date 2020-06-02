@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkflowService", "WorkflowService\WorkflowService.csproj", "{C395C2B5-AA1D-4EFC-B376-7A5B0993BB14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowService", "WorkflowService\WorkflowService.csproj", "{C395C2B5-AA1D-4EFC-B376-7A5B0993BB14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Workflow.DAL", "Workflow.DAL\Workflow.DAL.csproj", "{2B68849F-E508-4A3E-817C-8E56D1AE6FA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Workflow.DAL", "Workflow.DAL\Workflow.DAL.csproj", "{2B68849F-E508-4A3E-817C-8E56D1AE6FA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Workflow.Tests", "Workflow.Tests\Workflow.Tests.csproj", "{965D1996-EF38-41C6-8B92-1C8844802E35}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Workflow.Tests", "Workflow.Tests\Workflow.Tests.csproj", "{965D1996-EF38-41C6-8B92-1C8844802E35}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Workflow.VM", "Workflow.VM\Workflow.VM.csproj", "{46A94A64-FD5D-4828-A84E-41F3967B2D7E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Workflow.VM", "Workflow.VM\Workflow.VM.csproj", "{46A94A64-FD5D-4828-A84E-41F3967B2D7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Workflow.Share", "Workflow.Share\Workflow.Share.csproj", "{4F67D94C-A590-4318-9E18-E0EEA0551B5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Workflow.Share", "Workflow.Share\Workflow.Share.csproj", "{4F67D94C-A590-4318-9E18-E0EEA0551B5F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

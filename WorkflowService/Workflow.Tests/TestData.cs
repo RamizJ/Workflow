@@ -9,37 +9,58 @@ namespace Workflow.Tests
 {
     public class TestData
     {
-        public List<Scope> Scopes { get; set; }
-        public List<ApplicationUser> Users { get; set; }
-        public Team Team { get; set; }
-        public List<TeamUser> TeamUsers { get; set; }
-        public List<Goal> Goals { get; set; }
+        public IList<ApplicationUser> Users { get; set; }
+        public IList<Group> Groups { get; set; }
+        public IList<Team> Teams { get; set; }
+        public IList<TeamUser> TeamUsers { get; set; }
+        public IList<Scope> Scopes { get; set; }
+        public IList<Goal> Goals { get; set; }
 
 
         public void Initialize(DataContext context, UserManager<ApplicationUser> userManager)
         {
-            Users = Builder<ApplicationUser>.CreateListOfSize(3)
+            Users = Builder<ApplicationUser>.CreateListOfSize(10)
                 .All()
                 .With((x,i) => x.UserName = $"User {i}")
                 .With((x, i) => x.NormalizedUserName = x.UserName.ToUpper())
                 .With((x, i) => x.Email = $"Email {i}")
                 .With((x, i) => x.NormalizedEmail = x.Email.ToUpper())
-                .With((x, i) => x.FirstName = $"FirstName{i}")
-                .With((x, i) => x.LastName = $"LastName{i}")
                 .With((x, i) => x.PositionId = null)
+                .TheFirst(6)
+                .With((x, i) => x.FirstName = $"FirstName1{i}")
+                .With((x, i) => x.LastName = $"LastName1{i}")
+                .With((x, i) => x.MiddleName = $"MiddleName1{i}")
+                .TheNext(4)
+                .With((x, i) => x.FirstName = $"FirstName2{i}")
+                .With((x, i) => x.LastName = $"LastName2{i}")
+                .With((x, i) => x.MiddleName = $"MiddleName2{i}")
+                .TheFirst(9).With(x => x.IsRemoved = false)
+                .TheNext(1).With(x => x.IsRemoved = true)
                 .Build().ToList();
 
-            Team = Builder<Team>.CreateNew()
+            Groups = Builder<Group>.CreateListOfSize(2)
+                .All().With(g => g.Name = $"Group{g.Id}").Build();
+                
+            Teams = Builder<Team>.CreateListOfSize(2)
+                .All()
                 .With(x => x.GroupId = null)
+                .With(x => x.Name = $"Team{x.Id}")
                 .Build();
-            Scopes = Builder<Scope>.CreateListOfSize(2).All()
-                .With(x => x.OwnerId = Users.First().Id)
-                .With(x => x.GroupId = null)
-                .TheFirst(1).With(x => x.TeamId = null)
-                .TheNext(1).With(x => x.TeamId = Team.Id)
-                .Build().ToList();
+
+            Scopes = Builder<Scope>.CreateListOfSize(10)
+                .All()
+                .With(s => s.OwnerId = Users.First().Id)
+                .With(s => s.TeamId = null)
+                .TheFirst(6).With((s, i) => s.Name = $"Scope1{i}")
+                .TheNext(4).With((s, i) => s.Name = $"Scope2{i}")
+                .TheFirst(3).With(s => s.GroupId = Groups[0].Id).With(s => s.TeamId = Teams[0].Id)
+                .TheNext(7).With(s => s.GroupId = Groups[1].Id).With(s => s.TeamId = Teams[1].Id)
+                .TheFirst(9).With(s => s.IsRemoved = false)
+                .TheLast(1).With(s => s.IsRemoved = true)
+                .Build();
+
             TeamUsers = Builder<TeamUser>.CreateListOfSize(1)
-                .All().WithFactory(() => new TeamUser(Team.Id, Users[1].Id))
+                .All().WithFactory(() => new TeamUser(Teams[0].Id, Users[1].Id))
                 .Build().ToList();
 
             Goals = Builder<Goal>.CreateListOfSize(10)
@@ -64,9 +85,10 @@ namespace Workflow.Tests
                 .Build().ToList();
 
             context.Users.AddRange(Users);
-            context.Scopes.AddRange(Scopes);
-            context.Teams.AddRange(Team);
+            context.Groups.AddRange(Groups);
+            context.Teams.AddRange(Teams);
             context.TeamUsers.AddRange(TeamUsers);
+            context.Scopes.AddRange(Scopes);
             context.Goals.AddRange(Goals);
 
             context.SaveChanges();

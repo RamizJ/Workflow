@@ -11,5 +11,7 @@ namespace Workflow.DAL.Models
 
         public int? GroupId { get; set; }
         public Group Group { get; set; }
+
+        public bool IsRemoved { get; set; }
     }
 }

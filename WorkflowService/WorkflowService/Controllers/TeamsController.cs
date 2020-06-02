@@ -1,65 +1,122 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Workflow.DAL.Models;
 using Workflow.VM.ViewModels;
 using WorkflowService.Common;
-using WorkflowService.Controllers.Abstract;
+using WorkflowService.Services.Abstract;
 
 namespace WorkflowService.Controllers
 {
-    /// <inheritdoc cref="ITeamsController"/>
+    /// <summary>
+    /// API-методы работы с командами
+    /// </summary>
     [ApiController, Route("api/[controller]/[action]")]
-    public class TeamsController : ControllerBase, ITeamsController
+    public class TeamsController : ControllerBase
     {
-        /// <inheritdoc cref="ITeamsController"/>
+        /// <summary>
+        /// Конструктор
+        /// </summary>
+        /// <param name="userManager"></param>
+        /// <param name="teamsService"></param>
+        public TeamsController(UserManager<ApplicationUser> userManager, ITeamsService teamsService)
+        {
+            _userManager = userManager;
+            _teamsService = teamsService;
+        }
+
+        /// <summary>
+        /// Получить команду по идентификатору
+        /// </summary>
+        /// <param name="id">Идентификатор команды</param>
+        /// <returns>Команда</returns>
         [HttpGet("{id}")]
-        public Task<ActionResult<VmTeam>> Get(int id)
+        public async Task<ActionResult<VmTeam>> Get(int id)
         {
-            throw new System.NotImplementedException();
+            var currentUser = await _userManager.GetUserAsync(User);
+            return Ok(await _teamsService.Get(currentUser, id));
         }
 
-        /// <inheritdoc cref="ITeamsController"/>
+        /// <summary>
+        /// Постраничная загрузка команд с фильтрацией и сортировкой
+        /// </summary>
+        /// <param name="pageNumber">Номер страницы</param>
+        /// <param name="pageSize">Размер страницы</param>
+        /// <param name="filter">Фильтр по всем полям</param>
+        /// <param name="filterFields">Поля для фильтрации</param>
+        /// <param name="sortFields">Поля для сортировки</param>
+        /// <param name="withRemoved">Вместе с удаленными командами</param>
+        /// <returns>Коллекция команд</returns>
         [HttpGet]
-        public Task<IEnumerable<VmTeam>> GetAll()
+        public async Task<IEnumerable<VmTeam>> GetPage([FromQuery]int pageNumber, [FromQuery]int pageSize,
+            [FromQuery]string filter = null, [FromQuery]FieldFilter[] filterFields = null, 
+            [FromQuery]FieldSort[] sortFields = null, [FromQuery] bool withRemoved = false)
         {
-            throw new System.NotImplementedException();
+            var currentUser = await _userManager.GetUserAsync(User);
+            return await _teamsService.GetPage(currentUser, pageNumber, pageSize,
+                filter, filterFields, sortFields, withRemoved);
         }
 
-        /// <inheritdoc cref="ITeamsController"/>
+        /// <summary>
+        /// Получить команд по идентификаторам
+        /// </summary>
+        /// <param name="ids">Идентификаторы команд</param>
+        /// <returns>Коллецция команд</returns>
         [HttpGet]
-        public Task<IEnumerable<VmTeam>> GetPage([FromQuery]int pageNumber, [FromQuery]int pageSize,
-            [FromQuery]string filter, [FromQuery]string filterFields,
-            [FromQuery]SortType sort, [FromQuery]string sortedFields)
+        public async Task<IEnumerable<VmTeam>> GetRange([FromQuery]int[] ids)
         {
-            throw new System.NotImplementedException();
+            var currentUser = await _userManager.GetUserAsync(User);
+            return await _teamsService.GetRange(currentUser, ids);
         }
 
-        /// <inheritdoc cref="ITeamsController"/>
-        [HttpGet]
-        public Task<IEnumerable<VmTeam>> GetRange([FromQuery]int[] teamIds)
-        {
-            throw new System.NotImplementedException();
-        }
 
-        /// <inheritdoc cref="ITeamsController"/>
+        /// <summary>
+        /// Создать команду
+        /// </summary>
+        /// <param name="team">Новая команда</param>
+        /// <returns>Команда</returns>
         [HttpPost]
-        public Task<ActionResult<VmTeam>> Create([FromBody]VmTeam team)
+        public async Task<ActionResult<VmTeam>> Create([FromBody]VmTeam team)
         {
-            throw new System.NotImplementedException();
+            var currentUser = await _userManager.GetUserAsync(User);
+            return await _teamsService.Create(currentUser, team);
         }
 
-        /// <inheritdoc cref="ITeamsController"/>
+        /// <summary>
+        /// Обновление команды
+        /// </summary>
+        /// <param name="team">Команда</param>
+        /// <returns>NotFound(404) - если команда не найдена. NoContent(204) - если обновление прошло успешно</returns>
         [HttpPut]
-        public Task<IActionResult> Update([FromBody]VmTeam team)
+        public async Task<IActionResult> Update([FromBody]VmTeam team)
         {
-            throw new System.NotImplementedException();
+            var currentUser = await _userManager.GetUserAsync(User);
+            var updatedScope = await _teamsService.Update(currentUser, team);
+            if (updatedScope == null)
+                return NotFound();
+
+            return NoContent();
         }
 
-        /// <inheritdoc cref="ITeamsController"/>
+        /// <summary>
+        /// Удаление команды
+        /// </summary>
+        /// <param name="id">Идентификатор команды</param>
+        /// <returns>Удаленная команда</returns>
         [HttpDelete("{id}")]
-        public Task<ActionResult<VmTeam>> Delete(int id)
+        public async Task<ActionResult<VmTeam>> Delete(int id)
         {
-            throw new System.NotImplementedException();
+            var currentUser = await _userManager.GetUserAsync(User);
+            var deletedScope = await _teamsService.Delete(currentUser, id);
+            if (deletedScope == null)
+                return NotFound();
+
+            return Ok(deletedScope);
         }
+
+
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ITeamsService _teamsService;
     }
 }

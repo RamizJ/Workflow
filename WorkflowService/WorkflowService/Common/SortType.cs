@@ -1,10 +1,18 @@
 ﻿namespace WorkflowService.Common
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Тип сортировки
+    /// </summary>
     public enum SortType
     {
-        Unspecified,
+        /// <summary>
+        /// По возрастанию
+        /// </summary>
         Ascending,
+
+        /// <summary>
+        /// По убыванию
+        /// </summary>
         Descending
     }
 }
