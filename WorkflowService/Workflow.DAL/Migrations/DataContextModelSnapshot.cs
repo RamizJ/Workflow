@@ -351,7 +351,7 @@ namespace Workflow.DAL.Migrations
 
                     b.HasIndex("ObserverId");
 
-                    b.ToTable("Goal");
+                    b.ToTable("GoalObservers");
                 });
 
             modelBuilder.Entity("Workflow.DAL.Models.Group", b =>
@@ -380,7 +380,7 @@ namespace Workflow.DAL.Migrations
 
                     b.HasIndex("ParentGroupId");
 
-                    b.ToTable("Group");
+                    b.ToTable("Groups");
                 });
 
             modelBuilder.Entity("Workflow.DAL.Models.Position", b =>
@@ -455,6 +455,9 @@ namespace Workflow.DAL.Migrations
 
                     b.Property<int?>("GroupId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsRemoved")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(100)")

@@ -4,8 +4,88 @@
         <name>WorkflowService</name>
     </assembly>
     <members>
+        <member name="T:WorkflowService.Common.FieldFilter">
+            <summary>
+            Фильтр по полю
+            </summary>
+        </member>
+        <member name="P:WorkflowService.Common.FieldFilter.FieldName">
+            <summary>
+            Имя поля
+            </summary>
+        </member>
+        <member name="P:WorkflowService.Common.FieldFilter.Value">
+            <summary>
+            Значение поля
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Common.FieldFilter.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Common.FieldFilter.#ctor(System.String,System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="fieldName">Имя поля</param>
+            <param name="value">Значение</param>
+        </member>
+        <member name="M:WorkflowService.Common.FieldFilter.Is(System.String)">
+            <summary>
+            Проверка на совпадение имени поля с передаваемым. Регистр букв не учитывается
+            </summary>
+            <param name="fieldName">Имя поля</param>
+            <returns></returns>
+        </member>
+        <member name="T:WorkflowService.Common.FieldSort">
+            <summary>
+            Сортировка по полю
+            </summary>
+        </member>
+        <member name="P:WorkflowService.Common.FieldSort.FieldName">
+            <summary>
+            Имя поля
+            </summary>
+        </member>
+        <member name="P:WorkflowService.Common.FieldSort.SortType">
+            <summary>
+            Тип сортировки
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Common.FieldSort.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Common.FieldSort.#ctor(System.String,WorkflowService.Common.SortType)">
+            <summary>
+            
+            </summary>
+            <param name="fieldName">Имя поля по которому будет осуществляться сортировка</param>
+            <param name="sortType">Тип сортировки</param>
+        </member>
+        <member name="M:WorkflowService.Common.FieldSort.Is(System.String)">
+            <summary>
+            Проверка на совпадение имени поля с передаваемым. Регистр букв не учитывается
+            </summary>
+            <param name="fieldName">Имя поля</param>
+            <returns></returns>
+        </member>
         <member name="T:WorkflowService.Common.SortType">
-            <inheritdoc />
+            <summary>
+            Тип сортировки
+            </summary>
+        </member>
+        <member name="F:WorkflowService.Common.SortType.Ascending">
+            <summary>
+            По возрастанию
+            </summary>
+        </member>
+        <member name="F:WorkflowService.Common.SortType.Descending">
+            <summary>
+            По убыванию
+            </summary>
         </member>
         <member name="T:WorkflowService.Controllers.AuthenticationController">
             <summary>
@@ -33,7 +113,12 @@
         </member>
         <member name="T:WorkflowService.Controllers.GoalsController">
             <summary>
-            API работы с задачами
+            API-методы работы с задачами
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},WorkflowService.Services.Abstract.IGoalsService)">
+            <summary>
+            Конструктор
             </summary>
         </member>
         <member name="M:WorkflowService.Controllers.GoalsController.Get(System.Int32)">
@@ -43,22 +128,17 @@
             <param name="id">Идентификатор задачи</param>
             <returns>Задача</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.GoalsController.GetAll">
-            <summary>
-            Получить все задачи доступные пользователю
-            </summary>
-            <returns>Коллеция задач</returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.GoalsController.GetPage(System.Int32,System.Int32,System.String,System.String[],WorkflowService.Common.SortType,System.String[])">
+        <member name="M:WorkflowService.Controllers.GoalsController.GetPage(System.Int32,System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
             <summary>
             Постраничная загрузка задач с фильтрацией и сортировкой
             </summary>
+            <param name="scopeId">Идентификатор проекта</param>
             <param name="pageNumber">Номер страницы</param>
             <param name="pageSize">Размер страницы</param>
-            <param name="filter">Строка фильтрации</param>
-            <param name="filterFields">Поля фильтрации. Если не указаны, то фильтрация производится по всем полям</param>
-            <param name="sort">Тип сортировки</param>
+            <param name="filter">Фильтр по всем полям</param>
+            <param name="filterFields">Конкретные поля фильтрации</param>
             <param name="sortFields">Поля сортировки</param>
+            <param name="withRemoved">Вместе с удаленными</param>
             <returns>Коллеция задач</returns>
         </member>
         <member name="M:WorkflowService.Controllers.GoalsController.GetRange(System.Int32[])">
@@ -72,21 +152,21 @@
             <summary>
             Создание задачи
             </summary>
-            <param name="goal">Новая задача</param>
-            <returns>Задача с обновленным идентификатором</returns>
+            <param name="goal">Создаваемая задача</param>
+            <returns>Созданная задача</returns>
         </member>
         <member name="M:WorkflowService.Controllers.GoalsController.Update(Workflow.VM.ViewModels.VmGoal)">
             <summary>
             Обновление задачи
             </summary>
-            <param name="goal">Обновленная задача</param>
+            <param name="goal">Обновляемая задача</param>
             <returns></returns>
         </member>
         <member name="M:WorkflowService.Controllers.GoalsController.Delete(System.Int32)">
             <summary>
             Удаление задачи
             </summary>
-            <param name="id">Идентификатор задачи</param>
+            <param name="id">Идентификатор удаляемой задачи</param>
             <returns></returns>
         </member>
         <member name="T:WorkflowService.Controllers.GroupsController">
@@ -116,7 +196,7 @@
             <param name="filter">Filter string</param>
             <param name="filterFields">Fields by which result rows will be filtered. Serparator is "|"</param>
             <param name="sort">Sort type. 0 - Unspecified, 1 - Ascending, 2 - Descending</param>
-            <param name="sortFields">Fields by which result rows will be sorted. Serparator is "|"</param>
+            <param name="sortedFields">Fields by which result rows will be sorted. Serparator is "|"</param>
             <returns>Collection of scopes</returns>
         </member>
         <member name="M:WorkflowService.Controllers.GroupsController.GetRange(System.Int32[])">
@@ -149,133 +229,157 @@
         </member>
         <member name="T:WorkflowService.Controllers.ScopesController">
             <summary>
-            API for working with scopes of goals
+            API-методы работы с множествами задач
             </summary>
         </member>
         <member name="M:WorkflowService.Controllers.ScopesController.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},WorkflowService.Services.Abstract.IScopesService)">
             <summary>
-            Constructor
+            Конструктор
             </summary>
             <param name="userManager"></param>
             <param name="scopesService"></param>
         </member>
         <member name="M:WorkflowService.Controllers.ScopesController.Get(System.Int32)">
             <summary>
-            Get scope of goals
+            Получение множества задач по идентификатору
             </summary>
-            <param name="id">Scope id</param>
-            <returns>Scope data. Returned only if available for authenticated user</returns>
+            <param name="id">Идентификатор области задач</param>
+            <returns>Множество задач. Только если доступно пользователю</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.ScopesController.GetAll">
+        <member name="M:WorkflowService.Controllers.ScopesController.GetPage(System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
             <summary>
-            Get all scopes of goals
+            Постраничная загрузка множеств задач с фильтрацией и сортировкой
             </summary>
-            <returns>Collection of scopes</returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.ScopesController.GetPage(System.Int32,System.Int32,System.String,System.String[],WorkflowService.Common.SortType,System.String[])">
-            <summary>
-            Get scopes of goals with pagination, filtering and sorting
-            </summary>
-            <param name="pageNumber">Page number</param>
-            <param name="pageSize">Page size</param>
-            <param name="filter">Filter string</param>
-            <param name="filterFields">Fields by which result rows will be filtered. Serparator is "|"</param>
-            <param name="sort">Sort type. 0 - Unspecified, 1 - Ascending, 2 - Descending</param>
-            <param name="sortFields">Fields by which result rows will be sorted. Serparator is "|"</param>
-            <returns>Collection of scopes</returns>
+            <param name="pageNumber">Номер страницы</param>
+            <param name="pageSize">Размер страницы</param>
+            <param name="filter">Фильтр по всем полям</param>
+            <param name="filterFields">Конкретные поля фильтрации</param>
+            <param name="sortFields">Поля сортировки</param>
+            <param name="withRemoved">Вместе с удаленными</param>
+            <returns>Коллекция множеств задач</returns>
         </member>
         <member name="M:WorkflowService.Controllers.ScopesController.GetRange(System.Int32[])">
             <summary>
-            Get scopes collection by ids
+            Получение множеств задач по идентификаторам
             </summary>
-            <param name="ids"></param>
-            <returns></returns>
+            <param name="ids">Идентификаторы множеств</param>
+            <returns>Коллекция множеств</returns>
         </member>
         <member name="M:WorkflowService.Controllers.ScopesController.Create(Workflow.VM.ViewModels.VmScope)">
             <summary>
-            Create scope
+            Создание множества задач
             </summary>
-            <param name="scope">New scope</param>
-            <returns>Scope data with updated scope id</returns>
+            <param name="scope">Параметры множества</param>
+            <returns>Созданное множество</returns>
         </member>
         <member name="M:WorkflowService.Controllers.ScopesController.Update(Workflow.VM.ViewModels.VmScope)">
             <summary>
-            Update scope
+            Обновление множества задач
             </summary>
             <param name="scope">Updated scope</param>
-            <returns>Nothin</returns>
+            <returns></returns>
         </member>
         <member name="M:WorkflowService.Controllers.ScopesController.Delete(System.Int32)">
             <summary>
-            Delete scope
+            Удаление множества задач
             </summary>
-            <param name="id">Scope id</param>
-            <returns></returns>
+            <param name="id">Идентификатор множества</param>
+            <returns>Удаленное множество</returns>
         </member>
         <member name="T:WorkflowService.Controllers.TeamsController">
             <summary>
-            API for working with teams
+            API-методы работы с командами
             </summary>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},WorkflowService.Services.Abstract.ITeamsService)">
+            <summary>
+            Конструктор
+            </summary>
+            <param name="userManager"></param>
+            <param name="teamsService"></param>
         </member>
         <member name="M:WorkflowService.Controllers.TeamsController.Get(System.Int32)">
             <summary>
-            Get team
+            Получить команду по идентификатору
             </summary>
-            <param name="id">team id</param>
-            <returns>team data. Returned only if available for authenticated user</returns>
+            <param name="id">Идентификатор команды</param>
+            <returns>Команда</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.GetAll">
+        <member name="M:WorkflowService.Controllers.TeamsController.GetPage(System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
             <summary>
-            Get all teams
+            Постраничная загрузка команд с фильтрацией и сортировкой
             </summary>
-            <returns>Collection of teams</returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.GetPage(System.Int32,System.Int32,System.String,System.String,WorkflowService.Common.SortType,System.String)">
-            <summary>
-            Get teams with pagination, filtering and sorting
-            </summary>
-            <param name="pageNumber">Page number</param>
-            <param name="pageSize">Page size</param>
-            <param name="filter">Filter string</param>
-            <param name="filterFields">Fields by which result rows will be filtered. Serparator is "|"</param>
-            <param name="sort">Sort type. 0 - Unspecified, 1 - Ascending, 2 - Descending</param>
-            <param name="sortFields">Fields by which result rows will be sorted. Serparator is "|"</param>
-            <returns>Collection of teams</returns>
+            <param name="pageNumber">Номер страницы</param>
+            <param name="pageSize">Размер страницы</param>
+            <param name="filter">Фильтр по всем полям</param>
+            <param name="filterFields">Поля для фильтрации</param>
+            <param name="sortFields">Поля для сортировки</param>
+            <param name="withRemoved">Вместе с удаленными командами</param>
+            <returns>Коллекция команд</returns>
         </member>
         <member name="M:WorkflowService.Controllers.TeamsController.GetRange(System.Int32[])">
             <summary>
-            Get teams collection by ids
+            Получить команд по идентификаторам
             </summary>
-            <param name="ids"></param>
-            <returns></returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.GetTeams(System.String)">
-            <summary>
-            Get user teams
-            </summary>
-            <param name="userId">User id</param>
-            <returns>Collection users of team</returns>
+            <param name="ids">Идентификаторы команд</param>
+            <returns>Коллецция команд</returns>
         </member>
         <member name="M:WorkflowService.Controllers.TeamsController.Create(Workflow.VM.ViewModels.VmTeam)">
             <summary>
-            Create team
+            Создать команду
             </summary>
-            <param name="team">New team</param>
-            <returns>team data with updated team id</returns>
+            <param name="team">Новая команда</param>
+            <returns>Команда</returns>
         </member>
         <member name="M:WorkflowService.Controllers.TeamsController.Update(Workflow.VM.ViewModels.VmTeam)">
             <summary>
-            Update team
+            Обновление команды
             </summary>
-            <param name="team">Updated team</param>
-            <returns></returns>
+            <param name="team">Команда</param>
+            <returns>NotFound(404) - если команда не найдена. NoContent(204) - если обновление прошло успешно</returns>
         </member>
         <member name="M:WorkflowService.Controllers.TeamsController.Delete(System.Int32)">
             <summary>
-            Delete team
+            Удаление команды
             </summary>
-            <param name="id">team id</param>
-            <returns></returns>
+            <param name="id">Идентификатор команды</param>
+            <returns>Удаленная команда</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamUsersController.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},WorkflowService.Services.Abstract.ITeamUsersService)">
+            <summary>
+            Конструктор
+            </summary>
+            <param name="userManager"></param>
+            <param name="teamsService"></param>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamUsersController.GetPage(System.Int32,System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
+            <summary>
+            Постраничная загрузка пользователей команды с фильтрацией и сортировкой
+            </summary>
+            <param name="teamId">Идентификатор команды</param>
+            <param name="pageNumber">Номер страницы</param>
+            <param name="pageSize">Размер страницы</param>
+            <param name="filter">Фильтр по всем полям</param>
+            <param name="filterFields">Конкретные поля фильтрации</param>
+            <param name="sortFields">Поля сортировки</param>
+            <param name="withRemoved">Вместе с удаленными</param>
+            <returns>Коллекция пользователей команды</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamUsersController.Add(System.Int32,System.String)">
+            <summary>
+            Добавление пользователя в команду
+            </summary>
+            <param name="teamId"></param>
+            <param name="userId">Идентификатор добавляемого пользователя</param>
+            <returns>Добавленный пользователь</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamUsersController.Remove(System.Int32,System.String)">
+            <summary>
+            Удаление пользователя из команды
+            </summary>
+            <param name="teamId">Идентификатор команды</param>
+            <param name="userId">Идентификатор пользователя</param>
+            <returns>Удаленный пользователь</returns>
         </member>
         <member name="T:WorkflowService.Controllers.UsersController">
             <summary>
@@ -296,13 +400,7 @@
             <param name="id">Идентификатор пользователя</param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Controllers.UsersController.GetAll">
-            <summary>
-            Получение всех пользователей
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.UsersController.GetPage(System.Int32,System.Int32,System.String,System.String[],WorkflowService.Common.SortType,System.String[])">
+        <member name="M:WorkflowService.Controllers.UsersController.GetPage(System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
             <summary>
             Постраничная загрузка пользователей с фильтрацией и сортировкой
             </summary>
@@ -310,8 +408,8 @@
             <param name="pageSize">Размер страницы</param>
             <param name="filter">Фильтрация по всем полям если не указаны конкретные поля для фильтрации</param>
             <param name="filterFields">Поля фильтрации</param>
-            <param name="sort">Тип сортировки</param>
             <param name="sortFields">Поля сортировки. Сортировка производится по порядку указанных полей</param>
+            <param name="withRemoved">Вместе с удаленными</param>
             <returns>Коллекция пользователей</returns>
         </member>
         <member name="M:WorkflowService.Controllers.UsersController.GetRange(System.String[])">
@@ -320,13 +418,6 @@
             </summary>
             <param name="ids">Идентификаторы пользователей</param>
             <returns></returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.UsersController.GetTeamUsers(System.Int32)">
-            <summary>
-            Получение участников команды
-            </summary>
-            <param name="teamId">Идентификатор команды</param>
-            <returns>Коллекция участников команды</returns>
         </member>
         <member name="M:WorkflowService.Controllers.UsersController.Create(Workflow.VM.ViewModels.VmUser)">
             <summary>
@@ -349,6 +440,65 @@
             <param name="id">Идентификатор пользователя</param>
             <returns></returns>
         </member>
+        <member name="T:WorkflowService.Services.Abstract.IGoalsService">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.IGoalsService.Get(Workflow.DAL.Models.ApplicationUser,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="currentUser"></param>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.IGoalsService.GetPage(Workflow.DAL.Models.ApplicationUser,System.Int32,System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="currentUser"></param>
+            <param name="scopeId"></param>
+            <param name="pageNumber"></param>
+            <param name="pageSize"></param>
+            <param name="filter"></param>
+            <param name="filterFields"></param>
+            <param name="sortFields"></param>
+            <param name="withRemoved"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.IGoalsService.GetRange(Workflow.DAL.Models.ApplicationUser,System.Int32[])">
+            <summary>
+            
+            </summary>
+            <param name="currentUser"></param>
+            <param name="ids"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.IGoalsService.Create(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmGoal)">
+            <summary>
+            
+            </summary>
+            <param name="currentUser"></param>
+            <param name="goal"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.IGoalsService.Update(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmGoal)">
+            <summary>
+            
+            </summary>
+            <param name="user"></param>
+            <param name="goal"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.IGoalsService.Delete(Workflow.DAL.Models.ApplicationUser,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="currentUser"></param>
+            <param name="goalId"></param>
+            <returns></returns>
+        </member>
         <member name="T:WorkflowService.Services.Abstract.IScopesService">
             <summary>
             
@@ -362,14 +512,15 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Services.Abstract.IScopesService.GetAll(Workflow.DAL.Models.ApplicationUser)">
+        <member name="M:WorkflowService.Services.Abstract.IScopesService.GetAll(Workflow.DAL.Models.ApplicationUser,System.Boolean)">
             <summary>
             
             </summary>
             <param name="user"></param>
+            <param name="withRemoved"></param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Services.Abstract.IScopesService.GetPage(Workflow.DAL.Models.ApplicationUser,System.Int32,System.Int32,System.String,System.String[],WorkflowService.Common.SortType,System.String[])">
+        <member name="M:WorkflowService.Services.Abstract.IScopesService.GetPage(Workflow.DAL.Models.ApplicationUser,System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
             <summary>
             
             </summary>
@@ -378,8 +529,8 @@
             <param name="pageSize"></param>
             <param name="filter"></param>
             <param name="filterFields"></param>
-            <param name="sort"></param>
             <param name="sortFields"></param>
+            <param name="withRemoved"></param>
             <returns></returns>
         </member>
         <member name="M:WorkflowService.Services.Abstract.IScopesService.GetRange(Workflow.DAL.Models.ApplicationUser,System.Int32[])">
@@ -414,7 +565,195 @@
             <param name="scopeId"></param>
             <returns></returns>
         </member>
+        <member name="M:WorkflowService.Services.Abstract.ITeamsService.Get(Workflow.DAL.Models.ApplicationUser,System.Int32)">
+            <summary>
+            Получение команды по идентификатору
+            </summary>
+            <param name="currentUser"></param>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.ITeamsService.GetAll(Workflow.DAL.Models.ApplicationUser,System.Boolean)">
+            <summary>
+            Получение всех команд
+            </summary>
+            <param name="currentUser">Текущий пользователь</param>
+            <param name="withRemoved">Вместе с удаленными</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.ITeamsService.GetPage(Workflow.DAL.Models.ApplicationUser,System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
+            <summary>
+            Получение страницы команд
+            </summary>
+            <param name="currentUser">Текущий пользователь</param>
+            <param name="pageNumber">Номер страницы</param>
+            <param name="pageSize">Размер страницы</param>
+            <param name="filter">Фильтр по всем поляи</param>
+            <param name="filterFields">Поля фильтрации</param>
+            <param name="sortFields">Поля сортировки</param>
+            <param name="withRemoved">Получить вместе с удаленными</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.ITeamsService.GetRange(Workflow.DAL.Models.ApplicationUser,System.Int32[])">
+            <summary>
+            Получение команд по идентификаторам
+            </summary>
+            <param name="currentUser">Текущий пользователь</param>
+            <param name="ids">Идентификаторы команд</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.ITeamsService.Create(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmTeam)">
+            <summary>
+            Создание команды
+            </summary>
+            <param name="currentUser">Текущий пользователь</param>
+            <param name="team">Команда</param>
+            <returns>Команда</returns>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.ITeamsService.Update(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmTeam)">
+            <summary>
+            Обновление команды
+            </summary>
+            <param name="currentUser">Текущий пользователь</param>
+            <param name="team">Обновленная команда</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.ITeamsService.Delete(Workflow.DAL.Models.ApplicationUser,System.Int32)">
+            <summary>
+            Удаление команды
+            </summary>
+            <param name="currentUser">Текущий пользователь</param>
+            <param name="teamId">Идентификатор команды</param>
+            <returns>Удаленная команда</returns>
+        </member>
+        <member name="T:WorkflowService.Services.Abstract.ITeamUsersService">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.ITeamUsersService.GetPage(Workflow.DAL.Models.ApplicationUser,System.Int32,System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
+            <summary>
+            Получение пользователей команды  
+            </summary>
+            <param name="currentUser">Текущий пользователь</param>
+            <param name="teamId">Идентификатор команды</param>
+            <param name="pageNumber">Номер страницы</param>
+            <param name="pageSize">Размер страницы</param>
+            <param name="filter">Фильтр по всем полям</param>
+            <param name="filterFields">Фильтр по конкретным полям</param>
+            <param name="sortFields">Сортировка по полям</param>
+            <param name="withRemoved">Вместе с удаленными</param>
+            <returns>Коллеция пользователей команды</returns>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.ITeamUsersService.Add(Workflow.DAL.Models.ApplicationUser,System.Int32,System.String)">
+            <summary>
+            Добавить пользователя в команду
+            </summary>
+            <param name="currentUser">Текущий пользователь</param>
+            <param name="teamId">Идентификатор команды</param>
+            <param name="userId">Добавляемый пользователь</param>
+            <returns>Добавленный пользователь</returns>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.ITeamUsersService.Remove(Workflow.DAL.Models.ApplicationUser,System.Int32,System.String)">
+            <summary>
+            Удаление пользователя из команды
+            </summary>
+            <param name="currentUser">Текущий пользователь</param>
+            <param name="teamId">Идентификатор команды</param>
+            <param name="userId">Идентификатор удаляемого пользователя</param>
+            <returns>Удаленный пользователь</returns>
+        </member>
+        <member name="T:WorkflowService.Services.Abstract.IUsersService">
+            <summary>
+            Сервис работы с пользователями
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.IUsersService.Get(Workflow.DAL.Models.ApplicationUser,System.String)">
+            <summary>
+            Получение пользователя по идентификатору
+            </summary>
+            <param name="currentUser">Текущий пользователь</param>
+            <param name="userId">Идентификатор пользователя</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.IUsersService.GetAll(Workflow.DAL.Models.ApplicationUser,System.Boolean)">
+            <summary>
+            Получение всех пользователей
+            </summary>
+            <param name="currentUser">Текущий пользователь</param>
+            <param name="withRemoved">Вместе с удаленными</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.IUsersService.GetPage(Workflow.DAL.Models.ApplicationUser,System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="currentUser"></param>
+            <param name="pageNumber"></param>
+            <param name="pageSize"></param>
+            <param name="filter"></param>
+            <param name="filterFields"></param>
+            <param name="sortFields"></param>
+            <param name="withRemoved"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.IUsersService.GetRange(Workflow.DAL.Models.ApplicationUser,System.String[])">
+            <summary>
+            Получение пользователей по идентификаторам
+            </summary>
+            <param name="currentUser">Текущий пользователь</param>
+            <param name="ids">Идентификаторы пользователей</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.IUsersService.Create(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmUser)">
+            <summary>
+            Создание пользователя
+            </summary>
+            <param name="currentUser">Текущий пользователь </param>
+            <param name="user">Новый пользователь</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.IUsersService.Update(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmUser)">
+            <summary>
+            Обновление данных пользователя
+            </summary>
+            <param name="currentUser">Текущий пользователь</param>
+            <param name="user">Параметры пользователя</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.IUsersService.Delete(Workflow.DAL.Models.ApplicationUser,System.String)">
+            <summary>
+            Удаление пользователя
+            </summary>
+            <param name="currentUser">Текущий пользователь</param>
+            <param name="userId">Идентификатор пользователя</param>
+            <returns></returns>
+        </member>
         <member name="T:WorkflowService.Services.GoalsService">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.GoalsService.#ctor(Workflow.DAL.DataContext)">
+            <summary>
+            Конструктор
+            </summary>
+            <param name="dataContext"></param>
+        </member>
+        <member name="M:WorkflowService.Services.GoalsService.Get(Workflow.DAL.Models.ApplicationUser,System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.GoalsService.GetPage(Workflow.DAL.Models.ApplicationUser,System.Int32,System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.GoalsService.GetRange(Workflow.DAL.Models.ApplicationUser,System.Int32[])">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.GoalsService.Create(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmGoal)">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.GoalsService.Update(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmGoal)">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.GoalsService.Delete(Workflow.DAL.Models.ApplicationUser,System.Int32)">
             <inheritdoc />
         </member>
         <member name="T:WorkflowService.Services.ScopesService">
@@ -422,17 +761,17 @@
         </member>
         <member name="M:WorkflowService.Services.ScopesService.#ctor(Workflow.DAL.DataContext)">
             <summary>
-            Database context
+            Конструктор
             </summary>
-            <param name="dataContext"></param>
+            <param name="dataContext">Контекст БД</param>
         </member>
         <member name="M:WorkflowService.Services.ScopesService.Get(Workflow.DAL.Models.ApplicationUser,System.Int32)">
             <inheritdoc />
         </member>
-        <member name="M:WorkflowService.Services.ScopesService.GetAll(Workflow.DAL.Models.ApplicationUser)">
+        <member name="M:WorkflowService.Services.ScopesService.GetAll(Workflow.DAL.Models.ApplicationUser,System.Boolean)">
             <inheritdoc />
         </member>
-        <member name="M:WorkflowService.Services.ScopesService.GetPage(Workflow.DAL.Models.ApplicationUser,System.Int32,System.Int32,System.String,System.String[],WorkflowService.Common.SortType,System.String[])">
+        <member name="M:WorkflowService.Services.ScopesService.GetPage(Workflow.DAL.Models.ApplicationUser,System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
             <inheritdoc />
         </member>
         <member name="M:WorkflowService.Services.ScopesService.GetRange(Workflow.DAL.Models.ApplicationUser,System.Int32[])">
@@ -445,6 +784,77 @@
             <inheritdoc />
         </member>
         <member name="M:WorkflowService.Services.ScopesService.Delete(Workflow.DAL.Models.ApplicationUser,System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="T:WorkflowService.Services.TeamsService">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.TeamsService.#ctor(Workflow.DAL.DataContext)">
+            <summary>
+            Конструктор
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Services.TeamsService.Get(Workflow.DAL.Models.ApplicationUser,System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.TeamsService.GetAll(Workflow.DAL.Models.ApplicationUser,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.TeamsService.GetPage(Workflow.DAL.Models.ApplicationUser,System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.TeamsService.GetRange(Workflow.DAL.Models.ApplicationUser,System.Int32[])">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.TeamsService.Create(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmTeam)">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.TeamsService.Update(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmTeam)">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.TeamsService.Delete(Workflow.DAL.Models.ApplicationUser,System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="T:WorkflowService.Services.TeamUsersService">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.TeamUsersService.GetPage(Workflow.DAL.Models.ApplicationUser,System.Int32,System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.TeamUsersService.Add(Workflow.DAL.Models.ApplicationUser,System.Int32,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.TeamUsersService.Remove(Workflow.DAL.Models.ApplicationUser,System.Int32,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="T:WorkflowService.Services.UsersService">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.UsersService.#ctor(Workflow.DAL.DataContext)">
+            <summary>
+            
+            </summary>
+            <param name="dataContext"></param>
+        </member>
+        <member name="M:WorkflowService.Services.UsersService.Get(Workflow.DAL.Models.ApplicationUser,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.UsersService.GetAll(Workflow.DAL.Models.ApplicationUser,System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.UsersService.GetPage(Workflow.DAL.Models.ApplicationUser,System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.UsersService.GetRange(Workflow.DAL.Models.ApplicationUser,System.String[])">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.UsersService.Create(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmUser)">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.UsersService.Update(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmUser)">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.UsersService.Delete(Workflow.DAL.Models.ApplicationUser,System.String)">
             <inheritdoc />
         </member>
     </members>

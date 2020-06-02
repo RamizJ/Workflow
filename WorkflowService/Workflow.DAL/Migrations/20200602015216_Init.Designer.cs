@@ -10,7 +10,7 @@ using Workflow.DAL;
 namespace Workflow.DAL.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200519193305_Init")]
+    [Migration("20200602015216_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -353,7 +353,7 @@ namespace Workflow.DAL.Migrations
 
                     b.HasIndex("ObserverId");
 
-                    b.ToTable("Goal");
+                    b.ToTable("GoalObservers");
                 });
 
             modelBuilder.Entity("Workflow.DAL.Models.Group", b =>
@@ -382,7 +382,7 @@ namespace Workflow.DAL.Migrations
 
                     b.HasIndex("ParentGroupId");
 
-                    b.ToTable("Group");
+                    b.ToTable("Groups");
                 });
 
             modelBuilder.Entity("Workflow.DAL.Models.Position", b =>
@@ -457,6 +457,9 @@ namespace Workflow.DAL.Migrations
 
                     b.Property<int?>("GroupId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsRemoved")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(100)")

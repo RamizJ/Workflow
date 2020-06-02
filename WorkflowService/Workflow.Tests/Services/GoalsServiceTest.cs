@@ -25,7 +25,7 @@ namespace Workflow.Tests.Services
             _testData.Initialize(dataContext, userManager);
 
             _dataContext = ContextHelper.CreateContext(_dbConnection, true);
-            _service = new GoalsService();
+            _service = new GoalsService(_dataContext);
         }
 
         [TearDown]
@@ -44,16 +44,8 @@ namespace Workflow.Tests.Services
             //Arrange
 
             //Act
-            var vmScope = await _service.GetScope(_testData.Users[userIndex], _testData.Scopes[scopeIndex].Id);
 
             //Assert
-            Assert.AreEqual(expectedScopeId, vmScope?.Id);
-            if (expectedScopeId != null)
-            {
-                Assert.AreEqual(_testData.Scopes[scopeIndex].Team?.Name, vmScope?.TeamName);
-                Assert.AreEqual(_testData.Scopes[scopeIndex].Group?.Name, vmScope?.GroupName);
-                Assert.AreEqual(_testData.Scopes[scopeIndex].Owner?.Fio, vmScope?.OwnerFio);
-            }
         }
     }
 }

@@ -281,13 +281,13 @@ namespace WorkflowService.Services
                     {
                         orderedQuery = field.SortType == SortType.Ascending
                             ? query.OrderBy(s => s.Owner.LastName).ThenBy(s => s.Owner.FirstName).ThenBy(s => s.Owner.MiddleName)
-                            : query.OrderByDescending(s => s.Team.Name).ThenBy(s => s.Owner.FirstName).ThenBy(s => s.Owner.MiddleName);
+                            : query.OrderByDescending(s => s.Owner.LastName).ThenBy(s => s.Owner.FirstName).ThenBy(s => s.Owner.MiddleName);
                     }
                     else
                     {
                         orderedQuery = field.SortType == SortType.Ascending
                             ? orderedQuery.ThenBy(s => s.Owner.LastName).ThenBy(s => s.Owner.FirstName).ThenBy(s => s.Owner.MiddleName)
-                            : orderedQuery.ThenByDescending(s => s.Team.Name).ThenBy(s => s.Owner.FirstName).ThenBy(s => s.Owner.MiddleName);
+                            : orderedQuery.ThenByDescending(s => s.Owner.LastName).ThenBy(s => s.Owner.FirstName).ThenBy(s => s.Owner.MiddleName);
                     }
                 }
             }
