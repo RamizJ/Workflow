@@ -43,15 +43,15 @@ namespace WorkflowService.Controllers
         }
 
         /// <summary>
-        /// Получение всех пользователей
+        /// Получение параметров текущего пользователя
         /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery]bool withRemoved = false)
+        /// <returns>Параметры текущего пользователя</returns>
+        [HttpGet("{id}")]
+        public async Task<ActionResult<VmUser>> GetCurrent()
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var users = await _service.GetAll(currentUser, withRemoved);
-            return Ok(users);
+            var user = await _service.GetCurrent(currentUser);
+            return Ok(user);
         }
 
         /// <summary>

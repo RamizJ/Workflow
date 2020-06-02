@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Workflow.DAL.Models;
 
 namespace Workflow.VM.ViewModels
@@ -26,7 +23,9 @@ namespace Workflow.VM.ViewModels
         public GoalState GoalState { get; set; }
 
         public string OwnerId { get; set; }
+        public string OwnerFio { get; set; }
         public string PerformerId { get; set; }
+        public string PerformerFio { get; set; }
         public List<string> Observers { get; set; }
 
         public int? AttachmentId { get; set; }

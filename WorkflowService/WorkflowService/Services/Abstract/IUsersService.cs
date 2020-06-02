@@ -20,12 +20,11 @@ namespace WorkflowService.Services.Abstract
         Task<VmUser> Get(ApplicationUser currentUser, string userId);
 
         /// <summary>
-        /// Получение всех пользователей
+        /// Получение информации по текущему пользователю
         /// </summary>
         /// <param name="currentUser">Текущий пользователь</param>
-        /// <param name="withRemoved">Вместе с удаленными</param>
-        /// <returns></returns>
-        Task<IEnumerable<VmUser>> GetAll(ApplicationUser currentUser, bool withRemoved = false);
+        /// <returns>Параметры текущего пользователя</returns>
+        Task<VmUser> GetCurrent(ApplicationUser currentUser);
 
         /// <summary>
         /// 

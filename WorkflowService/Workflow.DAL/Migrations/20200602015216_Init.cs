@@ -34,7 +34,7 @@ namespace Workflow.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Group",
+                name: "Groups",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -47,11 +47,11 @@ namespace Workflow.DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Group", x => x.Id);
+                    table.PrimaryKey("PK_Groups", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Group_Group_ParentGroupId",
+                        name: "FK_Groups_Groups_ParentGroupId",
                         column: x => x.ParentGroupId,
-                        principalTable: "Group",
+                        principalTable: "Groups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -120,15 +120,16 @@ namespace Workflow.DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(maxLength: 100, nullable: true),
                     Description = table.Column<string>(nullable: true),
-                    GroupId = table.Column<int>(nullable: true)
+                    GroupId = table.Column<int>(nullable: true),
+                    IsRemoved = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Teams", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Teams_Group_GroupId",
+                        name: "FK_Teams_Groups_GroupId",
                         column: x => x.GroupId,
-                        principalTable: "Group",
+                        principalTable: "Groups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -273,9 +274,9 @@ namespace Workflow.DAL.Migrations
                 {
                     table.PrimaryKey("PK_Scopes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Scopes_Group_GroupId",
+                        name: "FK_Scopes_Groups_GroupId",
                         column: x => x.GroupId,
-                        principalTable: "Group",
+                        principalTable: "Groups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -370,7 +371,7 @@ namespace Workflow.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Goal",
+                name: "GoalObservers",
                 columns: table => new
                 {
                     GoalId = table.Column<int>(nullable: false),
@@ -378,15 +379,15 @@ namespace Workflow.DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Goal", x => new { x.GoalId, x.ObserverId });
+                    table.PrimaryKey("PK_GoalObservers", x => new { x.GoalId, x.ObserverId });
                     table.ForeignKey(
-                        name: "FK_Goal_Goals_GoalId",
+                        name: "FK_GoalObservers_Goals_GoalId",
                         column: x => x.GoalId,
                         principalTable: "Goals",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Goal_AspNetUsers_ObserverId",
+                        name: "FK_GoalObservers_AspNetUsers_ObserverId",
                         column: x => x.ObserverId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -450,8 +451,8 @@ namespace Workflow.DAL.Migrations
                 column: "FileDataId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Goal_ObserverId",
-                table: "Goal",
+                name: "IX_GoalObservers_ObserverId",
+                table: "GoalObservers",
                 column: "ObserverId");
 
             migrationBuilder.CreateIndex(
@@ -480,8 +481,8 @@ namespace Workflow.DAL.Migrations
                 column: "ScopeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Group_ParentGroupId",
-                table: "Group",
+                name: "IX_Groups_ParentGroupId",
+                table: "Groups",
                 column: "ParentGroupId");
 
             migrationBuilder.CreateIndex(
@@ -528,7 +529,7 @@ namespace Workflow.DAL.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Goal");
+                name: "GoalObservers");
 
             migrationBuilder.DropTable(
                 name: "TeamUsers");
@@ -558,7 +559,7 @@ namespace Workflow.DAL.Migrations
                 name: "Positions");
 
             migrationBuilder.DropTable(
-                name: "Group");
+                name: "Groups");
         }
     }
 }
