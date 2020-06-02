@@ -40,16 +40,16 @@ namespace WorkflowService
             services.AddDbContext<DataContext>(options =>
                 options.UseSqlServer(connectionString, o => o.MigrationsAssembly("Workflow.DAL")));
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-            {
-                options.Password.RequireLowercase = true;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireDigit = true;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequiredLength = 6;
-            })
-               .AddRoles<IdentityRole>()
-               .AddEntityFrameworkStores<DataContext>()
-               .AddDefaultTokenProviders();
+                {
+                    options.Password.RequireLowercase = true;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireDigit = true;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequiredLength = 6;
+                })
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<DataContext>()
+                .AddDefaultTokenProviders();
 
             services.AddAuthentication(options =>
             {
@@ -110,6 +110,7 @@ namespace WorkflowService
             services.AddTransient<IScopesService, ScopesService>();
             services.AddTransient<IUsersService, UsersService>();
             services.AddTransient<ITeamsService, TeamsService>();
+            services.AddTransient<ITeamUsersService, TeamUsersService>();
             services.AddTransient<IGoalsService, GoalsService>();
         }
 
@@ -118,6 +119,10 @@ namespace WorkflowService
         {
             if (env.IsDevelopment()) 
                 app.UseDeveloperExceptionPage();
+
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+            app.UseRouting();
 
             app.UseSwagger();
             app.UseSwaggerUI(options =>
