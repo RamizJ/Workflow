@@ -291,12 +291,13 @@
             API-методы работы с командами
             </summary>
         </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},WorkflowService.Services.Abstract.ITeamsService)">
+        <member name="M:WorkflowService.Controllers.TeamsController.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},WorkflowService.Services.Abstract.ITeamsService,WorkflowService.Services.Abstract.ITeamUsersService)">
             <summary>
             Конструктор
             </summary>
             <param name="userManager"></param>
             <param name="teamsService"></param>
+            <param name="teamUsersService"></param>
         </member>
         <member name="M:WorkflowService.Controllers.TeamsController.Get(System.Int32)">
             <summary>
@@ -317,6 +318,19 @@
             <param name="withRemoved">Вместе с удаленными командами</param>
             <returns>Коллекция команд</returns>
         </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.GetUsersPage(System.Int32,System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
+            <summary>
+            Постраничная загрузка пользователей команды с фильтрацией и сортировкой
+            </summary>
+            <param name="teamId">Идентификатор команды</param>
+            <param name="pageNumber">Номер страницы</param>
+            <param name="pageSize">Размер страницы</param>
+            <param name="filter">Фильтр по всем полям</param>
+            <param name="filterFields">Конкретные поля фильтрации</param>
+            <param name="sortFields">Поля сортировки</param>
+            <param name="withRemoved">Вместе с удаленными</param>
+            <returns>Коллекция пользователей команды</returns>
+        </member>
         <member name="M:WorkflowService.Controllers.TeamsController.GetRange(System.Int32[])">
             <summary>
             Получить команд по идентификаторам
@@ -330,6 +344,14 @@
             </summary>
             <param name="team">Новая команда</param>
             <returns>Команда</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.AddUser(System.Int32,System.String)">
+            <summary>
+            Добавление пользователя в команду
+            </summary>
+            <param name="teamId"></param>
+            <param name="userId">Идентификатор добавляемого пользователя</param>
+            <returns>Добавленный пользователь</returns>
         </member>
         <member name="M:WorkflowService.Controllers.TeamsController.Update(Workflow.VM.ViewModels.VmTeam)">
             <summary>
@@ -345,35 +367,7 @@
             <param name="id">Идентификатор команды</param>
             <returns>Удаленная команда</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.TeamUsersController.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},WorkflowService.Services.Abstract.ITeamUsersService)">
-            <summary>
-            Конструктор
-            </summary>
-            <param name="userManager"></param>
-            <param name="teamsService"></param>
-        </member>
-        <member name="M:WorkflowService.Controllers.TeamUsersController.GetPage(System.Int32,System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
-            <summary>
-            Постраничная загрузка пользователей команды с фильтрацией и сортировкой
-            </summary>
-            <param name="teamId">Идентификатор команды</param>
-            <param name="pageNumber">Номер страницы</param>
-            <param name="pageSize">Размер страницы</param>
-            <param name="filter">Фильтр по всем полям</param>
-            <param name="filterFields">Конкретные поля фильтрации</param>
-            <param name="sortFields">Поля сортировки</param>
-            <param name="withRemoved">Вместе с удаленными</param>
-            <returns>Коллекция пользователей команды</returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.TeamUsersController.Add(System.Int32,System.String)">
-            <summary>
-            Добавление пользователя в команду
-            </summary>
-            <param name="teamId"></param>
-            <param name="userId">Идентификатор добавляемого пользователя</param>
-            <returns>Добавленный пользователь</returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.TeamUsersController.Remove(System.Int32,System.String)">
+        <member name="M:WorkflowService.Controllers.TeamsController.RemoveUser(System.Int32,System.String)">
             <summary>
             Удаление пользователя из команды
             </summary>
@@ -399,6 +393,12 @@
             </summary>
             <param name="id">Идентификатор пользователя</param>
             <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.GetCurrent">
+            <summary>
+            Получение параметров текущего пользователя
+            </summary>
+            <returns>Параметры текущего пользователя</returns>
         </member>
         <member name="M:WorkflowService.Controllers.UsersController.GetPage(System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
             <summary>
@@ -676,13 +676,12 @@
             <param name="userId">Идентификатор пользователя</param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Services.Abstract.IUsersService.GetAll(Workflow.DAL.Models.ApplicationUser,System.Boolean)">
+        <member name="M:WorkflowService.Services.Abstract.IUsersService.GetCurrent(Workflow.DAL.Models.ApplicationUser)">
             <summary>
-            Получение всех пользователей
+            Получение информации по текущему пользователю
             </summary>
             <param name="currentUser">Текущий пользователь</param>
-            <param name="withRemoved">Вместе с удаленными</param>
-            <returns></returns>
+            <returns>Параметры текущего пользователя</returns>
         </member>
         <member name="M:WorkflowService.Services.Abstract.IUsersService.GetPage(Workflow.DAL.Models.ApplicationUser,System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
             <summary>
@@ -839,7 +838,7 @@
         <member name="M:WorkflowService.Services.UsersService.Get(Workflow.DAL.Models.ApplicationUser,System.String)">
             <inheritdoc />
         </member>
-        <member name="M:WorkflowService.Services.UsersService.GetAll(Workflow.DAL.Models.ApplicationUser,System.Boolean)">
+        <member name="M:WorkflowService.Services.UsersService.GetCurrent(Workflow.DAL.Models.ApplicationUser)">
             <inheritdoc />
         </member>
         <member name="M:WorkflowService.Services.UsersService.GetPage(Workflow.DAL.Models.ApplicationUser,System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">

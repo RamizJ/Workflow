@@ -46,7 +46,7 @@ namespace WorkflowService.Controllers
         /// Получение параметров текущего пользователя
         /// </summary>
         /// <returns>Параметры текущего пользователя</returns>
-        [HttpGet("{id}")]
+        [HttpGet]
         public async Task<ActionResult<VmUser>> GetCurrent()
         {
             var currentUser = await _userManager.GetUserAsync(User);
