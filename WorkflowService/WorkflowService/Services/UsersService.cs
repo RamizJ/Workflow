@@ -43,17 +43,12 @@ namespace WorkflowService.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<VmUser>> GetAll(ApplicationUser currentUser, bool withRemoved = false)
+        public Task<VmUser> GetCurrent(ApplicationUser currentUser)
         {
-            if (currentUser == null)
-                throw new ArgumentNullException(nameof(currentUser));
-
-            var users = await GetQuery(withRemoved)
-                .Select(u => _vmConverter.ToViewModel(u))
-                .ToArrayAsync();
-
-            return users;
+            var user = _vmConverter.ToViewModel(currentUser);
+            return Task.FromResult(user);
         }
+
 
         /// <inheritdoc />
         public async Task<IEnumerable<VmUser>> GetPage(ApplicationUser currentUser,

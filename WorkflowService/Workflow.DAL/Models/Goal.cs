@@ -43,7 +43,7 @@ namespace Workflow.DAL.Models
         New,
         Perform,
         Delay,
-        TestingInProcess,
+        Testing,
         Succeed,
         Rejected
     }
