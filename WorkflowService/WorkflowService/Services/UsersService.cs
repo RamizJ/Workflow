@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
@@ -15,17 +16,15 @@ namespace WorkflowService.Services
     /// <inheritdoc />
     public class UsersService : IUsersService
     {
-        private readonly DataContext _dataContext;
-        private readonly VmUserConverter _vmConverter;
-
-
         /// <summary>
         /// 
         /// </summary>
         /// <param name="dataContext"></param>
-        public UsersService(DataContext dataContext)
+        /// <param name="userManager"></param>
+        public UsersService(DataContext dataContext, UserManager<ApplicationUser> userManager)
         {
             _dataContext = dataContext;
+            _userManager = userManager;
             _vmConverter = new VmUserConverter();
         }
 
@@ -45,6 +44,9 @@ namespace WorkflowService.Services
         /// <inheritdoc />
         public Task<VmUser> GetCurrent(ApplicationUser currentUser)
         {
+            if(currentUser == null)
+                throw new ArgumentNullException(nameof(currentUser));
+
             var user = _vmConverter.ToViewModel(currentUser);
             return Task.FromResult(user);
         }
@@ -86,58 +88,110 @@ namespace WorkflowService.Services
         }
 
         /// <inheritdoc />
-        public async Task<VmUser> Create(ApplicationUser currentUser, VmUser user)
+        public async Task<VmUserResult> Create(VmUser user)
         {
-            if (currentUser == null)
-                throw new ArgumentNullException(nameof(currentUser));
-
-            if (string.IsNullOrWhiteSpace(user.Email))
-                throw new InvalidOperationException("User email cannot be empty");
+            if(user == null)
+                throw new ArgumentNullException(nameof(user));
 
             var model = _vmConverter.ToModel(user);
             model.Id = null;
 
-            await _dataContext.Users.AddAsync(model);
-            await _dataContext.SaveChangesAsync();
+            var result = await _userManager.CreateAsync(model, user.Password);
+            VmUser vmUser = null;
+            if (result.Succeeded)
+            {
+                vmUser = _vmConverter.ToViewModel(model);
+            }
 
-            return _vmConverter.ToViewModel(model);
+            return new VmUserResult
+            {
+                User = vmUser,
+                Result = result
+            };
         }
 
         /// <inheritdoc />
-        public async Task<VmUser> Update(ApplicationUser currentUser, VmUser user)
+        public async Task<VmUserResult> Update(VmUser user)
         {
-            if (currentUser == null)
-                throw new ArgumentNullException(nameof(currentUser));
-
             if (user == null)
-                return null;
+                throw new ArgumentNullException(nameof(user));
 
-            if (string.IsNullOrWhiteSpace(user.Email))
-                throw new InvalidOperationException("User email name cannot be empty");
+            var model = await _userManager.FindByIdAsync(user.Id);
+            if (model == null)
+                throw new InvalidOperationException($"User with id='{user.Id}' not found");
 
-            var model = _vmConverter.ToModel(user);
+            model.UserName = user.UserName;
+            model.NormalizedUserName = user.UserName.ToUpper();
+            model.Email = user.Email;
+            model.NormalizedEmail = user.Email.ToUpper();
+            model.PhoneNumber = user.Phone;
+            model.LastName = user.LastName;
+            model.FirstName = user.FirstName;
+            model.MiddleName = user.MiddleName;
+            model.PositionId = user.PositionId;
+            model.PositionCustom = user.Position;
 
-            _dataContext.Entry(model).State = EntityState.Modified;
-            await _dataContext.SaveChangesAsync();
-            return _vmConverter.ToViewModel(model);
+            var result = await _userManager.UpdateAsync(model);
+            VmUser vmUser = null;
+            if (result.Succeeded)
+            {
+                vmUser = _vmConverter.ToViewModel(model);
+            }
+
+            return new VmUserResult
+            {
+                User = vmUser,
+                Result = result
+            };
         }
 
         /// <inheritdoc />
-        public async Task<VmUser> Delete(ApplicationUser currentUser, string userId)
+        public async Task<VmUserResult> Delete(string userId)
         {
-            if (currentUser == null)
-                throw new ArgumentNullException(nameof(currentUser));
-
-            var model = await GetQuery(true)
-                .FirstOrDefaultAsync(u => u.Id == userId);
-
-            if (model == null) 
-                return null;
+            var model = await _userManager.FindByIdAsync(userId);
+            if (model == null)
+                throw new InvalidOperationException($"User with id='{userId}' not found");
 
             model.IsRemoved = true;
-            _dataContext.Users.Update(model);
-            await _dataContext.SaveChangesAsync();
-            return _vmConverter.ToViewModel(model);
+            var result = await _userManager.UpdateAsync(model);
+
+            VmUser vmUser = null;
+            if (result.Succeeded)
+            {
+                vmUser = _vmConverter.ToViewModel(model);
+            }
+
+            return new VmUserResult
+            {
+                User = vmUser,
+                Result = result
+            };
+        }
+
+        /// <inheritdoc />
+        public async Task<VmUserResult> ChangePassword(ApplicationUser currentUser, string currentPassword, string newPassword)
+        {
+            var result = await _userManager.ChangePasswordAsync(currentUser, currentPassword, newPassword);
+            return new VmUserResult
+            {
+                Result = result
+            };
+        }
+
+        /// <inheritdoc />
+        public async Task<VmUserResult> ResetPassword(string id, string newPassword)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            var result = await _userManager.RemovePasswordAsync(user);
+            if (result.Succeeded)
+            {
+                result = await _userManager.AddPasswordAsync(user, newPassword);
+            }
+
+            return new VmUserResult
+            {
+                Result = result
+            };
         }
 
 
@@ -318,5 +372,11 @@ namespace WorkflowService.Services
 
             return orderedQuery ?? query;
         }
+
+
+        private readonly DataContext _dataContext;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly VmUserConverter _vmConverter;
+
     }
 }

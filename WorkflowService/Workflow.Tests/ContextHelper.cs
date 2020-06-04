@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.IO;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Workflow.DAL;
 using Workflow.DAL.Models;
@@ -42,6 +45,7 @@ namespace Workflow.Tests
             return context;
         }
 
+
         public static UserManager<ApplicationUser> CreateUserManager(DataContext context)
         {
             var passwordHasher = new PasswordHasher<ApplicationUser>();
@@ -60,6 +64,37 @@ namespace Workflow.Tests
         public static ILoggerFactory GetLoggerFactory()
         {
             return LoggerFactory.Create(builder => builder.AddConsole());
+        }
+
+
+        public static ServiceProvider Initialize(SqliteConnection connection, bool isLogEnabled)
+        {
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddLogging();
+
+            serviceCollection.AddDbContext<DataContext>(options =>
+            {
+                if (isLogEnabled)
+                {
+                    options.UseLoggerFactory(GetLoggerFactory())
+                        .EnableSensitiveDataLogging();
+                }
+                options.UseSqlite(connection);
+            });
+
+            serviceCollection.AddIdentity<ApplicationUser, IdentityRole>(options =>
+                {
+                    options.Password.RequireLowercase = true;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireDigit = true;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequiredLength = 6;
+                    options.User.RequireUniqueEmail = true;
+                })
+                .AddUserManager<UserManager<ApplicationUser>>()
+                .AddEntityFrameworkStores<DataContext>();
+
+            return serviceCollection.BuildServiceProvider();
         }
     }
 }

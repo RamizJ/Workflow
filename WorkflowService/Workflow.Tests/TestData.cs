@@ -15,25 +15,32 @@ namespace Workflow.Tests
         public IList<TeamUser> TeamUsers { get; set; }
         public IList<Scope> Scopes { get; set; }
         public IList<Goal> Goals { get; set; }
+        public IList<Position> Positions { get; set; }
 
 
         public void Initialize(DataContext context, UserManager<ApplicationUser> userManager)
         {
+            Positions = Builder<Position>.CreateListOfSize(10)
+                .All()
+                .Build();
+
             Users = Builder<ApplicationUser>.CreateListOfSize(10)
                 .All()
-                .With((x,i) => x.UserName = $"User {i}")
+                .With((x,i) => x.UserName = $"User{i}")
                 .With((x, i) => x.NormalizedUserName = x.UserName.ToUpper())
-                .With((x, i) => x.Email = $"Email {i}")
+                .With((x, i) => x.Email = $"Email{i}@email")
                 .With((x, i) => x.NormalizedEmail = x.Email.ToUpper())
                 .With((x, i) => x.PositionId = null)
                 .TheFirst(6)
                 .With((x, i) => x.FirstName = $"FirstName1{i}")
                 .With((x, i) => x.LastName = $"LastName1{i}")
                 .With((x, i) => x.MiddleName = $"MiddleName1{i}")
+                .With((x, i) => x.PhoneNumber = $"Phone1{i}")
                 .TheNext(4)
                 .With((x, i) => x.FirstName = $"FirstName2{i}")
                 .With((x, i) => x.LastName = $"LastName2{i}")
                 .With((x, i) => x.MiddleName = $"MiddleName2{i}")
+                .With((x, i) => x.PhoneNumber = $"Phone2{i}")
                 .TheFirst(9).With(x => x.IsRemoved = false)
                 .TheNext(1).With(x => x.IsRemoved = true)
                 .Build().ToList();
@@ -84,12 +91,16 @@ namespace Workflow.Tests
                 .With(x => x.ParentGoalId = null)
                 .Build().ToList();
 
-            context.Users.AddRange(Users);
+            foreach (var user in Users)
+                userManager.CreateAsync(user, "Aa010110!");
+
+            //context.Users.AddRange(Users);
             context.Groups.AddRange(Groups);
             context.Teams.AddRange(Teams);
             context.TeamUsers.AddRange(TeamUsers);
             context.Scopes.AddRange(Scopes);
             context.Goals.AddRange(Goals);
+            context.Positions.AddRange(Positions);
 
             context.SaveChanges();
         }
