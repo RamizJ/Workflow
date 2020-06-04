@@ -7,15 +7,15 @@
         el-row(:gutter="20")
           el-col(:span="24")
             el-form-item
-              el-input(v-model="form.title" placeholder="Новая область")
+              el-input(v-model="form.title" size="medium" placeholder="Новая область")
         el-row(:gutter="20")
           el-col(:span="24")
             el-form-item
-              el-input(v-model="form.description" type="textarea" placeholder="Заметки")
+              el-input(v-model="form.description" size="medium" type="textarea" placeholder="Заметки")
         el-row(:gutter="20")
           el-col(:span="24")
             el-form-item
-              el-select(v-model="form.projects" placeholder="Проекты" multiple)
+              el-select(v-model="form.projects" size="medium" placeholder="Проекты" multiple)
                 el-option(v-for="item in projects" :key="item.value" :label="item.label" :value="item.value")
 
       div.footer
@@ -101,29 +101,32 @@
 </script>
 
 <style lang="scss" scoped>
-  .header,
-  .body {
-    padding: 14px 18px;
-  }
-  .header {
-    padding-bottom: 0;
-  }
-  .body {
-    padding-top: 0;
-  }
-  .title {
-    font-size: 24px;
-    font-weight: 700;
-  }
-  .footer {
-    margin-top: 10px;
-    display: flex;
-    justify-content: flex-end;
-  }
-  .el-select {
-    width: 100%;
-  }
-  .el-range-editor.el-input__inner {
-    width: 100%;
-  }
+.header,
+.body {
+  padding: 14px 18px;
+}
+.header {
+  padding-bottom: 0;
+}
+.body {
+  padding-top: 0;
+}
+.title {
+  font-size: 24px;
+  font-weight: 700;
+}
+.footer {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+.el-select {
+  width: 100%;
+}
+.el-form-item {
+  margin-bottom: 15px;
+}
+.el-range-editor.el-input__inner {
+  width: 100%;
+}
 </style>

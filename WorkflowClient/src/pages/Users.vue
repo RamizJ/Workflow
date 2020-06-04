@@ -6,7 +6,7 @@
         a(href="#" @click="dialogOpened = true") Создать
       template(slot="items")
         base-toolbar-item(title="Поиск")
-          el-input(size="medium" placeholder="Искать..." v-model="query.search" @change="refresh")
+          el-input(size="small" placeholder="Искать..." v-model="query.search" @change="refresh")
 
     div.content
       el-table(
@@ -24,16 +24,19 @@
           div(slot="no-more")
           div(slot="no-results")
 
+    user-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false")
+
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import BaseToolbar from '~/components/BaseToolbar';
 import BaseToolbarItem from '~/components/BaseToolbarItem';
+import UserDialog from '~/components/UserDialog';
 
 export default {
   name: 'Users',
-  components: { BaseToolbar, BaseToolbarItem },
+  components: { BaseToolbar, BaseToolbarItem, UserDialog },
   data() {
     return {
       loading: false,
@@ -52,10 +55,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters({ users: 'users' })
+    ...mapGetters({ users: 'users/getUsers' })
   },
   methods: {
-    ...mapActions({ fetchUsers: 'fetchUsers'}),
+    ...mapActions({ fetchUsers: 'users/fetchUsers'}),
     async refresh() {
       this.tableData = [];
       this.$refs.loader.stateChanger.reset();
@@ -80,6 +83,17 @@ export default {
 };
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+.content {
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  height: 100%;
+  padding: 0 30px;
+  .el-table {
+    overflow: auto;
+    position: unset !important;
+  }
+}
 </style>

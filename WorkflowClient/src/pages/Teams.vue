@@ -6,12 +6,12 @@
         a(href="#" @click="dialogOpened = true") Создать
       template(slot="items")
         base-toolbar-item(title="Поиск")
-          el-input(v-model="query.filter" size="medium" placeholder="Искать..." @change="refresh")
+          el-input(v-model="query.filter" size="small" placeholder="Искать..." @change="refresh")
         base-toolbar-item(title="Участник")
-          el-select(v-model="filters.status.value" size="medium" placeholder="Любой")
+          el-select(v-model="filters.status.value" size="small" placeholder="Любой")
             el-option(v-for="option in filters.status.items" :key="option.value" :value="option.value", :label="option.label")
         base-toolbar-item(title="Проект")
-          el-select(v-model="filters.performer.value" size="medium" placeholder="Любой")
+          el-select(v-model="filters.performer.value" size="small" placeholder="Любой")
             el-option(v-for="option in filters.performer.items" :key="option.value" :value="option.value", :label="option.label")
 
     div.content
@@ -131,7 +131,7 @@ export default {
   overflow: hidden;
   flex: 1;
   height: 100%;
-  padding: 10px 20px;
+  padding: 0 30px;
   .el-table {
     overflow: auto;
     position: unset !important;

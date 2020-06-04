@@ -7,19 +7,19 @@
         el-row(:gutter="20")
           el-col(:span="24")
             el-form-item
-              el-input(v-model="form.title" placeholder="Новая команда")
+              el-input(v-model="form.title" size="medium" placeholder="Новая команда")
         el-row(:gutter="20")
           el-col(:span="24")
             el-form-item
-              el-input(v-model="form.description" type="textarea" placeholder="Заметки")
+              el-input(v-model="form.description" size="medium" type="textarea" placeholder="Заметки")
         el-row(:gutter="20")
           el-col(:span="16")
             el-form-item
-              el-select(v-model="form.teamMembers" placeholder="Участники" multiple)
+              el-select(v-model="form.teamMembers" size="medium" placeholder="Участники" multiple)
                 el-option(v-for="item in users" :key="item.value" :label="item.label" :value="item.value")
           el-col(:span="8")
             el-form-item
-              el-select(v-model="form.scope" placeholder="Проект")
+              el-select(v-model="form.scope" size="medium" placeholder="Проект")
                 el-option(v-for="item in scopes" :key="item.value" :label="item.label" :value="item.value")
       div.footer
         el-button(size="medium" @click="close") Закрыть
@@ -140,6 +140,9 @@
 }
 .el-select {
   width: 100%;
+}
+.el-form-item {
+  margin-bottom: 15px;
 }
 .el-range-editor.el-input__inner {
   width: 100%;

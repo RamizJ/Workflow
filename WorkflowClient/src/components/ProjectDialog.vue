@@ -7,30 +7,31 @@
         el-row(:gutter="20")
           el-col(:span="24")
             el-form-item
-              el-input(v-model="form.name" placeholder="Новый проект")
+              el-input(v-model="form.name" size="medium" placeholder="Новый проект")
         el-row(:gutter="20")
           el-col(:span="24")
             el-form-item
-              el-input(v-model="form.description" type="textarea" placeholder="Заметки")
+              el-input(v-model="form.description" size="medium" type="textarea" placeholder="Заметки")
         el-row(:gutter="20")
           el-col(:span="24")
             el-form-item
               el-select(
                 v-model="form.tags"
+                size="medium"
                 placeholder="Теги"
                 multiple filterable allow-create default-first-option)
         el-row(:gutter="20")
           el-col(:span="8")
             el-form-item
-              el-select(v-model="form.ownerId" placeholder="Руководитель")
+              el-select(v-model="form.ownerId" size="medium" placeholder="Руководитель")
                 el-option(v-for="item in users" :key="item.id" :label="item.name" :value="item.name")
           el-col(:span="8")
             el-form-item
-              el-select(v-model="form.teamId" placeholder="Команда")
+              el-select(v-model="form.teamId" size="medium" placeholder="Команда")
                 el-option(v-for="item in teams" :key="item.id" :label="item.name" :value="item.name")
           el-col(:span="8")
             el-form-item
-              el-select(v-model="form.groupId" placeholder="Область")
+              el-select(v-model="form.groupId" size="medium" placeholder="Область")
                 el-option(v-for="item in scopes" :key="item.id" :label="item.name" :value="item.name")
       div.footer
         el-button(size="medium" @click="close") Закрыть
@@ -146,6 +147,9 @@ export default {
 }
 .el-select {
   width: 100%;
+}
+.el-form-item {
+  margin-bottom: 15px;
 }
 .el-range-editor.el-input__inner {
   width: 100%;

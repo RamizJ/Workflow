@@ -6,7 +6,7 @@
         a(href="#" @click="dialogOpened = true") Создать
       template(slot="items")
         base-toolbar-item(title="Поиск")
-          el-input(size="medium" placeholder="Искать..." v-model="query.search" @change="refresh")
+          el-input(v-model="query.filter" size="small" placeholder="Искать..." @change="refresh")
 
     div.content
       el-table(
@@ -46,9 +46,9 @@ export default {
       loading: false,
       tableData: [],
       query: {
-        search: '',
-        page: 1,
-        limit: 15
+        filter: '',
+        pageNumber: 1,
+        pageSize: 15
       },
       dialogOpened: false,
       selectedItemId: null,
@@ -85,16 +85,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .content {
-    display: flex;
-    position: relative;
-    overflow: hidden;
-    flex: 1;
-    height: 100%;
-    padding: 10px 20px;
-    .el-table {
-      overflow: auto;
-      position: unset !important;
-    }
+.content {
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  height: 100%;
+  padding: 0 30px;
+  .el-table {
+    overflow: auto;
+    position: unset !important;
   }
+}
 </style>

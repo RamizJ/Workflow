@@ -15,12 +15,12 @@ export default {
     }
   },
   actions: {
-    async getUsers({ commit }, params) {
+    async fetchUsers({ commit }, params) {
       const response = await usersAPI.getPage(params);
       const users = response.data;
       commit('setUsers', users);
     },
-    async getUser({ commit }, id) {
+    async fetchUser({ commit }, id) {
       const response = await usersAPI.get(id);
       const user = response.data;
       commit('setUser', user);
@@ -42,7 +42,7 @@ export default {
     }
   },
   getters: {
-    users: state => state.users,
-    user: state => state.user
+    getUsers: state => state.users,
+    getUser: state => state.user
   }
 };

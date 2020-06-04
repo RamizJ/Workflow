@@ -212,7 +212,9 @@ a {
   background-color: var(--table-background);
 }
 
-.el-checkbox__inner {
+.el-checkbox__inner,
+.el-checkbox__input.is-disabled .el-checkbox__inner,
+.el-checkbox__input.is-disabled.is-checked .el-checkbox__inner {
   border-color: var(--checkbox-border);
   background-color: var(--checkbox-background);
 }
