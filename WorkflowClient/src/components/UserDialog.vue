@@ -1,6 +1,6 @@
 <template lang="pug">
   base-dialog(v-if="visible" @close="$emit('close')")
-    div(slot="title") Область
+    div(slot="title") Пользователь
     div(slot="body")
       el-form(:model="form" :rules="rules" ref="form")
         el-row(:gutter="20")
@@ -46,11 +46,11 @@
 </template>
 
 <script>
-import BaseDialog from '~/components/BaseDialog';
 import { mapActions, mapGetters } from 'vuex';
+import BaseDialog from '~/components/BaseDialog';
 
 export default {
-  components: {  },
+  components: { BaseDialog },
   props: {
     id: Number,
   },
