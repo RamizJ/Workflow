@@ -1,9 +1,8 @@
 <template lang="pug">
-  el-dialog(:visible.sync="visible" :before-close="close" v-loading="loading")
-    div.header(slot="title")
-      div.title Задача
-    div.body
-      el-form(:model="form" ref="form")
+  base-dialog(v-if="visible" @close="$emit('close')")
+    div(slot="title") Задача
+    div(slot="body")
+      el-form(:model="form" ref="form" v-loading="loading")
         el-row(:gutter="20")
           el-col(:span="24")
             el-form-item
@@ -50,16 +49,17 @@
                 prefix-icon="el-icon-arrow-down"
                 suffix-icon="el-icon-arrow-down"
                 placeholder="Крайний срок")
-      div.footer
-        el-button(size="medium" @click="close") Закрыть
-        el-button(size="medium" type="primary" @click="submit") Создать
+    div(slot="footer")
+      el-button(size="medium" type="primary" @click="submit") Создать
+
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import BaseDialog from '~/components/BaseDialog';
 
 export default {
-  components: {  },
+  components: { BaseDialog },
   props: {
     id: Number,
   },
@@ -96,8 +96,8 @@ export default {
     this.visible = true;
     if (this.isEdit) {
       this.loading = true;
-      await this.$store.dispatch('getTask', this.id);
-      this.form = this.$store.getters.task;
+      await this.fetchTask(this.id);
+      this.form = this.task;
       this.loading = false;
     }
   },
@@ -110,10 +110,6 @@ export default {
       createTask: 'tasks/createTask',
       updateTask: 'tasks/updateTask'
     }),
-    close() {
-      this.visible = false;
-      setTimeout(() => this.$emit('close'), 300);
-    },
     submit() {
       const payload = { ...this.form };
       const form = this.$refs.form;
@@ -125,6 +121,7 @@ export default {
             else
               await this.createTask(payload);
             form.resetFields();
+            this.$emit('close');
           } catch (e) {
             this.$message.error('Ошибка отправки запроса');
           }
@@ -136,48 +133,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped>
-.header,
-.body {
-  padding: 14px 18px;
-}
-.header {
-  padding-bottom: 0;
-}
-.body {
-  padding-top: 0;
-}
-.title {
-  font-size: 24px;
-  font-weight: 700;
-}
-.footer {
-  margin-top: 10px;
-  display: flex;
-  justify-content: flex-end;
-}
-.el-form-item {
-  margin-bottom: 15px;
-}
-.el-select {
-  width: 100%;
-}
-.el-range-editor.el-input__inner {
-  width: 100%;
-}
-.el-date-editor.el-input,
-.el-date-editor.el-input__inner {
-  width: auto;
-}
-</style>
-
-<style lang="scss">
-.el-date-editor .el-input__prefix {
-  left: unset;
-  right: 5px;
-}
-.el-date-editor .el-input__inner {
-  padding-left: 15px;
-}
-</style>

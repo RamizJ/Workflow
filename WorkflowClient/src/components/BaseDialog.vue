@@ -1,13 +1,87 @@
 <template lang="pug">
-  div
+  el-dialog(:visible.sync="showDialog" custom-class="base-dialog" @closed="$emit('close')")
+    div.header(slot="title")
+      div.title
+        slot(name="title")
+    div.body
+      slot(name="body")
+      div.footer
+        slot(name="footer")
 </template>
 
 <script>
 export default {
-  name: 'BaseDialog'
+  name: 'BaseDialog',
+  props: {
+    visible: {
+      type: Boolean,
+      default: true
+    }
+  },
+  data() {
+    return {
+      showDialog: this.visible
+    }
+  }
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.header,
+.body {
+  padding: 14px 18px;
+}
+.header {
+  padding-bottom: 0;
+}
+.body {
+  padding-top: 0;
+}
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  cursor: default;
+}
+.footer {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+</style>
+
+<style lang="scss">
+.base-dialog {
+  border-radius: 6px !important;
+  border-width: var(--border-width);
+  border-color: var(--card-border);
+  background-color: var(--card-background);
+  .el-select {
+    width: 100%;
+  }
+  .el-form-item {
+    margin-bottom: 15px;
+  }
+  .el-range-editor.el-input__inner {
+    width: 100%;
+  }
+  .el-date-editor.el-input,
+  .el-date-editor.el-input__inner {
+    width: auto;
+  }
+  .el-date-editor .el-input__prefix {
+    left: unset;
+    right: 5px;
+  }
+  .el-date-editor .el-input__inner {
+    padding-left: 15px;
+  }
+  .el-dialog__headerbtn {
+    top: 34px;
+    right: 38px;
+  }
+  .el-dialog__body {
+    padding: 15px 20px !important;
+  }
+}
 
 </style>

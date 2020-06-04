@@ -1,8 +1,7 @@
 <template lang="pug">
-  el-dialog(:visible.sync="visible" :before-close="close" v-loading="loading")
-    div.header(slot="title")
-      div.title Пользователь
-    div.body
+  base-dialog(v-if="visible" @close="$emit('close')")
+    div(slot="title") Область
+    div(slot="body")
       el-form(:model="form" :rules="rules" ref="form")
         el-row(:gutter="20")
           el-col(:span="8")
@@ -24,7 +23,6 @@
           el-col(:span="8")
             el-form-item
               el-input(v-model="form.email" size="medium" placeholder="Почта")
-
         el-row(:gutter="20")
           el-col(:span="16")
             el-form-item
@@ -42,12 +40,15 @@
             el-form-item
               el-select(v-model="form.positionId" size="medium" placeholder="Должность")
                 el-option(v-for="item in positions" :key="item.value" :label="item.label" :value="item.value")
-      div.footer
-        el-button(size="medium" @click="close") Закрыть
-        el-button(size="medium" type="primary" @click="submit") Создать
+    div(slot="footer")
+      el-button(size="medium" type="primary" @click="submit") Создать
+
 </template>
 
 <script>
+import BaseDialog from '~/components/BaseDialog';
+import { mapActions, mapGetters } from 'vuex';
+
 export default {
   components: {  },
   props: {
@@ -109,16 +110,20 @@ export default {
     this.visible = true;
     if (this.isEdit) {
       this.loading = true;
-      await this.$store.dispatch('getTask', this.id);
-      this.form = this.$store.getters.task;
+      await this.fetchUser(this.id);
+      this.form = this.user;
       this.loading = false;
     }
   },
+  computed: {
+    ...mapGetters({ user: 'users/getUser' })
+  },
   methods: {
-    close() {
-      this.visible = false;
-      setTimeout(() => this.$emit('close'), 300);
-    },
+    ...mapActions({
+      fetchUser: 'users/fetchUser',
+      createUser: 'users/createUser',
+      updateUser: 'users/updateUser'
+    }),
     submit() {
       const payload = { ...this.form };
       const form = this.$refs.form;
@@ -126,11 +131,11 @@ export default {
         if (valid) {
           try {
             if (this.isEdit)
-              await this.$store.dispatch('updateTask', payload);
+              await this.updateUser(payload);
             else
-              await this.$store.dispatch('createTask', payload);
-            this.$message.success('Задача успешно создана');
+              await this.createUser(payload);
             form.resetFields();
+            this.$emit('close');
           } catch (e) {
             this.$message.error('Ошибка отправки запроса');
           }
@@ -142,34 +147,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped>
-.header,
-.body {
-  padding: 14px 18px;
-}
-.header {
-  padding-bottom: 0;
-}
-.body {
-  padding-top: 0;
-}
-.title {
-  font-size: 24px;
-  font-weight: 700;
-}
-.footer {
-  margin-top: 10px;
-  display: flex;
-  justify-content: flex-end;
-}
-.el-select {
-  width: 100%;
-}
-.el-form-item {
-  margin-bottom: 15px;
-}
-.el-range-editor.el-input__inner {
-  width: 100%;
-}
-</style>
