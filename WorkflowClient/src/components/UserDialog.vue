@@ -5,39 +5,39 @@
       el-form(:model="form" :rules="rules" ref="form")
         el-row(:gutter="20")
           el-col(:span="8")
-            el-form-item
-              el-input(v-model="form.lastName" size="medium" placeholder="Фамилия")
+            el-form-item(prop="lastName" required)
+              el-input(v-model="form.lastName" size="medium" placeholder="Фамилия" required)
           el-col(:span="8")
-            el-form-item
+            el-form-item(prop="firstName")
               el-input(v-model="form.firstName" size="medium" placeholder="Имя")
           el-col(:span="8")
-            el-form-item
+            el-form-item(prop="middleName")
               el-input(v-model="form.middleName" size="medium" placeholder="Отчество")
         el-row(:gutter="20")
           el-col(:span="8")
-            el-form-item
+            el-form-item(prop="userName")
               el-input(v-model="form.userName" size="medium" placeholder="Логин")
           el-col(:span="8")
-            el-form-item
-              el-input(v-model="form.password" size="medium" placeholder="Пароль")
+            el-form-item(prop="password")
+              el-input(v-model="form.password" type="password" size="medium" placeholder="Пароль")
           el-col(:span="8")
-            el-form-item
+            el-form-item(prop="email")
               el-input(v-model="form.email" size="medium" placeholder="Почта")
         el-row(:gutter="20")
           el-col(:span="16")
-            el-form-item
+            el-form-item(prop="scopes")
               el-select(v-model="form.scopeIds" size="medium" placeholder="Проекты" multiple)
                 el-option(v-for="item in projects" :key="item.value" :label="item.label" :value="item.value")
           el-col(:span="8")
-            el-form-item
+            el-form-item(prop="phone")
               el-input(v-model="form.phone" size="medium" placeholder="Телефон")
         el-row(:gutter="20")
           el-col(:span="16")
-            el-form-item
+            el-form-item(prop="roles")
               el-select(v-model="form.roles" size="medium" placeholder="Права" multiple)
                 el-option(v-for="item in roles" :key="item.value" :label="item.label" :value="item.value")
           el-col(:span="8")
-            el-form-item
+            el-form-item(prop="position")
               el-select(v-model="form.positionId" size="medium" placeholder="Должность")
                 el-option(v-for="item in positions" :key="item.value" :label="item.label" :value="item.value")
     div(slot="footer")
@@ -89,20 +89,19 @@ export default {
         { value: 2, label: "Оператор" }
       ],
       rules: {
-        title: [
-          {
-            required: true,
-            message: 'Пожалуйста, укажите название',
-            trigger: 'blur',
-          },
+        lastName: [ { required: true, message: 'Укажите фамилию', trigger: 'blur', } ],
+        firstName: [ { required: true, message: 'Укажите имя', trigger: 'blur', } ],
+        userName: [ { required: true, message: 'Укажите логин', trigger: 'blur', } ],
+        password: [
+          { required: true, message: 'Укажите пароль', trigger: 'blur' },
+          { min: 6, message: 'Минимальная длина - 6 символов', trigger: 'blur' }
         ],
-        responsible: [
-          {
-            required: true,
-            message: 'Пожалуйста, укажите ответственного',
-            trigger: 'blur',
-          },
+        email: [
+          { required: true, message: 'Укажите эл. почту', trigger: 'blur', },
+          { type: 'email', message: 'Некорректный адрес эл. почты', trigger: 'blur' }
         ],
+        phone: [ { required: true, message: 'Укажите номер телефона', trigger: 'blur', } ],
+        position: [ { required: true, message: 'Пожалуйста, укажите должность', trigger: 'blur', } ],
       },
     };
   },

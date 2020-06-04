@@ -59,7 +59,15 @@ export default {
     width: 100%;
   }
   .el-form-item {
-    margin-bottom: 15px;
+    margin-bottom: 16px;
+  }
+  .el-form-item__error {
+    font-size: 10px;
+    padding-top: 0;
+  }
+  .el-form-item.is-error .el-input__inner, .el-form-item.is-error .el-input__inner:focus, .el-form-item.is-error .el-textarea__inner, .el-form-item.is-error .el-textarea__inner:focus, .el-message-box__input input.invalid, .el-message-box__input input.invalid:focus {
+    background-color: #F56C6C26;
+    border-color: transparent;
   }
   .el-range-editor.el-input__inner {
     width: 100%;
@@ -83,5 +91,4 @@ export default {
     padding: 15px 20px !important;
   }
 }
-
 </style>
