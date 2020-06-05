@@ -6,6 +6,8 @@
       div.subtitle
         slot(name="subtitle")
         i.el-icon-arrow-right
+    div.search
+      slot(name="search")
     div.items
       slot(name="items")
 </template>
@@ -22,12 +24,15 @@ export default {
 <style lang="scss" scoped>
 .toolbar {
   padding: 32px 35px;
+  .search {
+    margin-top: 10px;
+    width: 20%;
+  }
   .title {
     display: flex;
     align-items: baseline;
     font-size: 28px;
     font-weight: 700;
-    margin-bottom: 25px;
     .subtitle {
       margin-left: 12px;
       font-size: 13px;
@@ -51,6 +56,9 @@ export default {
     display: grid;
     grid-gap: 24px;
     grid-template-columns: repeat(6,160px);
+    & > * {
+      margin-top: 25px;
+    }
   }
 }
 </style>

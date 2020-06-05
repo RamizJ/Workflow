@@ -19,7 +19,7 @@ export default {
   .item__name {
     font-size: 14px;
     font-weight: 600;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     text-transform: capitalize;
   }
 }
