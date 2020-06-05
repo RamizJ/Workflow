@@ -69,8 +69,9 @@ namespace Workflow.Tests
                 .TheLast(1).With(s => s.IsRemoved = true)
                 .Build();
 
-            TeamUsers = Builder<TeamUser>.CreateListOfSize(1)
-                .All().WithFactory(() => new TeamUser(Teams[0].Id, Users[1].Id))
+            TeamUsers = Builder<TeamUser>.CreateListOfSize(10)
+                .TheFirst(6).WithFactory(i => new TeamUser(Teams[0].Id, Users[i].Id))
+                .TheNext(4).WithFactory(i => new TeamUser(Teams[1].Id, Users[i].Id))
                 .Build().ToList();
 
             Goals = Builder<Goal>.CreateListOfSize(10)

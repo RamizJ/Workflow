@@ -6,6 +6,7 @@ using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
 using Workflow.Services.Common;
 using Workflow.VM.ViewModels;
+using WorkflowService.Extensions;
 
 namespace WorkflowService.Controllers
 {
@@ -103,10 +104,11 @@ namespace WorkflowService.Controllers
         /// <param name="team">Новая команда</param>
         /// <returns>Команда</returns>
         [HttpPost]
-        public async Task<ActionResult<VmTeamResult>> Create([FromBody]VmTeam team)
+        public async Task<ActionResult<VmTeam>> Create([FromBody]VmTeam team)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            return await _teamsService.Create(currentUser, team);
+            var result = await _teamsService.Create(currentUser, team);
+            return result.ToActionResult();
         }
 
         /// <summary>
@@ -114,12 +116,11 @@ namespace WorkflowService.Controllers
         /// </summary>
         /// <param name="teamId"></param>
         /// <param name="userId">Идентификатор добавляемого пользователя</param>
-        /// <returns>Добавленный пользователь</returns>
+        /// <returns>Результат выполнения операции</returns>
         [HttpPost("{teamId}")]
         public async Task<IActionResult> AddUser(int teamId, [FromBody] string userId)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
-            await _teamUsersService.Add(currentUser, teamId, userId);
+            await _teamUsersService.Add(teamId, userId);
             return NoContent();
         }
 
@@ -127,32 +128,26 @@ namespace WorkflowService.Controllers
         /// Обновление команды
         /// </summary>
         /// <param name="team">Команда</param>
-        /// <returns>NotFound(404) - если команда не найдена. NoContent(204) - если обновление прошло успешно</returns>
+        /// <returns>Результат выполнения операции</returns>
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody]VmTeam team)
+        public async Task<ActionResult<VmTeam>> Update([FromBody]VmTeam team)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var updatedScope = await _teamsService.Update(currentUser, team);
-            if (updatedScope == null)
-                return NotFound();
-
-            return NoContent();
+            var result = await _teamsService.Update(currentUser, team);
+            return result.ToActionResult();
         }
 
         /// <summary>
         /// Удаление команды
         /// </summary>
         /// <param name="id">Идентификатор команды</param>
-        /// <returns>Удаленная команда</returns>
+        /// <returns>Результат выполнения операции</returns>
         [HttpDelete("{id}")]
         public async Task<ActionResult<VmTeam>> Delete(int id)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var deletedScope = await _teamsService.Delete(currentUser, id);
-            if (deletedScope == null)
-                return NotFound();
-
-            return Ok(deletedScope);
+            var result = await _teamsService.Delete(currentUser, id);
+            return result.ToActionResult();
         }
 
         /// <summary>
@@ -164,9 +159,8 @@ namespace WorkflowService.Controllers
         [HttpDelete("{teamId}/{userId}")]
         public async Task<IActionResult> RemoveUser(int teamId, string userId)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
-            await _teamUsersService.Remove(currentUser, teamId, userId);
-            return NoContent();
+            var result = await _teamUsersService.Remove(teamId, userId);
+            return result.ToIActionResult();
         }
 
 

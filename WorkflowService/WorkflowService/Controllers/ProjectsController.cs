@@ -6,6 +6,7 @@ using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
 using Workflow.Services.Common;
 using Workflow.VM.ViewModels;
+using WorkflowService.Extensions;
 
 namespace WorkflowService.Controllers
 {
@@ -77,26 +78,24 @@ namespace WorkflowService.Controllers
         /// <param name="project">Проект</param>
         /// <returns>Результат выполнения операции</returns>
         [HttpPost]
-        public async Task<ActionResult<VmProjectResult>> Create([FromBody] VmProject project)
+        public async Task<ActionResult<VmProject>> Create([FromBody] VmProject project)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            return await _projectsService.Create(currentUser, project);
+            var result =  await _projectsService.Create(currentUser, project);
+            return result.ToActionResult();
         }
 
         /// <summary>
         /// Обновление проектов
         /// </summary>
-        /// <param name="project">Updated project</param>
+        /// <param name="project">Обновляемый проект</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult<VmProjectResult>> Update([FromBody]VmProject project)
+        public async Task<ActionResult<VmProject>> Update([FromBody]VmProject project)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var updatedScope = await _projectsService.Update(currentUser, project);
-            if (updatedScope == null)
-                return NotFound();
-
-            return NoContent();
+            var result = await _projectsService.Update(currentUser, project);
+            return result.ToActionResult();
         }
 
         /// <summary>
@@ -105,14 +104,11 @@ namespace WorkflowService.Controllers
         /// <param name="id">Идентификатор проекта</param>
         /// <returns>Результат выполнения операции</returns>
         [HttpDelete("{id}")]
-        public async Task<ActionResult<VmProjectResult>> Delete(int id)
+        public async Task<ActionResult<VmProject>> Delete(int id)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var deletedScope = await _projectsService.Delete(currentUser, id);
-            if (deletedScope == null)
-                return NotFound();
-
-            return Ok(deletedScope);
+            var result = await _projectsService.Delete(currentUser, id);
+            return result.ToActionResult();
         }
 
 

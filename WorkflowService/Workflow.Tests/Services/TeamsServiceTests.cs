@@ -7,10 +7,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Workflow.DAL;
 using Workflow.DAL.Models;
+using Workflow.Services;
+using Workflow.Services.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
-using WorkflowService.Common;
-using WorkflowService.Services;
 
 namespace Workflow.Tests.Services
 {
@@ -92,12 +92,12 @@ namespace Workflow.Tests.Services
             //Arrange
 
             //Act
-            var resultScopes = (await _service.GetPage(_testData.Users.First(),
+            var teams = (await _service.GetPage(_testData.Users.First(),
                 pageNumber, pageSize,
                 "", null, null)).ToArray();
 
             //Assert
-            Assert.AreEqual(expectedCount, resultScopes.Length);
+            Assert.AreEqual(expectedCount, teams.Length);
         }
 
         [TestCase(0, 12, null, 9)]

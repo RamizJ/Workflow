@@ -7,6 +7,7 @@ using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
 using Workflow.Services.Common;
 using Workflow.VM.ViewModels;
+using WorkflowService.Extensions;
 
 namespace WorkflowService.Controllers
 {
@@ -94,9 +95,9 @@ namespace WorkflowService.Controllers
         /// <param name="user">Параметры пользователя</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<VmUserResult> Create([FromBody]VmUser user)
+        public async Task<ActionResult<VmUser>> Create([FromBody]VmUser user)
         {
-            return await _service.Create(user);
+            return (await _service.Create(user)).ToActionResult();
         }
 
         /// <summary>
@@ -105,9 +106,9 @@ namespace WorkflowService.Controllers
         /// <param name="user">Параметры пользователя</param>
         /// <returns>Результат</returns>
         [HttpPut]
-        public async Task<VmUserResult> Update(VmUser user)
+        public async Task<ActionResult<VmUser>> Update(VmUser user)
         {
-            return await _service.Update(user);
+            return (await _service.Update(user)).ToActionResult();
         }
 
         /// <summary>
@@ -116,9 +117,9 @@ namespace WorkflowService.Controllers
         /// <param name="id">Идентификатор пользователя</param>
         /// <returns></returns>
         [HttpDelete]
-        public async Task<VmUserResult> Delete(string id)
+        public async Task<ActionResult<VmUser>> Delete(string id)
         {
-            return await _service.Delete(id);
+            return (await _service.Delete(id)).ToActionResult();
         }
 
 
@@ -129,10 +130,11 @@ namespace WorkflowService.Controllers
         /// <param name="newPassword">Новый пароль</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<VmUserResult> ChangePassword([FromQuery]string currentPassword, [FromQuery] string newPassword)
+        public async Task<ActionResult<VmUser>> ChangePassword([FromQuery]string currentPassword, [FromQuery] string newPassword)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            return await _service.ChangePassword(currentUser, currentPassword, newPassword);
+            var result = await _service.ChangePassword(currentUser, currentPassword, newPassword);
+            return result.ToActionResult();
         }
 
         /// <summary>
@@ -142,9 +144,10 @@ namespace WorkflowService.Controllers
         /// <param name="newPassword">Новый пароль</param>
         /// <returns></returns>
         [HttpPost("{id}"), Authorize(Roles = RoleNames.ADMINISTRATOR_ROLE)]
-        public async Task<VmUserResult> ResetPassword(string id, [FromQuery] string newPassword)
+        public async Task<ActionResult<VmUser>> ResetPassword(string id, [FromQuery] string newPassword)
         {
-            return await _service.ResetPassword(id, newPassword);
+            var result = await _service.ResetPassword(id, newPassword);
+            return result.ToActionResult();
         }
     }
 }

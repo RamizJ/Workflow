@@ -5,11 +5,11 @@ using Microsoft.Data.Sqlite;
 using NUnit.Framework;
 using Workflow.DAL;
 using Workflow.DAL.Models;
+using Workflow.Services;
+using Workflow.Services.Abstract;
+using Workflow.Services.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
-using WorkflowService.Common;
-using WorkflowService.Services;
-using WorkflowService.Services.Abstract;
 
 namespace Workflow.Tests.Services
 {

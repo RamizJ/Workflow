@@ -2,7 +2,7 @@
 using Microsoft.Data.Sqlite;
 using NUnit.Framework;
 using Workflow.DAL;
-using WorkflowService.Services;
+using Workflow.Services;
 
 namespace Workflow.Tests.Services
 {

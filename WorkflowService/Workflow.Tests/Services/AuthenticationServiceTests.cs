@@ -7,9 +7,9 @@ using Moq;
 using NUnit.Framework;
 using Workflow.DAL;
 using Workflow.DAL.Models;
+using Workflow.Services;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
-using WorkflowService.Services;
 
 namespace Workflow.Tests.Services
 {

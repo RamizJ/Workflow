@@ -20,6 +20,7 @@ namespace Workflow.Services
             _dataContext = dataContext;
             _vmConverter = new VmUserConverter();
         }
+
         /// <inheritdoc />
         public async Task<IEnumerable<VmUser>> GetPage(ApplicationUser currentUser, 
             int teamId, int pageNumber, int pageSize, string filter,
@@ -41,39 +42,54 @@ namespace Workflow.Services
         }
 
         /// <inheritdoc />
-        public async Task Add(ApplicationUser currentUser, int teamId, string userId)
+        public async Task<VmUserResult> Add(int teamId, string userId)
         {
-            if (string.IsNullOrWhiteSpace(userId))
-                throw new ArgumentNullException(nameof(userId));
+            var result = new VmUserResult();
+            try
+            {
+                await _dataContext.TeamUsers.AddAsync(new TeamUser(teamId, userId));
+                await _dataContext.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                string errorMessage = "Не удалось добавить пользователя в команду. ";
+                if (await _dataContext.TeamUsers
+                    .AnyAsync(tu => tu.TeamId == teamId
+                                    && tu.UserId == userId))
+                {
+                    errorMessage += "Пользователь уже существует";
+                }
 
-            var isUserExist = await _dataContext.Users.AnyAsync(u => u.Id == userId);
-            if (!isUserExist)
-                throw new InvalidOperationException($"User with id '{userId}' not found");
+                result.AddError(errorMessage);
+            }
 
-            var isTeamExist = await _dataContext.Teams.AnyAsync(t => t.Id == teamId);
-            if (!isTeamExist)
-                throw new InvalidOperationException($"Team with id '{teamId}' not found");
-
-            await _dataContext.TeamUsers.AddAsync(new TeamUser(teamId, userId));
-            await _dataContext.SaveChangesAsync();
+            return result;
         }
 
         /// <inheritdoc />
-        public async Task Remove(ApplicationUser currentUser, int teamId, string userId)
+        public async Task<VmUserResult> Remove(int teamId, string userId)
         {
-            if (string.IsNullOrWhiteSpace(userId))
-                throw new ArgumentNullException(nameof(userId));
+            var result = new VmUserResult();
 
-            var isUserExist = await _dataContext.Users.AnyAsync(u => u.Id == userId);
-            if (!isUserExist)
-                throw new InvalidOperationException($"User with id '{userId}' not found");
+            try
+            {
+                _dataContext.TeamUsers.Remove(new TeamUser(teamId, userId));
+                await _dataContext.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                string errorMessage = "Не удалось удалить пользователя из команды. ";
+                if (await _dataContext.TeamUsers
+                    .AnyAsync(tu => tu.TeamId == teamId
+                                    && tu.UserId == userId))
+                {
+                    errorMessage += "Пользователь в команде не найден";
+                }
 
-            var isTeamExist = await _dataContext.Teams.AnyAsync(t => t.Id == teamId);
-            if (!isTeamExist)
-                throw new InvalidOperationException($"Team with id '{teamId}' not found");
+                result.AddError(errorMessage);
+            }
 
-            _dataContext.TeamUsers.Remove(new TeamUser(teamId, userId));
-            await _dataContext.SaveChangesAsync();
+            return result;
         }
 
 
@@ -95,15 +111,15 @@ namespace Workflow.Services
             if (string.IsNullOrEmpty(filter)) return query;
 
             var words = filter.Split(" ");
-            foreach (var word in words)
+            foreach (var word in words.Select(w => w.ToLower()))
             {
                 query = query
-                    .Where(tu => tu.User.Email.Contains(word)
-                                 || tu.User.PhoneNumber.Contains(word)
-                                 || tu.User.Position.Name.Contains(word)
-                                 || tu.User.FirstName.Contains(word)
-                                 || tu.User.MiddleName.Contains(word)
-                                 || tu.User.LastName.Contains(word));
+                    .Where(tu => tu.User.Email.ToLower().Contains(word)
+                                 || tu.User.PhoneNumber.ToLower().Contains(word)
+                                 || tu.User.Position.Name.ToLower().Contains(word)
+                                 || tu.User.FirstName.ToLower().Contains(word)
+                                 || tu.User.MiddleName.ToLower().Contains(word)
+                                 || tu.User.LastName.ToLower().Contains(word));
             }
 
             return query;

@@ -35,5 +35,8 @@ namespace Workflow.VM.ViewModels
         public VmUserResult(string errorMessage, bool succeeded = false)
             : base(new []{ errorMessage }, succeeded)
         { }
+
+        public VmUserResult()
+        { }
     }
 }

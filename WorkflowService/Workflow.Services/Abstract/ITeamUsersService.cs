@@ -31,19 +31,17 @@ namespace Workflow.Services.Abstract
         /// <summary>
         /// Добавить пользователя в команду
         /// </summary>
-        /// <param name="currentUser">Текущий пользователь</param>
         /// <param name="teamId">Идентификатор команды</param>
         /// <param name="userId">Добавляемый пользователь</param>
         /// <returns>Добавленный пользователь</returns>
-        Task Add(ApplicationUser currentUser, int teamId, string userId);
+        Task<VmUserResult> Add(int teamId, string userId);
 
         /// <summary>
         /// Удаление пользователя из команды
         /// </summary>
-        /// <param name="currentUser">Текущий пользователь</param>
         /// <param name="teamId">Идентификатор команды</param>
         /// <param name="userId">Идентификатор удаляемого пользователя</param>
         /// <returns>Удаленный пользователь</returns>
-        Task Remove(ApplicationUser currentUser, int teamId, string userId);
+        Task<VmUserResult> Remove(int teamId, string userId);
     }
 }

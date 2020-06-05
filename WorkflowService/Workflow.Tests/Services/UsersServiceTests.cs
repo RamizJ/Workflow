@@ -8,9 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Workflow.DAL;
 using Workflow.DAL.Models;
+using Workflow.Services;
+using Workflow.Services.Common;
 using Workflow.VM.ViewModelConverters;
-using WorkflowService.Common;
-using WorkflowService.Services;
 
 namespace Workflow.Tests.Services
 {

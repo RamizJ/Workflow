@@ -135,7 +135,7 @@
             <summary>
             Обновление проектов
             </summary>
-            <param name="project">Updated project</param>
+            <param name="project">Обновляемый проект</param>
             <returns></returns>
         </member>
         <member name="M:WorkflowService.Controllers.ProjectsController.Delete(System.Int32)">
@@ -210,21 +210,21 @@
             </summary>
             <param name="teamId"></param>
             <param name="userId">Идентификатор добавляемого пользователя</param>
-            <returns>Добавленный пользователь</returns>
+            <returns>Результат выполнения операции</returns>
         </member>
         <member name="M:WorkflowService.Controllers.TeamsController.Update(Workflow.VM.ViewModels.VmTeam)">
             <summary>
             Обновление команды
             </summary>
             <param name="team">Команда</param>
-            <returns>NotFound(404) - если команда не найдена. NoContent(204) - если обновление прошло успешно</returns>
+            <returns>Результат выполнения операции</returns>
         </member>
         <member name="M:WorkflowService.Controllers.TeamsController.Delete(System.Int32)">
             <summary>
             Удаление команды
             </summary>
             <param name="id">Идентификатор команды</param>
-            <returns>Удаленная команда</returns>
+            <returns>Результат выполнения операции</returns>
         </member>
         <member name="M:WorkflowService.Controllers.TeamsController.RemoveUser(System.Int32,System.String)">
             <summary>
