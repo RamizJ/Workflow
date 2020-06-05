@@ -9,7 +9,7 @@ namespace WorkflowService.Services.Abstract
     /// <summary>
     /// 
     /// </summary>
-    public interface IScopesService
+    public interface IProjectsService
     {
         /// <summary>
         /// 
@@ -17,15 +17,8 @@ namespace WorkflowService.Services.Abstract
         /// <param name="user"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<VmScope> Get(ApplicationUser user, int id);
+        Task<VmProject> Get(ApplicationUser user, int id);
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="user"></param>
-        /// <param name="withRemoved"></param>
-        /// <returns></returns>
-        Task<IEnumerable<VmScope>> GetAll(ApplicationUser user, bool withRemoved = false);
 
         /// <summary>
         /// 
@@ -38,7 +31,7 @@ namespace WorkflowService.Services.Abstract
         /// <param name="sortFields"></param>
         /// <param name="withRemoved"></param>
         /// <returns></returns>
-        Task<IEnumerable<VmScope>> GetPage(ApplicationUser user, int pageNumber, int pageSize,
+        Task<IEnumerable<VmProject>> GetPage(ApplicationUser user, int pageNumber, int pageSize,
             string filter, FieldFilter[] filterFields, FieldSort[] sortFields, bool withRemoved = false);
 
         /// <summary>
@@ -47,23 +40,23 @@ namespace WorkflowService.Services.Abstract
         /// <param name="user"></param>
         /// <param name="ids"></param>
         /// <returns></returns>
-        Task<IEnumerable<VmScope>> GetRange(ApplicationUser user, int[] ids);
+        Task<IEnumerable<VmProject>> GetRange(ApplicationUser user, int[] ids);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="scope"></param>
+        /// <param name="project"></param>
         /// <returns></returns>
-        Task<VmScope> Create(ApplicationUser user, VmScope scope);
+        Task<VmProjectResult> Create(ApplicationUser user, VmProject project);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="scope"></param>
+        /// <param name="project"></param>
         /// <returns></returns>
-        Task<VmScope> Update(ApplicationUser user, VmScope scope);
+        Task<VmProjectResult> Update(ApplicationUser user, VmProject project);
 
         /// <summary>
         /// 
@@ -71,6 +64,6 @@ namespace WorkflowService.Services.Abstract
         /// <param name="user"></param>
         /// <param name="scopeId"></param>
         /// <returns></returns>
-        Task<VmScope> Delete(ApplicationUser user, int scopeId);
+        Task<VmProjectResult> Delete(ApplicationUser user, int scopeId);
     }
 }

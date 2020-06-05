@@ -169,86 +169,28 @@
             <param name="id">Идентификатор удаляемой задачи</param>
             <returns></returns>
         </member>
-        <member name="T:WorkflowService.Controllers.GroupsController">
+        <member name="T:WorkflowService.Controllers.ProjectsController">
             <summary>
-            API for working with groups
+            API-методы работы с проектами
             </summary>
         </member>
-        <member name="M:WorkflowService.Controllers.GroupsController.Get(System.Int32)">
-            <summary>
-            Get group
-            </summary>
-            <param name="id">group id</param>
-            <returns>group data. Returned only if available for authenticated user</returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.GroupsController.GetAll">
-            <summary>
-            Get all groups
-            </summary>
-            <returns>Collection of groups</returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.GroupsController.GetPage(System.Int32,System.Int32,System.String,System.String,WorkflowService.Common.SortType,System.String)">
-            <summary>
-            Get groups with pagination, filtering and sorting
-            </summary>
-            <param name="pageNumber">Page number</param>
-            <param name="pageSize">Page size</param>
-            <param name="filter">Filter string</param>
-            <param name="filterFields">Fields by which result rows will be filtered. Serparator is "|"</param>
-            <param name="sort">Sort type. 0 - Unspecified, 1 - Ascending, 2 - Descending</param>
-            <param name="sortedFields">Fields by which result rows will be sorted. Serparator is "|"</param>
-            <returns>Collection of scopes</returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.GroupsController.GetRange(System.Int32[])">
-            <summary>
-            Get groups collection by ids
-            </summary>
-            <param name="ids"></param>
-            <returns></returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.GroupsController.Create(Workflow.VM.ViewModels.VmGroup)">
-            <summary>
-            Create group
-            </summary>
-            <param name="group">New group</param>
-            <returns>group data with updated group id</returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.GroupsController.Update(Workflow.VM.ViewModels.VmGroup)">
-            <summary>
-            Update group
-            </summary>
-            <param name="group">Updated group</param>
-            <returns>Nothin</returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.GroupsController.Delete(System.Int32)">
-            <summary>
-            Delete group
-            </summary>
-            <param name="id">group id</param>
-            <returns></returns>
-        </member>
-        <member name="T:WorkflowService.Controllers.ScopesController">
-            <summary>
-            API-методы работы с множествами задач
-            </summary>
-        </member>
-        <member name="M:WorkflowService.Controllers.ScopesController.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},WorkflowService.Services.Abstract.IScopesService)">
+        <member name="M:WorkflowService.Controllers.ProjectsController.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},WorkflowService.Services.Abstract.IProjectsService)">
             <summary>
             Конструктор
             </summary>
             <param name="userManager"></param>
-            <param name="scopesService"></param>
+            <param name="projectsService"></param>
         </member>
-        <member name="M:WorkflowService.Controllers.ScopesController.Get(System.Int32)">
+        <member name="M:WorkflowService.Controllers.ProjectsController.Get(System.Int32)">
             <summary>
-            Получение множества задач по идентификатору
+            Получение проекта по идентификатору
             </summary>
-            <param name="id">Идентификатор области задач</param>
-            <returns>Множество задач. Только если доступно пользователю</returns>
+            <param name="id">Идентификатор проекта</param>
+            <returns>Проект. Только если доступен пользователю</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.ScopesController.GetPage(System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
+        <member name="M:WorkflowService.Controllers.ProjectsController.GetPage(System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
             <summary>
-            Постраничная загрузка множеств задач с фильтрацией и сортировкой
+            Постраничная загрузка проектов с фильтрацией и сортировкой
             </summary>
             <param name="pageNumber">Номер страницы</param>
             <param name="pageSize">Размер страницы</param>
@@ -256,35 +198,35 @@
             <param name="filterFields">Конкретные поля фильтрации</param>
             <param name="sortFields">Поля сортировки</param>
             <param name="withRemoved">Вместе с удаленными</param>
-            <returns>Коллекция множеств задач</returns>
+            <returns>Коллекция проектов</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.ScopesController.GetRange(System.Int32[])">
+        <member name="M:WorkflowService.Controllers.ProjectsController.GetRange(System.Int32[])">
             <summary>
-            Получение множеств задач по идентификаторам
+            Получение проектов по идентификаторам
             </summary>
-            <param name="ids">Идентификаторы множеств</param>
-            <returns>Коллекция множеств</returns>
+            <param name="ids">Идентификаторы проектов</param>
+            <returns>Коллекция проектов</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.ScopesController.Create(Workflow.VM.ViewModels.VmScope)">
+        <member name="M:WorkflowService.Controllers.ProjectsController.Create(Workflow.VM.ViewModels.VmProject)">
             <summary>
-            Создание множества задач
+            Создание проекта
             </summary>
-            <param name="scope">Параметры множества</param>
-            <returns>Созданное множество</returns>
+            <param name="project">Проект</param>
+            <returns>Результат выполнения операции</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.ScopesController.Update(Workflow.VM.ViewModels.VmScope)">
+        <member name="M:WorkflowService.Controllers.ProjectsController.Update(Workflow.VM.ViewModels.VmProject)">
             <summary>
-            Обновление множества задач
+            Обновление проектов
             </summary>
-            <param name="scope">Updated scope</param>
+            <param name="project">Updated project</param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Controllers.ScopesController.Delete(System.Int32)">
+        <member name="M:WorkflowService.Controllers.ProjectsController.Delete(System.Int32)">
             <summary>
-            Удаление множества задач
+            Удаление проектов
             </summary>
-            <param name="id">Идентификатор множества</param>
-            <returns>Удаленное множество</returns>
+            <param name="id">Идентификатор проекта</param>
+            <returns>Результат выполнения операции</returns>
         </member>
         <member name="T:WorkflowService.Controllers.TeamsController">
             <summary>
@@ -431,13 +373,29 @@
             Обновление пользователя
             </summary>
             <param name="user">Параметры пользователя</param>
-            <returns></returns>
+            <returns>Результат</returns>
         </member>
         <member name="M:WorkflowService.Controllers.UsersController.Delete(System.String)">
             <summary>
             Удаление пользователя
             </summary>
             <param name="id">Идентификатор пользователя</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.ChangePassword(System.String,System.String)">
+            <summary>
+            Изменение пароля пользователя. Доступно только текущему пользователю
+            </summary>
+            <param name="currentPassword">Текущий пароль</param>
+            <param name="newPassword">Новый пароль</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.ResetPassword(System.String,System.String)">
+            <summary>
+            Сброс пароля пользователя. Доступно только администраторам
+            </summary>
+            <param name="id">Идентификатор пользователя</param>
+            <param name="newPassword">Новый пароль</param>
             <returns></returns>
         </member>
         <member name="T:WorkflowService.Services.Abstract.IGoalsService">
@@ -499,12 +457,12 @@
             <param name="goalId"></param>
             <returns></returns>
         </member>
-        <member name="T:WorkflowService.Services.Abstract.IScopesService">
+        <member name="T:WorkflowService.Services.Abstract.IProjectsService">
             <summary>
             
             </summary>
         </member>
-        <member name="M:WorkflowService.Services.Abstract.IScopesService.Get(Workflow.DAL.Models.ApplicationUser,System.Int32)">
+        <member name="M:WorkflowService.Services.Abstract.IProjectsService.Get(Workflow.DAL.Models.ApplicationUser,System.Int32)">
             <summary>
             
             </summary>
@@ -512,15 +470,7 @@
             <param name="id"></param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Services.Abstract.IScopesService.GetAll(Workflow.DAL.Models.ApplicationUser,System.Boolean)">
-            <summary>
-            
-            </summary>
-            <param name="user"></param>
-            <param name="withRemoved"></param>
-            <returns></returns>
-        </member>
-        <member name="M:WorkflowService.Services.Abstract.IScopesService.GetPage(Workflow.DAL.Models.ApplicationUser,System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
+        <member name="M:WorkflowService.Services.Abstract.IProjectsService.GetPage(Workflow.DAL.Models.ApplicationUser,System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
             <summary>
             
             </summary>
@@ -533,7 +483,7 @@
             <param name="withRemoved"></param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Services.Abstract.IScopesService.GetRange(Workflow.DAL.Models.ApplicationUser,System.Int32[])">
+        <member name="M:WorkflowService.Services.Abstract.IProjectsService.GetRange(Workflow.DAL.Models.ApplicationUser,System.Int32[])">
             <summary>
             
             </summary>
@@ -541,29 +491,34 @@
             <param name="ids"></param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Services.Abstract.IScopesService.Create(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmScope)">
+        <member name="M:WorkflowService.Services.Abstract.IProjectsService.Create(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmProject)">
             <summary>
             
             </summary>
             <param name="user"></param>
-            <param name="scope"></param>
+            <param name="project"></param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Services.Abstract.IScopesService.Update(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmScope)">
+        <member name="M:WorkflowService.Services.Abstract.IProjectsService.Update(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmProject)">
             <summary>
             
             </summary>
             <param name="user"></param>
-            <param name="scope"></param>
+            <param name="project"></param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Services.Abstract.IScopesService.Delete(Workflow.DAL.Models.ApplicationUser,System.Int32)">
+        <member name="M:WorkflowService.Services.Abstract.IProjectsService.Delete(Workflow.DAL.Models.ApplicationUser,System.Int32)">
             <summary>
             
             </summary>
             <param name="user"></param>
             <param name="scopeId"></param>
             <returns></returns>
+        </member>
+        <member name="T:WorkflowService.Services.Abstract.ITeamsService">
+            <summary>
+            Сервис команд
+            </summary>
         </member>
         <member name="M:WorkflowService.Services.Abstract.ITeamsService.Get(Workflow.DAL.Models.ApplicationUser,System.Int32)">
             <summary>
@@ -608,7 +563,7 @@
             </summary>
             <param name="currentUser">Текущий пользователь</param>
             <param name="team">Команда</param>
-            <returns>Команда</returns>
+            <returns>Результат выполнения операции</returns>
         </member>
         <member name="M:WorkflowService.Services.Abstract.ITeamsService.Update(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmTeam)">
             <summary>
@@ -616,7 +571,7 @@
             </summary>
             <param name="currentUser">Текущий пользователь</param>
             <param name="team">Обновленная команда</param>
-            <returns></returns>
+            <returns>Результат выполнения операции</returns>
         </member>
         <member name="M:WorkflowService.Services.Abstract.ITeamsService.Delete(Workflow.DAL.Models.ApplicationUser,System.Int32)">
             <summary>
@@ -624,7 +579,7 @@
             </summary>
             <param name="currentUser">Текущий пользователь</param>
             <param name="teamId">Идентификатор команды</param>
-            <returns>Удаленная команда</returns>
+            <returns>Результат выполнения операции</returns>
         </member>
         <member name="T:WorkflowService.Services.Abstract.ITeamUsersService">
             <summary>
@@ -704,29 +659,58 @@
             <param name="ids">Идентификаторы пользователей</param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Services.Abstract.IUsersService.Create(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmUser)">
+        <member name="M:WorkflowService.Services.Abstract.IUsersService.Create(Workflow.VM.ViewModels.VmUser)">
             <summary>
             Создание пользователя
             </summary>
-            <param name="currentUser">Текущий пользователь </param>
             <param name="user">Новый пользователь</param>
-            <returns></returns>
+            <returns>Результат операции создания пользователя</returns>
         </member>
-        <member name="M:WorkflowService.Services.Abstract.IUsersService.Update(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmUser)">
+        <member name="M:WorkflowService.Services.Abstract.IUsersService.Update(Workflow.VM.ViewModels.VmUser)">
             <summary>
             Обновление данных пользователя
             </summary>
-            <param name="currentUser">Текущий пользователь</param>
             <param name="user">Параметры пользователя</param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Services.Abstract.IUsersService.Delete(Workflow.DAL.Models.ApplicationUser,System.String)">
+        <member name="M:WorkflowService.Services.Abstract.IUsersService.Delete(System.String)">
             <summary>
             Удаление пользователя
             </summary>
-            <param name="currentUser">Текущий пользователь</param>
             <param name="userId">Идентификатор пользователя</param>
             <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.IUsersService.ChangePassword(Workflow.DAL.Models.ApplicationUser,System.String,System.String)">
+            <summary>
+            Изменение пароля пользователя
+            </summary>
+            <param name="currentUser">Текущий пользователь</param>
+            <param name="currentPassword">Старый пароль</param>
+            <param name="newPassword">Новый пароль</param>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.IUsersService.ResetPassword(System.String,System.String)">
+            <summary>
+            Сброс пароля пользователя 
+            </summary>
+            <param name="id">Идентификатор пользователя</param>
+            <param name="newPassword">Новый пароль</param>
+            <returns></returns>
+        </member>
+        <member name="T:WorkflowService.Services.AuthenticationService">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.AuthenticationService.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            
+            </summary>
+            <param name="userManager"></param>
+            <param name="configuration"></param>
+        </member>
+        <member name="M:WorkflowService.Services.AuthenticationService.Login(Workflow.VM.ViewModels.VmAuthInput)">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.AuthenticationService.Logout">
+            <inheritdoc />
         </member>
         <member name="T:WorkflowService.Services.GoalsService">
             <inheritdoc />
@@ -755,34 +739,31 @@
         <member name="M:WorkflowService.Services.GoalsService.Delete(Workflow.DAL.Models.ApplicationUser,System.Int32)">
             <inheritdoc />
         </member>
-        <member name="T:WorkflowService.Services.ScopesService">
+        <member name="T:WorkflowService.Services.ProjectsService">
             <inheritdoc />
         </member>
-        <member name="M:WorkflowService.Services.ScopesService.#ctor(Workflow.DAL.DataContext)">
+        <member name="M:WorkflowService.Services.ProjectsService.#ctor(Workflow.DAL.DataContext)">
             <summary>
             Конструктор
             </summary>
             <param name="dataContext">Контекст БД</param>
         </member>
-        <member name="M:WorkflowService.Services.ScopesService.Get(Workflow.DAL.Models.ApplicationUser,System.Int32)">
+        <member name="M:WorkflowService.Services.ProjectsService.Get(Workflow.DAL.Models.ApplicationUser,System.Int32)">
             <inheritdoc />
         </member>
-        <member name="M:WorkflowService.Services.ScopesService.GetAll(Workflow.DAL.Models.ApplicationUser,System.Boolean)">
+        <member name="M:WorkflowService.Services.ProjectsService.GetPage(Workflow.DAL.Models.ApplicationUser,System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
             <inheritdoc />
         </member>
-        <member name="M:WorkflowService.Services.ScopesService.GetPage(Workflow.DAL.Models.ApplicationUser,System.Int32,System.Int32,System.String,WorkflowService.Common.FieldFilter[],WorkflowService.Common.FieldSort[],System.Boolean)">
+        <member name="M:WorkflowService.Services.ProjectsService.GetRange(Workflow.DAL.Models.ApplicationUser,System.Int32[])">
             <inheritdoc />
         </member>
-        <member name="M:WorkflowService.Services.ScopesService.GetRange(Workflow.DAL.Models.ApplicationUser,System.Int32[])">
+        <member name="M:WorkflowService.Services.ProjectsService.Create(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmProject)">
             <inheritdoc />
         </member>
-        <member name="M:WorkflowService.Services.ScopesService.Create(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmScope)">
+        <member name="M:WorkflowService.Services.ProjectsService.Update(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmProject)">
             <inheritdoc />
         </member>
-        <member name="M:WorkflowService.Services.ScopesService.Update(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmScope)">
-            <inheritdoc />
-        </member>
-        <member name="M:WorkflowService.Services.ScopesService.Delete(Workflow.DAL.Models.ApplicationUser,System.Int32)">
+        <member name="M:WorkflowService.Services.ProjectsService.Delete(Workflow.DAL.Models.ApplicationUser,System.Int32)">
             <inheritdoc />
         </member>
         <member name="T:WorkflowService.Services.TeamsService">
@@ -829,11 +810,12 @@
         <member name="T:WorkflowService.Services.UsersService">
             <inheritdoc />
         </member>
-        <member name="M:WorkflowService.Services.UsersService.#ctor(Workflow.DAL.DataContext)">
+        <member name="M:WorkflowService.Services.UsersService.#ctor(Workflow.DAL.DataContext,Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser})">
             <summary>
             
             </summary>
             <param name="dataContext"></param>
+            <param name="userManager"></param>
         </member>
         <member name="M:WorkflowService.Services.UsersService.Get(Workflow.DAL.Models.ApplicationUser,System.String)">
             <inheritdoc />
@@ -847,13 +829,19 @@
         <member name="M:WorkflowService.Services.UsersService.GetRange(Workflow.DAL.Models.ApplicationUser,System.String[])">
             <inheritdoc />
         </member>
-        <member name="M:WorkflowService.Services.UsersService.Create(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmUser)">
+        <member name="M:WorkflowService.Services.UsersService.Create(Workflow.VM.ViewModels.VmUser)">
             <inheritdoc />
         </member>
-        <member name="M:WorkflowService.Services.UsersService.Update(Workflow.DAL.Models.ApplicationUser,Workflow.VM.ViewModels.VmUser)">
+        <member name="M:WorkflowService.Services.UsersService.Update(Workflow.VM.ViewModels.VmUser)">
             <inheritdoc />
         </member>
-        <member name="M:WorkflowService.Services.UsersService.Delete(Workflow.DAL.Models.ApplicationUser,System.String)">
+        <member name="M:WorkflowService.Services.UsersService.Delete(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.UsersService.ChangePassword(Workflow.DAL.Models.ApplicationUser,System.String,System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.UsersService.ResetPassword(System.String,System.String)">
             <inheritdoc />
         </member>
     </members>

@@ -11,8 +11,8 @@ namespace Workflow.DAL.Models
         public string Title { get; set; }
         public string Description { get; set; }
 
-        public int ScopeId { get; set; }
-        public Scope Scope { get; set; }
+        public int ProjectId { get; set; }
+        public Project Project { get; set; }
 
         public int? ParentGoalId { get; set; }
         public Goal ParentGoal { get; set; }

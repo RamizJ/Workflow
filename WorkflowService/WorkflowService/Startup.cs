@@ -46,6 +46,7 @@ namespace WorkflowService
                     options.Password.RequireDigit = true;
                     options.Password.RequireNonAlphanumeric = false;
                     options.Password.RequiredLength = 6;
+                    options.User.RequireUniqueEmail = true;
                 })
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<DataContext>()
@@ -107,7 +108,7 @@ namespace WorkflowService
 
             services.AddTransient<IDefaultDataInitializationService, DefaultDataInitializationService>();
             services.AddTransient<IAuthenticationService, AuthenticationService>();
-            services.AddTransient<IScopesService, ScopesService>();
+            services.AddTransient<IProjectsService, ProjectsService>();
             services.AddTransient<IUsersService, UsersService>();
             services.AddTransient<ITeamsService, TeamsService>();
             services.AddTransient<ITeamUsersService, TeamUsersService>();

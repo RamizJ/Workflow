@@ -6,14 +6,14 @@ using Workflow.VM.ViewModelConverters;
 namespace Workflow.Tests.VmConverters
 {
     [TestFixture]
-    public class ScopeConverterTests
+    public class ProjectConverterTests
     {
-        private VmScopeConverter _vmConverter;
+        private VmProjectConverter _vmConverter;
 
         [SetUp]
         public void SetUp()
         {
-            _vmConverter = new VmScopeConverter();
+            _vmConverter = new VmProjectConverter();
         }
 
 
@@ -33,7 +33,7 @@ namespace Workflow.Tests.VmConverters
         public void ToViewModelTest()
         {
             //Arrange
-            var scope = Builder<Scope>.CreateNew()
+            var scope = Builder<Project>.CreateNew()
                 .With(x => x.Team = new Team{Id = x.TeamId ?? 1, Name = "Team"})
                 .With(x => x.Group = new Group { Id = x.GroupId ?? 1, Name = "Group" })
                 .With(x => x.OwnerId = "userId")

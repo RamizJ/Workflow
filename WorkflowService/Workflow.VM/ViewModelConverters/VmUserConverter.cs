@@ -9,13 +9,16 @@ namespace Workflow.VM.ViewModelConverters
     {
         public ApplicationUser ToModel(VmUser viewModel)
         {
+            if (viewModel == null)
+                return null;
+
             var id = string.IsNullOrWhiteSpace(viewModel.Id) ? null : viewModel.Id;
             return new ApplicationUser
             {
                 Id = id,
+                UserName = viewModel.UserName,
                 Email = viewModel.Email,
                 NormalizedEmail = viewModel.Email.ToUpper(),
-                UserName = viewModel.Email,
                 NormalizedUserName = viewModel.Email.ToUpper(),
                 PhoneNumber = viewModel.Phone,
                 PositionId = viewModel.PositionId,
@@ -28,16 +31,21 @@ namespace Workflow.VM.ViewModelConverters
 
         public VmUser ToViewModel(ApplicationUser model)
         {
+            if (model == null)
+                return null;
+
             return new VmUser
             {
                 Id = model.Id,
+                UserName = model.UserName,
                 Email = model.Email,
                 Phone = model.PhoneNumber,
                 PositionId = model.PositionId,
-                Position = model.Position?.Name,
+                Position = model.Position?.Name ?? model.PositionCustom,
                 FirstName = model.FirstName,
                 MiddleName = model.MiddleName,
-                LastName = model.LastName
+                LastName = model.LastName,
+                IsRemoved = model.IsRemoved
             };
         }
     }

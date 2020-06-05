@@ -12,7 +12,7 @@ namespace Workflow.VM.ViewModels
         public string Title { get; set; }
         public string Description { get; set; }
 
-        public int ScopeId { get; set; }
+        public int ProjectId { get; set; }
         public int? ParentGoalId { get; set; }
         public List<int> ChildGoals { get; set; }
 

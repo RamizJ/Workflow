@@ -52,25 +52,39 @@ namespace WorkflowService.Services.Abstract
         /// <summary>
         /// Создание пользователя
         /// </summary>
-        /// <param name="currentUser">Текущий пользователь </param>
         /// <param name="user">Новый пользователь</param>
-        /// <returns></returns>
-        Task<VmUser> Create(ApplicationUser currentUser, VmUser user);
+        /// <returns>Результат операции создания пользователя</returns>
+        Task<VmUserResult> Create(VmUser user);
 
         /// <summary>
         /// Обновление данных пользователя
         /// </summary>
-        /// <param name="currentUser">Текущий пользователь</param>
         /// <param name="user">Параметры пользователя</param>
         /// <returns></returns>
-        Task<VmUser> Update(ApplicationUser currentUser, VmUser user);
+        Task<VmUserResult> Update(VmUser user);
 
         /// <summary>
         /// Удаление пользователя
         /// </summary>
-        /// <param name="currentUser">Текущий пользователь</param>
         /// <param name="userId">Идентификатор пользователя</param>
         /// <returns></returns>
-        Task<VmUser> Delete(ApplicationUser currentUser, string userId);
+        Task<VmUserResult> Delete(string userId);
+
+
+        /// <summary>
+        /// Изменение пароля пользователя
+        /// </summary>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="currentPassword">Старый пароль</param>
+        /// <param name="newPassword">Новый пароль</param>
+        Task<VmUserResult> ChangePassword(ApplicationUser currentUser, string currentPassword, string newPassword);
+
+        /// <summary>
+        /// Сброс пароля пользователя 
+        /// </summary>
+        /// <param name="id">Идентификатор пользователя</param>
+        /// <param name="newPassword">Новый пароль</param>
+        /// <returns></returns>
+        Task<VmUserResult> ResetPassword(string id, string newPassword);
     }
 }

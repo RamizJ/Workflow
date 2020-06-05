@@ -103,7 +103,7 @@ namespace WorkflowService.Controllers
         /// <param name="team">Новая команда</param>
         /// <returns>Команда</returns>
         [HttpPost]
-        public async Task<ActionResult<VmTeam>> Create([FromBody]VmTeam team)
+        public async Task<ActionResult<VmTeamResult>> Create([FromBody]VmTeam team)
         {
             var currentUser = await _userManager.GetUserAsync(User);
             return await _teamsService.Create(currentUser, team);

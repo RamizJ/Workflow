@@ -20,7 +20,7 @@ namespace Workflow.VM.ViewModelConverters
                 Description = viewModel.Description,
                 GoalNumber = viewModel.GoalNumber,
                 PerformerId = viewModel.PerformerId,
-                ScopeId = viewModel.ScopeId,
+                ProjectId = viewModel.ProjectId,
                 GoalState = viewModel.GoalState,
                 IsRemoved = viewModel.IsRemoved
             };
@@ -41,7 +41,7 @@ namespace Workflow.VM.ViewModelConverters
                 GoalNumber = model.GoalNumber,
                 PerformerId = model.PerformerId,
                 Observers = model.Observers.Select(x => x.ObserverId).ToList(),
-                ScopeId = model.ScopeId,
+                ProjectId = model.ProjectId,
                 GoalState = model.GoalState,
                 IsRemoved = model.IsRemoved
             };

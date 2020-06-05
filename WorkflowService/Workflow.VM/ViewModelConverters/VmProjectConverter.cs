@@ -4,14 +4,14 @@ using Workflow.VM.ViewModels;
 
 namespace Workflow.VM.ViewModelConverters
 {
-    public class VmScopeConverter : IViewModelConverter<Scope, VmScope>
+    public class VmProjectConverter : IViewModelConverter<Project, VmProject>
     {
-        public Scope ToModel(VmScope viewModel)
+        public Project ToModel(VmProject viewModel)
         {
             if (viewModel == null)
                 return null;
 
-            return new Scope
+            return new Project
             {
                 Id = viewModel.Id,
                 Name = viewModel.Name,
@@ -19,17 +19,15 @@ namespace Workflow.VM.ViewModelConverters
                 OwnerId = viewModel.OwnerId,
                 TeamId = viewModel.TeamId,
                 GroupId = viewModel.GroupId,
-                CreationDate = viewModel.CreationDate,
-                IsRemoved = viewModel.IsRemoved,
             };
         }
 
-        public VmScope ToViewModel(Scope model)
+        public VmProject ToViewModel(Project model)
         {
             if (model == null)
                 return null;
 
-            return new VmScope
+            return new VmProject
             {
                 Id = model.Id,
                 Name = model.Name,

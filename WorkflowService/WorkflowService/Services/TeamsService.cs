@@ -83,55 +83,80 @@ namespace WorkflowService.Services
         }
 
         /// <inheritdoc />
-        public async Task<VmTeam> Create(ApplicationUser currentUser, VmTeam team)
+        public async Task<VmTeamResult> Create(ApplicationUser currentUser, VmTeam team)
         {
             if (team == null)
                 throw new ArgumentNullException(nameof(team));
 
+            var result = new VmTeamResult();
             if (string.IsNullOrWhiteSpace(team.Name))
-                throw new InvalidOperationException("Scope name cannot be empty");
+            {
+                result.AddError("Имя команды не должно быть пустым");
+            }
+            else
+            {
+                var model = _vmConverter.ToModel(team);
+                model.Id = 0;
 
-            var model = _vmConverter.ToModel(team);
-            model.Id = 0;
+                await _dataContext.Teams.AddAsync(model);
+                await _dataContext.SaveChangesAsync();
 
-            await _dataContext.Teams.AddAsync(model);
-            await _dataContext.SaveChangesAsync();
+                result.Data = _vmConverter.ToViewModel(model);
+            }
 
-            return _vmConverter.ToViewModel(model);
+            return result;
         }
 
 
         /// <inheritdoc />
-        public async Task<VmTeam> Update(ApplicationUser currentUser, VmTeam team)
+        public async Task<VmTeamResult> Update(ApplicationUser currentUser, VmTeam team)
         {
             if (team == null)
-                return null;
+                throw new ArgumentNullException(nameof(team));
 
+            var result = new VmTeamResult();
             if (string.IsNullOrWhiteSpace(team.Name))
-                throw new InvalidOperationException("Scope name cannot be empty");
+            {
+                result.AddError("Имя команды не должно быть пустым");
+            }
+            else
+            {
+                var model = _vmConverter.ToModel(team);
+                try
+                {
+                    _dataContext.Entry(model).State = EntityState.Modified;
+                    await _dataContext.SaveChangesAsync();
+                    result.Data = _vmConverter.ToViewModel(model);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    bool isExist = await _dataContext.Teams.AnyAsync(t => t.Id == team.Id);
+                    result.AddError(isExist
+                        ? "Не удалось обновить команду"
+                        : "Не удалось обновить команду. Команда не найдена");
+                }
+            }
 
-            var model = _vmConverter.ToModel(team);
-
-            _dataContext.Teams.Update(model);
-            await _dataContext.SaveChangesAsync();
-            return _vmConverter.ToViewModel(model);
+            return result;
         }
 
         /// <inheritdoc />
-        public async Task<VmTeam> Delete(ApplicationUser currentUser, int teamId)
+        public async Task<VmTeamResult> Delete(ApplicationUser currentUser, int teamId)
         {
-            var model = await GetQuery(true)
-                .FirstOrDefaultAsync(s => s.Id == teamId);
-
+            var model = await _dataContext.Teams.FindAsync(teamId);
+            var result = new VmTeamResult();
             if (model != null)
             {
                 model.IsRemoved = true;
                 _dataContext.Teams.Update(model);
                 await _dataContext.SaveChangesAsync();
-                return _vmConverter.ToViewModel(model);
+                result.Data = _vmConverter.ToViewModel(model);
             }
-
-            return null;
+            else
+            {
+                result.AddError("Не удалось удалить команду. Команда не найдена");
+            }
+            return result;
         }
 
 
@@ -153,12 +178,12 @@ namespace WorkflowService.Services
             if (string.IsNullOrEmpty(filter)) return query;
 
             var words = filter.Split(" ");
-            foreach (var word in words)
+            foreach (var word in words.Select(w => w.ToLower()))
             {
                 query = query
-                    .Where(team => team.Name.Contains(word)
-                                   || team.Description.Contains(word)
-                                   || team.Group.Name.Contains(word));
+                    .Where(team => team.Name.ToLower().Contains(word)
+                                   || team.Description.ToLower().Contains(word)
+                                   || team.Group.Name.ToLower().Contains(word));
             }
 
             return query;
@@ -185,6 +210,11 @@ namespace WorkflowService.Services
                 else if (field.Is(nameof(VmTeam.Description)))
                 {
                     query = query.Where(t => t.Description.ToLower().Contains(strValue));
+                }
+                else if (field.Is(nameof(VmTeam.IsRemoved)))
+                { 
+                    bool.TryParse(field.Value?.ToString(), out var isRemoved);
+                    query = query.Where(t => t.IsRemoved == isRemoved);
                 }
             }
 
@@ -244,6 +274,21 @@ namespace WorkflowService.Services
                         orderedQuery = field.SortType == SortType.Ascending
                             ? orderedQuery.ThenBy(s => s.Group.Name)
                             : orderedQuery.ThenByDescending(s => s.Group.Name);
+                    }
+                }
+                else if (field.Is(nameof(VmTeam.IsRemoved)))
+                {
+                    if (orderedQuery == null)
+                    {
+                        orderedQuery = field.SortType == SortType.Ascending
+                            ? query.OrderBy(s => s.IsRemoved)
+                            : query.OrderByDescending(s => s.IsRemoved);
+                    }
+                    else
+                    {
+                        orderedQuery = field.SortType == SortType.Ascending
+                            ? orderedQuery.ThenBy(s => s.IsRemoved)
+                            : orderedQuery.ThenByDescending(s => s.IsRemoved);
                     }
                 }
             }

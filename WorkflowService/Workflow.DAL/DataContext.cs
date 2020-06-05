@@ -6,7 +6,7 @@ namespace Workflow.DAL
 {
     public class DataContext : IdentityDbContext<ApplicationUser>
     {
-        public DbSet<Scope> Scopes { get; set; }
+        public DbSet<Project> Projects { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamUser> TeamUsers { get; set; }
@@ -26,7 +26,7 @@ namespace Workflow.DAL
             SetupTeamUser(builder);
             SetupGoalObserver(builder);
             SetupTeam(builder);
-            SetupScope(builder);
+            SetupProject(builder);
             SetupGoal(builder);
             SetupAttachment(builder);
             SetupPosition(builder);
@@ -66,13 +66,17 @@ namespace Workflow.DAL
         private void SetupTeam(ModelBuilder builder)
         {
             var entity = builder.Entity<Team>();
-            entity.Property(t => t.Name).HasMaxLength(100);
+            entity.Property(t => t.Name)
+                .HasMaxLength(100)
+                .IsRequired();
         }
 
-        private void SetupScope(ModelBuilder builder)
+        private void SetupProject(ModelBuilder builder)
         {
-            var entity = builder.Entity<Scope>();
-            entity.Property(t => t.Name).HasMaxLength(100);
+            var entity = builder.Entity<Project>();
+            entity.Property(t => t.Name)
+                .HasMaxLength(100)
+                .IsRequired();
         }
 
         private void SetupGoal(ModelBuilder builder)

@@ -1,11 +1,12 @@
 ﻿using System;
+using Workflow.VM.Common;
 
 namespace Workflow.VM.ViewModels
 {
     /// <summary>
-    /// Область задач (например проект содержащий задачи)
+    /// Проект
     /// </summary>
-    public class VmScope
+    public class VmProject
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -19,4 +20,7 @@ namespace Workflow.VM.ViewModels
         public string GroupName { get; set; }
         public bool IsRemoved { get; set; }
     }
+
+    public class VmProjectResult : OperationResult<VmProject>
+    { }
 }

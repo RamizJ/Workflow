@@ -16,8 +16,14 @@ using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegiste
 
 namespace WorkflowService.Services
 {
+    /// <inheritdoc />
     public class AuthenticationService : IAuthenticationService
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userManager"></param>
+        /// <param name="configuration"></param>
         public AuthenticationService(UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
             _userManager = userManager;
@@ -25,6 +31,7 @@ namespace WorkflowService.Services
             _vmConverter = new VmUserConverter();
         }
 
+        /// <inheritdoc />
         public async Task<VmAuthOutput> Login(VmAuthInput authInput)
         {
             if(authInput == null)
@@ -68,6 +75,7 @@ namespace WorkflowService.Services
             return new VmAuthOutput(vmUser, tokenString);
         }
 
+        /// <inheritdoc />
         public Task Logout()
         {
             return Task.CompletedTask;

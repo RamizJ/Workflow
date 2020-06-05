@@ -80,6 +80,7 @@ namespace Workflow.Tests.Services
             //Arrange
             var vmUser = new VmUser
             {
+                UserName = "user01",
                 Email = "user@email.com",
                 Phone = "123",
                 FirstName = "FirstName",
@@ -99,7 +100,7 @@ namespace Workflow.Tests.Services
 
             //Assert
             Assert.IsNotNull(authOutput?.Token);
-            Assert.IsFalse(string.IsNullOrWhiteSpace(authOutput.User?.Id));
+            Assert.IsFalse(string.IsNullOrWhiteSpace(authOutput.User.Id));
             Assert.AreEqual(vmUser.FirstName, authOutput.User.FirstName);
             Assert.AreEqual(vmUser.MiddleName, authOutput.User.MiddleName);
             Assert.AreEqual(vmUser.LastName, authOutput.User.LastName);

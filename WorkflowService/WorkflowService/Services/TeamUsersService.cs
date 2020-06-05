@@ -131,7 +131,7 @@ namespace WorkflowService.Services
                 {
                     query = query.Where(tu => tu.User.Position.Name.ToLower().Contains(strValue));
                 }
-                else if (field.Is(nameof(VmScope.OwnerFio)))
+                else if (field.Is(nameof(VmProject.OwnerFio)))
                 {
                     var names = strValue?.Split();
                     if (names == null || names.Length == 0)

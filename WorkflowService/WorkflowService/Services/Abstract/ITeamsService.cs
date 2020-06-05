@@ -6,6 +6,9 @@ using WorkflowService.Common;
 
 namespace WorkflowService.Services.Abstract
 {
+    /// <summary>
+    /// Сервис команд
+    /// </summary>
     public interface ITeamsService
     {
         /// <summary>
@@ -51,23 +54,23 @@ namespace WorkflowService.Services.Abstract
         /// </summary>
         /// <param name="currentUser">Текущий пользователь</param>
         /// <param name="team">Команда</param>
-        /// <returns>Команда</returns>
-        Task<VmTeam> Create(ApplicationUser currentUser, VmTeam team);
+        /// <returns>Результат выполнения операции</returns>
+        Task<VmTeamResult> Create(ApplicationUser currentUser, VmTeam team);
 
         /// <summary>
         /// Обновление команды
         /// </summary>
         /// <param name="currentUser">Текущий пользователь</param>
         /// <param name="team">Обновленная команда</param>
-        /// <returns></returns>
-        Task<VmTeam> Update(ApplicationUser currentUser, VmTeam team);
+        /// <returns>Результат выполнения операции</returns>
+        Task<VmTeamResult> Update(ApplicationUser currentUser, VmTeam team);
 
         /// <summary>
         /// Удаление команды
         /// </summary>
         /// <param name="currentUser">Текущий пользователь</param>
         /// <param name="teamId">Идентификатор команды</param>
-        /// <returns>Удаленная команда</returns>
-        Task<VmTeam> Delete(ApplicationUser currentUser, int teamId);
+        /// <returns>Результат выполнения операции</returns>
+        Task<VmTeamResult> Delete(ApplicationUser currentUser, int teamId);
     }
 }

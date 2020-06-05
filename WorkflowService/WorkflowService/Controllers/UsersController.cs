@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Workflow.DAL.Models;
@@ -93,26 +94,20 @@ namespace WorkflowService.Controllers
         /// <param name="user">Параметры пользователя</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<VmUser> Create([FromBody]VmUser user)
+        public async Task<VmUserResult> Create([FromBody]VmUser user)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
-            return await _service.Create(currentUser, user);
+            return await _service.Create(user);
         }
 
         /// <summary>
         /// Обновление пользователя
         /// </summary>
         /// <param name="user">Параметры пользователя</param>
-        /// <returns></returns>
+        /// <returns>Результат</returns>
         [HttpPut]
-        public async Task<ActionResult> Update(VmUser user)
+        public async Task<VmUserResult> Update(VmUser user)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
-            var updatedUser = await _service.Update(currentUser, user);
-            if (updatedUser == null)
-                return NotFound();
-
-            return NoContent();
+            return await _service.Update(user);
         }
 
         /// <summary>
@@ -121,14 +116,35 @@ namespace WorkflowService.Controllers
         /// <param name="id">Идентификатор пользователя</param>
         /// <returns></returns>
         [HttpDelete]
-        public async Task<ActionResult<VmScope>> Delete(string id)
+        public async Task<VmUserResult> Delete(string id)
+        {
+            return await _service.Delete(id);
+        }
+
+
+        /// <summary>
+        /// Изменение пароля пользователя. Доступно только текущему пользователю
+        /// </summary>
+        /// <param name="currentPassword">Текущий пароль</param>
+        /// <param name="newPassword">Новый пароль</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<VmUserResult> ChangePassword([FromQuery]string currentPassword, [FromQuery] string newPassword)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var deletedUser = await _service.Delete(currentUser, id);
-            if (deletedUser == null)
-                return NotFound();
+            return await _service.ChangePassword(currentUser, currentPassword, newPassword);
+        }
 
-            return Ok(deletedUser);
+        /// <summary>
+        /// Сброс пароля пользователя. Доступно только администраторам
+        /// </summary>
+        /// <param name="id">Идентификатор пользователя</param>
+        /// <param name="newPassword">Новый пароль</param>
+        /// <returns></returns>
+        [HttpPost("{id}"), Authorize(Roles = RoleNames.ADMINISTRATOR_ROLE)]
+        public async Task<VmUserResult> ResetPassword(string id, [FromQuery] string newPassword)
+        {
+            return await _service.ResetPassword(id, newPassword);
         }
     }
 }
