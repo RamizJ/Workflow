@@ -1,29 +1,30 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Workflow.DAL.Models;
+using Workflow.Services.Common;
 using Workflow.VM.ViewModels;
-using WorkflowService.Common;
 
-namespace WorkflowService.Services.Abstract
+namespace Workflow.Services.Abstract
 {
     /// <summary>
     /// 
     /// </summary>
-    public interface IProjectsService
+    public interface IGoalsService
     {
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="currentUser"></param>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<VmProject> Get(ApplicationUser user, int id);
+        Task<VmGoal> Get(ApplicationUser currentUser, int id);
 
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="currentUser"></param>
+        /// <param name="scopeId"></param>
         /// <param name="pageNumber"></param>
         /// <param name="pageSize"></param>
         /// <param name="filter"></param>
@@ -31,39 +32,40 @@ namespace WorkflowService.Services.Abstract
         /// <param name="sortFields"></param>
         /// <param name="withRemoved"></param>
         /// <returns></returns>
-        Task<IEnumerable<VmProject>> GetPage(ApplicationUser user, int pageNumber, int pageSize,
+        Task<IEnumerable<VmGoal>> GetPage(ApplicationUser currentUser, int scopeId,
+            int pageNumber, int pageSize,
             string filter, FieldFilter[] filterFields, FieldSort[] sortFields, bool withRemoved = false);
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="currentUser"></param>
         /// <param name="ids"></param>
         /// <returns></returns>
-        Task<IEnumerable<VmProject>> GetRange(ApplicationUser user, int[] ids);
+        Task<IEnumerable<VmGoal>> GetRange(ApplicationUser currentUser, int[] ids);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="currentUser"></param>
+        /// <param name="goal"></param>
+        /// <returns></returns>
+        Task<VmGoal> Create(ApplicationUser currentUser, VmGoal goal);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="project"></param>
+        /// <param name="goal"></param>
         /// <returns></returns>
-        Task<VmProjectResult> Create(ApplicationUser user, VmProject project);
+        Task<VmGoal> Update(ApplicationUser user, VmGoal goal);
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="project"></param>
+        /// <param name="currentUser"></param>
+        /// <param name="goalId"></param>
         /// <returns></returns>
-        Task<VmProjectResult> Update(ApplicationUser user, VmProject project);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="user"></param>
-        /// <param name="scopeId"></param>
-        /// <returns></returns>
-        Task<VmProjectResult> Delete(ApplicationUser user, int scopeId);
+        Task<VmGoal> Delete(ApplicationUser currentUser, int goalId);
     }
 }

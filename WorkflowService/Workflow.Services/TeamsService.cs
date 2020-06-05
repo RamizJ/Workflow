@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
+using Workflow.Services.Abstract;
+using Workflow.Services.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
-using WorkflowService.Common;
-using WorkflowService.Services.Abstract;
 
-namespace WorkflowService.Services
+namespace Workflow.Services
 {
     /// <inheritdoc />
     public class TeamsService : ITeamsService

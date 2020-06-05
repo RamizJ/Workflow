@@ -9,12 +9,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Workflow.DAL.Models;
+using Workflow.Services.Abstract;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
-using WorkflowService.Services.Abstract;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
-namespace WorkflowService.Services
+namespace Workflow.Services
 {
     /// <inheritdoc />
     public class AuthenticationService : IAuthenticationService

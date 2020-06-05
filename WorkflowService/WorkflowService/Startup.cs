@@ -16,8 +16,8 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 using Workflow.DAL;
 using Workflow.DAL.Models;
-using WorkflowService.Services;
-using WorkflowService.Services.Abstract;
+using Workflow.Services;
+using Workflow.Services.Abstract;
 using static WorkflowService.ConfigKeys;
 
 #pragma warning disable 1591    //Disable xml documentation for this file

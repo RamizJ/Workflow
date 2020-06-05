@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WorkflowService.Common
+namespace Workflow.Services.Common
 {
     /// <summary>
     /// Сортировка по полю

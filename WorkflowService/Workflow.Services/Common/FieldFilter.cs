@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WorkflowService.Common
+namespace Workflow.Services.Common
 {
     /// <summary>
     /// Фильтр по полю
