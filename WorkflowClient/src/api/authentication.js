@@ -8,5 +8,5 @@ export default {
       rememberMe
     }),
   logout: () => httpClient.post(`/api/Authentication/Logout`),
-  getMe: () => httpClient.get(`/api/Users/GetCurrentUser`)
+  getMe: () => httpClient.get(`/api/Users/GetCurrent`)
 };

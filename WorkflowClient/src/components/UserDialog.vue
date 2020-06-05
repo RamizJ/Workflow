@@ -5,8 +5,8 @@
       el-form(:model="form" :rules="rules" ref="form")
         el-row(:gutter="20")
           el-col(:span="8")
-            el-form-item(prop="lastName" required)
-              el-input(v-model="form.lastName" size="medium" placeholder="Фамилия" required)
+            el-form-item(prop="lastName")
+              el-input(v-model="form.lastName" size="medium" placeholder="Фамилия")
           el-col(:span="8")
             el-form-item(prop="firstName")
               el-input(v-model="form.firstName" size="medium" placeholder="Имя")
@@ -37,7 +37,7 @@
               el-select(v-model="form.roles" size="medium" placeholder="Права" multiple)
                 el-option(v-for="item in roles" :key="item.value" :label="item.label" :value="item.value")
           el-col(:span="8")
-            el-form-item(prop="position")
+            el-form-item(prop="positionId")
               el-select(v-model="form.positionId" size="medium" placeholder="Должность")
                 el-option(v-for="item in positions" :key="item.value" :label="item.label" :value="item.value")
     div(slot="footer")
@@ -89,19 +89,16 @@ export default {
         { value: 2, label: "Оператор" }
       ],
       rules: {
-        lastName: [ { required: true, message: 'Укажите фамилию', trigger: 'blur', } ],
-        firstName: [ { required: true, message: 'Укажите имя', trigger: 'blur', } ],
-        userName: [ { required: true, message: 'Укажите логин', trigger: 'blur', } ],
-        password: [
-          { required: true, message: 'Укажите пароль', trigger: 'blur' },
-          { min: 6, message: 'Минимальная длина - 6 символов', trigger: 'blur' }
-        ],
+        lastName: [ { required: true, message: 'Введите фамилию', trigger: 'blur', } ],
+        firstName: [ { required: true, message: 'Введите имя', trigger: 'blur', } ],
+        userName: [ { required: true, message: 'Введите логин', trigger: 'blur', } ],
+        password: [ { validator: this.validatePassword, trigger: 'blur' } ],
         email: [
-          { required: true, message: 'Укажите эл. почту', trigger: 'blur', },
+          { required: true, message: 'Введите эл. почту', trigger: 'blur', },
           { type: 'email', message: 'Некорректный адрес эл. почты', trigger: 'blur' }
         ],
-        phone: [ { required: true, message: 'Укажите номер телефона', trigger: 'blur', } ],
-        position: [ { required: true, message: 'Пожалуйста, укажите должность', trigger: 'blur', } ],
+        phone: [ { required: true, message: 'Введите номер телефона', trigger: 'blur', } ],
+        positionId: [ { required: true, message: 'Введите должность', trigger: 'blur', } ],
       },
     };
   },
@@ -123,6 +120,19 @@ export default {
       createUser: 'users/createUser',
       updateUser: 'users/updateUser'
     }),
+    validatePassword(rule, value, callback) {
+      const length = value.trim().length;
+      const symbolsLeft = 6 - length;
+      if (!value)
+        callback(new Error('Введите пароль'));
+      else if (length < 6)
+        callback(new Error(`Введите ещё ${symbolsLeft}
+        ${symbolsLeft > 1 ? (symbolsLeft > 4 ? 'символов' : 'символа') : 'символ'}`));
+      else if (!/[a-z]/.test(value))
+        callback(new Error('Введите хотя бы одну букву'));
+      else
+        callback();
+    },
     submit() {
       const payload = { ...this.form };
       const form = this.$refs.form;
