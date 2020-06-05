@@ -46,7 +46,7 @@ namespace WorkflowService.Services
             if (currentUser == null)
                 throw new ArgumentNullException(nameof(currentUser));
 
-            var query = GetQuery(withRemoved).Where(x => x.ScopeId == scopeId);
+            var query = GetQuery(withRemoved).Where(x => x.ProjectId == scopeId);
             query = Filter(filter, query);
             query = FilterByFields(filterFields, query);
             query = SortByFields(sortFields, query);
@@ -143,19 +143,19 @@ namespace WorkflowService.Services
             if (string.IsNullOrEmpty(filter)) return query;
 
             var words = filter.Split(" ");
-            foreach (var word in words)
+            foreach (var word in words.Select(w => w.ToLower()))
             {
                 query = query
-                    .Where(goal => goal.Title.Contains(word)
-                                   || goal.Description.Contains(word)
-                                   || goal.Scope.Name.Contains(word)
+                    .Where(goal => goal.Title.ToLower().Contains(word)
+                                   || goal.Description.ToLower().Contains(word)
+                                   || goal.Project.Name.ToLower().Contains(word)
                                    || goal.GoalNumber.ToString() == word
-                                   || goal.Owner.FirstName.Contains(word)
-                                   || goal.Owner.MiddleName.Contains(word)
-                                   || goal.Owner.LastName.Contains(word)
-                                   || goal.Performer.FirstName.Contains(word)
-                                   || goal.Performer.MiddleName.Contains(word)
-                                   || goal.Performer.LastName.Contains(word));
+                                   || goal.Owner.FirstName.ToLower().Contains(word)
+                                   || goal.Owner.MiddleName.ToLower().Contains(word)
+                                   || goal.Owner.LastName.ToLower().Contains(word)
+                                   || goal.Performer.FirstName.ToLower().Contains(word)
+                                   || goal.Performer.MiddleName.ToLower().Contains(word)
+                                   || goal.Performer.LastName.ToLower().Contains(word));
             }
 
             return query;

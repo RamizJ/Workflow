@@ -13,7 +13,7 @@ namespace Workflow.Tests
         public IList<Group> Groups { get; set; }
         public IList<Team> Teams { get; set; }
         public IList<TeamUser> TeamUsers { get; set; }
-        public IList<Scope> Scopes { get; set; }
+        public IList<Project> Projects { get; set; }
         public IList<Goal> Goals { get; set; }
         public IList<Position> Positions { get; set; }
 
@@ -48,13 +48,16 @@ namespace Workflow.Tests
             Groups = Builder<Group>.CreateListOfSize(2)
                 .All().With(g => g.Name = $"Group{g.Id}").Build();
                 
-            Teams = Builder<Team>.CreateListOfSize(2)
+            Teams = Builder<Team>.CreateListOfSize(10)
                 .All()
                 .With(x => x.GroupId = null)
-                .With(x => x.Name = $"Team{x.Id}")
+                .TheFirst(6).With(x => x.Name = $"Team1{x.Id}")
+                .TheNext(4).With(x => x.Name = $"Team2{x.Id}")
+                .TheFirst(9).With(x => x.IsRemoved = false)
+                .TheLast(1).With(x => x.IsRemoved = true)
                 .Build();
 
-            Scopes = Builder<Scope>.CreateListOfSize(10)
+            Projects = Builder<Project>.CreateListOfSize(10)
                 .All()
                 .With(s => s.OwnerId = Users.First().Id)
                 .With(s => s.TeamId = null)
@@ -76,7 +79,7 @@ namespace Workflow.Tests
                     OwnerId = Users[0].Id,
                     PerformerId = Users[0].Id,
                     Title = $"Goal {i}",
-                    ScopeId = Scopes[0].Id
+                    ProjectId = Projects[0].Id
                 })
                 .With(x => x.AttachmentId = null)
                 .With(x => x.ParentGoalId = null)
@@ -85,7 +88,7 @@ namespace Workflow.Tests
                     OwnerId = Users[1].Id,
                     PerformerId = Users[1].Id,
                     Title = $"Goal {i}",
-                    ScopeId = Scopes[1].Id
+                    ProjectId = Projects[1].Id
                 })
                 .With(x => x.AttachmentId = null)
                 .With(x => x.ParentGoalId = null)
@@ -98,7 +101,7 @@ namespace Workflow.Tests
             context.Groups.AddRange(Groups);
             context.Teams.AddRange(Teams);
             context.TeamUsers.AddRange(TeamUsers);
-            context.Scopes.AddRange(Scopes);
+            context.Projects.AddRange(Projects);
             context.Goals.AddRange(Goals);
             context.Positions.AddRange(Positions);
 

@@ -319,7 +319,7 @@ namespace Workflow.DAL.Migrations
                     b.Property<string>("PerformerId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("ScopeId")
+                    b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -336,7 +336,7 @@ namespace Workflow.DAL.Migrations
 
                     b.HasIndex("PerformerId");
 
-                    b.HasIndex("ScopeId");
+                    b.HasIndex("ProjectId");
 
                     b.ToTable("Goals");
                 });
@@ -574,7 +574,7 @@ namespace Workflow.DAL.Migrations
 
                     b.HasOne("Workflow.DAL.Models.Scope", "Scope")
                         .WithMany("Goals")
-                        .HasForeignKey("ScopeId")
+                        .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

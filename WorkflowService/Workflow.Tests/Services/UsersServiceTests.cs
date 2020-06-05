@@ -242,7 +242,7 @@ namespace Workflow.Tests.Services
             var result = await _service.Create(vmUser);
 
             //Assert
-            Assert.IsTrue(result.Result.Succeeded);
+            Assert.IsTrue(result.Succeeded);
         }
 
         [Test]
@@ -288,15 +288,15 @@ namespace Workflow.Tests.Services
             var result = await _service.Update(vmUser);
 
             //Assert
-            Assert.IsTrue(result.Result.Succeeded);
-            Assert.AreEqual(userName, result.User.UserName);
-            Assert.AreEqual(email, result.User.Email);
-            Assert.AreEqual(phone, result.User.Phone);
-            Assert.AreEqual(lastName, result.User.LastName);
-            Assert.AreEqual(firstName, result.User.FirstName);
-            Assert.AreEqual(middleName, result.User.MiddleName);
-            Assert.AreEqual(posId, result.User.PositionId);
-            Assert.AreEqual(positionCustom, result.User.Position);
+            Assert.IsTrue(result.Succeeded);
+            Assert.AreEqual(userName, result.Data.UserName);
+            Assert.AreEqual(email, result.Data.Email);
+            Assert.AreEqual(phone, result.Data.Phone);
+            Assert.AreEqual(lastName, result.Data.LastName);
+            Assert.AreEqual(firstName, result.Data.FirstName);
+            Assert.AreEqual(middleName, result.Data.MiddleName);
+            Assert.AreEqual(posId, result.Data.PositionId);
+            Assert.AreEqual(positionCustom, result.Data.Position);
         }
 
         [TestCase(null)]
@@ -318,7 +318,7 @@ namespace Workflow.Tests.Services
             var result = await _service.Delete(userId);
 
             //Assert
-            Assert.IsTrue(result.Result.Succeeded);
+            Assert.IsTrue(result.Succeeded);
         }
 
 
@@ -336,7 +336,7 @@ namespace Workflow.Tests.Services
             var result = await _service.ChangePassword(user, "Aa010110!", newPassword);
 
             //Assert
-            Assert.AreEqual(isSucceed, result.Result.Succeeded);
+            Assert.AreEqual(isSucceed, result.Succeeded);
         }
 
         [TestCase("", false)]
@@ -353,7 +353,7 @@ namespace Workflow.Tests.Services
             var result = await _service.ResetPassword(user.Id, newPassword);
 
             //Assert
-            Assert.AreEqual(isSucceed, result.Result.Succeeded);
+            Assert.AreEqual(isSucceed, result.Succeeded);
         }
     }
 }

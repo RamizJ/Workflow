@@ -103,10 +103,9 @@ namespace WorkflowService.Services
                 vmUser = _vmConverter.ToViewModel(model);
             }
 
-            return new VmUserResult
+            return new VmUserResult(result.Errors.Select(e => e.Description), result.Succeeded)
             {
-                User = vmUser,
-                Result = result
+                Data = vmUser
             };
         }
 
@@ -118,7 +117,7 @@ namespace WorkflowService.Services
 
             var model = await _userManager.FindByIdAsync(user.Id);
             if (model == null)
-                throw new InvalidOperationException($"User with id='{user.Id}' not found");
+                return new VmUserResult($"User with id='{user.Id}' not found");
 
             model.UserName = user.UserName;
             model.NormalizedUserName = user.UserName.ToUpper();
@@ -138,10 +137,10 @@ namespace WorkflowService.Services
                 vmUser = _vmConverter.ToViewModel(model);
             }
 
-            return new VmUserResult
+            return new VmUserResult(result.Errors.Select(e => e.Description), result.Succeeded)
             {
-                User = vmUser,
-                Result = result
+                Data = vmUser,
+                Succeeded = result.Succeeded
             };
         }
 
@@ -161,10 +160,9 @@ namespace WorkflowService.Services
                 vmUser = _vmConverter.ToViewModel(model);
             }
 
-            return new VmUserResult
+            return new VmUserResult(result.Errors.Select(e => e.Description), result.Succeeded)
             {
-                User = vmUser,
-                Result = result
+                Data = vmUser
             };
         }
 
@@ -172,10 +170,7 @@ namespace WorkflowService.Services
         public async Task<VmUserResult> ChangePassword(ApplicationUser currentUser, string currentPassword, string newPassword)
         {
             var result = await _userManager.ChangePasswordAsync(currentUser, currentPassword, newPassword);
-            return new VmUserResult
-            {
-                Result = result
-            };
+            return new VmUserResult(result.Errors.Select(e => e.Description), result.Succeeded);
         }
 
         /// <inheritdoc />
@@ -187,11 +182,7 @@ namespace WorkflowService.Services
             {
                 result = await _userManager.AddPasswordAsync(user, newPassword);
             }
-
-            return new VmUserResult
-            {
-                Result = result
-            };
+            return new VmUserResult(result.Errors.Select(e => e.Description), result.Succeeded);
         }
 
 
@@ -213,16 +204,16 @@ namespace WorkflowService.Services
             if (string.IsNullOrEmpty(filter)) return query;
 
             var words = filter.Split(" ");
-            foreach (var word in words)
+            foreach (var word in words.Select(w => w.ToLower()))
             {
                 query = query
-                    .Where(s => s.Email.Contains(word)
-                                || s.PhoneNumber.Contains(word)
-                                || s.Position.Name.Contains(word)
-                                || s.LastName.Contains(word)
-                                || s.FirstName.Contains(word)
-                                || s.MiddleName.Contains(word)
-                                || s.LastName.Contains(word));
+                    .Where(s => s.Email.ToLower().Contains(word)
+                                || s.PhoneNumber.ToLower().Contains(word)
+                                || s.Position.Name.ToLower().Contains(word)
+                                || s.LastName.ToLower().Contains(word)
+                                || s.FirstName.ToLower().Contains(word)
+                                || s.MiddleName.ToLower().Contains(word)
+                                || s.LastName.ToLower().Contains(word));
             }
 
             return query;
@@ -262,6 +253,11 @@ namespace WorkflowService.Services
                 else if (field.Is(nameof(VmUser.FirstName)))
                 {
                     query = query.Where(u => u.FirstName.ToLower().Contains(strValue));
+                }
+                else if (field.Is(nameof(VmUser.IsRemoved)))
+                {
+                    bool.TryParse(field.Value?.ToString(), out var isRemoved);
+                    query = query.Where(u => u.IsRemoved == isRemoved);
                 }
             }
 

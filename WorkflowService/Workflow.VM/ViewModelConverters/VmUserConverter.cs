@@ -44,7 +44,8 @@ namespace Workflow.VM.ViewModelConverters
                 Position = model.Position?.Name ?? model.PositionCustom,
                 FirstName = model.FirstName,
                 MiddleName = model.MiddleName,
-                LastName = model.LastName
+                LastName = model.LastName,
+                IsRemoved = model.IsRemoved
             };
         }
     }

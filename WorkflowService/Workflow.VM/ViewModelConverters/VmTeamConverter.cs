@@ -17,7 +17,7 @@ namespace Workflow.VM.ViewModelConverters
                 Id = viewModel.Id,
                 GroupId = viewModel.GroupId,
                 Name = viewModel.Name,
-                Description = viewModel.Description
+                Description = viewModel.Description,
             };
         }
 
@@ -33,6 +33,7 @@ namespace Workflow.VM.ViewModelConverters
                 Description = model.Description,
                 GroupId = model.GroupId,
                 GroupName = model.Group?.Name,
+                IsRemoved = model.IsRemoved,
                 TeamMembers = model.TeamUsers?.Select(tu => tu.UserId).ToList()
             };
         }

@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using Workflow.VM.Common;
 
 namespace Workflow.VM.ViewModels
 {
@@ -11,7 +10,13 @@ namespace Workflow.VM.ViewModels
         public string Description { get; set; }
         public int? GroupId { get; set; }
         public string GroupName { get; set; }
+        public bool IsRemoved { get; set; }
 
         public List<string> TeamMembers { get; set; }
     }
+
+
+    /// <inheritdoc />
+    public class VmTeamResult : OperationResult<VmTeam>
+    { }
 }

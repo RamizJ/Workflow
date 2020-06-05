@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Projects\Workflow\WorkflowService\WorkflowService\WorkflowService.xml</DocumentationFile>
+    <DocumentationFile>C:\Projects\GIRNGM\Workflow\WorkflowService\WorkflowService\WorkflowService.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -47,6 +47,10 @@
     <ProjectReference Include="..\Workflow.DAL\Workflow.DAL.csproj" />
     <ProjectReference Include="..\Workflow.Share\Workflow.Share.csproj" />
     <ProjectReference Include="..\Workflow.VM\Workflow.VM.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="WorkflowService.xml" />
   </ItemGroup>
 
   <ItemGroup>

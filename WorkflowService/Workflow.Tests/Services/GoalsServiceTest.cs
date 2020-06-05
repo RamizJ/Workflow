@@ -39,7 +39,7 @@ namespace Workflow.Tests.Services
         [TestCase(0, 0, 1)]
         [TestCase(2, 0, null)]
         [TestCase(1, 1, 2)]
-        public async Task GetScopeTest(int userIndex, int scopeIndex, int? expectedScopeId)
+        public async Task GetTest(int userIndex, int scopeIndex, int? expectedScopeId)
         {
             //Arrange
 

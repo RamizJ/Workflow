@@ -10,37 +10,37 @@ using WorkflowService.Services.Abstract;
 namespace WorkflowService.Controllers
 {
     /// <summary>
-    /// API-методы работы с множествами задач
+    /// API-методы работы с проектами
     /// </summary>
     [ApiController, Route("api/[controller]/[action]")]
-    public class ScopesController : ControllerBase
+    public class ProjectsController : ControllerBase
     {
         /// <summary>
         /// Конструктор
         /// </summary>
         /// <param name="userManager"></param>
-        /// <param name="scopesService"></param>
-        public ScopesController(UserManager<ApplicationUser> userManager, IScopesService scopesService)
+        /// <param name="projectsService"></param>
+        public ProjectsController(UserManager<ApplicationUser> userManager, IProjectsService projectsService)
         {
             _userManager = userManager;
-            _scopesService = scopesService;
+            _projectsService = projectsService;
         }
 
 
         /// <summary>
-        /// Получение множества задач по идентификатору
+        /// Получение проекта по идентификатору
         /// </summary>
-        /// <param name="id">Идентификатор области задач</param>
-        /// <returns>Множество задач. Только если доступно пользователю</returns>
+        /// <param name="id">Идентификатор проекта</param>
+        /// <returns>Проект. Только если доступен пользователю</returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<VmScope>> Get(int id)
+        public async Task<ActionResult<VmProject>> Get(int id)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            return Ok(await _scopesService.Get(currentUser, id));
+            return Ok(await _projectsService.Get(currentUser, id));
         }
 
         /// <summary>
-        /// Постраничная загрузка множеств задач с фильтрацией и сортировкой
+        /// Постраничная загрузка проектов с фильтрацией и сортировкой
         /// </summary>
         /// <param name="pageNumber">Номер страницы</param>
         /// <param name="pageSize">Размер страницы</param>
@@ -48,51 +48,51 @@ namespace WorkflowService.Controllers
         /// <param name="filterFields">Конкретные поля фильтрации</param>
         /// <param name="sortFields">Поля сортировки</param>
         /// <param name="withRemoved">Вместе с удаленными</param>
-        /// <returns>Коллекция множеств задач</returns>
+        /// <returns>Коллекция проектов</returns>
         [HttpGet]
-        public async Task<IEnumerable<VmScope>> GetPage([FromQuery] int pageNumber, [FromQuery] int pageSize,
+        public async Task<IEnumerable<VmProject>> GetPage([FromQuery] int pageNumber, [FromQuery] int pageSize,
             [FromQuery] string filter = null, [FromQuery] FieldFilter[] filterFields = null, 
             [FromQuery] FieldSort[] sortFields = null, [FromQuery]bool withRemoved = false)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            return await _scopesService.GetPage(currentUser, pageNumber, pageSize,
+            return await _projectsService.GetPage(currentUser, pageNumber, pageSize,
                 filter, filterFields, sortFields, withRemoved);
         }
 
         /// <summary>
-        /// Получение множеств задач по идентификаторам
+        /// Получение проектов по идентификаторам
         /// </summary>
-        /// <param name="ids">Идентификаторы множеств</param>
-        /// <returns>Коллекция множеств</returns>
+        /// <param name="ids">Идентификаторы проектов</param>
+        /// <returns>Коллекция проектов</returns>
         [HttpGet]
-        public async Task<IEnumerable<VmScope>> GetRange(int[] ids)
+        public async Task<IEnumerable<VmProject>> GetRange(int[] ids)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            return await _scopesService.GetRange(currentUser, ids);
+            return await _projectsService.GetRange(currentUser, ids);
         }
 
         /// <summary>
-        /// Создание множества задач
+        /// Создание проекта
         /// </summary>
-        /// <param name="scope">Параметры множества</param>
-        /// <returns>Созданное множество</returns>
+        /// <param name="project">Проект</param>
+        /// <returns>Результат выполнения операции</returns>
         [HttpPost]
-        public async Task<ActionResult<VmScope>> Create([FromBody] VmScope scope)
+        public async Task<ActionResult<VmProjectResult>> Create([FromBody] VmProject project)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            return await _scopesService.Create(currentUser, scope);
+            return await _projectsService.Create(currentUser, project);
         }
 
         /// <summary>
-        /// Обновление множества задач
+        /// Обновление проектов
         /// </summary>
-        /// <param name="scope">Updated scope</param>
+        /// <param name="project">Updated project</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Update([FromBody]VmScope scope)
+        public async Task<ActionResult<VmProjectResult>> Update([FromBody]VmProject project)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var updatedScope = await _scopesService.Update(currentUser, scope);
+            var updatedScope = await _projectsService.Update(currentUser, project);
             if (updatedScope == null)
                 return NotFound();
 
@@ -100,15 +100,15 @@ namespace WorkflowService.Controllers
         }
 
         /// <summary>
-        /// Удаление множества задач
+        /// Удаление проектов
         /// </summary>
-        /// <param name="id">Идентификатор множества</param>
-        /// <returns>Удаленное множество</returns>
+        /// <param name="id">Идентификатор проекта</param>
+        /// <returns>Результат выполнения операции</returns>
         [HttpDelete("{id}")]
-        public async Task<ActionResult<VmScope>> Delete(int id)
+        public async Task<ActionResult<VmProjectResult>> Delete(int id)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var deletedScope = await _scopesService.Delete(currentUser, id);
+            var deletedScope = await _projectsService.Delete(currentUser, id);
             if (deletedScope == null)
                 return NotFound();
 
@@ -117,6 +117,6 @@ namespace WorkflowService.Controllers
 
 
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IScopesService _scopesService;
+        private readonly IProjectsService _projectsService;
     }
 }

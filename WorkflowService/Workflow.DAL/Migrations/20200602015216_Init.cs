@@ -478,7 +478,7 @@ namespace Workflow.DAL.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Goals_ScopeId",
                 table: "Goals",
-                column: "ScopeId");
+                column: "ProjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Groups_ParentGroupId",
