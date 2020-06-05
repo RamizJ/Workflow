@@ -77,14 +77,32 @@ export default {
     ...mapActions({
       logout: 'auth/logout',
       updateUser: 'users/updateUser',
+      updatePassword: 'auth/updatePassword',
       fetchMe: 'auth/fetchMe'
     }),
     async updateProfile() {
       try {
+        if (this.form.password)
+          await this.setPassword();
         await this.updateUser(this.form);
         await this.fetchMe();
       } catch (e) {
-        this.$message.error('Не удалось данные профиля');
+        this.$message.error('Не удалось обновить данные профиля');
+        console.error(e);
+      }
+    },
+    async setPassword() {
+      const newPassword = this.form.password;
+      const answer = await this.$prompt('Введите текущий пароль', 'Смена пароля', {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Закрыть'
+      });
+      const currentPassword = answer.value;
+      try {
+        await this.updatePassword(currentPassword, newPassword);
+        this.$message.success('Пароль успешно изменен');
+      } catch (e) {
+        this.$message.error('Во время смены пароля произошла ошибка')
       }
     },
     async exit() {

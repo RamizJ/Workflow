@@ -51,6 +51,9 @@ export default {
       const user = response.data.user;
       commit('setUser', user);
     },
+    async updatePassword({ commit }, currentPassword, newPassword) {
+      const response = await authentication.changePassword(currentPassword, newPassword);
+    },
     async hasRole({ commit }, role) {
       console.log(role);
     }
