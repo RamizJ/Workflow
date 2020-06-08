@@ -29,6 +29,8 @@
         ref="table"
         height="100%"
         v-loading="loading"
+        @row-contextmenu="onItemRightClick"
+        @row-dblclick="onItemDoubleClick"
         highlight-current-row)
         el-table-column(type="selection" width="55")
         el-table-column(prop="description" label="Заголовок")
@@ -38,6 +40,12 @@
         infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
           div(slot="no-more")
           div(slot="no-results")
+
+      vue-context(ref="contextMenu")
+        template(slot-scope="child")
+          li(@click.prevent="onItemEdit($event, child.data.row)") Редактировать
+          li Завершить
+          li Удалить
 
     task-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false")
 
@@ -122,6 +130,17 @@ export default {
       } catch (e) {
         this.$message.error('Ошибка получения данных');
       }
+    },
+    onItemRightClick(row, column, event) {
+      this.$refs.contextMenu.open(event, { row, column });
+      event.preventDefault();
+    },
+    onItemDoubleClick(row, column, event) {
+      this.onItemEdit(event, row);
+    },
+    onItemEdit(event, row) {
+      this.selectedItemId = row.id;
+      this.dialogOpened = true;
     }
   }
 };

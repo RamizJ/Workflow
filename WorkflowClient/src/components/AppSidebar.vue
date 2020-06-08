@@ -128,8 +128,10 @@ export default {
     margin-bottom: 5px;
   }
   .profile__subtitle {
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
   }
 }
 </style>

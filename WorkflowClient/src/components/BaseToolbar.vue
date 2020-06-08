@@ -29,10 +29,11 @@ export default {
     width: 20%;
   }
   .title {
+    cursor: default;
     display: flex;
     align-items: baseline;
     font-size: 28px;
-    font-weight: 700;
+    font-weight: 800;
     .subtitle {
       margin-left: 12px;
       font-size: 13px;

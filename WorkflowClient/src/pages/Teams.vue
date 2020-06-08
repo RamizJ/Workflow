@@ -20,6 +20,8 @@
         ref="table"
         height="auto"
         v-loading="loading"
+        @row-contextmenu="onItemRightClick"
+        @row-dblclick="onItemDoubleClick"
         highlight-current-row
         stripe)
         el-table-column(type="selection" width="55")
@@ -29,6 +31,12 @@
         infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="400" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
           div(slot="no-more")
           div(slot="no-results")
+
+      vue-context(ref="contextMenu")
+        template(slot-scope="child")
+          li(@click.prevent="onItemEdit($event, child.data.row)") Редактировать
+          li Добавить участника
+          li Удалить
 
     team-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false")
 
@@ -119,6 +127,17 @@ export default {
       } catch (e) {
         this.$message.error('Ошибка получения данных');
       }
+    },
+    onItemRightClick(row, column, event) {
+      this.$refs.contextMenu.open(event, { row, column });
+      event.preventDefault();
+    },
+    onItemDoubleClick(row, column, event) {
+      this.onItemEdit(event, row);
+    },
+    onItemEdit(event, row) {
+      this.selectedItemId = row.id;
+      this.dialogOpened = true;
     }
   }
 }
