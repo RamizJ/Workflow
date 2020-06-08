@@ -2,18 +2,18 @@
   base-dialog(v-if="visible" @close="$emit('close')")
     div(slot="title") Проект
     div(slot="body")
-      el-form(:model="form" ref="form")
+      el-form(:model="form" :rules="rules" ref="form")
         el-row(:gutter="20")
           el-col(:span="24")
-            el-form-item
+            el-form-item(prop="name")
               el-input(v-model="form.name" size="medium" placeholder="Новый проект")
         el-row(:gutter="20")
           el-col(:span="24")
-            el-form-item
+            el-form-item(prop="description")
               el-input(v-model="form.description" size="medium" type="textarea" placeholder="Заметки")
         el-row(:gutter="20")
           el-col(:span="24")
-            el-form-item
+            el-form-item(prop="tags")
               el-select(
                 v-model="form.tags"
                 size="medium"
@@ -21,15 +21,15 @@
                 multiple filterable allow-create default-first-option)
         el-row(:gutter="20")
           el-col(:span="8")
-            el-form-item
+            el-form-item(prop="ownerId")
               el-select(v-model="form.ownerId" size="medium" placeholder="Руководитель")
                 el-option(v-for="item in users" :key="item.id" :label="item.name" :value="item.name")
           el-col(:span="8")
-            el-form-item
+            el-form-item(prop="teamId")
               el-select(v-model="form.teamId" size="medium" placeholder="Команда")
                 el-option(v-for="item in teams" :key="item.id" :label="item.name" :value="item.name")
           el-col(:span="8")
-            el-form-item
+            el-form-item(prop="groupId")
               el-select(v-model="form.groupId" size="medium" placeholder="Область")
                 el-option(v-for="item in scopes" :key="item.id" :label="item.name" :value="item.name")
     div(slot="footer")
@@ -78,6 +78,11 @@ export default {
         { id: 1, name: "Алексей" },
         { id: 2, name: "Андрей" }
       ],
+      rules: {
+        name: [ { required: true, message: 'Введите название проекта', trigger: 'blur', } ],
+        ownerId: [ { required: true, message: 'Укажите руководителя', trigger: 'blur', } ],
+        groupId: [ { required: true, message: 'Укажите область', trigger: 'blur', } ],
+      },
     };
   },
   async mounted() {

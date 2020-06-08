@@ -5,20 +5,20 @@
       el-form(:model="form" :rules="rules" ref="form")
         el-row(:gutter="20")
           el-col(:span="24")
-            el-form-item
-              el-input(v-model="form.title" size="medium" placeholder="Новая команда")
+            el-form-item(prop="name")
+              el-input(v-model="form.name" size="medium" placeholder="Новая команда")
         el-row(:gutter="20")
           el-col(:span="24")
-            el-form-item
+            el-form-item(prop="description")
               el-input(v-model="form.description" size="medium" type="textarea" placeholder="Заметки")
         el-row(:gutter="20")
           el-col(:span="16")
-            el-form-item
+            el-form-item(prop="teamMembers")
               el-select(v-model="form.teamMembers" size="medium" placeholder="Участники" multiple)
                 el-option(v-for="item in users" :key="item.value" :label="item.label" :value="item.value")
           el-col(:span="8")
-            el-form-item
-              el-select(v-model="form.scope" size="medium" placeholder="Проект")
+            el-form-item(prop="scopeId")
+              el-select(v-model="form.scopeId" size="medium" placeholder="Проект")
                 el-option(v-for="item in scopes" :key="item.value" :label="item.label" :value="item.value")
     div(slot="footer")
       el-button(size="medium" type="primary" @click="submit") Создать
@@ -46,7 +46,7 @@ export default {
         teamMembers: [],
         responsible: null,
         team: null,
-        scope: null,
+        scopeId: null,
         dateStart: null,
         dateEnd: null
       },
@@ -65,20 +65,7 @@ export default {
         { value: 2, label: "Андрей" }
       ],
       rules: {
-        title: [
-          {
-            required: true,
-            message: 'Пожалуйста, укажите название',
-            trigger: 'blur',
-          },
-        ],
-        responsible: [
-          {
-            required: true,
-            message: 'Пожалуйста, укажите ответственного',
-            trigger: 'blur',
-          },
-        ],
+        name: [ { required: true, message: 'Введите название команды', trigger: 'blur', } ],
       },
     };
   },
