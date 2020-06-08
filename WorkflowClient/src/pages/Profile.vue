@@ -99,7 +99,7 @@ export default {
       });
       const currentPassword = answer.value;
       try {
-        await this.updatePassword(currentPassword, newPassword);
+        await this.updatePassword({ currentPassword, newPassword });
         this.$message.success('Пароль успешно изменен');
       } catch (e) {
         this.$message.error('Во время смены пароля произошла ошибка')
