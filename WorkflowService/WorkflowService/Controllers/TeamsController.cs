@@ -6,7 +6,6 @@ using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
 using Workflow.Services.Common;
 using Workflow.VM.ViewModels;
-using WorkflowService.Extensions;
 
 namespace WorkflowService.Controllers
 {
@@ -108,7 +107,7 @@ namespace WorkflowService.Controllers
         {
             var currentUser = await _userManager.GetUserAsync(User);
             var result = await _teamsService.Create(currentUser, team);
-            return result.ToActionResult();
+            return Ok(result);
         }
 
         /// <summary>
@@ -130,11 +129,11 @@ namespace WorkflowService.Controllers
         /// <param name="team">Команда</param>
         /// <returns>Результат выполнения операции</returns>
         [HttpPut]
-        public async Task<ActionResult<VmTeam>> Update([FromBody]VmTeam team)
+        public async Task<IActionResult> Update([FromBody]VmTeam team)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var result = await _teamsService.Update(currentUser, team);
-            return result.ToActionResult();
+            await _teamsService.Update(currentUser, team);
+            return NoContent();
         }
 
         /// <summary>
@@ -147,7 +146,7 @@ namespace WorkflowService.Controllers
         {
             var currentUser = await _userManager.GetUserAsync(User);
             var result = await _teamsService.Delete(currentUser, id);
-            return result.ToActionResult();
+            return Ok(result);
         }
 
         /// <summary>
@@ -159,8 +158,8 @@ namespace WorkflowService.Controllers
         [HttpDelete("{teamId}/{userId}")]
         public async Task<IActionResult> RemoveUser(int teamId, string userId)
         {
-            var result = await _teamUsersService.Remove(teamId, userId);
-            return result.ToIActionResult();
+            await _teamUsersService.Remove(teamId, userId);
+            return NoContent();
         }
 
 

@@ -53,22 +53,23 @@ namespace Workflow.Services.Abstract
         /// Создание пользователя
         /// </summary>
         /// <param name="user">Новый пользователь</param>
-        /// <returns>Результат операции создания пользователя</returns>
-        Task<VmUserResult> Create(VmUser user);
+        /// <param name="password">Пароль должен содержать не менее 6 символов, включая цифры</param>
+        /// <returns></returns>
+        Task<VmUser> Create(VmUser user, string password);
 
         /// <summary>
         /// Обновление данных пользователя
         /// </summary>
         /// <param name="user">Параметры пользователя</param>
         /// <returns></returns>
-        Task<VmUserResult> Update(VmUser user);
+        Task Update(VmUser user);
 
         /// <summary>
         /// Удаление пользователя
         /// </summary>
         /// <param name="userId">Идентификатор пользователя</param>
         /// <returns></returns>
-        Task<VmUserResult> Delete(string userId);
+        Task<VmUser> Delete(string userId);
 
 
         /// <summary>
@@ -77,14 +78,14 @@ namespace Workflow.Services.Abstract
         /// <param name="currentUser">Текущий пользователь</param>
         /// <param name="currentPassword">Старый пароль</param>
         /// <param name="newPassword">Новый пароль</param>
-        Task<VmUserResult> ChangePassword(ApplicationUser currentUser, string currentPassword, string newPassword);
+        Task ChangePassword(ApplicationUser currentUser, string currentPassword, string newPassword);
 
         /// <summary>
         /// Сброс пароля пользователя 
         /// </summary>
         /// <param name="id">Идентификатор пользователя</param>
-        /// <param name="newPassword">Новый пароль</param>
+        /// <param name="newPassword">Новый пароль. Пароль должен содержать не менее 6 символов, включая цифры</param>
         /// <returns></returns>
-        Task<VmUserResult> ResetPassword(string id, string newPassword);
+        Task ResetPassword(string id, string newPassword);
     }
 }

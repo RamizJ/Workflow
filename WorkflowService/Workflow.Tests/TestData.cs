@@ -75,24 +75,22 @@ namespace Workflow.Tests
                 .Build().ToList();
 
             Goals = Builder<Goal>.CreateListOfSize(10)
-                .TheFirst(5).WithFactory(i => new Goal
-                {
-                    OwnerId = Users[0].Id,
-                    PerformerId = Users[0].Id,
-                    Title = $"Goal {i}",
-                    ProjectId = Projects[0].Id
-                })
+                .All()
+                .With(x => x.ProjectId = Projects.First().Id)
+                .TheFirst(6)
+                .With(x => x.OwnerId = Users[0].Id)
+                .With(x => x.PerformerId = Users[0].Id)
                 .With(x => x.AttachmentId = null)
                 .With(x => x.ParentGoalId = null)
-                .TheNext(5).WithFactory(i => new Goal
-                {
-                    OwnerId = Users[1].Id,
-                    PerformerId = Users[1].Id,
-                    Title = $"Goal {i}",
-                    ProjectId = Projects[1].Id
-                })
+                .With(x => x.Title = $"Goal1{x.Id}")
+                .TheNext(4)
+                .With(x => x.OwnerId = Users[1].Id)
+                .With(x => x.PerformerId = Users[1].Id)
                 .With(x => x.AttachmentId = null)
                 .With(x => x.ParentGoalId = null)
+                .With(x => x.Title = $"Goal2{x.Id}")
+                .TheFirst(9).With(x => x.IsRemoved = false)
+                .TheNext(1).With(x => x.IsRemoved = true)
                 .Build().ToList();
 
             foreach (var user in Users)

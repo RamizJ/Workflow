@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Workflow.DAL;
 using Workflow.DAL.Models;
@@ -20,28 +22,32 @@ namespace Workflow.Tests.Services
         public void Setup()
         {
             _dbConnection = ContextHelper.OpenSqliteInMemoryConnection();
-            using var dataContext = ContextHelper.CreateContext(_dbConnection, false);
-            var userManager = ContextHelper.CreateUserManager(dataContext);
+            using var serviceProvider = ContextHelper.Initialize(_dbConnection, false);
+            var dataContext = serviceProvider.GetRequiredService<DataContext>();
+            var userManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
 
+            dataContext.Database.EnsureCreated();
             _testData = new TestData();
             _testData.Initialize(dataContext, userManager);
 
-            _dataContext = ContextHelper.CreateContext(_dbConnection, true);
-            _service = new ProjectsService(_dataContext);
-            _vmConverter = new VmProjectConverter();
+            _serviceProvider = ContextHelper.Initialize(_dbConnection, true);
+            _dataContext = _serviceProvider.GetService<DataContext>();
+            _userManager = _serviceProvider.GetService<UserManager<ApplicationUser>>();
+            _service = new ProjectsService(_dataContext, _userManager);
             _currentUser = _testData.Users.First();
+            _vmConverter = new VmProjectConverter();
         }
 
         [TearDown]
         public void TearDown()
         {
             _dataContext.Database.EnsureDeleted();
-            _dataContext.Dispose();
+            _serviceProvider.Dispose();
             _dbConnection.Close();
         }
 
         [TestCase(0, 0, 1)]
-        [TestCase(2, 0, null)]
+        [TestCase(2, 0, 1)]
         [TestCase(1, 1, 2)]
         public async Task GetTest(int userIndex, int scopeIndex, int? expectedScopeId)
         {
@@ -182,7 +188,7 @@ namespace Workflow.Tests.Services
         [TestCase(null)]
         [TestCase("")]
         [TestCase("  ")]
-        public async Task CreateForNullInvalidNameTest(string name)
+        public void CreateForNullInvalidNameTest(string name)
         {
             //Arrange
             var vmScope = new VmProject
@@ -195,10 +201,8 @@ namespace Workflow.Tests.Services
                 IsRemoved = false,
             };
 
-            var result = await _service.Create(_testData.Users.First(), vmScope);
-
             //Assert
-            Assert.IsFalse(result.Succeeded);
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Create(_testData.Users.First(), vmScope));
         }
 
         [TestCase(0)]
@@ -223,36 +227,48 @@ namespace Workflow.Tests.Services
             var result = await _service.Create(currentUser, vmScope);
 
             //Assert
-            Assert.IsTrue(result.Succeeded);
-            Assert.AreEqual(_testData.Projects.Count + 1, result.Data.Id);
-            Assert.AreEqual(currentUser.Id, result.Data.OwnerId);
-            Assert.AreEqual(groupId, result.Data.GroupId);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(_testData.Projects.Count + 1, result.Id);
+            Assert.AreEqual(currentUser.Id, result.OwnerId);
+            Assert.AreEqual(groupId, result.GroupId);
         }
 
-        [TestCase(1, null, "", false)]
-        [TestCase(1, "", "", false)]
-        [TestCase(1, "  ", "", false)]
-        [TestCase(1, "New project", "New project description", true)]
-        public async Task UpdateTest(int projectId, string name, string description, bool isSucceeded)
+        [Test]
+        public async Task UpdateTest()
         {
             //Arrange
             var project = _testData.Projects.First();
-            project.Id = projectId;
-            project.Name = name;
-            project.Description = description;
+            project.Id = 1;
+            project.Name = "New project";
+            project.Description = "New project description";
             var vmProject = _vmConverter.ToViewModel(project);
 
             //Act
-            var result = await _service.Update(_currentUser, vmProject);
+            await _service.Update(_currentUser, vmProject);
+            var result = _dataContext.Projects.First(x => x.Id == 1);
 
             //Assert
-            Assert.AreEqual(isSucceeded, result.Succeeded);
-            if (isSucceeded)
-            {
-                Assert.AreEqual(projectId, result.Data.Id);
-                Assert.AreEqual(name, result.Data.Name);
-                Assert.AreEqual(description, result.Data.Description);
-            }
+            Assert.IsNotNull(result);
+            Assert.AreEqual(project.Id, result.Id);
+            Assert.AreEqual(project.Name, result.Name);
+            Assert.AreEqual(project.Description, result.Description);
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase("  ")]
+        public void UpdateInvalidNameTest(string name)
+        {
+            //Arrange
+            var project = _testData.Projects.First();
+            project.Id = 1;
+            project.Name = name;
+            project.Description = "New project description";
+            var vmProject = _vmConverter.ToViewModel(project);
+
+            //Assert
+            Assert.ThrowsAsync<InvalidOperationException>(async () => 
+                await _service.Update(_currentUser, vmProject));
         }
 
 
@@ -262,5 +278,7 @@ namespace Workflow.Tests.Services
         private IProjectsService _service;
         private VmProjectConverter _vmConverter;
         private ApplicationUser _currentUser;
+        private ServiceProvider _serviceProvider;
+        private UserManager<ApplicationUser> _userManager;
     }
 }

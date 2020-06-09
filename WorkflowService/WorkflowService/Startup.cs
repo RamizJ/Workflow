@@ -106,6 +106,7 @@ namespace WorkflowService
                 options.EnableDetailedErrors = true;
             });
 
+            //Services
             services.AddTransient<IDefaultDataInitializationService, DefaultDataInitializationService>();
             services.AddTransient<IAuthenticationService, AuthenticationService>();
             services.AddTransient<IProjectsService, ProjectsService>();

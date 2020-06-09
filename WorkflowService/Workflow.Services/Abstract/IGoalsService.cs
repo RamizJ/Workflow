@@ -24,7 +24,7 @@ namespace Workflow.Services.Abstract
         /// 
         /// </summary>
         /// <param name="currentUser"></param>
-        /// <param name="scopeId"></param>
+        /// <param name="projectId"></param>
         /// <param name="pageNumber"></param>
         /// <param name="pageSize"></param>
         /// <param name="filter"></param>
@@ -32,7 +32,7 @@ namespace Workflow.Services.Abstract
         /// <param name="sortFields"></param>
         /// <param name="withRemoved"></param>
         /// <returns></returns>
-        Task<IEnumerable<VmGoal>> GetPage(ApplicationUser currentUser, int scopeId,
+        Task<IEnumerable<VmGoal>> GetPage(ApplicationUser currentUser, int projectId,
             int pageNumber, int pageSize,
             string filter, FieldFilter[] filterFields, FieldSort[] sortFields, bool withRemoved = false);
 
@@ -58,7 +58,7 @@ namespace Workflow.Services.Abstract
         /// <param name="user"></param>
         /// <param name="goal"></param>
         /// <returns></returns>
-        Task<VmGoal> Update(ApplicationUser user, VmGoal goal);
+        Task Update(ApplicationUser user, VmGoal goal);
 
         /// <summary>
         /// 

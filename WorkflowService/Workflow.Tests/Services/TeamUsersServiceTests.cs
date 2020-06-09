@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
@@ -108,26 +109,17 @@ namespace Workflow.Tests.Services
             var user = _testData.Users.First();
 
             //Act
-            var result = await _service.Remove(team.Id, user.Id);
+            await _service.Remove(team.Id, user.Id);
 
-            //Assert
-            Assert.IsTrue(result.Succeeded);
+            //Asserts
             Assert.AreEqual(expectedCount, _dataContext.TeamUsers.Count(tu => tu.TeamId == team.Id));
         }
 
 
         [Test]
-        public async Task RemoveNotExistedTest()
+        public void RemoveNotExistedTest()
         {
-            //Arrange
-            var team = _testData.Teams.First();
-            var user = _testData.Users.Last();
-
-            //Act
-            var result = await _service.Remove(team.Id, user.Id);
-
-            //Assert
-            Assert.IsFalse(result.Succeeded);
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Remove(0, string.Empty));
         }
     }
 }

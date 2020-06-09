@@ -214,7 +214,7 @@ namespace Workflow.Tests.Services
         [Test]
         public void CreateForNullInputTest()
         {
-            Assert.ThrowsAsync<ArgumentNullException>(async () => await _service.Create(null));
+            Assert.ThrowsAsync<ArgumentNullException>(async () => await _service.Create(null, "Aa010110!"));
         }
 
         [Test]
@@ -235,14 +235,14 @@ namespace Workflow.Tests.Services
                 .Build();
 
             var vmUser = _vmConverter.ToViewModel(user);
-            vmUser.Password = "Aa010110!";
+            string password = "Aa010110!";
 
 
             //Act
-            var result = await _service.Create(vmUser);
+            var result = await _service.Create(vmUser, password);
 
             //Assert
-            Assert.IsTrue(result.Succeeded);
+            Assert.IsNotNull(result);
         }
 
         [Test]
@@ -265,14 +265,13 @@ namespace Workflow.Tests.Services
             Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Update(vmUser));
         }
 
-        [TestCase("UserNameNew1", "EmailNew1@email", "PhoneNew1", "LastNameNew1", "FirstNameNew1", "MiddleNameNew1", 1, "Pos1")]
-        [TestCase("UserNameNew2", "EmailNew2@email", "PhoneNew2", "LastNameNew2", "FirstNameNew2", "MiddleNameNew2", 2, "Pos2")]
+        [TestCase("UserNameNew1", "EmailNew1@email", "PhoneNew1", "LastNameNew1", "FirstNameNew1", "MiddleNameNew1", null, "Pos1")]
+        [TestCase("UserNameNew2", "EmailNew2@email", "PhoneNew2", "LastNameNew2", "FirstNameNew2", "MiddleNameNew2", 2, null)]
         public async Task UpdateTest(string userName, string email, string phone,
             string lastName, string firstName, string middleName, 
-            int positionIndex, string positionCustom)
+            int? posId, string positionCustom)
         {
             //Arrange
-            int posId = _testData.Positions[positionIndex].Id;
             var user = _testData.Users.First();
             user.UserName = userName;
             user.Email = email;
@@ -285,18 +284,18 @@ namespace Workflow.Tests.Services
             var vmUser = _vmConverter.ToViewModel(user);
 
             //Act
-            var result = await _service.Update(vmUser);
+            await _service.Update(vmUser);
+            var expectedUser = _dataContext.Users.First();
 
             //Assert
-            Assert.IsTrue(result.Succeeded);
-            Assert.AreEqual(userName, result.Data.UserName);
-            Assert.AreEqual(email, result.Data.Email);
-            Assert.AreEqual(phone, result.Data.Phone);
-            Assert.AreEqual(lastName, result.Data.LastName);
-            Assert.AreEqual(firstName, result.Data.FirstName);
-            Assert.AreEqual(middleName, result.Data.MiddleName);
-            Assert.AreEqual(posId, result.Data.PositionId);
-            Assert.AreEqual(positionCustom, result.Data.Position);
+            Assert.AreEqual(userName, expectedUser.UserName);
+            Assert.AreEqual(email, expectedUser.Email);
+            Assert.AreEqual(phone, expectedUser.PhoneNumber);
+            Assert.AreEqual(lastName, expectedUser.LastName);
+            Assert.AreEqual(firstName, expectedUser.FirstName);
+            Assert.AreEqual(middleName, expectedUser.MiddleName);
+            Assert.AreEqual(posId, expectedUser.PositionId);
+            Assert.AreEqual(positionCustom, expectedUser.PositionCustom);
         }
 
         [TestCase(null)]
@@ -318,7 +317,7 @@ namespace Workflow.Tests.Services
             var result = await _service.Delete(userId);
 
             //Assert
-            Assert.IsTrue(result.Succeeded);
+            Assert.IsNotNull(result);
         }
 
 
@@ -333,10 +332,18 @@ namespace Workflow.Tests.Services
             var user = await _userManager.FindByIdAsync(_testData.Users.First().Id);
 
             //Act
-            var result = await _service.ChangePassword(user, "Aa010110!", newPassword);
+            bool result = true;
+            try
+            {
+                await _service.ChangePassword(user, "Aa010110!", newPassword);
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
 
             //Assert
-            Assert.AreEqual(isSucceed, result.Succeeded);
+            Assert.AreEqual(isSucceed, result);
         }
 
         [TestCase("", false)]
@@ -350,10 +357,18 @@ namespace Workflow.Tests.Services
             var user = _testData.Users.First();
 
             //Act
-            var result = await _service.ResetPassword(user.Id, newPassword);
+            bool result = true;
+            try
+            {
+                await _service.ResetPassword(user.Id, newPassword);
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
 
             //Assert
-            Assert.AreEqual(isSucceed, result.Succeeded);
+            Assert.AreEqual(isSucceed, result);
         }
     }
 }

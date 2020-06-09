@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
@@ -18,10 +19,12 @@ namespace Workflow.Services
         /// <summary>
         /// Конструктор
         /// </summary>
-        /// <param name="dataContext">Контекст БД</param>
-        public ProjectsService(DataContext dataContext)
+        /// <param name="dataContext"></param>
+        /// <param name="userManager"></param>
+        public ProjectsService(DataContext dataContext, UserManager<ApplicationUser> userManager)
         {
             _dataContext = dataContext;
+            _userManager = userManager;
             _vmConverter = new VmProjectConverter();
         }
 
@@ -32,10 +35,10 @@ namespace Workflow.Services
             if(user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var scope = await GetQuery(user, true)
-                .FirstOrDefaultAsync(s => s.Id == id);
+            var query = await GetQuery(user, true);
+            var project = await query.FirstOrDefaultAsync(s => s.Id == id);
 
-            return _vmConverter.ToViewModel(scope);
+            return _vmConverter.ToViewModel(project);
         }
 
         
@@ -48,7 +51,7 @@ namespace Workflow.Services
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var query = GetQuery(user, withRemoved);
+            var query = await GetQuery(user, withRemoved);
             query = Filter(filter, query);
             query = FilterByFields(filterFields, query);
             query = SortByFields(sortFields, query);
@@ -65,104 +68,81 @@ namespace Workflow.Services
         {
             if (ids == null || ids.Length == 0)
                 return null;
-            
-            return await GetQuery(user, true)
-                .Where(s => ids.Any(id => s.Id == id))
+
+            var query = await GetQuery(user, true);
+            return await query.Where(s => ids.Any(id => s.Id == id))
                 .Select(s => _vmConverter.ToViewModel(s))
                 .ToArrayAsync();
         }
 
         /// <inheritdoc />
-        public async Task<VmProjectResult> Create(ApplicationUser user, VmProject project)
+        public async Task<VmProject> Create(ApplicationUser user, VmProject project)
         {
             if(project == null)
                 throw new ArgumentNullException(nameof(project));
 
-            var result = new VmProjectResult();
             if (string.IsNullOrWhiteSpace(project.Name))
-            {
-                result.AddError("Имя проекта не должно быть пустым");
-            }
-            else
-            {
-                var model = _vmConverter.ToModel(project);
-                model.Id = 0;
-                model.OwnerId = user.Id;
+                throw new InvalidOperationException("Cannot create project. The name cannot be empty");
 
-                await _dataContext.Projects.AddAsync(model);
-                await _dataContext.SaveChangesAsync();
+            var model = _vmConverter.ToModel(project);
+            model.Id = 0;
+            model.OwnerId = user.Id;
 
-                result.Data = _vmConverter.ToViewModel(model);
-            }
+            await _dataContext.Projects.AddAsync(model);
+            await _dataContext.SaveChangesAsync();
 
-            return result;
+            return _vmConverter.ToViewModel(model);
         }
 
         /// <inheritdoc />
-        public async Task<VmProjectResult> Update(ApplicationUser user, VmProject project)
+        public async Task Update(ApplicationUser user, VmProject project)
         {
             if (project == null)
-                return null;
+                throw new ArgumentNullException(nameof(project));
 
-            var result = new VmProjectResult();
             if (string.IsNullOrWhiteSpace(project.Name))
+                throw new InvalidOperationException("Cannot create project. The name cannot be empty");
+
+            var model = _vmConverter.ToModel(project);
+            try
             {
-                result.AddError("Имя проекта не должно быть пустым");
+                _dataContext.Entry(model).State = EntityState.Modified;
+                await _dataContext.SaveChangesAsync();
             }
-            else
+            catch (DbUpdateConcurrencyException)
             {
-                var model = _vmConverter.ToModel(project);
-
-                try
-                {
-                    _dataContext.Entry(model).State = EntityState.Modified;
-                    await _dataContext.SaveChangesAsync();
-                    result.Data = _vmConverter.ToViewModel(model);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    bool isExist = await _dataContext.Teams.AnyAsync(t => t.Id == project.Id);
-                    result.AddError(isExist
-                        ? "Не удалось обновить проект"
-                        : "Не удалось обновить проект. Проект не найден");
-                }
+                bool isExist = await _dataContext.Teams.AnyAsync(t => t.Id == project.Id);
+                throw new InvalidOperationException(isExist 
+                    ? "Cannot update project"
+                    : "Cannot update project. Project not found");
             }
-
-            
-
-            return result;
         }
 
         /// <inheritdoc />
-        public async Task<VmProjectResult> Delete(ApplicationUser user, int scopeId)
+        public async Task<VmProject> Delete(ApplicationUser user, int projectId)
         {
-            var model = await GetQuery(user, true)
-                .FirstOrDefaultAsync(s => s.Id == scopeId);
-            var result = new VmProjectResult();
-            if (model != null)
-            {
-                model.IsRemoved = true;
-                _dataContext.Projects.Update(model);
-                await _dataContext.SaveChangesAsync();
-                result.Data = _vmConverter.ToViewModel(model);
-            }
-            else
-            {
-                result.AddError("Не удалось удалить проект. Проект не найден");
-            }
+            var query = await GetQuery(user, true);
+            var model = await query.FirstOrDefaultAsync(s => s.Id == projectId);
+            if(model == null)
+                throw new InvalidOperationException("");
 
-            return null;
+            model.IsRemoved = true;
+            _dataContext.Projects.Update(model);
+            await _dataContext.SaveChangesAsync();
+            return _vmConverter.ToViewModel(model);
         }
 
 
-        private IQueryable<Project> GetQuery(ApplicationUser user, bool withRemoved)
+        private async Task<IQueryable<Project>> GetQuery(ApplicationUser currentUser, bool withRemoved)
         {
+            bool isAdmin = await _userManager.IsInRoleAsync(currentUser, RoleNames.ADMINISTRATOR_ROLE);
             var query = _dataContext.Projects
                 .Include(s => s.Owner)
                 .Include(s => s.Team)
                 .Include(s => s.Group)
-                .Where(s => s.OwnerId == user.Id
-                            || s.Team.TeamUsers.Any(tu => tu.UserId == user.Id));
+                .Where(s => isAdmin
+                            || s.OwnerId == currentUser.Id
+                            || s.Team.TeamUsers.Any(tu => tu.UserId == currentUser.Id));
 
             if (!withRemoved)
                 query = query.Where(s => s.IsRemoved == false);
@@ -346,6 +326,7 @@ namespace Workflow.Services
 
 
         private readonly DataContext _dataContext;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly VmProjectConverter _vmConverter;
     }
 }

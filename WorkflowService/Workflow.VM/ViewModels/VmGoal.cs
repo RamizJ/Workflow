@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Workflow.DAL.Models;
+using Workflow.VM.Common;
 
 namespace Workflow.VM.ViewModels
 {
@@ -31,4 +32,7 @@ namespace Workflow.VM.ViewModels
         public int? AttachmentId { get; set; }
         public bool IsRemoved { get; set; }
     }
+
+    public class VmGoalResult : OperationResult<VmGoal>
+    { }
 }

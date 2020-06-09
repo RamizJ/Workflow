@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
@@ -19,9 +20,12 @@ namespace Workflow.Services
         /// Конструктор
         /// </summary>
         /// <param name="dataContext"></param>
-        public GoalsService(DataContext dataContext)
+        /// <param name="userManager"></param>
+        public GoalsService(DataContext dataContext, 
+            UserManager<ApplicationUser> userManager)
         {
             _dataContext = dataContext;
+            _userManager = userManager;
             _vmConverter = new VmGoalConverter();
         }
 
@@ -32,21 +36,21 @@ namespace Workflow.Services
             if (currentUser == null)
                 throw new ArgumentNullException(nameof(currentUser));
 
-            var scope = await GetQuery(true)
-                .FirstOrDefaultAsync(s => s.Id == id);
-
-            return _vmConverter.ToViewModel(scope);
+            var query = await GetQuery(currentUser, true);
+            var goal = await query.FirstOrDefaultAsync(s => s.Id == id);
+            return _vmConverter.ToViewModel(goal);
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<VmGoal>> GetPage(ApplicationUser currentUser, int scopeId,
-            int pageNumber, int pageSize, string filter, FieldFilter[] filterFields,
-            FieldSort[] sortFields, bool withRemoved = false)
+        public async Task<IEnumerable<VmGoal>> GetPage(ApplicationUser currentUser, 
+            int projectId, int pageNumber, int pageSize, string filter, 
+            FieldFilter[] filterFields, FieldSort[] sortFields, bool withRemoved = false)
         {
             if (currentUser == null)
                 throw new ArgumentNullException(nameof(currentUser));
 
-            var query = GetQuery(withRemoved).Where(x => x.ProjectId == scopeId);
+            var query = await GetQuery(currentUser, withRemoved);
+            query = query.Where(x => x.ProjectId == projectId);
             query = Filter(filter, query);
             query = FilterByFields(filterFields, query);
             query = SortByFields(sortFields, query);
@@ -64,8 +68,8 @@ namespace Workflow.Services
             if (ids == null || ids.Length == 0)
                 return null;
 
-            return await GetQuery(true)
-                .Where(x => ids.Any(id => x.Id == id))
+            var query = await GetQuery(currentUser, true);
+            return await query.Where(x => ids.Any(id => x.Id == id))
                 .Select(x => _vmConverter.ToViewModel(x))
                 .ToArrayAsync();
         }
@@ -76,7 +80,7 @@ namespace Workflow.Services
             if (goal == null)
                 throw new ArgumentNullException(nameof(goal));
 
-            if (string.IsNullOrWhiteSpace(goal.Title))
+            if(string.IsNullOrWhiteSpace(goal.Title))
                 throw new InvalidOperationException("Goal title cannot be empty");
 
             var model = _vmConverter.ToModel(goal);
@@ -90,10 +94,10 @@ namespace Workflow.Services
         }
 
         /// <inheritdoc />
-        public async Task<VmGoal> Update(ApplicationUser currentUser, VmGoal goal)
+        public async Task Update(ApplicationUser currentUser, VmGoal goal)
         {
             if (goal == null)
-                return null;
+                throw new ArgumentNullException(nameof(goal));
 
             if (string.IsNullOrWhiteSpace(goal.Title))
                 throw new InvalidOperationException("Goal title cannot be empty");
@@ -102,19 +106,18 @@ namespace Workflow.Services
 
             _dataContext.Entry(model).State = EntityState.Modified;
             await _dataContext.SaveChangesAsync();
-            return _vmConverter.ToViewModel(model);
         }
 
         /// <inheritdoc />
         public async Task<VmGoal> Delete(ApplicationUser currentUser, int goalId)
         {
-            var model = await GetQuery(true)
+            var model = await (await GetQuery(currentUser, true))
                 .FirstOrDefaultAsync(s => s.Id == goalId);
 
             if (model != null)
             {
                 model.IsRemoved = true;
-                _dataContext.Goals.Update(model);
+                _dataContext.Entry(model).State = EntityState.Deleted;
                 await _dataContext.SaveChangesAsync();
 
                 return _vmConverter.ToViewModel(model);
@@ -124,13 +127,19 @@ namespace Workflow.Services
         }
 
 
-        private IQueryable<Goal> GetQuery(bool withRemoved)
+        private async Task<IQueryable<Goal>> GetQuery(ApplicationUser currentUser, bool withRemoved)
         {
+            bool isAdmin = await _userManager.IsInRoleAsync(currentUser, RoleNames.ADMINISTRATOR_ROLE);
             var query = _dataContext.Goals.AsNoTracking()
                 .Include(x => x.Owner)
                 .Include(x => x.Observers)
                 .Include(x => x.Performer)
-                .AsQueryable();
+                //.Include(x => x.Project)
+                //.ThenInclude(x => x.Team)
+                //.ThenInclude(x => x.TeamUsers)
+                .Where(x => isAdmin
+                            || x.Project.OwnerId == currentUser.Id
+                            || x.Project.Team.TeamUsers.Any(tu => tu.UserId == currentUser.Id));
 
             if (!withRemoved)
                 query = query.Where(x => x.IsRemoved == false);
@@ -145,11 +154,12 @@ namespace Workflow.Services
             var words = filter.Split(" ");
             foreach (var word in words.Select(w => w.ToLower()))
             {
+                int.TryParse(word, out int intValue);
                 query = query
                     .Where(goal => goal.Title.ToLower().Contains(word)
                                    || goal.Description.ToLower().Contains(word)
                                    || goal.Project.Name.ToLower().Contains(word)
-                                   || goal.GoalNumber.ToString() == word
+                                   || goal.GoalNumber == intValue
                                    || goal.Owner.FirstName.ToLower().Contains(word)
                                    || goal.Owner.MiddleName.ToLower().Contains(word)
                                    || goal.Owner.LastName.ToLower().Contains(word)
@@ -344,6 +354,7 @@ namespace Workflow.Services
 
 
         private readonly DataContext _dataContext;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly VmGoalConverter _vmConverter;
     }
 }

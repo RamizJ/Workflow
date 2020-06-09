@@ -34,7 +34,7 @@ namespace Workflow.Services.Abstract
         /// <param name="teamId">Идентификатор команды</param>
         /// <param name="userId">Добавляемый пользователь</param>
         /// <returns>Добавленный пользователь</returns>
-        Task<VmUserResult> Add(int teamId, string userId);
+        Task Add(int teamId, string userId);
 
         /// <summary>
         /// Удаление пользователя из команды
@@ -42,6 +42,6 @@ namespace Workflow.Services.Abstract
         /// <param name="teamId">Идентификатор команды</param>
         /// <param name="userId">Идентификатор удаляемого пользователя</param>
         /// <returns>Удаленный пользователь</returns>
-        Task<VmUserResult> Remove(int teamId, string userId);
+        Task Remove(int teamId, string userId);
     }
 }

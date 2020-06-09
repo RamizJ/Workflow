@@ -48,7 +48,7 @@ namespace Workflow.Services.Abstract
         /// <param name="user"></param>
         /// <param name="project"></param>
         /// <returns></returns>
-        Task<VmProjectResult> Create(ApplicationUser user, VmProject project);
+        Task<VmProject> Create(ApplicationUser user, VmProject project);
 
         /// <summary>
         /// 
@@ -56,14 +56,14 @@ namespace Workflow.Services.Abstract
         /// <param name="user"></param>
         /// <param name="project"></param>
         /// <returns></returns>
-        Task<VmProjectResult> Update(ApplicationUser user, VmProject project);
+        Task Update(ApplicationUser user, VmProject project);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="scopeId"></param>
+        /// <param name="projectId"></param>
         /// <returns></returns>
-        Task<VmProjectResult> Delete(ApplicationUser user, int scopeId);
+        Task<VmProject> Delete(ApplicationUser user, int projectId);
     }
 }

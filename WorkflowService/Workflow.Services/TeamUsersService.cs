@@ -42,54 +42,17 @@ namespace Workflow.Services
         }
 
         /// <inheritdoc />
-        public async Task<VmUserResult> Add(int teamId, string userId)
+        public async Task Add(int teamId, string userId)
         {
-            var result = new VmUserResult();
-            try
-            {
-                await _dataContext.TeamUsers.AddAsync(new TeamUser(teamId, userId));
-                await _dataContext.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                string errorMessage = "Не удалось добавить пользователя в команду. ";
-                if (await _dataContext.TeamUsers
-                    .AnyAsync(tu => tu.TeamId == teamId
-                                    && tu.UserId == userId))
-                {
-                    errorMessage += "Пользователь уже существует";
-                }
-
-                result.AddError(errorMessage);
-            }
-
-            return result;
+            await _dataContext.TeamUsers.AddAsync(new TeamUser(teamId, userId));
+            await _dataContext.SaveChangesAsync();
         }
 
         /// <inheritdoc />
-        public async Task<VmUserResult> Remove(int teamId, string userId)
+        public async Task Remove(int teamId, string userId)
         {
-            var result = new VmUserResult();
-
-            try
-            {
-                _dataContext.TeamUsers.Remove(new TeamUser(teamId, userId));
-                await _dataContext.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                string errorMessage = "Не удалось удалить пользователя из команды. ";
-                if (await _dataContext.TeamUsers
-                    .AnyAsync(tu => tu.TeamId == teamId
-                                    && tu.UserId == userId))
-                {
-                    errorMessage += "Пользователь в команде не найден";
-                }
-
-                result.AddError(errorMessage);
-            }
-
-            return result;
+            _dataContext.TeamUsers.Remove(new TeamUser(teamId, userId));
+            await _dataContext.SaveChangesAsync();
         }
 
 

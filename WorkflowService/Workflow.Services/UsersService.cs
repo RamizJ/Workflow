@@ -88,7 +88,7 @@ namespace Workflow.Services
         }
 
         /// <inheritdoc />
-        public async Task<VmUserResult> Create(VmUser user)
+        public async Task<VmUser> Create(VmUser user, string password)
         {
             if(user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -96,28 +96,22 @@ namespace Workflow.Services
             var model = _vmConverter.ToModel(user);
             model.Id = null;
 
-            var result = await _userManager.CreateAsync(model, user.Password);
-            VmUser vmUser = null;
-            if (result.Succeeded)
-            {
-                vmUser = _vmConverter.ToViewModel(model);
-            }
+            var result = await _userManager.CreateAsync(model, password);
+            if (!result.Succeeded) 
+                throw new InvalidOperationException(result.ToString());
 
-            return new VmUserResult(result.Errors.Select(e => e.Description), result.Succeeded)
-            {
-                Data = vmUser
-            };
+            return _vmConverter.ToViewModel(model);
         }
 
         /// <inheritdoc />
-        public async Task<VmUserResult> Update(VmUser user)
+        public async Task Update(VmUser user)
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
             var model = await _userManager.FindByIdAsync(user.Id);
             if (model == null)
-                return new VmUserResult($"User with id='{user.Id}' not found");
+                throw new InvalidOperationException($"User with id='{user.Id}' not found");
 
             model.UserName = user.UserName;
             model.NormalizedUserName = user.UserName.ToUpper();
@@ -131,21 +125,12 @@ namespace Workflow.Services
             model.PositionCustom = user.Position;
 
             var result = await _userManager.UpdateAsync(model);
-            VmUser vmUser = null;
-            if (result.Succeeded)
-            {
-                vmUser = _vmConverter.ToViewModel(model);
-            }
-
-            return new VmUserResult(result.Errors.Select(e => e.Description), result.Succeeded)
-            {
-                Data = vmUser,
-                Succeeded = result.Succeeded
-            };
+            if (!result.Succeeded) 
+                throw new InvalidOperationException(result.ToString());
         }
 
         /// <inheritdoc />
-        public async Task<VmUserResult> Delete(string userId)
+        public async Task<VmUser> Delete(string userId)
         {
             var model = await _userManager.FindByIdAsync(userId);
             if (model == null)
@@ -154,35 +139,30 @@ namespace Workflow.Services
             model.IsRemoved = true;
             var result = await _userManager.UpdateAsync(model);
 
-            VmUser vmUser = null;
-            if (result.Succeeded)
-            {
-                vmUser = _vmConverter.ToViewModel(model);
-            }
+            if (!result.Succeeded) 
+                throw new InvalidOperationException(result.ToString());
 
-            return new VmUserResult(result.Errors.Select(e => e.Description), result.Succeeded)
-            {
-                Data = vmUser
-            };
+            return _vmConverter.ToViewModel(model);
         }
 
         /// <inheritdoc />
-        public async Task<VmUserResult> ChangePassword(ApplicationUser currentUser, string currentPassword, string newPassword)
+        public async Task ChangePassword(ApplicationUser currentUser, string currentPassword, string newPassword)
         {
             var result = await _userManager.ChangePasswordAsync(currentUser, currentPassword, newPassword);
-            return new VmUserResult(result.Errors.Select(e => e.Description), result.Succeeded);
+            if (!result.Succeeded)
+                throw new InvalidOperationException(result.ToString());
         }
 
         /// <inheritdoc />
-        public async Task<VmUserResult> ResetPassword(string id, string newPassword)
+        public async Task ResetPassword(string id, string newPassword)
         {
             var user = await _userManager.FindByIdAsync(id);
             var result = await _userManager.RemovePasswordAsync(user);
-            if (result.Succeeded)
-            {
+            if (result.Succeeded) 
                 result = await _userManager.AddPasswordAsync(user, newPassword);
-            }
-            return new VmUserResult(result.Errors.Select(e => e.Description), result.Succeeded);
+
+            if(!result.Succeeded)
+                throw new InvalidOperationException(result.ToString());
         }
 
 

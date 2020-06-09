@@ -91,10 +91,7 @@ namespace WorkflowService.Controllers
         public async Task<IActionResult> Update([FromBody]VmGoal goal)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var updatedScope = await _goalsService.Update(currentUser, goal);
-            if (updatedScope == null)
-                return NotFound();
-
+            await _goalsService.Update(currentUser, goal);
             return NoContent();
         }
 

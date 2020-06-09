@@ -169,7 +169,7 @@ namespace Workflow.Tests.Services
         [TestCase(null)]
         [TestCase("")]
         [TestCase("  ")]
-        public async Task CreateForNullInvalidNameTest(string name)
+        public void CreateForNullInvalidNameTest(string name)
         {
             //Arrange
             var vmTeam = new VmTeam
@@ -181,10 +181,9 @@ namespace Workflow.Tests.Services
             };
 
             //Act
-            var result = await _service.Create(_testData.Users.First(), vmTeam);
 
             //Assert
-            Assert.IsFalse(result.Succeeded);
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Create(_currentUser, vmTeam));
         }
 
         [TestCase(0)]
@@ -206,41 +205,37 @@ namespace Workflow.Tests.Services
             var result = await _service.Create(currentUser, vmTeam);
 
             //Assert
-            Assert.IsTrue(result.Succeeded);
-            Assert.AreEqual(_testData.Projects.Count + 1, result.Data.Id);
-            Assert.AreEqual("Team", result.Data.Name);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(_testData.Projects.Count + 1, result.Id);
+            Assert.AreEqual("Team", result.Name);
         }
-
 
         [TestCase(null)]
         [TestCase("")]
         [TestCase("  ")]
-        public async Task UpdateForNullInvalidNameTest(string name)
+        public void UpdateForNullInvalidNameTest(string name)
         {
             //Arrange
             var team = _testData.Teams.First();
             team.Name = name;
             var vmTeam = _vmConverter.ToViewModel(team);
 
-            var result = await _service.Create(_testData.Users.First(), vmTeam);
-
-            Assert.IsFalse(result.Succeeded);
+            Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await _service.Create(_testData.Users.First(), vmTeam));
         }
 
         [TestCase(-1)]
         [TestCase(0)]
         [TestCase(int.MaxValue)]
-        public async Task UpdateForNotExistedTest(int id)
+        public void UpdateForNotExistedTest(int id)
         {
             //Arrange
             var team = _testData.Teams.First();
             team.Id = id;
             var vmTeam = _vmConverter.ToViewModel(team);
 
-            var result = await _service.Update(_testData.Users.First(), vmTeam);
-
-            Assert.IsFalse(result.Succeeded);
-            Assert.AreEqual(1, result.Errors.Count);
+            //Assert
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Update(_testData.Users.First(), vmTeam));
         }
 
         [TestCase("TeamNew1", "DescriptionNew1")]
@@ -253,19 +248,18 @@ namespace Workflow.Tests.Services
             var vmTeam = _vmConverter.ToViewModel(team);
 
             //Act
-            var result = await _service.Update(_currentUser, vmTeam);
+            await _service.Update(_currentUser, vmTeam);
+            var expectedTeam = _dataContext.Teams.First();
 
             //Assert
-            Assert.IsTrue(result.Succeeded);
-            Assert.AreEqual(name, result.Data.Name);
-            Assert.AreEqual(description, result.Data.Description);
+            Assert.AreEqual(name, expectedTeam.Name);
+            Assert.AreEqual(description, expectedTeam.Description);
         }
 
 
-        [TestCase(-1, false)]
-        [TestCase(0, false)]
-        [TestCase(1, true)]
-        public async Task DeleteTest(int teamId, bool isSucceed)
+        [TestCase(1)]
+        [TestCase(2)]
+        public async Task DeleteTest(int teamId)
         {
             //Arrange
 
@@ -273,9 +267,15 @@ namespace Workflow.Tests.Services
             var result = await _service.Delete(_currentUser, teamId);
 
             //Assert
-            Assert.AreEqual(result.Succeeded, isSucceed);
-            if(isSucceed)
-                Assert.AreEqual(teamId, result.Data.Id);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(teamId, result.Id);
+        }
+
+        [TestCase(0)]
+        [TestCase(-1)]
+        public void DeleteNotExistedTest(int teamId)
+        {
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Delete(_currentUser, teamId));
         }
     }
 }

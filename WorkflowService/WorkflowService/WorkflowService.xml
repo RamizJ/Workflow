@@ -278,11 +278,11 @@
             <param name="ids">Идентификаторы пользователей</param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Controllers.UsersController.Create(Workflow.VM.ViewModels.VmUser)">
+        <member name="M:WorkflowService.Controllers.UsersController.Create(Workflow.VM.ViewModels.VmNewUser)">
             <summary>
             Добавление нового пользователя
             </summary>
-            <param name="user">Параметры пользователя</param>
+            <param name="user">Параметры пользователя. Пароль должен содержать не менее 6 символов, включая цифры</param>
             <returns></returns>
         </member>
         <member name="M:WorkflowService.Controllers.UsersController.Update(Workflow.VM.ViewModels.VmUser)">

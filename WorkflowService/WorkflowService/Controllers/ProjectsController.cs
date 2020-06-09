@@ -6,7 +6,6 @@ using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
 using Workflow.Services.Common;
 using Workflow.VM.ViewModels;
-using WorkflowService.Extensions;
 
 namespace WorkflowService.Controllers
 {
@@ -81,8 +80,8 @@ namespace WorkflowService.Controllers
         public async Task<ActionResult<VmProject>> Create([FromBody] VmProject project)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var result =  await _projectsService.Create(currentUser, project);
-            return result.ToActionResult();
+            var result = await _projectsService.Create(currentUser, project);
+            return Ok(result);
         }
 
         /// <summary>
@@ -91,11 +90,11 @@ namespace WorkflowService.Controllers
         /// <param name="project">Обновляемый проект</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult<VmProject>> Update([FromBody]VmProject project)
+        public async Task<IActionResult> Update([FromBody]VmProject project)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var result = await _projectsService.Update(currentUser, project);
-            return result.ToActionResult();
+            await _projectsService.Update(currentUser, project);
+            return NoContent();
         }
 
         /// <summary>
@@ -108,7 +107,7 @@ namespace WorkflowService.Controllers
         {
             var currentUser = await _userManager.GetUserAsync(User);
             var result = await _projectsService.Delete(currentUser, id);
-            return result.ToActionResult();
+            return Ok(result);
         }
 
 

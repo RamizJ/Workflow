@@ -49,7 +49,7 @@ namespace Workflow.VM.Common
         /// </summary>
         /// <param name="messages">Тексты ошибок</param>
         /// <param name="succeeded">Успешность операции</param>
-        public void AddErrorRange(IEnumerable<string> messages, bool succeeded = false)
+        public void AddErrors(IEnumerable<string> messages, bool succeeded = false)
         {
             Succeeded = succeeded;
             var errors = new List<string>(Errors);

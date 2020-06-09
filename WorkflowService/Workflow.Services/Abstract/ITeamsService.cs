@@ -55,7 +55,7 @@ namespace Workflow.Services.Abstract
         /// <param name="currentUser">Текущий пользователь</param>
         /// <param name="team">Команда</param>
         /// <returns>Результат выполнения операции</returns>
-        Task<VmTeamResult> Create(ApplicationUser currentUser, VmTeam team);
+        Task<VmTeam> Create(ApplicationUser currentUser, VmTeam team);
 
         /// <summary>
         /// Обновление команды
@@ -63,7 +63,7 @@ namespace Workflow.Services.Abstract
         /// <param name="currentUser">Текущий пользователь</param>
         /// <param name="team">Обновленная команда</param>
         /// <returns>Результат выполнения операции</returns>
-        Task<VmTeamResult> Update(ApplicationUser currentUser, VmTeam team);
+        Task Update(ApplicationUser currentUser, VmTeam team);
 
         /// <summary>
         /// Удаление команды
@@ -71,6 +71,6 @@ namespace Workflow.Services.Abstract
         /// <param name="currentUser">Текущий пользователь</param>
         /// <param name="teamId">Идентификатор команды</param>
         /// <returns>Результат выполнения операции</returns>
-        Task<VmTeamResult> Delete(ApplicationUser currentUser, int teamId);
+        Task<VmTeam> Delete(ApplicationUser currentUser, int teamId);
     }
 }

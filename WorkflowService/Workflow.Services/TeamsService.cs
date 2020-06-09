@@ -83,80 +83,58 @@ namespace Workflow.Services
         }
 
         /// <inheritdoc />
-        public async Task<VmTeamResult> Create(ApplicationUser currentUser, VmTeam team)
+        public async Task<VmTeam> Create(ApplicationUser currentUser, VmTeam team)
+        {
+            if (team == null)
+                throw new ArgumentNullException(nameof(team));
+
+            if (string.IsNullOrWhiteSpace(team.Name))
+                throw new InvalidOperationException("Team name cannot be empty");
+
+            var model = _vmConverter.ToModel(team);
+            model.Id = 0;
+
+            await _dataContext.Teams.AddAsync(model);
+            await _dataContext.SaveChangesAsync();
+
+            return _vmConverter.ToViewModel(model);
+        }
+
+
+        /// <inheritdoc />
+        public async Task Update(ApplicationUser currentUser, VmTeam team)
         {
             if (team == null)
                 throw new ArgumentNullException(nameof(team));
 
             var result = new VmTeamResult();
             if (string.IsNullOrWhiteSpace(team.Name))
-            {
-                result.AddError("Имя команды не должно быть пустым");
-            }
-            else
-            {
-                var model = _vmConverter.ToModel(team);
-                model.Id = 0;
+                throw new InvalidOperationException("Team name cannot be empty");
 
-                await _dataContext.Teams.AddAsync(model);
+            var model = _vmConverter.ToModel(team);
+            try
+            {
+                _dataContext.Entry(model).State = EntityState.Modified;
                 await _dataContext.SaveChangesAsync();
-
                 result.Data = _vmConverter.ToViewModel(model);
             }
-
-            return result;
-        }
-
-
-        /// <inheritdoc />
-        public async Task<VmTeamResult> Update(ApplicationUser currentUser, VmTeam team)
-        {
-            if (team == null)
-                throw new ArgumentNullException(nameof(team));
-
-            var result = new VmTeamResult();
-            if (string.IsNullOrWhiteSpace(team.Name))
+            catch (DbUpdateConcurrencyException)
             {
-                result.AddError("Имя команды не должно быть пустым");
+                throw new InvalidOperationException("Cannot update team. Team not found");
             }
-            else
-            {
-                var model = _vmConverter.ToModel(team);
-                try
-                {
-                    _dataContext.Entry(model).State = EntityState.Modified;
-                    await _dataContext.SaveChangesAsync();
-                    result.Data = _vmConverter.ToViewModel(model);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    bool isExist = await _dataContext.Teams.AnyAsync(t => t.Id == team.Id);
-                    result.AddError(isExist
-                        ? "Не удалось обновить команду"
-                        : "Не удалось обновить команду. Команда не найдена");
-                }
-            }
-
-            return result;
         }
 
         /// <inheritdoc />
-        public async Task<VmTeamResult> Delete(ApplicationUser currentUser, int teamId)
+        public async Task<VmTeam> Delete(ApplicationUser currentUser, int teamId)
         {
             var model = await _dataContext.Teams.FindAsync(teamId);
-            var result = new VmTeamResult();
-            if (model != null)
-            {
-                model.IsRemoved = true;
-                _dataContext.Teams.Update(model);
-                await _dataContext.SaveChangesAsync();
-                result.Data = _vmConverter.ToViewModel(model);
-            }
-            else
-            {
-                result.AddError("Не удалось удалить команду. Команда не найдена");
-            }
-            return result;
+            if (model == null) 
+                throw new InvalidOperationException("Cannot delete team. Team not found");
+
+            model.IsRemoved = true;
+            _dataContext.Teams.Update(model);
+            await _dataContext.SaveChangesAsync();
+            return _vmConverter.ToViewModel(model);
         }
 
 

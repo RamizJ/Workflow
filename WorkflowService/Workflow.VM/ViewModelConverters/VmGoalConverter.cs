@@ -9,6 +9,9 @@ namespace Workflow.VM.ViewModelConverters
     {
         public Goal ToModel(VmGoal viewModel)
         {
+            if (viewModel == null)
+                return null;
+
             return new Goal
             {
                 Id = viewModel.Id,
@@ -28,6 +31,9 @@ namespace Workflow.VM.ViewModelConverters
 
         public VmGoal ToViewModel(Goal model)
         {
+            if (model == null)
+                return null;
+
             return new VmGoal
             {
                 Id = model.Id,
@@ -40,7 +46,7 @@ namespace Workflow.VM.ViewModelConverters
                 Description = model.Description,
                 GoalNumber = model.GoalNumber,
                 PerformerId = model.PerformerId,
-                Observers = model.Observers.Select(x => x.ObserverId).ToList(),
+                Observers = model.Observers?.Select(x => x.ObserverId).ToList(),
                 ProjectId = model.ProjectId,
                 GoalState = model.GoalState,
                 IsRemoved = model.IsRemoved
