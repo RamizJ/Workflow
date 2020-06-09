@@ -234,26 +234,30 @@ namespace Workflow.Tests.Services
             Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Update(_currentUser, vmTeam));
         }
 
-        [TestCase("goal123")]
-        [TestCase("g")]
-        [TestCase("1")]
-        public void UpdateTitleTest(string title)
+        [TestCase("goal123", "", 1, GoalState. )]
+        [TestCase("g", "")]
+        [TestCase("1", "")]
+        public async Task UpdateTitleTest(string title, string description, 
+            int projectId, GoalState state, GoalProirity proirity)
         {
             //Arrange
             int goalId = 1;
-            var vmTeam = new VmGoal
+            var vmGoal = new VmGoal
             {
                 Id = goalId,
                 Title = title,
-                ProjectId = _testData.Projects.First().Id,
+                Description = description,
+                ProjectId = projectId,
                 IsRemoved = false
             };
 
+            //Act
+            await _service.Update(_currentUser, vmGoal);
+            var goal = _dataContext.Goals.First(g => g.Id == goalId);
+
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Update(_currentUser, vmTeam));
+            Assert.AreEqual(goal.Title, vmGoal.Title);
         }
-
-
 
 
         private SqliteConnection _dbConnection;

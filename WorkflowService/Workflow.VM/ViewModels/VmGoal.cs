@@ -21,7 +21,8 @@ namespace Workflow.VM.ViewModels
         private DateTime ExpectedCompletedDate { get; set; }
         private TimeSpan EstimatedPerformingTime { get; set; }
 
-        public GoalState GoalState { get; set; }
+        public GoalState State { get; set; }
+        public GoalProirity Priority { get; set; }
 
         public string OwnerId { get; set; }
         public string OwnerFio { get; set; }

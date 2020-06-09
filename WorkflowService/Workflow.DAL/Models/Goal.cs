@@ -22,7 +22,8 @@ namespace Workflow.DAL.Models
         private DateTime ExpectedCompletedDate { get; set; }
         private TimeSpan EstimatedPerformingTime { get; set; }
 
-        public GoalState GoalState { get; set; }
+        public GoalState State { get; set; }
+        public GoalProirity Priority { get; set; }
 
         public string OwnerId { get; set; }
         public ApplicationUser Owner { get; set; }
@@ -38,13 +39,60 @@ namespace Workflow.DAL.Models
         public bool IsRemoved { get; set; }
     }
 
+    /// <summary>
+    /// Состояние выполнения задачи
+    /// </summary>
     public enum GoalState
     {
+        /// <summary>
+        /// Новая
+        /// </summary>
         New,
+
+        /// <summary>
+        /// Выполняется
+        /// </summary>
         Perform,
+
+        /// <summary>
+        /// Приостановлена
+        /// </summary>
         Delay,
+
+        /// <summary>
+        /// Тестируется
+        /// </summary>
         Testing,
+        
+        /// <summary>
+        /// Прошла тестирование и успешно завершена
+        /// </summary>
         Succeed,
+
+        /// <summary>
+        /// Отклонена по результатам тестирования
+        /// </summary>
         Rejected
+    }
+
+    /// <summary>
+    /// Приоритет задачи
+    /// </summary>
+    public enum GoalProirity
+    {
+        /// <summary>
+        /// Высокий
+        /// </summary>
+        Hight,
+
+        /// <summary>
+        /// Нормальный 
+        /// </summary>
+        Normal,
+
+        /// <summary>
+        /// Низкий
+        /// </summary>
+        Low
     }
 }

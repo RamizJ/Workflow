@@ -195,10 +195,10 @@ namespace Workflow.Services
                     int.TryParse(field.Value?.ToString(), out var intValue);
                     query = query.Where(goal => goal.GoalNumber == intValue);
                 }
-                else if (field.Is(nameof(VmGoal.GoalState)))
+                else if (field.Is(nameof(VmGoal.State)))
                 {
                     Enum.TryParse<GoalState>(field.Value?.ToString(), out var state);
-                    query = query.Where(goal => goal.GoalState == state);
+                    query = query.Where(goal => goal.State == state);
                 }
                 else if (field.Is(nameof(VmGoal.OwnerFio)))
                 {
@@ -286,19 +286,19 @@ namespace Workflow.Services
                             : orderedQuery.ThenByDescending(goal => goal.GoalNumber);
                     }
                 }
-                else if (field.Is(nameof(VmGoal.GoalState)))
+                else if (field.Is(nameof(VmGoal.State)))
                 {
                     if (orderedQuery == null)
                     {
                         orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(goal => goal.GoalState)
-                            : query.OrderByDescending(goal => goal.GoalState);
+                            ? query.OrderBy(goal => goal.State)
+                            : query.OrderByDescending(goal => goal.State);
                     }
                     else
                     {
                         orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(goal => goal.GoalState)
-                            : orderedQuery.ThenByDescending(goal => goal.GoalState);
+                            ? orderedQuery.ThenBy(goal => goal.State)
+                            : orderedQuery.ThenByDescending(goal => goal.State);
                     }
                 }
                 else if (field.Is(nameof(VmGoal.OwnerFio)))

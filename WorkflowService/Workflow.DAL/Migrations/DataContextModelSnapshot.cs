@@ -302,7 +302,7 @@ namespace Workflow.DAL.Migrations
                     b.Property<int>("GoalNumber")
                         .HasColumnType("int");
 
-                    b.Property<int>("GoalState")
+                    b.Property<int>("State")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsRemoved")

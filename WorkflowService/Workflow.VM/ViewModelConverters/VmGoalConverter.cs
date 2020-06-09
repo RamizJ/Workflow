@@ -24,8 +24,9 @@ namespace Workflow.VM.ViewModelConverters
                 GoalNumber = viewModel.GoalNumber,
                 PerformerId = viewModel.PerformerId,
                 ProjectId = viewModel.ProjectId,
-                GoalState = viewModel.GoalState,
-                IsRemoved = viewModel.IsRemoved
+                State = viewModel.State,
+                Priority = viewModel.Priority,
+                IsRemoved = viewModel.IsRemoved,
             };
         }
 
@@ -48,7 +49,8 @@ namespace Workflow.VM.ViewModelConverters
                 PerformerId = model.PerformerId,
                 Observers = model.Observers?.Select(x => x.ObserverId).ToList(),
                 ProjectId = model.ProjectId,
-                GoalState = model.GoalState,
+                State = model.State,
+                Priority = model.Priority,
                 IsRemoved = model.IsRemoved
             };
         }
