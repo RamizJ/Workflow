@@ -34,25 +34,15 @@ export default {
       localStorage.removeItem('access_token');
     },
     async fetchMe({ commit }) {
-      // const response = await authentication.getMe();
-      // console.log(response);
-      const response = {
-        data: {
-          user: {
-            id: "b4396eb2-0405-43d5-ab28-2432b9336aff",
-            firstName: "Administrator",
-            middleName: "",
-            lastName: "",
-            email: "admin@admin.ru",
-            roles: ["ADMINISTRATOR_ROLE"]
-          }
-        }
-      };
-      const user = response.data.user;
+      const response = await authentication.getMe();
+      const user = response.data;
       commit('setUser', user);
     },
     async updatePassword({ commit }, { currentPassword, newPassword }) {
-      const response = await authentication.changePassword(currentPassword, newPassword);
+      const response = await authentication.changePassword(
+        currentPassword,
+        newPassword
+      );
     },
     async hasRole({ commit }, role) {
       console.log(role);

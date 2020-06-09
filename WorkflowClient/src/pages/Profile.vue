@@ -1,6 +1,6 @@
 <template lang="pug">
   div.container
-    base-toolbar
+    base-toolbar(v-if="!!me")
       template(slot="title") {{ `${me.lastName} ${me.firstName}` }}
       template(slot="subtitle")
         a(href="#" @click="exit") Выйти
@@ -55,7 +55,7 @@ import BaseToolbar from '~/components/BaseToolbar';
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
-  name: "Profile",
+  name: 'Profile',
   components: { BaseToolbar },
   data() {
     return {
@@ -75,20 +75,35 @@ export default {
         roles: []
       },
       rules: {
-        lastName: [ { required: true, message: 'Введите фамилию', trigger: 'blur', } ],
-        firstName: [ { required: true, message: 'Введите имя', trigger: 'blur', } ],
-        userName: [ { required: true, message: 'Введите логин', trigger: 'blur', } ],
-        password: [ { validator: this.validatePassword, trigger: 'blur' } ],
-        email: [
-          { required: true, message: 'Введите эл. почту', trigger: 'blur', },
-          { type: 'email', message: 'Некорректный адрес эл. почты', trigger: 'blur' }
+        lastName: [
+          { required: true, message: 'Введите фамилию', trigger: 'blur' }
         ],
-        phone: [ { required: true, message: 'Введите номер телефона', trigger: 'blur', } ],
-        positionId: [ { required: true, message: 'Введите должность', trigger: 'blur', } ],
+        firstName: [
+          { required: true, message: 'Введите имя', trigger: 'blur' }
+        ],
+        userName: [
+          { required: true, message: 'Введите логин', trigger: 'blur' }
+        ],
+        password: [{ validator: this.validatePassword, trigger: 'blur' }],
+        email: [
+          { required: true, message: 'Введите эл. почту', trigger: 'blur' },
+          {
+            type: 'email',
+            message: 'Некорректный адрес эл. почты',
+            trigger: 'blur'
+          }
+        ],
+        phone: [
+          { required: true, message: 'Введите номер телефона', trigger: 'blur' }
+        ],
+        positionId: [
+          { required: true, message: 'Введите должность', trigger: 'blur' }
+        ]
       }
     };
   },
-  mounted() {
+  async mounted() {
+    if (!this.me) await this.fetchMe();
     this.form = { ...this.me };
   },
   computed: {
@@ -103,8 +118,7 @@ export default {
     }),
     async updateProfile() {
       try {
-        if (this.form.password)
-          await this.setPassword();
+        if (this.form.password) await this.setPassword();
         await this.updateUser(this.form);
         await this.fetchMe();
       } catch (e) {
@@ -114,16 +128,20 @@ export default {
     },
     async setPassword() {
       const newPassword = this.form.password;
-      const answer = await this.$prompt('Введите текущий пароль', 'Смена пароля', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Закрыть'
-      });
+      const answer = await this.$prompt(
+        'Введите текущий пароль',
+        'Смена пароля',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Закрыть'
+        }
+      );
       const currentPassword = answer.value;
       try {
         await this.updatePassword({ currentPassword, newPassword });
         this.$message.success('Пароль успешно изменен');
       } catch (e) {
-        this.$message.error('Во время смены пароля произошла ошибка')
+        this.$message.error('Во время смены пароля произошла ошибка');
       }
     },
     async exit() {
@@ -158,7 +176,6 @@ export default {
   cursor: pointer;
   color: var(--link);
 }
-
 </style>
 
 <style lang="scss">
@@ -172,7 +189,9 @@ export default {
     border-radius: 0;
     padding: 0;
     background-color: transparent;
-    &:hover, &:focus, &:hover:not(:focus) {
+    &:hover,
+    &:focus,
+    &:hover:not(:focus) {
       color: var(--link-hover);
       background-color: transparent;
     }
