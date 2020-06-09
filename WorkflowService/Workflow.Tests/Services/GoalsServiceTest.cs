@@ -234,11 +234,11 @@ namespace Workflow.Tests.Services
             Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Update(_currentUser, vmTeam));
         }
 
-        [TestCase("goal123", "", 1, GoalState. )]
-        [TestCase("g", "")]
-        [TestCase("1", "")]
+        [TestCase("goal123", "d1", 10, 1, GoalState.Perform, GoalPriority.Low)]
+        [TestCase("g", "d2", 11, 2, GoalState.Testing, GoalPriority.Normal)]
+        [TestCase("1", "d3", 12, 3, GoalState.New, GoalPriority.High)]
         public async Task UpdateTitleTest(string title, string description, 
-            int projectId, GoalState state, GoalProirity proirity)
+            int goalNumber, int projectId, GoalState state, GoalPriority priority)
         {
             //Arrange
             int goalId = 1;
@@ -248,7 +248,10 @@ namespace Workflow.Tests.Services
                 Title = title,
                 Description = description,
                 ProjectId = projectId,
-                IsRemoved = false
+                State = state,
+                Priority = priority,
+                GoalNumber = goalNumber,
+                IsRemoved = true
             };
 
             //Act
@@ -256,7 +259,12 @@ namespace Workflow.Tests.Services
             var goal = _dataContext.Goals.First(g => g.Id == goalId);
 
             //Assert
-            Assert.AreEqual(goal.Title, vmGoal.Title);
+            Assert.AreEqual(title, goal.Title);
+            Assert.AreEqual(description, goal.Description);
+            Assert.AreEqual(1, goal.ProjectId);
+            Assert.AreEqual(priority, goal.Priority);
+            Assert.AreEqual(state, goal.State);
+            Assert.IsFalse(goal.IsRemoved);
         }
 
 

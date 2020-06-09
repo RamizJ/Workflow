@@ -16,14 +16,14 @@ namespace Workflow.DAL.Models
 
         public int? ParentGoalId { get; set; }
         public Goal ParentGoal { get; set; }
-        public List<Goal> ChildGoals { get; set; }
+        public List<Goal> ChildGoals { get; set; } = new List<Goal>();
 
         public DateTime CreationDate { get; set; }
         private DateTime ExpectedCompletedDate { get; set; }
         private TimeSpan EstimatedPerformingTime { get; set; }
 
         public GoalState State { get; set; }
-        public GoalProirity Priority { get; set; }
+        public GoalPriority Priority { get; set; }
 
         public string OwnerId { get; set; }
         public ApplicationUser Owner { get; set; }
@@ -31,10 +31,9 @@ namespace Workflow.DAL.Models
         public string PerformerId { get; set; }
         public ApplicationUser Performer { get; set; }
 
-        public List<GoalObserver> Observers { get; set; }
+        public List<GoalObserver> Observers { get; set; } = new List<GoalObserver>();
 
-        public int? AttachmentId { get; set; }
-        public Attachment Attachment { get; set; }
+        public List<Attachment> Attachments { get; set; } = new List<Attachment>();
 
         public bool IsRemoved { get; set; }
     }
@@ -78,14 +77,8 @@ namespace Workflow.DAL.Models
     /// <summary>
     /// Приоритет задачи
     /// </summary>
-    public enum GoalProirity
-    {
-        /// <summary>
-        /// Высокий
-        /// </summary>
-        Hight,
-
-        /// <summary>
+    public enum GoalPriority
+    {   /// <summary>
         /// Нормальный 
         /// </summary>
         Normal,
@@ -93,6 +86,11 @@ namespace Workflow.DAL.Models
         /// <summary>
         /// Низкий
         /// </summary>
-        Low
+        Low,
+
+        /// <summary>
+        /// Высокий
+        /// </summary>
+        High
     }
 }

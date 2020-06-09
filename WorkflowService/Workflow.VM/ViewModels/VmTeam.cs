@@ -14,9 +14,4 @@ namespace Workflow.VM.ViewModels
 
         public List<string> TeamMembers { get; set; }
     }
-
-
-    /// <inheritdoc />
-    public class VmTeamResult : OperationResult<VmTeam>
-    { }
 }

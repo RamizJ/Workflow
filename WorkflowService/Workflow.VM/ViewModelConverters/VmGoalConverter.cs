@@ -17,16 +17,16 @@ namespace Workflow.VM.ViewModelConverters
                 Id = viewModel.Id,
                 ParentGoalId = viewModel.ParentGoalId,
                 OwnerId = viewModel.OwnerId,
-                AttachmentId = viewModel.AttachmentId,
                 CreationDate = viewModel.CreationDate,
                 Title = viewModel.Title,
                 Description = viewModel.Description,
                 GoalNumber = viewModel.GoalNumber,
                 PerformerId = viewModel.PerformerId,
+                Observers = viewModel.Observers.Select(oId => new GoalObserver(viewModel.Id, oId)).ToList(),
                 ProjectId = viewModel.ProjectId,
                 State = viewModel.State,
                 Priority = viewModel.Priority,
-                IsRemoved = viewModel.IsRemoved,
+                IsRemoved = viewModel.IsRemoved
             };
         }
 
@@ -41,7 +41,6 @@ namespace Workflow.VM.ViewModelConverters
                 ParentGoalId = model.ParentGoalId,
                 ChildGoals = model.ChildGoals?.Select(x => x.Id).ToList(),
                 OwnerId = model.OwnerId,
-                AttachmentId = model.AttachmentId,
                 CreationDate = model.CreationDate,
                 Title = model.Title,
                 Description = model.Description,

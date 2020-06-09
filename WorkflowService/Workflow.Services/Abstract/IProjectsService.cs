@@ -65,5 +65,15 @@ namespace Workflow.Services.Abstract
         /// <param name="projectId"></param>
         /// <returns></returns>
         Task<VmProject> Delete(ApplicationUser user, int projectId);
+
+
+        /// <summary>
+        /// Восстановление ранее удаленного проекта
+        /// </summary>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <returns></returns>
+        Task<VmProject> Restore(ApplicationUser currentUser, int projectId);
+
     }
 }

@@ -87,5 +87,13 @@ namespace Workflow.Services.Abstract
         /// <param name="newPassword">Новый пароль. Пароль должен содержать не менее 6 символов, включая цифры</param>
         /// <returns></returns>
         Task ResetPassword(string id, string newPassword);
+
+        /// <summary>
+        /// Восстановление ранее удаленного пользователя
+        /// </summary>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="userId">Идентификатор пользователя</param>
+        /// <returns></returns>
+        Task<VmUser> Restore(ApplicationUser currentUser, string userId);
     }
 }

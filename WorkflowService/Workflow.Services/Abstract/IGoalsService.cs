@@ -67,5 +67,13 @@ namespace Workflow.Services.Abstract
         /// <param name="goalId"></param>
         /// <returns></returns>
         Task<VmGoal> Delete(ApplicationUser currentUser, int goalId);
+
+        /// <summary>
+        /// Восстановление ранее удаленной задачи
+        /// </summary>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="goalId">Идентификатор задачи</param>
+        /// <returns></returns>
+        Task<VmGoal> Restore(ApplicationUser currentUser, int goalId);
     }
 }

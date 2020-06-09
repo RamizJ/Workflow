@@ -102,7 +102,19 @@ namespace Workflow.Services
             if (string.IsNullOrWhiteSpace(goal.Title))
                 throw new InvalidOperationException("Goal title cannot be empty");
 
-            var model = _vmConverter.ToModel(goal);
+            //var model = _vmConverter.ToModel(goal);
+            var query = await GetQuery(currentUser, true);
+            var model = query.FirstOrDefault(x => x.Id == goal.Id);
+            if(model == null)
+                throw new InvalidOperationException($"Goal with id='{goal.Id}' not found");
+
+            model.Title = goal.Title;
+            model.Description = goal.Description;
+            model.State = goal.State;
+            model.Priority = goal.Priority;
+            model.GoalNumber = goal.GoalNumber;
+            model.ParentGoalId = goal.ParentGoalId;
+            model.PerformerId = goal.PerformerId;
 
             _dataContext.Entry(model).State = EntityState.Modified;
             await _dataContext.SaveChangesAsync();

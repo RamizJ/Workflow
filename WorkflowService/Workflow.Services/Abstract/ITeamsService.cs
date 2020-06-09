@@ -72,5 +72,13 @@ namespace Workflow.Services.Abstract
         /// <param name="teamId">Идентификатор команды</param>
         /// <returns>Результат выполнения операции</returns>
         Task<VmTeam> Delete(ApplicationUser currentUser, int teamId);
+
+        /// <summary>
+        /// Восстановление ранее удаленной команды
+        /// </summary>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="teamId">Идентификатор команды</param>
+        /// <returns></returns>
+        Task<VmTeam> Restore(ApplicationUser currentUser, int teamId);
     }
 }

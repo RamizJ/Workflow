@@ -20,7 +20,4 @@ namespace Workflow.VM.ViewModels
         public string GroupName { get; set; }
         public bool IsRemoved { get; set; }
     }
-
-    public class VmProjectResult : OperationResult<VmProject>
-    { }
 }
