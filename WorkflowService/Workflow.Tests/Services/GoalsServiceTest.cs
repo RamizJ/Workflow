@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using Org.BouncyCastle.Asn1;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
@@ -194,6 +196,64 @@ namespace Workflow.Tests.Services
             Assert.AreEqual(_testData.Projects.Count + 1, result.Id);
             Assert.AreEqual(vmTeam.Title, result.Title);
         }
+
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase("  ")]
+        public void CreateInvalidTitleTest(string title)
+        {
+            //Arrange
+            var vmTeam = new VmGoal
+            {
+                Id = 0,
+                Title = title,
+                ProjectId = _testData.Projects.First().Id,
+                IsRemoved = false
+            };
+
+            //Assert
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Create(_currentUser, vmTeam));
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase("  ")]
+        public void UpdateInvalidTitleTest(string title)
+        {
+            //Arrange
+            int goalId = 1;
+            var vmTeam = new VmGoal
+            {
+                Id = goalId,
+                Title = title,
+                ProjectId = _testData.Projects.First().Id,
+                IsRemoved = false
+            };
+
+            //Assert
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Update(_currentUser, vmTeam));
+        }
+
+        [TestCase("goal123")]
+        [TestCase("g")]
+        [TestCase("1")]
+        public void UpdateTitleTest(string title)
+        {
+            //Arrange
+            int goalId = 1;
+            var vmTeam = new VmGoal
+            {
+                Id = goalId,
+                Title = title,
+                ProjectId = _testData.Projects.First().Id,
+                IsRemoved = false
+            };
+
+            //Assert
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Update(_currentUser, vmTeam));
+        }
+
+
 
 
         private SqliteConnection _dbConnection;
