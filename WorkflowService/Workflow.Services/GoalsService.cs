@@ -138,6 +138,21 @@ namespace Workflow.Services
             return null;
         }
 
+        public async Task<VmGoal> Restore(ApplicationUser currentUser, int goalId)
+        {
+            var query = await GetQuery(currentUser, true);
+            var goal = await query.FirstOrDefaultAsync(g => g.Id == goalId);
+            if(goal == null)
+                throw new InvalidOperationException($"The goal with id='{goalId}' not found");
+
+
+            goal.IsRemoved = false;
+            _dataContext.Entry(goal).State = EntityState.Modified;
+            await _dataContext.SaveChangesAsync();
+
+            return _vmConverter.ToViewModel(goal);
+        }
+
 
         private async Task<IQueryable<Goal>> GetQuery(ApplicationUser currentUser, bool withRemoved)
         {

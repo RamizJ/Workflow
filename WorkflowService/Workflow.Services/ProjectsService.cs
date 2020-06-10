@@ -132,6 +132,11 @@ namespace Workflow.Services
             return _vmConverter.ToViewModel(model);
         }
 
+        public async Task<VmProject> Restore(ApplicationUser currentUser, int projectId)
+        {
+            throw new NotImplementedException();
+        }
+
 
         private async Task<IQueryable<Project>> GetQuery(ApplicationUser currentUser, bool withRemoved)
         {

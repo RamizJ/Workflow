@@ -165,6 +165,11 @@ namespace Workflow.Services
                 throw new InvalidOperationException(result.ToString());
         }
 
+        public async Task<VmUser> Restore(ApplicationUser currentUser, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
 
         private IQueryable<ApplicationUser> GetQuery(bool withRemoved)
         {

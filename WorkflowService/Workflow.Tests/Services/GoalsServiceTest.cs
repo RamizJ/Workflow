@@ -5,12 +5,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using Org.BouncyCastle.Asn1;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
 using Workflow.Services.Common;
-using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 
 namespace Workflow.Tests.Services
@@ -35,7 +33,6 @@ namespace Workflow.Tests.Services
             _userManager = _serviceProvider.GetService<UserManager<ApplicationUser>>();
             _service = new GoalsService(_dataContext, _userManager);
             _currentUser = _testData.Users.First();
-            _vmConverter = new VmGoalConverter();
         }
 
         [TearDown]
@@ -267,6 +264,24 @@ namespace Workflow.Tests.Services
             Assert.IsFalse(goal.IsRemoved);
         }
 
+        [TestCase(1)]
+        [TestCase(10)]
+        public async Task RestoreGoalTest(int goalId)
+        {
+            //Act
+            var result = await _service.Restore(_currentUser, goalId);
+
+            //Assert
+            Assert.IsFalse(result.IsRemoved);
+        }
+
+        [TestCase(-1)]
+        [TestCase(0)]
+        public void RestoreNotExistedGoalTest(int goalId)
+        {
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Restore(_currentUser, goalId));
+        }
+
 
         private SqliteConnection _dbConnection;
         private TestData _testData;
@@ -274,7 +289,6 @@ namespace Workflow.Tests.Services
         private ServiceProvider _serviceProvider;
         private GoalsService _service;
         private ApplicationUser _currentUser;
-        private VmGoalConverter _vmConverter;
         private UserManager<ApplicationUser> _userManager;
     }
 }

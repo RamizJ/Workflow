@@ -277,5 +277,24 @@ namespace Workflow.Tests.Services
         {
             Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Delete(_currentUser, teamId));
         }
+
+
+        [TestCase(1)]
+        [TestCase(10)]
+        public async Task RestoreGoalTest(int teamId)
+        {
+            //Act
+            var result = await _service.Restore(_currentUser, teamId);
+
+            //Assert
+            Assert.IsFalse(result.IsRemoved);
+        }
+
+        [TestCase(-1)]
+        [TestCase(0)]
+        public void RestoreNotExistedGoalTest(int teamId)
+        {
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Restore(_currentUser, teamId));
+        }
     }
 }

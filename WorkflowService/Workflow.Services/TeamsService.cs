@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
@@ -18,9 +19,10 @@ namespace Workflow.Services
         /// <summary>
         /// Конструктор
         /// </summary>
-        public TeamsService(DataContext dataContext)
+        public TeamsService(DataContext dataContext, UserManager<ApplicationUser> userManager)
         {
             _dataContext = dataContext;
+            _userManager = userManager;
             _vmConverter = new VmTeamConverter();
         }
 
@@ -30,8 +32,8 @@ namespace Workflow.Services
             if (currentUser == null)
                 throw new ArgumentNullException(nameof(currentUser));
 
-            var team = await GetQuery(true)
-                .FirstOrDefaultAsync(s => s.Id == id);
+            var query = await GetQuery(currentUser, true);
+            var team = await query.FirstOrDefaultAsync(s => s.Id == id);
 
             return _vmConverter.ToViewModel(team);
         }
@@ -42,7 +44,7 @@ namespace Workflow.Services
             if (currentUser == null)
                 throw new ArgumentNullException(nameof(currentUser));
 
-            var query = GetQuery(withRemoved);
+            var query = await GetQuery(currentUser, withRemoved);
             var teams = await query
                 .Select(t => _vmConverter.ToViewModel(t))
                 .ToArrayAsync();
@@ -58,7 +60,7 @@ namespace Workflow.Services
             if (currentUser == null)
                 throw new ArgumentNullException(nameof(currentUser));
 
-            var query = GetQuery(withRemoved);
+            var query = await GetQuery(currentUser, withRemoved);
             query = Filter(filter, query);
             query = FilterByFields(filterFields, query);
             query = SortByFields(sortFields, query);
@@ -76,7 +78,8 @@ namespace Workflow.Services
             if (ids == null || ids.Length == 0)
                 return null;
 
-            return await GetQuery(true)
+            var query = await GetQuery(currentUser, true);
+            return await query
                 .Where(s => ids.Any(id => s.Id == id))
                 .Select(s => _vmConverter.ToViewModel(s))
                 .ToArrayAsync();
@@ -107,7 +110,6 @@ namespace Workflow.Services
             if (team == null)
                 throw new ArgumentNullException(nameof(team));
 
-            var result = new VmTeamResult();
             if (string.IsNullOrWhiteSpace(team.Name))
                 throw new InvalidOperationException("Team name cannot be empty");
 
@@ -116,7 +118,6 @@ namespace Workflow.Services
             {
                 _dataContext.Entry(model).State = EntityState.Modified;
                 await _dataContext.SaveChangesAsync();
-                result.Data = _vmConverter.ToViewModel(model);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -137,13 +138,31 @@ namespace Workflow.Services
             return _vmConverter.ToViewModel(model);
         }
 
-
-        private IQueryable<Team> GetQuery(bool withRemoved)
+        public async Task<VmTeam> Restore(ApplicationUser currentUser, int teamId)
         {
+            var query = await GetQuery(currentUser, true);
+            var team = await query.FirstOrDefaultAsync(g => g.Id == teamId);
+            if (team == null)
+                throw new InvalidOperationException($"The team with id='{teamId}' not found for current user");
+
+            team.IsRemoved = false;
+            _dataContext.Entry(team).State = EntityState.Modified;
+            await _dataContext.SaveChangesAsync();
+
+            return _vmConverter.ToViewModel(team);
+        }
+
+
+        private async Task<IQueryable<Team>> GetQuery(ApplicationUser currentUser, bool withRemoved)
+        {
+            bool isAdmin = await _userManager.IsInRoleAsync(currentUser, RoleNames.ADMINISTRATOR_ROLE);
+
             var query = _dataContext.Teams
                 .Include(t => t.Group)
                 .Include(t => t.TeamUsers)
-                .AsQueryable();
+                .Where(t => isAdmin
+                            || t.Projects.Any(p => p.OwnerId == currentUser.Id
+                                                   || p.Team.TeamUsers.Any(tu => tu.UserId == currentUser.Id)));
 
             if (!withRemoved)
                 query = query.Where(t => t.IsRemoved == false);
@@ -276,6 +295,7 @@ namespace Workflow.Services
 
 
         private readonly DataContext _dataContext;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly VmTeamConverter _vmConverter;
     }
 }
