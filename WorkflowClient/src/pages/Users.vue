@@ -1,12 +1,14 @@
 <template lang="pug">
   div.container
-    base-toolbar
+    base-header
       template(slot="title") Пользователи
-      template(slot="subtitle")
+      template(slot="action")
         a(href="#" @click="dialogOpened = true") Создать
-      template(slot="items")
-        base-toolbar-item(title="Поиск")
-          el-input(size="small" placeholder="Искать..." v-model="query.search" @change="refresh")
+
+    base-toolbar
+      template(slot="filters")
+        base-toolbar-item
+          el-input(size="small" placeholder="Поиск" v-model="query.search" @change="refresh")
 
     div.content
       el-table(
@@ -30,13 +32,19 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import BaseHeader from '~/components/BaseHeader';
 import BaseToolbar from '~/components/BaseToolbar';
 import BaseToolbarItem from '~/components/BaseToolbarItem';
 import UserDialog from '~/components/UserDialog';
 
 export default {
   name: 'Users',
-  components: { BaseToolbar, BaseToolbarItem, UserDialog },
+  components: {
+    BaseHeader,
+    BaseToolbar,
+    BaseToolbarItem,
+    UserDialog
+  },
   data() {
     return {
       loading: false,
@@ -48,17 +56,15 @@ export default {
       },
       dialogOpened: false,
       selectedItemId: null,
-      filters: {
-
-      },
-      value: '',
+      filters: {},
+      value: ''
     };
   },
   computed: {
     ...mapGetters({ users: 'users/getUsers' })
   },
   methods: {
-    ...mapActions({ fetchUsers: 'users/fetchUsers'}),
+    ...mapActions({ fetchUsers: 'users/fetchUsers' }),
     async refresh() {
       this.tableData = [];
       this.$refs.loader.stateChanger.reset();
@@ -67,8 +73,11 @@ export default {
       const firstLoad = !this.tableData.length;
       if (firstLoad) this.loading = true;
       await this.fetch(this.query);
-      if (this.users.length) $state.loaded(); else $state.complete();
-      this.tableData = firstLoad ? this.users : this.tableData.concat(this.users);
+      if (this.users.length) $state.loaded();
+      else $state.complete();
+      this.tableData = firstLoad
+        ? this.users
+        : this.tableData.concat(this.users);
       if (firstLoad) this.loading = false;
     },
     async fetch(params) {

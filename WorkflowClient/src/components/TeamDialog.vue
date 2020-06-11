@@ -32,7 +32,7 @@ import BaseDialog from '~/components/BaseDialog';
 export default {
   components: { BaseDialog },
   props: {
-    id: Number,
+    id: Number
   },
   data() {
     return {
@@ -40,9 +40,9 @@ export default {
       loading: false,
       isEdit: !!this.id,
       form: {
-        title: "",
+        title: '',
         priority: null,
-        description: "",
+        description: '',
         teamMembers: [],
         responsible: null,
         team: null,
@@ -51,22 +51,28 @@ export default {
         dateEnd: null
       },
       users: [
-        { value: 0, label: "Виталий" },
-        { value: 1, label: "Алексей" },
-        { value: 2, label: "Иван" },
-        { value: 3, label: "Константин" },
-        { value: 4, label: "Олег" },
-        { value: 5, label: "Николай" },
-        { value: 6, label: "Андрей" }
+        { value: 0, label: 'Виталий' },
+        { value: 1, label: 'Алексей' },
+        { value: 2, label: 'Иван' },
+        { value: 3, label: 'Константин' },
+        { value: 4, label: 'Олег' },
+        { value: 5, label: 'Николай' },
+        { value: 6, label: 'Андрей' }
       ],
       scopes: [
-        { value: 0, label: "Виталий" },
-        { value: 1, label: "Алексей" },
-        { value: 2, label: "Андрей" }
+        { value: 0, label: 'Виталий' },
+        { value: 1, label: 'Алексей' },
+        { value: 2, label: 'Андрей' }
       ],
       rules: {
-        name: [ { required: true, message: 'Введите название команды', trigger: 'blur', } ],
-      },
+        name: [
+          {
+            required: true,
+            message: 'Введите название команды',
+            trigger: 'blur'
+          }
+        ]
+      }
     };
   },
   async mounted() {
@@ -90,17 +96,16 @@ export default {
     submit() {
       const payload = { ...this.form };
       const form = this.$refs.form;
-      form.validate(async (valid) => {
+      form.validate(async valid => {
         if (valid) {
           try {
-            if (this.isEdit)
-              await this.updateTask(payload);
-            else
-              await this.createTask(payload);
+            if (this.isEdit) await this.updateTeam(payload);
+            else await this.createTeam(payload);
             form.resetFields();
             this.$emit('close');
           } catch (e) {
             this.$message.error('Ошибка отправки запроса');
+            console.error(e);
           }
         } else {
           this.$message.error('Укажите корректные данные');

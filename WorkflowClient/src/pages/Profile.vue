@@ -1,9 +1,10 @@
 <template lang="pug">
   div.container
-    base-toolbar(v-if="!!me")
+    base-header(v-if="!!me")
       template(slot="title") {{ `${me.lastName} ${me.firstName}` }}
-      template(slot="subtitle")
+      template(slot="action")
         a(href="#" @click="exit") Выйти
+
     div.profile
       el-form(:model="form" :rules="rules" ref="form")
         div.items
@@ -51,12 +52,12 @@
 </template>
 
 <script>
-import BaseToolbar from '~/components/BaseToolbar';
 import { mapActions, mapGetters } from 'vuex';
+import BaseHeader from '~/components/BaseHeader';
 
 export default {
   name: 'Profile',
-  components: { BaseToolbar },
+  components: { BaseHeader },
   data() {
     return {
       emptyText: '-',

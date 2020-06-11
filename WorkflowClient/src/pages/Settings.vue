@@ -1,7 +1,8 @@
 <template lang="pug">
   div.container
-    base-toolbar
+    base-header
       template(slot="title") Настройки
+
     div.settings
       div.item
         div.item__title Оформление
@@ -11,21 +12,18 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-import BaseToolbar from '~/components/BaseToolbar';
-import BaseToolbarItem from '~/components/BaseToolbarItem';
+import BaseHeader from '~/components/BaseHeader';
 
 export default {
   name: 'Settings',
   components: {
-    BaseToolbar,
-    BaseToolbarItem
+    BaseHeader
   },
   data() {
     return {
       search: '',
       appearance: localStorage.getItem('theme')
-    }
+    };
   },
   methods: {
     switchTheme(appearance) {
@@ -47,7 +45,6 @@ export default {
   margin-bottom: 15px;
 }
 .item__content {
-
 }
 .theme-icon {
   cursor: pointer;
@@ -55,7 +52,7 @@ export default {
   border-radius: 10px;
   border: 3px solid var(--input-background);
   margin-right: 15px;
-  transition: border-color .25s;
+  transition: border-color 0.25s;
   &.active {
     border-color: var(--color-primary);
   }

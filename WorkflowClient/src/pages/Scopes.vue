@@ -1,12 +1,21 @@
 <template lang="pug">
   div.container
-    base-toolbar
+    base-header
       template(slot="title") Области
-      template(slot="subtitle")
+      template(slot="action")
         a(href="#" @click="dialogOpened = true") Создать
-      template(slot="items")
-        base-toolbar-item(title="Поиск")
-          el-input(v-model="query.filter" size="small" placeholder="Искать..." @change="refresh")
+
+    base-toolbar
+      template(slot="filters")
+        base-toolbar-item
+          el-input(v-model="query.filter" size="small" placeholder="Поиск" @change="refresh")
+        base-toolbar-item
+          el-select(
+            v-model="filters.sort.value"
+            size="small"
+            placeholder="Сортировать"
+            @change="applyFilters" clearable)
+            el-option(v-for="option in filters.sort.items" :key="option.value" :value="option.value", :label="option.label")
 
     div.content
       el-table(
@@ -38,13 +47,15 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import BaseHeader from '~/components/BaseHeader';
 import BaseToolbar from '~/components/BaseToolbar';
 import BaseToolbarItem from '~/components/BaseToolbarItem';
 import ScopeDialog from '~/components/ScopeDialog';
 
 export default {
-  name: "Teams",
+  name: 'Teams',
   components: {
+    BaseHeader,
     BaseToolbar,
     BaseToolbarItem,
     ScopeDialog
@@ -60,7 +71,15 @@ export default {
       },
       dialogOpened: false,
       selectedItemId: null,
-      filters: {}
+      filters: {
+        sort: {
+          value: null,
+          items: [
+            { value: 'name', label: 'Название' },
+            { value: 'creationDate', label: 'Дата создания' }
+          ]
+        }
+      }
     };
   },
   computed: {
@@ -76,8 +95,11 @@ export default {
       const firstLoad = !this.tableData.length;
       if (firstLoad) this.loading = true;
       await this.fetch(this.query);
-      if (this.scopes.length) $state.loaded(); else $state.complete();
-      this.tableData = firstLoad ? this.scopes : this.tableData.concat(this.scopes);
+      if (this.scopes.length) $state.loaded();
+      else $state.complete();
+      this.tableData = firstLoad
+        ? this.scopes
+        : this.tableData.concat(this.scopes);
       if (firstLoad) this.loading = false;
     },
     async fetch(params) {
@@ -100,7 +122,7 @@ export default {
       this.dialogOpened = true;
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

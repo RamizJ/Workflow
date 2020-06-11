@@ -62,7 +62,7 @@ export default {
   height: 100%;
   position: relative;
   background-color: var(--sidebar-background);
-  padding: 24px 22px;
+  padding: 24px 20px;
   transition: background-color 0.25s;
 }
 .el-menu:not(.el-menu--collapse) {
@@ -73,7 +73,7 @@ export default {
 .el-submenu__title {
   color: var(--sidebar-text);
   height: auto;
-  line-height: 34px;
+  line-height: 38px;
   font-size: 14px;
   font-weight: 500;
   padding: 0 8px !important;
