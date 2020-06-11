@@ -57,8 +57,9 @@
   --card-border: var(--background-4);
 
   --popover-background: var(--background-3);
-  --popover-border: var(--background-2);
-  --popover-hover: var(--background-2);
+  --popover-border: #f1f1f1;
+  --popover-hover: #f1f1f1;
+  --popover-shadow: 0 0 20px rgba(0,0,0,.05);
 
   --tag-background: var(--background-3);
   --tag-border: var(--background-4);
@@ -129,8 +130,9 @@
   --card-border: var(--background-3);
 
   --popover-background: var(--background-3);
-  --popover-border: var(--background-4);
+  --popover-border: var(--background-3);
   --popover-hover: var(--background-5);
+  --popover-shadow: 0 0 20px rgba(0,0,0,.05);
 
   --tag-background: var(--background-2);
   --tag-border: var(--background-4);

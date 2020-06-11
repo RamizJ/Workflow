@@ -1,23 +1,32 @@
 <template lang="pug">
   div.container
-    base-toolbar
+    base-header
       template(slot="title") Проекты
-      template(slot="subtitle")
+      template(slot="action")
         a(href="#" @click="dialogOpened = true") Создать
-      template(slot="items")
-        base-toolbar-item(title="Поиск")
-          el-input(v-model="query.filter" size="small" placeholder="Искать..." @change="refresh")
-        base-toolbar-item(title="Команда")
-          el-select(v-model="filters.status.value" size="small" placeholder="Любая")
+
+    base-toolbar
+      template(slot="filters")
+        base-toolbar-item
+          el-input(v-model="query.filter" size="small" placeholder="Поиск" @change="refresh")
+        base-toolbar-item
+          el-select(
+            v-model="filters.sort.value"
+            size="small"
+            placeholder="Сортировать"
+            @change="applyFilters" clearable)
+            el-option(v-for="option in filters.sort.items" :key="option.value" :value="option.value", :label="option.label")
+        base-toolbar-item
+          el-select(v-model="filters.status.value" size="small" placeholder="Команда")
             el-option(v-for="option in filters.status.items" :key="option.value" :value="option.value", :label="option.label")
-        base-toolbar-item(title="Область")
-          el-select(v-model="filters.status.value" size="small" placeholder="Любая")
+        base-toolbar-item
+          el-select(v-model="filters.status.value" size="small" placeholder="Область")
             el-option(v-for="option in filters.status.items" :key="option.value" :value="option.value", :label="option.label")
-        base-toolbar-item(title="Руководитель")
-          el-select(v-model="filters.performer.value" size="small" placeholder="Любой")
+        base-toolbar-item
+          el-select(v-model="filters.performer.value" size="small" placeholder="Руководитель")
             el-option(v-for="option in filters.performer.items" :key="option.value" :value="option.value", :label="option.label")
-        base-toolbar-item(title="Тег")
-          el-select(v-model="filters.tag.value" size="small" placeholder="Любой")
+        base-toolbar-item
+          el-select(v-model="filters.tag.value" size="small" placeholder="Метка")
             el-option(v-for="option in filters.tag.items" :key="option.value" :value="option.value", :label="option.label")
 
     div.content
@@ -26,6 +35,8 @@
         ref="table"
         height="auto"
         v-loading="loading"
+        @row-contextmenu="onItemRightClick"
+        @row-dblclick="onItemDoubleClick"
         highlight-current-row
         stripe)
         el-table-column(type="selection" width="55")
@@ -36,19 +47,31 @@
           div(slot="no-more")
           div(slot="no-results")
 
+      vue-context(ref="contextMenu")
+        template(slot-scope="child")
+          li(@click.prevent="onItemEdit($event, child.data.row)") Редактировать
+          li Добавить задачу
+          li Удалить
+
     project-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false")
 
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import BaseToolbar from "~/components/BaseToolbar";
-import BaseToolbarItem from "~/components/BaseToolbarItem";
+import BaseHeader from '~/components/BaseHeader';
+import BaseToolbar from '~/components/BaseToolbar';
+import BaseToolbarItem from '~/components/BaseToolbarItem';
 import ProjectDialog from '~/components/ProjectDialog';
 
 export default {
-  name: "Projects",
-  components: { BaseToolbar, BaseToolbarItem, ProjectDialog },
+  name: 'Projects',
+  components: {
+    BaseHeader,
+    BaseToolbar,
+    BaseToolbarItem,
+    ProjectDialog
+  },
   data() {
     return {
       loading: false,
@@ -61,12 +84,22 @@ export default {
       dialogOpened: false,
       selectedItemId: null,
       filters: {
+        sort: {
+          value: null,
+          items: [
+            { value: 'name', label: 'Название' },
+            { value: 'ownerFio', label: 'Руководитель' },
+            { value: 'teamName', label: 'Команда' },
+            { value: 'groupName', label: 'Область' },
+            { value: 'creationDate', label: 'Дата создания' }
+          ]
+        },
         status: {
           value: null,
           field: 'goalState',
           items: [
             { value: 0, label: 'Новое' },
-            { value: 1, label: 'Завершённое' },
+            { value: 1, label: 'Завершённое' }
           ]
         },
         performer: {
@@ -85,15 +118,15 @@ export default {
           items: [
             { value: 0, label: 'Низкий' },
             { value: 1, label: 'Средний' },
-            { value: 2, label: 'Высокий' },
+            { value: 2, label: 'Высокий' }
           ]
         },
         tag: {
           value: null,
           field: 'tag',
           items: []
-        },
-      },
+        }
+      }
     };
   },
   computed: {
@@ -109,8 +142,11 @@ export default {
       const firstLoad = !this.tableData.length;
       if (firstLoad) this.loading = true;
       await this.fetch(this.query);
-      if (this.projects.length) $state.loaded(); else $state.complete();
-      this.tableData = firstLoad ? this.getProjects : this.tableData.concat(this.getProjects);
+      if (this.projects.length) $state.loaded();
+      else $state.complete();
+      this.tableData = firstLoad
+        ? this.getProjects
+        : this.tableData.concat(this.getProjects);
       if (firstLoad) this.loading = false;
     },
     async fetch(params) {
@@ -121,9 +157,20 @@ export default {
         console.error(e);
         this.$message.error('Ошибка получения данных');
       }
+    },
+    onItemRightClick(row, column, event) {
+      this.$refs.contextMenu.open(event, { row, column });
+      event.preventDefault();
+    },
+    onItemDoubleClick(row, column, event) {
+      this.onItemEdit(event, row);
+    },
+    onItemEdit(event, row) {
+      this.selectedItemId = row.id;
+      this.dialogOpened = true;
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

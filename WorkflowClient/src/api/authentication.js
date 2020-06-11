@@ -7,6 +7,11 @@ export default {
       password,
       rememberMe
     }),
+  changePassword: (currentPassword, newPassword) =>
+    httpClient.post(`/api/Users/ChangePassword`, {
+      currentPassword,
+      newPassword
+    }),
   logout: () => httpClient.post(`/api/Authentication/Logout`),
-  getMe: () => httpClient.get(`/api/Users/GetCurrentUser`)
+  getMe: () => httpClient.get(`/api/Users/GetCurrent`)
 };

@@ -39,7 +39,7 @@ export default {
 }
 .title {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: default;
 }
 .footer {

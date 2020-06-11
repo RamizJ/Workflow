@@ -3,8 +3,7 @@
     el-menu(
       :router="true"
       :default-active="$route.path"
-      :collapse="isCollapsed"
-      @select="menuItemSelected")
+      :collapse="isCollapsed")
 
       el-menu-item(index="/tasks")
         i.el-icon-news
@@ -26,7 +25,7 @@
         i.el-icon-user
         span Пользователи
 
-      div.profile(@click="$router.push({ name: 'Profile' })")
+      div.profile(v-if="!!me" @click="$router.push({ name: 'Profile' })")
         el-avatar(:size="36" icon="el-icon-user-solid")
         div
           div.profile__title {{ `${me.lastName} ${me.firstName}` }}
@@ -34,28 +33,25 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
-  name: "AppSidebar",
-  components: {  },
+  name: 'AppSidebar',
+  components: {},
   data() {
     return {
       isCollapsed: false,
-      collapseState: "rotate"
+      collapseState: 'rotate'
     };
   },
   computed: {
-    ...mapGetters({ me: 'auth/me'})
+    ...mapGetters({ me: 'auth/me' })
+  },
+  async created() {
+    if (!this.me) await this.fetchMe();
   },
   methods: {
-    toggleCollapse() {
-      this.isCollapsed = !this.isCollapsed;
-      this.collapseState = this.isCollapsed ? "rotateOut" : "rotateIn";
-    },
-    menuItemSelected(index) {
-      // this.isCollapsed = true;
-    }
+    ...mapActions({ fetchMe: 'auth/fetchMe' })
   }
 };
 </script>
@@ -66,7 +62,7 @@ export default {
   height: 100%;
   position: relative;
   background-color: var(--sidebar-background);
-  padding: 24px 22px;
+  padding: 24px 20px;
   transition: background-color 0.25s;
 }
 .el-menu:not(.el-menu--collapse) {
@@ -77,7 +73,7 @@ export default {
 .el-submenu__title {
   color: var(--sidebar-text);
   height: auto;
-  line-height: 34px;
+  line-height: 38px;
   font-size: 14px;
   font-weight: 500;
   padding: 0 8px !important;
@@ -101,7 +97,7 @@ export default {
 .el-submenu i,
 .el-menu-item i {
   color: var(--sidebar-text);
-  transition: color .25s;
+  transition: color 0.25s;
 }
 .el-menu--collapse {
   width: var(--header-height);
@@ -128,8 +124,14 @@ export default {
     margin-bottom: 5px;
   }
   .profile__subtitle {
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    background: var(--sidebar-item-active-background);
+    border-radius: 3px;
+    padding: 4px;
+    width: fit-content;
   }
 }
 </style>

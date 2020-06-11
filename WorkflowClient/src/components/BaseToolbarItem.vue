@@ -1,26 +1,29 @@
 <template lang="pug">
-  div.item
-    div.item__name {{ this.title }}
-    div.item__content
-      slot
+  div.toolbar-item
+    slot
 </template>
 
 <script>
 export default {
-  props: {
-    title: String
-  },
-  name: "BaseToolbarItem"
-}
+  name: 'BaseToolbarItem'
+};
 </script>
 
-<style lang="scss" scoped>
-.item {
-  .item__name {
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 12px;
-    text-transform: capitalize;
+<style lang="scss">
+.toolbar-item {
+  margin: 6px 0;
+  &:not(:last-child) {
+    border-right: 1px solid var(--sidebar-background);
+  }
+  .el-select__caret {
+    font-size: 13px !important;
+    margin-top: 0.5px;
+  }
+  .el-input__inner {
+    color: var(--link-hover);
+    font-size: 13px;
+    font-weight: 500;
+    background-color: transparent !important;
   }
 }
 </style>

@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+const getToken = () => localStorage.getItem('access_token');
+
 const httpClient = axios.create({
   baseURL: process.env.VUE_APP_API_URL,
   headers: {
@@ -7,7 +9,6 @@ const httpClient = axios.create({
   }
 });
 
-const getToken = () => localStorage.getItem('access_token');
 const authInterceptor = config => {
   config.headers['Authorization'] = `Bearer ${getToken()}`;
   return config;

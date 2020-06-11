@@ -2,18 +2,18 @@
   base-dialog(v-if="visible" @close="$emit('close')")
     div(slot="title") Область
     div(slot="body")
-      el-form(:model="form" ref="form")
+      el-form(:model="form" :rules="rules" ref="form")
         el-row(:gutter="20")
           el-col(:span="24")
-            el-form-item
-              el-input(v-model="form.title" size="medium" placeholder="Новая область")
+            el-form-item(prop="name")
+              el-input(v-model="form.name" size="medium" placeholder="Новая область")
         el-row(:gutter="20")
           el-col(:span="24")
-            el-form-item
+            el-form-item(prop="description")
               el-input(v-model="form.description" size="medium" type="textarea" placeholder="Заметки")
         el-row(:gutter="20")
           el-col(:span="24")
-            el-form-item
+            el-form-item(prop="projects")
               el-select(v-model="form.projects" size="medium" placeholder="Проекты" multiple)
                 el-option(v-for="item in projects" :key="item.value" :label="item.label" :value="item.value")
     div(slot="footer")
@@ -51,7 +51,10 @@ export default {
         { value: 1, label: "Проект2" },
         { value: 2, label: "Проект3" },
         { value: 3, label: "Проект4" }
-      ]
+      ],
+      rules: {
+        name: [ { required: true, message: 'Введите название области', trigger: 'blur', } ],
+      },
     };
   },
   async mounted() {
