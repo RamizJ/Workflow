@@ -121,18 +121,18 @@ namespace Workflow.Tests.Services
             Assert.AreEqual(expectedCount, resultScopes.Length);
         }
 
-        [TestCase(0, 5, null, "Name", "Team1", false, 5)]
-        [TestCase(1, 5, null, "Name", "Team1", false, 1)]
-        [TestCase(0, 5, null, "Name", "Team2", false, 3)]
-        [TestCase(0, 5, null, "Description", "descriptioN1", false, 1)]
-        [TestCase(0, 5, null, "isRemoved", true, true, 1)]
+        [TestCase(0, 5, null, "Name", new object[] {"Team1"}, false, 5)]
+        [TestCase(1, 5, null, "Name", new object[] {"Team1"}, false, 1)]
+        [TestCase(0, 5, null, "Name", new object[] {"Team2"}, false, 3)]
+        [TestCase(0, 5, null, "Description", new object[] {"descriptioN1"}, false, 1)]
+        [TestCase(0, 5, null, "isRemoved", new object[] {true}, true, 1)]
         public async Task GetPageFilterFieldsTest(int pageNumber, int pageSize,
-            string filter, string fieldName, object value, bool withRemoved, int expectedCount)
+            string filter, string fieldName, object[] values, bool withRemoved, int expectedCount)
         {
             //Arrange
 
             //Act
-            var filterField = new FieldFilter(fieldName, value);
+            var filterField = new FieldFilter(fieldName, values);
             var resultScopes = (await _service.GetPage(_testData.Users.First(),
                 pageNumber, pageSize,
                 filter, new[] { filterField }, null, withRemoved)).ToArray();
@@ -163,7 +163,8 @@ namespace Workflow.Tests.Services
         [Test]
         public void CreateForNullInputTest()
         {
-            Assert.ThrowsAsync<ArgumentNullException>(async () => await _service.Create(_testData.Users.First(), null));
+            Assert.ThrowsAsync<ArgumentNullException>(async () => 
+                await _service.Create(_currentUser, 1, null));
         }
 
         [TestCase(null)]
@@ -183,7 +184,8 @@ namespace Workflow.Tests.Services
             //Act
 
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Create(_currentUser, vmTeam));
+            Assert.ThrowsAsync<InvalidOperationException>(async () => 
+                await _service.Create(_currentUser, 1, vmTeam));
         }
 
         [TestCase(0)]
@@ -199,10 +201,9 @@ namespace Workflow.Tests.Services
                 GroupId = null,
                 IsRemoved = false
             };
-            var currentUser = _testData.Users.First();
 
             //Act
-            var result = await _service.Create(currentUser, vmTeam);
+            var result = await _service.Create(_currentUser, 1, vmTeam);
 
             //Assert
             Assert.IsNotNull(result);
@@ -221,7 +222,7 @@ namespace Workflow.Tests.Services
             var vmTeam = _vmConverter.ToViewModel(team);
 
             Assert.ThrowsAsync<InvalidOperationException>(async () =>
-                await _service.Create(_testData.Users.First(), vmTeam));
+                await _service.Create(_currentUser, 1, vmTeam));
         }
 
         [TestCase(-1)]

@@ -27,6 +27,7 @@ namespace Workflow.DAL
             SetupGoalObserver(builder);
             SetupTeam(builder);
             SetupProject(builder);
+            SetupProjectTeam(builder);
             SetupGoal(builder);
             SetupAttachment(builder);
             SetupPosition(builder);
@@ -69,6 +70,22 @@ namespace Workflow.DAL
             entity.Property(t => t.Name)
                 .HasMaxLength(100)
                 .IsRequired();
+        }
+
+        private void SetupProjectTeam(ModelBuilder builder)
+        {
+            builder.Entity<ProjectTeam>()
+                .HasKey(pt => new { pt.ProjectId, pt.TeamId });
+
+            builder.Entity<ProjectTeam>()
+                .HasOne(pt => pt.Team)
+                .WithMany(t => t.TeamProjects)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<ProjectTeam>()
+                .HasOne(pt => pt.Project)
+                .WithMany(u => u.ProjectTeams)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         private void SetupProject(ModelBuilder builder)

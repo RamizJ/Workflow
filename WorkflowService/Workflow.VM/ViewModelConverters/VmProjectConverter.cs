@@ -17,7 +17,6 @@ namespace Workflow.VM.ViewModelConverters
                 Name = viewModel.Name,
                 Description = viewModel.Description,
                 OwnerId = viewModel.OwnerId,
-                TeamId = viewModel.TeamId,
                 GroupId = viewModel.GroupId,
             };
         }
@@ -34,8 +33,6 @@ namespace Workflow.VM.ViewModelConverters
                 Description = model.Description,
                 OwnerId = model.OwnerId,
                 OwnerFio = model.Owner?.Fio,
-                TeamId = model.TeamId,
-                TeamName = model.Team?.Name,
                 GroupId = model.GroupId,
                 GroupName = model.Group?.Name,
                 CreationDate = model.CreationDate,

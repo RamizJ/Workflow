@@ -60,7 +60,6 @@ namespace Workflow.Tests.Services
             Assert.AreEqual(expectedScopeId, vmScope?.Id);
             if (expectedScopeId != null)
             {
-                Assert.AreEqual(_testData.Projects[scopeIndex].Team?.Name, vmScope?.TeamName);
                 Assert.AreEqual(_testData.Projects[scopeIndex].Group?.Name, vmScope?.GroupName);
                 Assert.AreEqual(_testData.Projects[scopeIndex].Owner?.Fio, vmScope?.OwnerFio);
             }
@@ -105,21 +104,21 @@ namespace Workflow.Tests.Services
             Assert.AreEqual(expectedCount, resultScopes.Length);
         }
 
-        [TestCase(0, 5, null, "Name", "scope1", 5)]
-        [TestCase(0, 5, null, "GroupName", "Group2", 5)]
-        [TestCase(1, 5, null, "GroupName", "Group2", 1)]
-        [TestCase(1, 5, null, "OwnerFio", "Firstname1", 4)]
-        [TestCase(1, 5, null, "OwnerFio", "lastname1", 4)]
-        [TestCase(1, 5, null, "OwnerFio", "middlename1", 4)]
-        [TestCase(0, 5, null, "OwnerFio", "Firstname3", 0)]
-        [TestCase(0, 3, "Team1", "OwnerFio", "Firstname1", 3)]
+        [TestCase(0, 5, null, "Name", new object[] {"scope1"}, 5)]
+        [TestCase(0, 5, null, "GroupName", new object[] { "Group2" }, 5)]
+        [TestCase(1, 5, null, "GroupName", new object[] { "Group2" }, 1)]
+        [TestCase(1, 5, null, "OwnerFio", new object[] { "Firstname1" }, 4)]
+        [TestCase(1, 5, null, "OwnerFio", new object[] { "lastname1" }, 4)]
+        [TestCase(1, 5, null, "OwnerFio", new object[] { "middlename1" }, 4)]
+        [TestCase(0, 5, null, "OwnerFio", new object[] { "Firstname3" }, 0)]
+        [TestCase(0, 3, "Team1", "OwnerFio", new object[] { "Firstname1" }, 3)]
         public async Task GetPageFilterFieldsTest(int pageNumber, int pageSize,
-            string filter, string fieldName, object value, int expectedCount)
+            string filter, string fieldName, object[] values, int expectedCount)
         {
             //Arrange
 
             //Act
-            var filterField = new FieldFilter(fieldName, value);
+            var filterField = new FieldFilter(fieldName, values);
             var resultScopes = (await _service.GetPage(_testData.Users.First(), pageNumber, pageSize,
                 filter, new []{ filterField }, null)).ToArray();
 
@@ -195,7 +194,6 @@ namespace Workflow.Tests.Services
             {
                 Id = 0,
                 Name = name,
-                TeamId = null,
                 GroupId = null,
                 OwnerId = _testData.Users.First().Id,
                 IsRemoved = false,
@@ -216,7 +214,6 @@ namespace Workflow.Tests.Services
             {
                 Id = id,
                 Name = "new project",
-                TeamId = null,
                 GroupId = groupId,
                 OwnerId = _testData.Users[1].Id,
                 IsRemoved = false,

@@ -7,7 +7,13 @@ namespace Workflow.DAL.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+
+        public string CreatorId { get; set; }
+        public ApplicationUser Creator { get; set; }
+
         public List<TeamUser> TeamUsers { get; set; }
+        public List<ProjectTeam> TeamProjects { get; set; }
+
 
         public int? GroupId { get; set; }
         public Group Group { get; set; }

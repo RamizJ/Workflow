@@ -53,9 +53,10 @@ namespace Workflow.Services.Abstract
         /// Создание команды
         /// </summary>
         /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="projectId">Идентификатор проекта</param>
         /// <param name="team">Команда</param>
         /// <returns>Результат выполнения операции</returns>
-        Task<VmTeam> Create(ApplicationUser currentUser, VmTeam team);
+        Task<VmTeam> Create(ApplicationUser currentUser, int projectId, VmTeam team);
 
         /// <summary>
         /// Обновление команды
