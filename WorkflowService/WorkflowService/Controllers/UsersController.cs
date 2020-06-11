@@ -131,7 +131,7 @@ namespace WorkflowService.Controllers
         /// <param name="currentPassword">Текущий пароль</param>
         /// <param name="newPassword">Новый пароль</param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPatch]
         public async Task<IActionResult> ChangePassword([FromQuery]string currentPassword, [FromQuery] string newPassword)
         {
             var currentUser = await _userManager.GetUserAsync(User);
@@ -145,7 +145,7 @@ namespace WorkflowService.Controllers
         /// <param name="id">Идентификатор пользователя</param>
         /// <param name="newPassword">Новый пароль</param>
         /// <returns></returns>
-        [HttpPost("{id}"), Authorize(Roles = RoleNames.ADMINISTRATOR_ROLE)]
+        [HttpPatch("{id}"), Authorize(Roles = RoleNames.ADMINISTRATOR_ROLE)]
         public async Task<IActionResult> ResetPassword(string id, [FromQuery] string newPassword)
         {
             await _service.ResetPassword(id, newPassword);

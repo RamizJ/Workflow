@@ -134,7 +134,7 @@ namespace Workflow.Services
             var query = await GetQuery(user, true);
             var model = await query.FirstOrDefaultAsync(s => s.Id == projectId);
             if (model == null)
-                throw new InvalidOperationException("");
+                throw new InvalidOperationException($"Project with id='{projectId}' not found for current user");
 
             model.IsRemoved = isRemoved;
             _dataContext.Entry(model).State = EntityState.Modified;
@@ -189,7 +189,10 @@ namespace Workflow.Services
 
             foreach (var field in filterFields.Where(ff => ff != null))
             {
-                var strValues = field.Values?.Select(v => v.ToString().ToLower()).ToList()
+                var strValues = field.Values?
+                                    .Select(v => v?.ToString()?.ToLower())
+                                    .Where(v => v != null)
+                                    .ToList()
                                 ?? new List<string>();
 
                 if (field.SameAs(nameof(VmProject.Name)))

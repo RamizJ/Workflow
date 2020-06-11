@@ -137,6 +137,32 @@ namespace WorkflowService.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Добавление команды в список команд проекта
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="teamId">Идентификатор команды</param>
+        /// <returns></returns>
+        [HttpPatch("{teamId}")]
+        public async Task<IActionResult> AddTeam(int projectId, [FromBody] int teamId)
+        {
+            await _projectTeamsService.AddTeam(projectId, teamId);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Удаление команды из списка команд проекта
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="teamId">Идентификатор команды</param>
+        /// <returns></returns>
+        [HttpPatch("{teamId}/{projectId}")]
+        public async Task<IActionResult> RemoveTeam(int projectId, int teamId)
+        {
+            await _projectTeamsService.RemoveTeam(projectId, teamId);
+            return NoContent();
+        }
+
 
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IProjectsService _projectsService;
