@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Workflow.Services.Common
 {
@@ -13,9 +14,9 @@ namespace Workflow.Services.Common
         public string FieldName { get; set; }
 
         /// <summary>
-        /// Значение поля
+        /// Значения поля
         /// </summary>
-        public object Value { get; set; }
+        public object[] Values { get; set; }
 
 
         /// <summary>
@@ -28,11 +29,11 @@ namespace Workflow.Services.Common
         /// 
         /// </summary>
         /// <param name="fieldName">Имя поля</param>
-        /// <param name="value">Значение</param>
-        public FieldFilter(string fieldName, object value)
+        /// <param name="values">Значение</param>
+        public FieldFilter(string fieldName, object[] values)
         {
             FieldName = fieldName;
-            Value = value;
+            Values = values;
         }
 
 
@@ -41,9 +42,14 @@ namespace Workflow.Services.Common
         /// </summary>
         /// <param name="fieldName">Имя поля</param>
         /// <returns></returns>
-        public bool Is(string fieldName)
+        public bool SameAs(string fieldName)
         {
             return FieldName.Equals(fieldName, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public bool HasValuesAndSameAs(string fieldName)
+        {
+            return SameAs(fieldName) && Values != null && Values.Length > 0;
         }
     }
 }

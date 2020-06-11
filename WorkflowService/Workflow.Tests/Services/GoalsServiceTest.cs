@@ -112,17 +112,17 @@ namespace Workflow.Tests.Services
             Assert.AreEqual(expectedCount, result.Length);
         }
 
-        [TestCase(0, 5, null, "Title", "Goal1", false, 5)]
-        [TestCase(0, 5, null, "Description", "Description1", false, 1)]
-        [TestCase(0, 5, null, "Title", "Goal2", true, 4)]
+        [TestCase(0, 5, null, "Title", new object[] { "Goal1" }, false, 5)]
+        [TestCase(0, 5, null, "Description", new object[] { "Description1" }, false, 1)]
+        [TestCase(0, 5, null, "Title", new object[] { "Goal2" }, true, 4)]
         public async Task GetPageFilterFieldsTest(int pageNumber, int pageSize,
-            string filter, string fieldName, object value, bool withRemoved, int expectedCount)
+            string filter, string fieldName, object[] values, bool withRemoved, int expectedCount)
         {
             //Arrange
             var projectId = _testData.Projects.First().Id;
 
             //Act
-            var filterField = new FieldFilter(fieldName, value);
+            var filterField = new FieldFilter(fieldName, values);
             var resultScopes = (await _service.GetPage(_currentUser, projectId,
                 pageNumber, pageSize,
                 filter, new[] { filterField }, null, withRemoved)).ToArray();

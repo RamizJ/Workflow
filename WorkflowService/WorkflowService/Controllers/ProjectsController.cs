@@ -20,10 +20,14 @@ namespace WorkflowService.Controllers
         /// </summary>
         /// <param name="userManager"></param>
         /// <param name="projectsService"></param>
-        public ProjectsController(UserManager<ApplicationUser> userManager, IProjectsService projectsService)
+        /// <param name="projectTeamsService"></param>
+        public ProjectsController(UserManager<ApplicationUser> userManager, 
+            IProjectsService projectsService,
+            IProjectTeamsService projectTeamsService)
         {
             _userManager = userManager;
             _projectsService = projectsService;
+            _projectTeamsService = projectTeamsService;
         }
 
 
@@ -58,6 +62,29 @@ namespace WorkflowService.Controllers
             return await _projectsService.GetPage(currentUser, pageNumber, pageSize,
                 filter, filterFields, sortFields, withRemoved);
         }
+
+        /// <summary>
+        /// Постраничная загрузка списка команд проекта с фильтрацией и сортировкой
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="pageNumber">Номер страницы</param>
+        /// <param name="pageSize">Размер страницы</param>
+        /// <param name="filter">Фильтр по всем полям</param>
+        /// <param name="filterFields">Конкретные поля фильтрации</param>
+        /// <param name="sortFields">Поля сортировки</param>
+        /// <param name="withRemoved">Вместе с удаленными</param>
+        /// <returns>Коллекция команд</returns>
+        [HttpGet]
+        public async Task<IEnumerable<VmTeam>> GetTeamsPage([FromQuery] int projectId,
+            [FromQuery] int pageNumber, [FromQuery] int pageSize,
+            [FromQuery] string filter = null, [FromQuery] FieldFilter[] filterFields = null,
+            [FromQuery] FieldSort[] sortFields = null, [FromQuery]bool withRemoved = false)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            return await _projectTeamsService.GetProjectTeamsPage(currentUser, projectId, 
+                pageNumber, pageSize, filter, filterFields, sortFields, withRemoved);
+        }
+
 
         /// <summary>
         /// Получение проектов по идентификаторам
@@ -113,5 +140,6 @@ namespace WorkflowService.Controllers
 
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IProjectsService _projectsService;
+        private readonly IProjectTeamsService _projectTeamsService;
     }
 }

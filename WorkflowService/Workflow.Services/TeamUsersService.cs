@@ -12,6 +12,8 @@ using Workflow.VM.ViewModels;
 
 namespace Workflow.Services
 {
+
+
     /// <inheritdoc />
     public class TeamUsersService : ITeamUsersService
     {
@@ -97,20 +99,20 @@ namespace Workflow.Services
                 if (field == null)
                     continue;
 
-                var strValue = field.Value?.ToString()?.ToLower();
-                if (field.Is(nameof(VmUser.Email)))
+                var strValue = field.Values?.ToString()?.ToLower();
+                if (field.SameAs(nameof(VmUser.Email)))
                 {
                     query = query.Where(tu => tu.User.Email.ToLower().Contains(strValue));
                 }
-                else if (field.Is(nameof(VmUser.Phone)))
+                else if (field.SameAs(nameof(VmUser.Phone)))
                 {
                     query = query.Where(tu => tu.User.PhoneNumber.ToLower().Contains(strValue));
                 }
-                else if (field.Is(nameof(VmUser.Position)))
+                else if (field.SameAs(nameof(VmUser.Position)))
                 {
                     query = query.Where(tu => tu.User.Position.Name.ToLower().Contains(strValue));
                 }
-                else if (field.Is(nameof(VmProject.OwnerFio)))
+                else if (field.SameAs(nameof(VmProject.OwnerFio)))
                 {
                     var names = strValue?.Split();
                     if (names == null || names.Length == 0)

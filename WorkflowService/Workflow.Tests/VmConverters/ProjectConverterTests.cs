@@ -34,7 +34,6 @@ namespace Workflow.Tests.VmConverters
         {
             //Arrange
             var scope = Builder<Project>.CreateNew()
-                .With(x => x.Team = new Team{Id = x.TeamId ?? 1, Name = "Team"})
                 .With(x => x.Group = new Group { Id = x.GroupId ?? 1, Name = "Group" })
                 .With(x => x.OwnerId = "userId")
                 .With(x => x.Owner = new ApplicationUser { Id = x.OwnerId, FirstName = "A", MiddleName = "B", LastName = "C"})
@@ -50,8 +49,6 @@ namespace Workflow.Tests.VmConverters
             Assert.AreEqual(scope.Description, vm.Description);
             Assert.AreEqual(scope.OwnerId, vm.OwnerId);
             Assert.AreEqual(scope.Owner.Fio, vm.OwnerFio);
-            Assert.AreEqual(scope.TeamId, vm.TeamId);
-            Assert.AreEqual(scope.Team.Name, vm.TeamName);
             Assert.AreEqual(scope.GroupId, vm.GroupId);
             Assert.AreEqual(scope.Group.Name, vm.GroupName);
             Assert.AreEqual(scope.CreationDate, vm.CreationDate);

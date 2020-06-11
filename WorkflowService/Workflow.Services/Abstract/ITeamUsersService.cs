@@ -7,7 +7,7 @@ using Workflow.VM.ViewModels;
 namespace Workflow.Services.Abstract
 {
     /// <summary>
-    /// 
+    /// Сервис управления пользователями команды
     /// </summary>
     public interface ITeamUsersService
     {

@@ -123,19 +123,12 @@ namespace Workflow.Services
         /// <inheritdoc />
         public async Task<VmGoal> Delete(ApplicationUser currentUser, int goalId)
         {
-            var model = await (await GetQuery(currentUser, true))
-                .FirstOrDefaultAsync(s => s.Id == goalId);
+            return await RemoveRestore(currentUser, goalId, true);
+        }
 
-            if (model != null)
-            {
-                model.IsRemoved = true;
-                _dataContext.Entry(model).State = EntityState.Deleted;
-                await _dataContext.SaveChangesAsync();
-
-                return _vmConverter.ToViewModel(model);
-            }
-
-            return null;
+        public async Task<VmGoal> Restore(ApplicationUser currentUser, int goalId)
+        {
+            return await RemoveRestore(currentUser, goalId, false);
         }
 
         public async Task<VmGoal> Restore(ApplicationUser currentUser, int goalId)
@@ -166,7 +159,9 @@ namespace Workflow.Services
                 //.ThenInclude(x => x.TeamUsers)
                 .Where(x => isAdmin
                             || x.Project.OwnerId == currentUser.Id
-                            || x.Project.Team.TeamUsers.Any(tu => tu.UserId == currentUser.Id));
+                            || x.Project.ProjectTeams
+                                .SelectMany(pt => pt.Team.TeamUsers)
+                                .Any(tu => tu.UserId == currentUser.Id));
 
             if (!withRemoved)
                 query = query.Where(x => x.IsRemoved == false);
@@ -202,32 +197,34 @@ namespace Workflow.Services
         {
             if (filterFields == null) return query;
 
-            foreach (var field in filterFields)
+            foreach (var field in filterFields.Where(ff => ff != null))
             {
-                if (field == null)
-                    continue;
+                var strValues = field.Values?.Select(v => v.ToString().ToLower()).ToList()
+                                ?? new List<string>();
 
-                var strValue = field.Value?.ToString()?.ToLower();
-
-                if (field.Is(nameof(VmGoal.Title)))
+                if (field.SameAs(nameof(VmGoal.Title)))
                 {
-                    query = query.Where(goal => goal.Title.ToLower().Contains(strValue));
+                    var queries = strValues.Select(sv => query.Where(p =>
+                        p.Title.ToLower().Contains(sv))).ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
-                else if (field.Is(nameof(VmGoal.Description)))
+                else if (field.SameAs(nameof(VmGoal.Description)))
                 {
                     query = query.Where(goal => goal.Description.ToLower().Contains(strValue));
                 }
-                else if (field.Is(nameof(VmGoal.GoalNumber)))
+                else if (field.SameAs(nameof(VmGoal.GoalNumber)))
                 {
-                    int.TryParse(field.Value?.ToString(), out var intValue);
+                    int.TryParse(field.Values?.ToString(), out var intValue);
                     query = query.Where(goal => goal.GoalNumber == intValue);
                 }
-                else if (field.Is(nameof(VmGoal.State)))
+                else if (field.SameAs(nameof(VmGoal.State)))
                 {
-                    Enum.TryParse<GoalState>(field.Value?.ToString(), out var state);
+                    Enum.TryParse<GoalState>(field.Values?.ToString(), out var state);
                     query = query.Where(goal => goal.State == state);
                 }
-                else if (field.Is(nameof(VmGoal.OwnerFio)))
+                else if (field.SameAs(nameof(VmGoal.OwnerFio)))
                 {
                     var names = strValue?.Split();
                     if (names == null || names.Length == 0)
@@ -240,7 +237,7 @@ namespace Workflow.Services
                                                  || goal.Owner.LastName.ToLower().Contains(name));
                     }
                 }
-                else if (field.Is(nameof(VmGoal.PerformerFio)))
+                else if (field.SameAs(nameof(VmGoal.PerformerFio)))
                 {
                     var names = strValue?.Split();
                     if (names == null || names.Length == 0)
@@ -377,6 +374,23 @@ namespace Workflow.Services
             }
 
             return orderedQuery ?? query;
+        }
+
+        private async Task<VmGoal> RemoveRestore(ApplicationUser currentUser, int goalId, bool isRemoved)
+        {
+            var model = await (await GetQuery(currentUser, true))
+                .FirstOrDefaultAsync(s => s.Id == goalId);
+
+            if (model != null)
+            {
+                model.IsRemoved = isRemoved;
+                _dataContext.Entry(model).State = EntityState.Modified;
+                await _dataContext.SaveChangesAsync();
+
+                return _vmConverter.ToViewModel(model);
+            }
+
+            return null;
         }
 
 

@@ -132,17 +132,12 @@ namespace Workflow.Services
         /// <inheritdoc />
         public async Task<VmUser> Delete(string userId)
         {
-            var model = await _userManager.FindByIdAsync(userId);
-            if (model == null)
-                throw new InvalidOperationException($"User with id='{userId}' not found");
+            return await RemoveRestore(userId, true);
+        }
 
-            model.IsRemoved = true;
-            var result = await _userManager.UpdateAsync(model);
-
-            if (!result.Succeeded) 
-                throw new InvalidOperationException(result.ToString());
-
-            return _vmConverter.ToViewModel(model);
+        public async Task<VmUser> Restore(ApplicationUser currentUser, string userId)
+        {
+            return await RemoveRestore(userId, false);
         }
 
         /// <inheritdoc />
@@ -164,12 +159,6 @@ namespace Workflow.Services
             if(!result.Succeeded)
                 throw new InvalidOperationException(result.ToString());
         }
-
-        public async Task<VmUser> Restore(ApplicationUser currentUser, string userId)
-        {
-            throw new NotImplementedException();
-        }
-
 
         private IQueryable<ApplicationUser> GetQuery(bool withRemoved)
         {
@@ -209,40 +198,65 @@ namespace Workflow.Services
         {
             if (filterFields == null) return query;
 
-            foreach (var field in filterFields)
+            foreach (var field in filterFields.Where(ff => ff != null))
             {
-                if (field == null)
-                    continue;
+                var strValues = field.Values?.Select(v => v.ToString().ToLower()).ToList()
+                                ?? new List<string>();
 
-                var strValue = field.Value?.ToString()?.ToLower();
-                if (field.Is(nameof(VmUser.Email)))
+                if (field.SameAs(nameof(VmUser.Email)))
                 {
-                    query = query.Where(u => u.Email.ToLower().Contains(strValue));
+                    var queries = strValues.Select(sv => query.Where(u => 
+                        u.Email.ToLower().Contains(sv))).ToArray();
+
+                    if (queries.Any()) 
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
-                else if (field.Is(nameof(VmUser.Phone)))
+                else if (field.SameAs(nameof(VmUser.Phone)))
                 {
-                    query = query.Where(u => u.PhoneNumber.ToLower().Contains(strValue));
+                    var queries = strValues.Select(sv => query.Where(u => 
+                        u.PhoneNumber.ToLower().Contains(sv))).ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
-                else if (field.Is(nameof(VmUser.Position)))
+                else if (field.SameAs(nameof(VmUser.Position)))
                 {
-                    query = query.Where(u => u.Position.Name.ToLower().Contains(strValue));
+                    var queries = strValues.Select(sv => query.Where(u =>
+                            u.Position.Name.ToLower().Contains(sv)
+                            || u.PositionCustom.ToLower().Contains(sv)))
+                        .ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
-                else if (field.Is(nameof(VmUser.LastName)))
+                else if (field.SameAs(nameof(VmUser.LastName)))
                 {
-                    query = query.Where(u => u.LastName.ToLower().Contains(strValue));
+                    var queries = strValues.Select(sv => query.Where(u =>
+                        u.LastName.ToLower().Contains(sv))).ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
-                else if (field.Is(nameof(VmUser.MiddleName)))
+                else if (field.SameAs(nameof(VmUser.MiddleName)))
                 {
-                    query = query.Where(u => u.MiddleName.ToLower().Contains(strValue));
+                    var queries = strValues.Select(sv => query.Where(u =>
+                        u.MiddleName.ToLower().Contains(sv))).ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
-                else if (field.Is(nameof(VmUser.FirstName)))
+                else if (field.SameAs(nameof(VmUser.FirstName)))
                 {
-                    query = query.Where(u => u.FirstName.ToLower().Contains(strValue));
+                    var queries = strValues.Select(sv => query.Where(u =>
+                        u.FirstName.ToLower().Contains(sv))).ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
-                else if (field.Is(nameof(VmUser.IsRemoved)))
+                else if (field.SameAs(nameof(VmUser.IsRemoved)))
                 {
-                    bool.TryParse(field.Value?.ToString(), out var isRemoved);
-                    query = query.Where(u => u.IsRemoved == isRemoved);
+                    var vals = field.Values.OfType<bool>().ToArray();
+                    query = query.Where(u => vals.Any(v => v == u.IsRemoved));
                 }
             }
 
@@ -352,6 +366,21 @@ namespace Workflow.Services
             }
 
             return orderedQuery ?? query;
+        }
+
+        private async Task<VmUser> RemoveRestore(string userId, bool isRemoved)
+        {
+            var model = await _userManager.FindByIdAsync(userId);
+            if (model == null)
+                throw new InvalidOperationException($"User with id='{userId}' not found");
+
+            model.IsRemoved = isRemoved;
+            var result = await _userManager.UpdateAsync(model);
+
+            if (!result.Succeeded)
+                throw new InvalidOperationException(result.ToString());
+
+            return _vmConverter.ToViewModel(model);
         }
 
 

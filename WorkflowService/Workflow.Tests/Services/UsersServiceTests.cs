@@ -24,6 +24,7 @@ namespace Workflow.Tests.Services
         private VmUserConverter _vmConverter;
         private UserManager<ApplicationUser> _userManager;
         private ServiceProvider _serviceProvider;
+        private ApplicationUser _currentUser;
 
         [SetUp]
         public void Setup()
@@ -42,6 +43,7 @@ namespace Workflow.Tests.Services
             _userManager = _serviceProvider.GetService<UserManager<ApplicationUser>>();
             _service = new UsersService(_dataContext, _userManager);
             _vmConverter = new VmUserConverter();
+            _currentUser = _testData.Users.First();
         }
 
         [TearDown]
@@ -64,7 +66,7 @@ namespace Workflow.Tests.Services
         public async Task GetUserForNullIdTest(string emptyUserId)
         {
             //Arrange
-            var user = await _service.Get(_testData.Users.First(), emptyUserId);
+            var user = await _service.Get(_currentUser, emptyUserId);
 
             //Assert
             Assert.IsNull(user);
@@ -77,11 +79,10 @@ namespace Workflow.Tests.Services
         public async Task GetUserTest(int userIndex)
         {
             //Arrange
-            var currentUser = _testData.Users.First();
             var expectedUser = _testData.Users[userIndex];
 
             //Act
-            var resultUser = await _service.Get(currentUser, expectedUser.Id);
+            var resultUser = await _service.Get(_currentUser, expectedUser.Id);
 
             //Assert
             Assert.AreEqual(expectedUser.Id, resultUser.Id);
@@ -120,7 +121,7 @@ namespace Workflow.Tests.Services
             //Arrange
 
             //Act
-            var resultScopes = (await _service.GetPage(_testData.Users.First(),
+            var resultScopes = (await _service.GetPage(_currentUser,
                 pageNumber, pageSize,
                 "", null, null)).ToArray();
 
@@ -145,7 +146,8 @@ namespace Workflow.Tests.Services
             //Arrange
 
             //Act
-            var resultScopes = (await _service.GetPage(_testData.Users.First(), pageNumber, pageSize,
+            var resultScopes = (await _service.GetPage(_currentUser, 
+                pageNumber, pageSize,
                 filter, null, null)).ToArray();
 
             //Assert
@@ -153,25 +155,45 @@ namespace Workflow.Tests.Services
         }
 
 
-        [TestCase(0, 5, null, "Email", "Email", 5)]
-        [TestCase(1, 5, null, "Email", "Email", 4)]
-        [TestCase(0, 5, null, "Email", "Email1", 1)]
-        [TestCase(0, 5, null, "Phone", "Phone2", 3)]
-        [TestCase(1, 5, null, "FirstName", "Firstname1", 1)]
-        [TestCase(1, 5, null, "LastName", "lastname1", 1)]
-        [TestCase(1, 5, null, "MiddleName", "middlename1", 1)]
+        [TestCase(0, 5, null, "Email", new []{"Email"}, 5)]
+        [TestCase(1, 5, null, "Email", new[] { "Email" }, 4)]
+        [TestCase(0, 5, null, "Email", new[] { "Email", "Email1" }, 5)]
+        [TestCase(0, 5, null, "Email", new[] { "Email1" }, 1)]
+        [TestCase(0, 5, null, "Email", new[] { "1@", "2@", "3@" }, 3)]
+        [TestCase(0, 5, null, "Phone", new[] { "Phone2" }, 3)]
+        [TestCase(1, 5, null, "FirstName", new[] { "Firstname1" }, 1)]
+        [TestCase(1, 5, null, "LastName", new[] { "lastname1" }, 1)]
+        [TestCase(1, 5, null, "MiddleName", new[] { "middlename1" }, 1)]
         public async Task GetPageFilterFieldsTest(int pageNumber, int pageSize,
-            string filter, string fieldName, object value, int expectedCount)
+            string filter, string fieldName, object[] value, int expectedCount)
         {
             //Arrange
 
             //Act
             var filterField = new FieldFilter(fieldName, value);
-            var resultScopes = (await _service.GetPage(_testData.Users.First(), pageNumber, pageSize,
+            var result = (await _service.GetPage(_currentUser, 
+                pageNumber, pageSize,
                 filter, new[] { filterField }, null)).ToArray();
 
             //Assert
-            Assert.AreEqual(expectedCount, resultScopes.Length);
+            Assert.AreEqual(expectedCount, result.Length);
+        }
+
+        [TestCase(1, 5, null, "IsRemoved", new object[] { true, false }, 5)]
+        [TestCase(0, 5, null, "IsRemoved", new object[] { true }, 1)]
+        public async Task GetPageFilterFieldRemovedTest(int pageNumber, int pageSize,
+            string filter, string fieldName, object[] value, int expectedCount)
+        {
+            //Arrange
+
+            //Act
+            var filterField = new FieldFilter(fieldName, value);
+            var result = (await _service.GetPage(_currentUser,
+                pageNumber, pageSize,
+                filter, new[] { filterField }, null, true)).ToArray();
+
+            //Assert
+            Assert.AreEqual(expectedCount, result.Length);
         }
 
 
@@ -179,7 +201,7 @@ namespace Workflow.Tests.Services
         public async Task GetRangeForNullInputTest(string[] ids)
         {
             //Act
-            var resultScopes = await _service.GetRange(_testData.Users.First(), ids);
+            var resultScopes = await _service.GetRange(_currentUser, ids);
 
             //Assert
             Assert.IsNull(resultScopes);
@@ -198,7 +220,7 @@ namespace Workflow.Tests.Services
                 .ToArray();
 
             //Act
-            var resultUsers = (await _service.GetRange(_testData.Users.First(), ids))
+            var resultUsers = (await _service.GetRange(_currentUser, ids))
                 .OrderBy(u => u.Id)
                 .ToArray();
 

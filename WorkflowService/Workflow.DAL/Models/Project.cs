@@ -14,8 +14,10 @@ namespace Workflow.DAL.Models
 
         public DateTime CreationDate { get; set; }
 
-        public int? TeamId { get; set; }
-        public Team Team { get; set; }
+        //public int? TeamId { get; set; }
+        //public Team Team { get; set; }
+
+        public List<ProjectTeam> ProjectTeams { get; set; }
 
         public List<Goal> Goals { get; set; }
 

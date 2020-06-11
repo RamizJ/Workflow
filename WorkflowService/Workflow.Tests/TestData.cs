@@ -47,10 +47,11 @@ namespace Workflow.Tests
 
             Groups = Builder<Group>.CreateListOfSize(2)
                 .All().With(g => g.Name = $"Group{g.Id}").Build();
-                
+
             Teams = Builder<Team>.CreateListOfSize(10)
                 .All()
                 .With(x => x.GroupId = null)
+                .With(x => x.CreatorId = Users.First().Id)
                 .TheFirst(6).With(x => x.Name = $"Team1{x.Id}")
                 .TheNext(4).With(x => x.Name = $"Team2{x.Id}")
                 .TheFirst(9).With(x => x.IsRemoved = false)
@@ -60,11 +61,10 @@ namespace Workflow.Tests
             Projects = Builder<Project>.CreateListOfSize(10)
                 .All()
                 .With(s => s.OwnerId = Users.First().Id)
-                .With(s => s.TeamId = null)
                 .TheFirst(6).With((s, i) => s.Name = $"Scope1{i}")
                 .TheNext(4).With((s, i) => s.Name = $"Scope2{i}")
-                .TheFirst(3).With(s => s.GroupId = Groups[0].Id).With(s => s.TeamId = Teams[0].Id)
-                .TheNext(7).With(s => s.GroupId = Groups[1].Id).With(s => s.TeamId = Teams[1].Id)
+                .TheFirst(3).With(s => s.GroupId = Groups[0].Id)
+                .TheNext(7).With(s => s.GroupId = Groups[1].Id)
                 .TheFirst(9).With(s => s.IsRemoved = false)
                 .TheLast(1).With(s => s.IsRemoved = true)
                 .Build();
@@ -94,7 +94,6 @@ namespace Workflow.Tests
             foreach (var user in Users)
                 userManager.CreateAsync(user, "Aa010110!");
 
-            //context.Users.AddRange(Users);
             context.Groups.AddRange(Groups);
             context.Teams.AddRange(Teams);
             context.TeamUsers.AddRange(TeamUsers);
