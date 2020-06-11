@@ -10,6 +10,7 @@ namespace Workflow.DAL
         public DbSet<Group> Groups { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamUser> TeamUsers { get; set; }
+        public DbSet<ProjectTeam> ProjectTeams { get; set; }
         public DbSet<Goal> Goals { get; set; }
         public DbSet<GoalObserver> GoalObservers { get; set; }
         public DbSet<Attachment> Attachments { get; set; }

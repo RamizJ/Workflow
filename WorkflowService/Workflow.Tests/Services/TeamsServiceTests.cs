@@ -207,8 +207,8 @@ namespace Workflow.Tests.Services
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(_testData.Projects.Count + 1, result.Id);
-            Assert.AreEqual("Team", result.Name);
+            Assert.Greater(result.Id, 0);
+            Assert.AreEqual(vmTeam.Name, result.Name);
         }
 
         [TestCase(null)]

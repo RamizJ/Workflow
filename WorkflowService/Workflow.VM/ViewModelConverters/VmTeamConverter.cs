@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Workflow.DAL.Models;
+﻿using Workflow.DAL.Models;
 using Workflow.VM.ViewModelConverters.Absract;
 using Workflow.VM.ViewModels;
 
@@ -33,8 +32,7 @@ namespace Workflow.VM.ViewModelConverters
                 Description = model.Description,
                 GroupId = model.GroupId,
                 GroupName = model.Group?.Name,
-                IsRemoved = model.IsRemoved,
-                TeamMembers = model.TeamUsers?.Select(tu => tu.UserId).ToList()
+                IsRemoved = model.IsRemoved
             };
         }
     }

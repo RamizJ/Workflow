@@ -95,7 +95,7 @@ namespace Workflow.Services
             var model = _vmConverter.ToModel(team);
             model.Id = 0;
             model.CreatorId = currentUser.Id;
-            model.TeamProjects.Add(new ProjectTeam(0, projectId));
+            model.TeamProjects.Add(new ProjectTeam(projectId, 0));
 
             await _dataContext.Teams.AddAsync(model);
             await _dataContext.SaveChangesAsync();

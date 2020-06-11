@@ -22,7 +22,7 @@ namespace Workflow.VM.ViewModelConverters
                 Description = viewModel.Description,
                 GoalNumber = viewModel.GoalNumber,
                 PerformerId = viewModel.PerformerId,
-                Observers = viewModel.Observers.Select(oId => new GoalObserver(viewModel.Id, oId)).ToList(),
+                Observers = viewModel.Observers?.Select(oId => new GoalObserver(viewModel.Id, oId)).ToList(),
                 ProjectId = viewModel.ProjectId,
                 State = viewModel.State,
                 Priority = viewModel.Priority,

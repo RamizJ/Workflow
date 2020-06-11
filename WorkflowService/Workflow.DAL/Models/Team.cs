@@ -12,7 +12,7 @@ namespace Workflow.DAL.Models
         public ApplicationUser Creator { get; set; }
 
         public List<TeamUser> TeamUsers { get; set; }
-        public List<ProjectTeam> TeamProjects { get; set; }
+        public List<ProjectTeam> TeamProjects { get; set; } = new List<ProjectTeam>();
 
 
         public List<Project> Projects { get; set; } = new List<Project>();

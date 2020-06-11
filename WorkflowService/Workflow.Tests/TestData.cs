@@ -14,6 +14,7 @@ namespace Workflow.Tests
         public IList<Team> Teams { get; set; }
         public IList<TeamUser> TeamUsers { get; set; }
         public IList<Project> Projects { get; set; }
+        public List<ProjectTeam> ProjectTeams { get; set; }
         public IList<Goal> Goals { get; set; }
         public IList<Position> Positions { get; set; }
 
@@ -74,6 +75,12 @@ namespace Workflow.Tests
                 .TheNext(4).WithFactory(i => new TeamUser(Teams[1].Id, Users[i].Id))
                 .Build().ToList();
 
+            ProjectTeams = Builder<ProjectTeam>.CreateListOfSize(10)
+                .TheFirst(6).WithFactory(i => new ProjectTeam(Projects[i].Id, Teams[0].Id))
+                .TheNext(4).WithFactory(i => new ProjectTeam(Projects[i].Id, Teams[1].Id))
+                .Build().ToList();
+
+
             Goals = Builder<Goal>.CreateListOfSize(10)
                 .All()
                 .With(x => x.ProjectId = Projects.First().Id)
@@ -98,6 +105,7 @@ namespace Workflow.Tests
             context.Teams.AddRange(Teams);
             context.TeamUsers.AddRange(TeamUsers);
             context.Projects.AddRange(Projects);
+            context.ProjectTeams.AddRange(ProjectTeams);
             context.Goals.AddRange(Goals);
             context.Positions.AddRange(Positions);
 

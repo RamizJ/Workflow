@@ -17,9 +17,9 @@ namespace Workflow.DAL.Models
         //public int? TeamId { get; set; }
         //public Team Team { get; set; }
 
-        public List<ProjectTeam> ProjectTeams { get; set; }
+        public List<ProjectTeam> ProjectTeams { get; set; } = new List<ProjectTeam>();
 
-        public List<Goal> Goals { get; set; }
+        public List<Goal> Goals { get; set; } = new List<Goal>();
 
         public int? GroupId { get; set; }
         public Group Group { get; set; }
