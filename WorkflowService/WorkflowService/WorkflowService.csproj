@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>C:\Projects\GIRNGM\Workflow\WorkflowService\WorkflowService\WorkflowService.xml</DocumentationFile>
+    <DocumentationFile>C:\GIRNGM\Workflow\WorkflowService\WorkflowService\WorkflowService.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -48,10 +48,6 @@
     <ProjectReference Include="..\Workflow.Services\Workflow.Services.csproj" />
     <ProjectReference Include="..\Workflow.Share\Workflow.Share.csproj" />
     <ProjectReference Include="..\Workflow.VM\Workflow.VM.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="WorkflowService.xml" />
   </ItemGroup>
 
   <ItemGroup>

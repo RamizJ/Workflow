@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using Workflow.VM.Common;
 
 namespace Workflow.VM.ViewModels
 {

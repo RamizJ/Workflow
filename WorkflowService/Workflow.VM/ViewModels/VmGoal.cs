@@ -14,6 +14,8 @@ namespace Workflow.VM.ViewModels
         public string Description { get; set; }
 
         public int ProjectId { get; set; }
+        public string ProjectName { get; set; }
+
         public int? ParentGoalId { get; set; }
         public List<int> ChildGoals { get; set; }
 

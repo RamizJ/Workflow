@@ -48,6 +48,7 @@ namespace Workflow.VM.ViewModelConverters
                 PerformerId = model.PerformerId,
                 Observers = model.Observers?.Select(x => x.ObserverId).ToList(),
                 ProjectId = model.ProjectId,
+                ProjectName = model.Project?.Name,
                 State = model.State,
                 Priority = model.Priority,
                 IsRemoved = model.IsRemoved

@@ -138,7 +138,7 @@ namespace Workflow.Services
                 .Include(x => x.Owner)
                 .Include(x => x.Observers)
                 .Include(x => x.Performer)
-                //.Include(x => x.Project)
+                .Include(x => x.Project)
                 //.ThenInclude(x => x.Team)
                 //.ThenInclude(x => x.TeamUsers)
                 .Where(x => isAdmin
@@ -201,6 +201,14 @@ namespace Workflow.Services
                 {
                     var queries = strValues.Select(sv => query.Where(p =>
                         p.Description.ToLower().Contains(sv))).ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
+                }
+                else if (field.SameAs(nameof(VmGoal.ProjectName)))
+                {
+                    var queries = strValues.Select(sv => query.Where(p =>
+                        p.Project.Name.ToLower().Contains(sv))).ToArray();
 
                     if (queries.Any())
                         query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
