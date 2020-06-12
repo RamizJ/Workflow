@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
+using Workflow.Services.Abstract;
+using Workflow.Services.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
-using WorkflowService.Common;
-using WorkflowService.Services.Abstract;
 
-namespace WorkflowService.Services
+namespace Workflow.Services
 {
     /// <inheritdoc />
     public class UsersService : IUsersService
@@ -88,7 +88,7 @@ namespace WorkflowService.Services
         }
 
         /// <inheritdoc />
-        public async Task<VmUserResult> Create(VmUser user)
+        public async Task<VmUser> Create(VmUser user, string password)
         {
             if(user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -96,28 +96,22 @@ namespace WorkflowService.Services
             var model = _vmConverter.ToModel(user);
             model.Id = null;
 
-            var result = await _userManager.CreateAsync(model, user.Password);
-            VmUser vmUser = null;
-            if (result.Succeeded)
-            {
-                vmUser = _vmConverter.ToViewModel(model);
-            }
+            var result = await _userManager.CreateAsync(model, password);
+            if (!result.Succeeded) 
+                throw new InvalidOperationException(result.ToString());
 
-            return new VmUserResult(result.Errors.Select(e => e.Description), result.Succeeded)
-            {
-                Data = vmUser
-            };
+            return _vmConverter.ToViewModel(model);
         }
 
         /// <inheritdoc />
-        public async Task<VmUserResult> Update(VmUser user)
+        public async Task Update(VmUser user)
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
             var model = await _userManager.FindByIdAsync(user.Id);
             if (model == null)
-                return new VmUserResult($"User with id='{user.Id}' not found");
+                throw new InvalidOperationException($"User with id='{user.Id}' not found");
 
             model.UserName = user.UserName;
             model.NormalizedUserName = user.UserName.ToUpper();
@@ -131,60 +125,40 @@ namespace WorkflowService.Services
             model.PositionCustom = user.Position;
 
             var result = await _userManager.UpdateAsync(model);
-            VmUser vmUser = null;
-            if (result.Succeeded)
-            {
-                vmUser = _vmConverter.ToViewModel(model);
-            }
-
-            return new VmUserResult(result.Errors.Select(e => e.Description), result.Succeeded)
-            {
-                Data = vmUser,
-                Succeeded = result.Succeeded
-            };
+            if (!result.Succeeded) 
+                throw new InvalidOperationException(result.ToString());
         }
 
         /// <inheritdoc />
-        public async Task<VmUserResult> Delete(string userId)
+        public async Task<VmUser> Delete(string userId)
         {
-            var model = await _userManager.FindByIdAsync(userId);
-            if (model == null)
-                throw new InvalidOperationException($"User with id='{userId}' not found");
+            return await RemoveRestore(userId, true);
+        }
 
-            model.IsRemoved = true;
-            var result = await _userManager.UpdateAsync(model);
-
-            VmUser vmUser = null;
-            if (result.Succeeded)
-            {
-                vmUser = _vmConverter.ToViewModel(model);
-            }
-
-            return new VmUserResult(result.Errors.Select(e => e.Description), result.Succeeded)
-            {
-                Data = vmUser
-            };
+        public async Task<VmUser> Restore(ApplicationUser currentUser, string userId)
+        {
+            return await RemoveRestore(userId, false);
         }
 
         /// <inheritdoc />
-        public async Task<VmUserResult> ChangePassword(ApplicationUser currentUser, string currentPassword, string newPassword)
+        public async Task ChangePassword(ApplicationUser currentUser, string currentPassword, string newPassword)
         {
             var result = await _userManager.ChangePasswordAsync(currentUser, currentPassword, newPassword);
-            return new VmUserResult(result.Errors.Select(e => e.Description), result.Succeeded);
+            if (!result.Succeeded)
+                throw new InvalidOperationException(result.ToString());
         }
 
         /// <inheritdoc />
-        public async Task<VmUserResult> ResetPassword(string id, string newPassword)
+        public async Task ResetPassword(string id, string newPassword)
         {
             var user = await _userManager.FindByIdAsync(id);
             var result = await _userManager.RemovePasswordAsync(user);
-            if (result.Succeeded)
-            {
+            if (result.Succeeded) 
                 result = await _userManager.AddPasswordAsync(user, newPassword);
-            }
-            return new VmUserResult(result.Errors.Select(e => e.Description), result.Succeeded);
-        }
 
+            if(!result.Succeeded)
+                throw new InvalidOperationException(result.ToString());
+        }
 
         private IQueryable<ApplicationUser> GetQuery(bool withRemoved)
         {
@@ -224,40 +198,65 @@ namespace WorkflowService.Services
         {
             if (filterFields == null) return query;
 
-            foreach (var field in filterFields)
+            foreach (var field in filterFields.Where(ff => ff != null))
             {
-                if (field == null)
-                    continue;
+                var strValues = field.Values?.Select(v => v.ToString().ToLower()).ToList()
+                                ?? new List<string>();
 
-                var strValue = field.Value?.ToString()?.ToLower();
-                if (field.Is(nameof(VmUser.Email)))
+                if (field.SameAs(nameof(VmUser.Email)))
                 {
-                    query = query.Where(u => u.Email.ToLower().Contains(strValue));
+                    var queries = strValues.Select(sv => query.Where(u => 
+                        u.Email.ToLower().Contains(sv))).ToArray();
+
+                    if (queries.Any()) 
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
-                else if (field.Is(nameof(VmUser.Phone)))
+                else if (field.SameAs(nameof(VmUser.Phone)))
                 {
-                    query = query.Where(u => u.PhoneNumber.ToLower().Contains(strValue));
+                    var queries = strValues.Select(sv => query.Where(u => 
+                        u.PhoneNumber.ToLower().Contains(sv))).ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
-                else if (field.Is(nameof(VmUser.Position)))
+                else if (field.SameAs(nameof(VmUser.Position)))
                 {
-                    query = query.Where(u => u.Position.Name.ToLower().Contains(strValue));
+                    var queries = strValues.Select(sv => query.Where(u =>
+                            u.Position.Name.ToLower().Contains(sv)
+                            || u.PositionCustom.ToLower().Contains(sv)))
+                        .ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
-                else if (field.Is(nameof(VmUser.LastName)))
+                else if (field.SameAs(nameof(VmUser.LastName)))
                 {
-                    query = query.Where(u => u.LastName.ToLower().Contains(strValue));
+                    var queries = strValues.Select(sv => query.Where(u =>
+                        u.LastName.ToLower().Contains(sv))).ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
-                else if (field.Is(nameof(VmUser.MiddleName)))
+                else if (field.SameAs(nameof(VmUser.MiddleName)))
                 {
-                    query = query.Where(u => u.MiddleName.ToLower().Contains(strValue));
+                    var queries = strValues.Select(sv => query.Where(u =>
+                        u.MiddleName.ToLower().Contains(sv))).ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
-                else if (field.Is(nameof(VmUser.FirstName)))
+                else if (field.SameAs(nameof(VmUser.FirstName)))
                 {
-                    query = query.Where(u => u.FirstName.ToLower().Contains(strValue));
+                    var queries = strValues.Select(sv => query.Where(u =>
+                        u.FirstName.ToLower().Contains(sv))).ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
-                else if (field.Is(nameof(VmUser.IsRemoved)))
+                else if (field.SameAs(nameof(VmUser.IsRemoved)))
                 {
-                    bool.TryParse(field.Value?.ToString(), out var isRemoved);
-                    query = query.Where(u => u.IsRemoved == isRemoved);
+                    var vals = field.Values.OfType<bool>().ToArray();
+                    query = query.Where(u => vals.Any(v => v == u.IsRemoved));
                 }
             }
 
@@ -367,6 +366,21 @@ namespace WorkflowService.Services
             }
 
             return orderedQuery ?? query;
+        }
+
+        private async Task<VmUser> RemoveRestore(string userId, bool isRemoved)
+        {
+            var model = await _userManager.FindByIdAsync(userId);
+            if (model == null)
+                throw new InvalidOperationException($"User with id='{userId}' not found");
+
+            model.IsRemoved = isRemoved;
+            var result = await _userManager.UpdateAsync(model);
+
+            if (!result.Succeeded)
+                throw new InvalidOperationException(result.ToString());
+
+            return _vmConverter.ToViewModel(model);
         }
 
 

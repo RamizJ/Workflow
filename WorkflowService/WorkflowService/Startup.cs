@@ -16,8 +16,8 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 using Workflow.DAL;
 using Workflow.DAL.Models;
-using WorkflowService.Services;
-using WorkflowService.Services.Abstract;
+using Workflow.Services;
+using Workflow.Services.Abstract;
 using static WorkflowService.ConfigKeys;
 
 #pragma warning disable 1591    //Disable xml documentation for this file
@@ -106,12 +106,14 @@ namespace WorkflowService
                 options.EnableDetailedErrors = true;
             });
 
+            //Services
             services.AddTransient<IDefaultDataInitializationService, DefaultDataInitializationService>();
             services.AddTransient<IAuthenticationService, AuthenticationService>();
             services.AddTransient<IProjectsService, ProjectsService>();
             services.AddTransient<IUsersService, UsersService>();
             services.AddTransient<ITeamsService, TeamsService>();
             services.AddTransient<ITeamUsersService, TeamUsersService>();
+            services.AddTransient<IProjectTeamsService, ProjectTeamsService>();
             services.AddTransient<IGoalsService, GoalsService>();
         }
 

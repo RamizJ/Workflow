@@ -9,40 +9,48 @@ namespace Workflow.VM.ViewModelConverters
     {
         public Goal ToModel(VmGoal viewModel)
         {
+            if (viewModel == null)
+                return null;
+
             return new Goal
             {
                 Id = viewModel.Id,
                 ParentGoalId = viewModel.ParentGoalId,
                 OwnerId = viewModel.OwnerId,
-                AttachmentId = viewModel.AttachmentId,
                 CreationDate = viewModel.CreationDate,
                 Title = viewModel.Title,
                 Description = viewModel.Description,
                 GoalNumber = viewModel.GoalNumber,
                 PerformerId = viewModel.PerformerId,
+                Observers = viewModel.Observers?.Select(oId => new GoalObserver(viewModel.Id, oId)).ToList(),
                 ProjectId = viewModel.ProjectId,
-                GoalState = viewModel.GoalState,
+                State = viewModel.State,
+                Priority = viewModel.Priority,
                 IsRemoved = viewModel.IsRemoved
             };
         }
 
         public VmGoal ToViewModel(Goal model)
         {
+            if (model == null)
+                return null;
+
             return new VmGoal
             {
                 Id = model.Id,
                 ParentGoalId = model.ParentGoalId,
                 ChildGoals = model.ChildGoals?.Select(x => x.Id).ToList(),
                 OwnerId = model.OwnerId,
-                AttachmentId = model.AttachmentId,
                 CreationDate = model.CreationDate,
                 Title = model.Title,
                 Description = model.Description,
                 GoalNumber = model.GoalNumber,
                 PerformerId = model.PerformerId,
-                Observers = model.Observers.Select(x => x.ObserverId).ToList(),
+                Observers = model.Observers?.Select(x => x.ObserverId).ToList(),
                 ProjectId = model.ProjectId,
-                GoalState = model.GoalState,
+                ProjectName = model.Project?.Name,
+                State = model.State,
+                Priority = model.Priority,
                 IsRemoved = model.IsRemoved
             };
         }

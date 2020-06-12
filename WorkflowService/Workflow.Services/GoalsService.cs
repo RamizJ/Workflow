@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
+using Workflow.Services.Abstract;
+using Workflow.Services.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
-using WorkflowService.Common;
-using WorkflowService.Services.Abstract;
 
-namespace WorkflowService.Services
+namespace Workflow.Services
 {
     /// <inheritdoc />
     public class GoalsService : IGoalsService
@@ -19,9 +20,12 @@ namespace WorkflowService.Services
         /// Конструктор
         /// </summary>
         /// <param name="dataContext"></param>
-        public GoalsService(DataContext dataContext)
+        /// <param name="userManager"></param>
+        public GoalsService(DataContext dataContext, 
+            UserManager<ApplicationUser> userManager)
         {
             _dataContext = dataContext;
+            _userManager = userManager;
             _vmConverter = new VmGoalConverter();
         }
 
@@ -32,21 +36,21 @@ namespace WorkflowService.Services
             if (currentUser == null)
                 throw new ArgumentNullException(nameof(currentUser));
 
-            var scope = await GetQuery(true)
-                .FirstOrDefaultAsync(s => s.Id == id);
-
-            return _vmConverter.ToViewModel(scope);
+            var query = await GetQuery(currentUser, true);
+            var goal = await query.FirstOrDefaultAsync(s => s.Id == id);
+            return _vmConverter.ToViewModel(goal);
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<VmGoal>> GetPage(ApplicationUser currentUser, int scopeId,
-            int pageNumber, int pageSize, string filter, FieldFilter[] filterFields,
-            FieldSort[] sortFields, bool withRemoved = false)
+        public async Task<IEnumerable<VmGoal>> GetPage(ApplicationUser currentUser, 
+            int projectId, int pageNumber, int pageSize, string filter, 
+            FieldFilter[] filterFields, FieldSort[] sortFields, bool withRemoved = false)
         {
             if (currentUser == null)
                 throw new ArgumentNullException(nameof(currentUser));
 
-            var query = GetQuery(withRemoved).Where(x => x.ProjectId == scopeId);
+            var query = await GetQuery(currentUser, withRemoved);
+            query = query.Where(x => x.ProjectId == projectId);
             query = Filter(filter, query);
             query = FilterByFields(filterFields, query);
             query = SortByFields(sortFields, query);
@@ -64,8 +68,8 @@ namespace WorkflowService.Services
             if (ids == null || ids.Length == 0)
                 return null;
 
-            return await GetQuery(true)
-                .Where(x => ids.Any(id => x.Id == id))
+            var query = await GetQuery(currentUser, true);
+            return await query.Where(x => ids.Any(id => x.Id == id))
                 .Select(x => _vmConverter.ToViewModel(x))
                 .ToArrayAsync();
         }
@@ -76,7 +80,7 @@ namespace WorkflowService.Services
             if (goal == null)
                 throw new ArgumentNullException(nameof(goal));
 
-            if (string.IsNullOrWhiteSpace(goal.Title))
+            if(string.IsNullOrWhiteSpace(goal.Title))
                 throw new InvalidOperationException("Goal title cannot be empty");
 
             var model = _vmConverter.ToModel(goal);
@@ -90,47 +94,58 @@ namespace WorkflowService.Services
         }
 
         /// <inheritdoc />
-        public async Task<VmGoal> Update(ApplicationUser currentUser, VmGoal goal)
+        public async Task Update(ApplicationUser currentUser, VmGoal goal)
         {
             if (goal == null)
-                return null;
+                throw new ArgumentNullException(nameof(goal));
 
             if (string.IsNullOrWhiteSpace(goal.Title))
                 throw new InvalidOperationException("Goal title cannot be empty");
 
-            var model = _vmConverter.ToModel(goal);
+            //var model = _vmConverter.ToModel(goal);
+            var query = await GetQuery(currentUser, true);
+            var model = query.FirstOrDefault(x => x.Id == goal.Id);
+            if(model == null)
+                throw new InvalidOperationException($"Goal with id='{goal.Id}' not found");
+
+            model.Title = goal.Title;
+            model.Description = goal.Description;
+            model.State = goal.State;
+            model.Priority = goal.Priority;
+            model.GoalNumber = goal.GoalNumber;
+            model.ParentGoalId = goal.ParentGoalId;
+            model.PerformerId = goal.PerformerId;
 
             _dataContext.Entry(model).State = EntityState.Modified;
             await _dataContext.SaveChangesAsync();
-            return _vmConverter.ToViewModel(model);
         }
 
         /// <inheritdoc />
         public async Task<VmGoal> Delete(ApplicationUser currentUser, int goalId)
         {
-            var model = await GetQuery(true)
-                .FirstOrDefaultAsync(s => s.Id == goalId);
-
-            if (model != null)
-            {
-                model.IsRemoved = true;
-                _dataContext.Goals.Update(model);
-                await _dataContext.SaveChangesAsync();
-
-                return _vmConverter.ToViewModel(model);
-            }
-
-            return null;
+            return await RemoveRestore(currentUser, goalId, true);
         }
 
-
-        private IQueryable<Goal> GetQuery(bool withRemoved)
+        public async Task<VmGoal> Restore(ApplicationUser currentUser, int goalId)
         {
+            return await RemoveRestore(currentUser, goalId, false);
+        }
+
+       private async Task<IQueryable<Goal>> GetQuery(ApplicationUser currentUser, bool withRemoved)
+        {
+            bool isAdmin = await _userManager.IsInRoleAsync(currentUser, RoleNames.ADMINISTRATOR_ROLE);
             var query = _dataContext.Goals.AsNoTracking()
                 .Include(x => x.Owner)
                 .Include(x => x.Observers)
                 .Include(x => x.Performer)
-                .AsQueryable();
+                .Include(x => x.Project)
+                //.ThenInclude(x => x.Team)
+                //.ThenInclude(x => x.TeamUsers)
+                .Where(x => isAdmin
+                            || x.Project.OwnerId == currentUser.Id
+                            || x.Project.ProjectTeams
+                                .SelectMany(pt => pt.Team.TeamUsers)
+                                .Any(tu => tu.UserId == currentUser.Id));
 
             if (!withRemoved)
                 query = query.Where(x => x.IsRemoved == false);
@@ -145,11 +160,12 @@ namespace WorkflowService.Services
             var words = filter.Split(" ");
             foreach (var word in words.Select(w => w.ToLower()))
             {
+                int.TryParse(word, out int intValue);
                 query = query
                     .Where(goal => goal.Title.ToLower().Contains(word)
                                    || goal.Description.ToLower().Contains(word)
                                    || goal.Project.Name.ToLower().Contains(word)
-                                   || goal.GoalNumber.ToString() == word
+                                   || goal.GoalNumber == intValue
                                    || goal.Owner.FirstName.ToLower().Contains(word)
                                    || goal.Owner.MiddleName.ToLower().Contains(word)
                                    || goal.Owner.LastName.ToLower().Contains(word)
@@ -165,56 +181,91 @@ namespace WorkflowService.Services
         {
             if (filterFields == null) return query;
 
-            foreach (var field in filterFields)
+            foreach (var field in filterFields.Where(ff => ff != null))
             {
-                if (field == null)
-                    continue;
+                var strValues = field.Values?
+                                    .Select(v => v?.ToString()?.ToLower())
+                                    .Where(v => v != null)
+                                    .ToList()
+                                ?? new List<string>();
 
-                var strValue = field.Value?.ToString()?.ToLower();
+                if (field.SameAs(nameof(VmGoal.Title)))
+                {
+                    var queries = strValues.Select(sv => query.Where(p =>
+                        p.Title.ToLower().Contains(sv))).ToArray();
 
-                if (field.Is(nameof(VmGoal.Title)))
-                {
-                    query = query.Where(goal => goal.Title.ToLower().Contains(strValue));
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
-                else if (field.Is(nameof(VmGoal.Description)))
+                else if (field.SameAs(nameof(VmGoal.Description)))
                 {
-                    query = query.Where(goal => goal.Description.ToLower().Contains(strValue));
-                }
-                else if (field.Is(nameof(VmGoal.GoalNumber)))
-                {
-                    int.TryParse(field.Value?.ToString(), out var intValue);
-                    query = query.Where(goal => goal.GoalNumber == intValue);
-                }
-                else if (field.Is(nameof(VmGoal.GoalState)))
-                {
-                    Enum.TryParse<GoalState>(field.Value?.ToString(), out var state);
-                    query = query.Where(goal => goal.GoalState == state);
-                }
-                else if (field.Is(nameof(VmGoal.OwnerFio)))
-                {
-                    var names = strValue?.Split();
-                    if (names == null || names.Length == 0)
-                        continue;
+                    var queries = strValues.Select(sv => query.Where(p =>
+                        p.Description.ToLower().Contains(sv))).ToArray();
 
-                    foreach (var name in names)
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
+                }
+                else if (field.SameAs(nameof(VmGoal.ProjectName)))
+                {
+                    var queries = strValues.Select(sv => query.Where(p =>
+                        p.Project.Name.ToLower().Contains(sv))).ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
+                }
+                else if (field.SameAs(nameof(VmGoal.GoalNumber)))
+                {
+                    var vals = field.Values.OfType<int>().ToArray();
+                    query = query.Where(g => vals.Any(v => v == g.GoalNumber));
+                }
+                else if (field.SameAs(nameof(VmGoal.State)))
+                {
+                    var vals = field.Values.Select(v =>
                     {
-                        query = query.Where(goal => goal.Owner.FirstName.ToLower().Contains(name)
-                                                 || goal.Owner.MiddleName.ToLower().Contains(name)
-                                                 || goal.Owner.LastName.ToLower().Contains(name));
-                    }
-                }
-                else if (field.Is(nameof(VmGoal.PerformerFio)))
-                {
-                    var names = strValue?.Split();
-                    if (names == null || names.Length == 0)
-                        continue;
+                        GoalState? state = null;
+                        if (Enum.TryParse<GoalState>(v.ToString(), out var s))
+                            state = s;
 
-                    foreach (var name in names)
+                        return state;
+                    }).Where(s => s != null).Cast<GoalState>().ToArray();
+
+                    query = query.Where(g => vals.Any(v => v == g.State));
+                }
+                else if (field.SameAs(nameof(VmGoal.Priority)))
+                {
+                    var vals = field.Values.Select(v =>
                     {
-                        query = query.Where(goal => goal.Performer.FirstName.ToLower().Contains(name)
-                                                    || goal.Performer.MiddleName.ToLower().Contains(name)
-                                                    || goal.Performer.LastName.ToLower().Contains(name));
-                    }
+                        GoalPriority? priority = null;
+                        if (Enum.TryParse<GoalPriority>(v.ToString(), out var p))
+                            priority = p;
+                        return priority;
+                    }).Where(s => s != null).Cast<GoalPriority>().ToArray();
+
+                    query = query.Where(g => vals.Any(v => v == g.Priority));
+                }
+                else if (field.SameAs(nameof(VmGoal.OwnerFio)))
+                {
+                    var names = strValues.SelectMany(sv => sv.Split(" "));
+                    var queries = names.Select(name => query.Where(p =>
+                            p.Owner.LastName.ToLower().Contains(name)
+                            || p.Owner.FirstName.ToLower().Contains(name)
+                            || p.Owner.MiddleName.ToLower().Contains(name)))
+                        .ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
+                }
+                else if (field.SameAs(nameof(VmGoal.PerformerFio)))
+                {
+                    var names = strValues.SelectMany(sv => sv.Split(" "));
+                    var queries = names.Select(name => query.Where(p =>
+                            p.Performer.LastName.ToLower().Contains(name)
+                            || p.Performer.FirstName.ToLower().Contains(name)
+                            || p.Performer.MiddleName.ToLower().Contains(name)))
+                        .ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
             }
 
@@ -276,19 +327,19 @@ namespace WorkflowService.Services
                             : orderedQuery.ThenByDescending(goal => goal.GoalNumber);
                     }
                 }
-                else if (field.Is(nameof(VmGoal.GoalState)))
+                else if (field.Is(nameof(VmGoal.State)))
                 {
                     if (orderedQuery == null)
                     {
                         orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(goal => goal.GoalState)
-                            : query.OrderByDescending(goal => goal.GoalState);
+                            ? query.OrderBy(goal => goal.State)
+                            : query.OrderByDescending(goal => goal.State);
                     }
                     else
                     {
                         orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(goal => goal.GoalState)
-                            : orderedQuery.ThenByDescending(goal => goal.GoalState);
+                            ? orderedQuery.ThenBy(goal => goal.State)
+                            : orderedQuery.ThenByDescending(goal => goal.State);
                     }
                 }
                 else if (field.Is(nameof(VmGoal.OwnerFio)))
@@ -342,8 +393,23 @@ namespace WorkflowService.Services
             return orderedQuery ?? query;
         }
 
+        private async Task<VmGoal> RemoveRestore(ApplicationUser currentUser, int goalId, bool isRemoved)
+        {
+            var query = await GetQuery(currentUser, true);
+            var goal = await query.FirstOrDefaultAsync(g => g.Id == goalId);
+            if (goal == null)
+                throw new InvalidOperationException($"The goal with id='{goalId}' not found");
+
+            goal.IsRemoved = isRemoved;
+            _dataContext.Entry(goal).State = EntityState.Modified;
+            await _dataContext.SaveChangesAsync();
+
+            return _vmConverter.ToViewModel(goal);
+        }
+
 
         private readonly DataContext _dataContext;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly VmGoalConverter _vmConverter;
     }
 }

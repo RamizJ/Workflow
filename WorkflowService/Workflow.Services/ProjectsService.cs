@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
+using Workflow.Services.Abstract;
+using Workflow.Services.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
-using WorkflowService.Common;
-using WorkflowService.Services.Abstract;
 
-namespace WorkflowService.Services
+namespace Workflow.Services
 {
     /// <inheritdoc />
     public class ProjectsService : IProjectsService
@@ -18,10 +19,12 @@ namespace WorkflowService.Services
         /// <summary>
         /// Конструктор
         /// </summary>
-        /// <param name="dataContext">Контекст БД</param>
-        public ProjectsService(DataContext dataContext)
+        /// <param name="dataContext"></param>
+        /// <param name="userManager"></param>
+        public ProjectsService(DataContext dataContext, UserManager<ApplicationUser> userManager)
         {
             _dataContext = dataContext;
+            _userManager = userManager;
             _vmConverter = new VmProjectConverter();
         }
 
@@ -32,10 +35,10 @@ namespace WorkflowService.Services
             if(user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var scope = await GetQuery(user, true)
-                .FirstOrDefaultAsync(s => s.Id == id);
+            var query = await GetQuery(user, true);
+            var project = await query.FirstOrDefaultAsync(s => s.Id == id);
 
-            return _vmConverter.ToViewModel(scope);
+            return _vmConverter.ToViewModel(project);
         }
 
         
@@ -48,7 +51,7 @@ namespace WorkflowService.Services
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var query = GetQuery(user, withRemoved);
+            var query = await GetQuery(user, withRemoved);
             query = Filter(filter, query);
             query = FilterByFields(filterFields, query);
             query = SortByFields(sortFields, query);
@@ -65,104 +68,94 @@ namespace WorkflowService.Services
         {
             if (ids == null || ids.Length == 0)
                 return null;
-            
-            return await GetQuery(user, true)
-                .Where(s => ids.Any(id => s.Id == id))
+
+            var query = await GetQuery(user, true);
+            return await query.Where(s => ids.Any(id => s.Id == id))
                 .Select(s => _vmConverter.ToViewModel(s))
                 .ToArrayAsync();
         }
 
         /// <inheritdoc />
-        public async Task<VmProjectResult> Create(ApplicationUser user, VmProject project)
+        public async Task<VmProject> Create(ApplicationUser user, VmProject project)
         {
             if(project == null)
                 throw new ArgumentNullException(nameof(project));
 
-            var result = new VmProjectResult();
             if (string.IsNullOrWhiteSpace(project.Name))
-            {
-                result.AddError("Имя проекта не должно быть пустым");
-            }
-            else
-            {
-                var model = _vmConverter.ToModel(project);
-                model.Id = 0;
-                model.OwnerId = user.Id;
+                throw new InvalidOperationException("Cannot create project. The name cannot be empty");
 
-                await _dataContext.Projects.AddAsync(model);
-                await _dataContext.SaveChangesAsync();
+            var model = _vmConverter.ToModel(project);
+            model.Id = 0;
+            model.OwnerId = user.Id;
 
-                result.Data = _vmConverter.ToViewModel(model);
-            }
+            await _dataContext.Projects.AddAsync(model);
+            await _dataContext.SaveChangesAsync();
 
-            return result;
+            return _vmConverter.ToViewModel(model);
         }
 
         /// <inheritdoc />
-        public async Task<VmProjectResult> Update(ApplicationUser user, VmProject project)
+        public async Task Update(ApplicationUser user, VmProject project)
         {
             if (project == null)
-                return null;
+                throw new ArgumentNullException(nameof(project));
 
-            var result = new VmProjectResult();
             if (string.IsNullOrWhiteSpace(project.Name))
+                throw new InvalidOperationException("Cannot create project. The name cannot be empty");
+
+            var model = _vmConverter.ToModel(project);
+            try
             {
-                result.AddError("Имя проекта не должно быть пустым");
+                _dataContext.Entry(model).State = EntityState.Modified;
+                await _dataContext.SaveChangesAsync();
             }
-            else
+            catch (DbUpdateConcurrencyException)
             {
-                var model = _vmConverter.ToModel(project);
-
-                try
-                {
-                    _dataContext.Entry(model).State = EntityState.Modified;
-                    await _dataContext.SaveChangesAsync();
-                    result.Data = _vmConverter.ToViewModel(model);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    bool isExist = await _dataContext.Teams.AnyAsync(t => t.Id == project.Id);
-                    result.AddError(isExist
-                        ? "Не удалось обновить проект"
-                        : "Не удалось обновить проект. Проект не найден");
-                }
+                bool isExist = await _dataContext.Teams.AnyAsync(t => t.Id == project.Id);
+                throw new InvalidOperationException(isExist 
+                    ? "Cannot update project"
+                    : "Cannot update project. Project not found");
             }
-
-            
-
-            return result;
         }
 
         /// <inheritdoc />
-        public async Task<VmProjectResult> Delete(ApplicationUser user, int scopeId)
+        public async Task<VmProject> Delete(ApplicationUser user, int projectId)
         {
-            var model = await GetQuery(user, true)
-                .FirstOrDefaultAsync(s => s.Id == scopeId);
-            var result = new VmProjectResult();
-            if (model != null)
-            {
-                model.IsRemoved = true;
-                _dataContext.Projects.Update(model);
-                await _dataContext.SaveChangesAsync();
-                result.Data = _vmConverter.ToViewModel(model);
-            }
-            else
-            {
-                result.AddError("Не удалось удалить проект. Проект не найден");
-            }
-
-            return null;
+            return await RemoveRestore(user, projectId, true);
         }
 
-
-        private IQueryable<Project> GetQuery(ApplicationUser user, bool withRemoved)
+        public async Task<VmProject> Restore(ApplicationUser currentUser, int projectId)
         {
+            return await RemoveRestore(currentUser, projectId, false);
+        }
+
+        private async Task<VmProject> RemoveRestore(ApplicationUser user, int projectId, bool isRemoved)
+        {
+            var query = await GetQuery(user, true);
+            var model = await query.FirstOrDefaultAsync(s => s.Id == projectId);
+            if (model == null)
+                throw new InvalidOperationException($"Project with id='{projectId}' not found for current user");
+
+            model.IsRemoved = isRemoved;
+            _dataContext.Entry(model).State = EntityState.Modified;
+            await _dataContext.SaveChangesAsync();
+
+            return _vmConverter.ToViewModel(model);
+        }
+
+        private async Task<IQueryable<Project>> GetQuery(ApplicationUser currentUser, bool withRemoved)
+        {
+            bool isAdmin = await _userManager.IsInRoleAsync(currentUser, RoleNames.ADMINISTRATOR_ROLE);
             var query = _dataContext.Projects
                 .Include(s => s.Owner)
-                .Include(s => s.Team)
+                .Include(s => s.ProjectTeams)
                 .Include(s => s.Group)
-                .Where(s => s.OwnerId == user.Id
-                            || s.Team.TeamUsers.Any(tu => tu.UserId == user.Id));
+                .Where(s => isAdmin
+                            || s.OwnerId == currentUser.Id
+                            || s.ProjectTeams
+                                .Any(pt => pt.Team.CreatorId == currentUser.Id
+                                           || pt.Team.TeamUsers
+                                               .Any(tu => tu.UserId == currentUser.Id)));
 
             if (!withRemoved)
                 query = query.Where(s => s.IsRemoved == false);
@@ -177,13 +170,14 @@ namespace WorkflowService.Services
             var words = filter.Split(" ");
             foreach (var word in words.Select(w => w.ToLower()))
             {
+                bool isDate = DateTime.TryParse(word, out var creationDate);
                 query = query
-                    .Where(s => s.Name.ToLower().Contains(word)
-                                || s.Group.Name.ToLower().Contains(word)
-                                || s.Team.Name.ToLower().Contains(word)
-                                || s.Owner.FirstName.ToLower().Contains(word)
-                                || s.Owner.MiddleName.ToLower().Contains(word)
-                                || s.Owner.LastName.ToLower().Contains(word));
+                    .Where(p => p.Name.ToLower().Contains(word)
+                                || p.Group.Name.ToLower().Contains(word)
+                                || isDate && p.CreationDate == creationDate
+                                || p.Owner.FirstName.ToLower().Contains(word)
+                                || p.Owner.MiddleName.ToLower().Contains(word)
+                                || p.Owner.LastName.ToLower().Contains(word));
             }
 
             return query;
@@ -193,46 +187,52 @@ namespace WorkflowService.Services
         {
             if (filterFields == null) return query;
 
-            foreach (var field in filterFields)
+            foreach (var field in filterFields.Where(ff => ff != null))
             {
-                if(field == null)
-                    continue;
+                var strValues = field.Values?
+                                    .Select(v => v?.ToString()?.ToLower())
+                                    .Where(v => v != null)
+                                    .ToList()
+                                ?? new List<string>();
 
-                var strValue = field.Value?.ToString()?.ToLower();
-                if (field.Is(nameof(VmProject.Name)))
+                if (field.SameAs(nameof(VmProject.Name)))
                 {
-                    query = query.Where(s => s.Name.ToLower().Contains(strValue));
-                }
-                else if (field.Is(nameof(VmProject.GroupName)))
-                {
-                    query = query.Where(s => s.Group.Name.ToLower().Contains(strValue));
-                }
-                else if (field.Is(nameof(VmProject.TeamName)))
-                {
-                    query = query.Where(s => s.Team.Name.ToLower().Contains(strValue));
-                }
-                else if (field.Is(nameof(VmProject.IsRemoved)))
-                {
-                    bool.TryParse(field.Value?.ToString(), out var isRemoved);
-                    query = query.Where(s => s.IsRemoved == isRemoved);
-                }
-                else if (field.Is(nameof(VmProject.CreationDate)))
-                {
-                    DateTime.TryParse(field.Value?.ToString(), out var creationDate);
-                    query = query.Where(s => s.CreationDate == creationDate);
-                }
-                else if (field.Is(nameof(VmProject.OwnerFio)))
-                {
-                    var names = strValue?.Split();
-                    if(names == null || names.Length == 0)
-                        continue;
+                    var queries = strValues.Select(sv => query.Where(p =>
+                        p.Name.ToLower().Contains(sv))).ToArray();
 
-                    foreach (var name in names)
-                    {
-                        query = query.Where(s => s.Owner.FirstName.ToLower().Contains(name)
-                                                 || s.Owner.MiddleName.ToLower().Contains(name)
-                                                 || s.Owner.LastName.ToLower().Contains(name));
-                    }
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
+                }
+                else if (field.SameAs(nameof(VmProject.GroupName)))
+                {
+                    var queries = strValues.Select(sv => query.Where(p =>
+                        p.Group.Name.ToLower().Contains(sv))).ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
+                }
+                else if (field.SameAs(nameof(VmProject.IsRemoved)))
+                {
+                    var vals = field.Values.OfType<bool>().ToArray();
+                    query = query.Where(p => vals.Any(v => v == p.IsRemoved));
+                }
+                else if (field.SameAs(nameof(VmProject.CreationDate)))
+                {
+                    var vals = field.Values.OfType<DateTime>().ToArray();
+                    query = query.Where(p => vals.Any(v => v == p.CreationDate));
+                }
+                else if (field.SameAs(nameof(VmProject.OwnerFio)))
+                {
+                    var names = strValues.SelectMany(sv => sv.Split(" "));
+
+                    var queries = names.Select(name => query.Where(p =>
+                            p.Owner.LastName.ToLower().Contains(name)
+                            || p.Owner.FirstName.ToLower().Contains(name)
+                            || p.Owner.MiddleName.ToLower().Contains(name)))
+                        .ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
             }
 
@@ -277,21 +277,6 @@ namespace WorkflowService.Services
                         orderedQuery = field.SortType == SortType.Ascending
                             ? orderedQuery.ThenBy(s => s.Group.Name)
                             : orderedQuery.ThenByDescending(s => s.Group.Name);
-                    }
-                }
-                else if (field.Is(nameof(VmProject.TeamName)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(s => s.Team.Name)
-                            : query.OrderByDescending(s => s.Team.Name);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(s => s.Team.Name)
-                            : orderedQuery.ThenByDescending(s => s.Team.Name);
                     }
                 }
                 else if (field.Is(nameof(VmProject.CreationDate)))
@@ -346,6 +331,7 @@ namespace WorkflowService.Services
 
 
         private readonly DataContext _dataContext;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly VmProjectConverter _vmConverter;
     }
 }

@@ -14,6 +14,7 @@ namespace Workflow.Tests
         public IList<Team> Teams { get; set; }
         public IList<TeamUser> TeamUsers { get; set; }
         public IList<Project> Projects { get; set; }
+        public List<ProjectTeam> ProjectTeams { get; set; }
         public IList<Goal> Goals { get; set; }
         public IList<Position> Positions { get; set; }
 
@@ -47,10 +48,11 @@ namespace Workflow.Tests
 
             Groups = Builder<Group>.CreateListOfSize(2)
                 .All().With(g => g.Name = $"Group{g.Id}").Build();
-                
+
             Teams = Builder<Team>.CreateListOfSize(10)
                 .All()
                 .With(x => x.GroupId = null)
+                .With(x => x.CreatorId = Users.First().Id)
                 .TheFirst(6).With(x => x.Name = $"Team1{x.Id}")
                 .TheNext(4).With(x => x.Name = $"Team2{x.Id}")
                 .TheFirst(9).With(x => x.IsRemoved = false)
@@ -60,48 +62,50 @@ namespace Workflow.Tests
             Projects = Builder<Project>.CreateListOfSize(10)
                 .All()
                 .With(s => s.OwnerId = Users.First().Id)
-                .With(s => s.TeamId = null)
                 .TheFirst(6).With((s, i) => s.Name = $"Scope1{i}")
                 .TheNext(4).With((s, i) => s.Name = $"Scope2{i}")
-                .TheFirst(3).With(s => s.GroupId = Groups[0].Id).With(s => s.TeamId = Teams[0].Id)
-                .TheNext(7).With(s => s.GroupId = Groups[1].Id).With(s => s.TeamId = Teams[1].Id)
+                .TheFirst(3).With(s => s.GroupId = Groups[0].Id)
+                .TheNext(7).With(s => s.GroupId = Groups[1].Id)
                 .TheFirst(9).With(s => s.IsRemoved = false)
                 .TheLast(1).With(s => s.IsRemoved = true)
                 .Build();
 
-            TeamUsers = Builder<TeamUser>.CreateListOfSize(1)
-                .All().WithFactory(() => new TeamUser(Teams[0].Id, Users[1].Id))
+            TeamUsers = Builder<TeamUser>.CreateListOfSize(10)
+                .TheFirst(6).WithFactory(i => new TeamUser(Teams[0].Id, Users[i].Id))
+                .TheNext(4).WithFactory(i => new TeamUser(Teams[1].Id, Users[i].Id))
                 .Build().ToList();
 
+            ProjectTeams = Builder<ProjectTeam>.CreateListOfSize(10)
+                .TheFirst(6).WithFactory(i => new ProjectTeam(Projects[i].Id, Teams[0].Id))
+                .TheNext(4).WithFactory(i => new ProjectTeam(Projects[i].Id, Teams[1].Id))
+                .Build().ToList();
+
+
             Goals = Builder<Goal>.CreateListOfSize(10)
-                .TheFirst(5).WithFactory(i => new Goal
-                {
-                    OwnerId = Users[0].Id,
-                    PerformerId = Users[0].Id,
-                    Title = $"Goal {i}",
-                    ProjectId = Projects[0].Id
-                })
-                .With(x => x.AttachmentId = null)
+                .All()
+                .With(x => x.ProjectId = Projects.First().Id)
+                .TheFirst(6)
+                .With(x => x.OwnerId = Users[0].Id)
+                .With(x => x.PerformerId = Users[0].Id)
                 .With(x => x.ParentGoalId = null)
-                .TheNext(5).WithFactory(i => new Goal
-                {
-                    OwnerId = Users[1].Id,
-                    PerformerId = Users[1].Id,
-                    Title = $"Goal {i}",
-                    ProjectId = Projects[1].Id
-                })
-                .With(x => x.AttachmentId = null)
+                .With(x => x.Title = $"Goal1{x.Id}")
+                .TheNext(4)
+                .With(x => x.OwnerId = Users[1].Id)
+                .With(x => x.PerformerId = Users[1].Id)
                 .With(x => x.ParentGoalId = null)
+                .With(x => x.Title = $"Goal2{x.Id}")
+                .TheFirst(9).With(x => x.IsRemoved = false)
+                .TheNext(1).With(x => x.IsRemoved = true)
                 .Build().ToList();
 
             foreach (var user in Users)
                 userManager.CreateAsync(user, "Aa010110!");
 
-            //context.Users.AddRange(Users);
             context.Groups.AddRange(Groups);
             context.Teams.AddRange(Teams);
             context.TeamUsers.AddRange(TeamUsers);
             context.Projects.AddRange(Projects);
+            context.ProjectTeams.AddRange(ProjectTeams);
             context.Goals.AddRange(Goals);
             context.Positions.AddRange(Positions);
 

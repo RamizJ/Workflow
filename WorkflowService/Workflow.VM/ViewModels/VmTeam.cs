@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using Workflow.VM.Common;
-
-namespace Workflow.VM.ViewModels
+﻿namespace Workflow.VM.ViewModels
 {
     public class VmTeam
     {
@@ -12,11 +9,5 @@ namespace Workflow.VM.ViewModels
         public string GroupName { get; set; }
         public bool IsRemoved { get; set; }
 
-        public List<string> TeamMembers { get; set; }
     }
-
-
-    /// <inheritdoc />
-    public class VmTeamResult : OperationResult<VmTeam>
-    { }
 }

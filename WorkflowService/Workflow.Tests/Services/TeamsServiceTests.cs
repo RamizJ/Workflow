@@ -7,10 +7,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Workflow.DAL;
 using Workflow.DAL.Models;
+using Workflow.Services;
+using Workflow.Services.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
-using WorkflowService.Common;
-using WorkflowService.Services;
 
 namespace Workflow.Tests.Services
 {
@@ -92,12 +92,12 @@ namespace Workflow.Tests.Services
             //Arrange
 
             //Act
-            var resultScopes = (await _service.GetPage(_testData.Users.First(),
+            var teams = (await _service.GetPage(_testData.Users.First(),
                 pageNumber, pageSize,
                 "", null, null)).ToArray();
 
             //Assert
-            Assert.AreEqual(expectedCount, resultScopes.Length);
+            Assert.AreEqual(expectedCount, teams.Length);
         }
 
         [TestCase(0, 12, null, 9)]
@@ -121,18 +121,18 @@ namespace Workflow.Tests.Services
             Assert.AreEqual(expectedCount, resultScopes.Length);
         }
 
-        [TestCase(0, 5, null, "Name", "Team1", false, 5)]
-        [TestCase(1, 5, null, "Name", "Team1", false, 1)]
-        [TestCase(0, 5, null, "Name", "Team2", false, 3)]
-        [TestCase(0, 5, null, "Description", "descriptioN1", false, 1)]
-        [TestCase(0, 5, null, "isRemoved", true, true, 1)]
+        [TestCase(0, 5, null, "Name", new object[] {"Team1"}, false, 5)]
+        [TestCase(1, 5, null, "Name", new object[] {"Team1"}, false, 1)]
+        [TestCase(0, 5, null, "Name", new object[] {"Team2"}, false, 3)]
+        [TestCase(0, 5, null, "Description", new object[] {"descriptioN1"}, false, 1)]
+        [TestCase(0, 5, null, "isRemoved", new object[] {true}, true, 1)]
         public async Task GetPageFilterFieldsTest(int pageNumber, int pageSize,
-            string filter, string fieldName, object value, bool withRemoved, int expectedCount)
+            string filter, string fieldName, object[] values, bool withRemoved, int expectedCount)
         {
             //Arrange
 
             //Act
-            var filterField = new FieldFilter(fieldName, value);
+            var filterField = new FieldFilter(fieldName, values);
             var resultScopes = (await _service.GetPage(_testData.Users.First(),
                 pageNumber, pageSize,
                 filter, new[] { filterField }, null, withRemoved)).ToArray();
@@ -163,13 +163,14 @@ namespace Workflow.Tests.Services
         [Test]
         public void CreateForNullInputTest()
         {
-            Assert.ThrowsAsync<ArgumentNullException>(async () => await _service.Create(_testData.Users.First(), null));
+            Assert.ThrowsAsync<ArgumentNullException>(async () => 
+                await _service.Create(_currentUser, 1, null));
         }
 
         [TestCase(null)]
         [TestCase("")]
         [TestCase("  ")]
-        public async Task CreateForNullInvalidNameTest(string name)
+        public void CreateForNullInvalidNameTest(string name)
         {
             //Arrange
             var vmTeam = new VmTeam
@@ -181,10 +182,10 @@ namespace Workflow.Tests.Services
             };
 
             //Act
-            var result = await _service.Create(_testData.Users.First(), vmTeam);
 
             //Assert
-            Assert.IsFalse(result.Succeeded);
+            Assert.ThrowsAsync<InvalidOperationException>(async () => 
+                await _service.Create(_currentUser, 1, vmTeam));
         }
 
         [TestCase(0)]
@@ -200,47 +201,42 @@ namespace Workflow.Tests.Services
                 GroupId = null,
                 IsRemoved = false
             };
-            var currentUser = _testData.Users.First();
 
             //Act
-            var result = await _service.Create(currentUser, vmTeam);
+            var result = await _service.Create(_currentUser, 1, vmTeam);
 
             //Assert
-            Assert.IsTrue(result.Succeeded);
-            Assert.AreEqual(_testData.Projects.Count + 1, result.Data.Id);
-            Assert.AreEqual("Team", result.Data.Name);
+            Assert.IsNotNull(result);
+            Assert.Greater(result.Id, 0);
+            Assert.AreEqual(vmTeam.Name, result.Name);
         }
-
 
         [TestCase(null)]
         [TestCase("")]
         [TestCase("  ")]
-        public async Task UpdateForNullInvalidNameTest(string name)
+        public void UpdateForNullInvalidNameTest(string name)
         {
             //Arrange
             var team = _testData.Teams.First();
             team.Name = name;
             var vmTeam = _vmConverter.ToViewModel(team);
 
-            var result = await _service.Create(_testData.Users.First(), vmTeam);
-
-            Assert.IsFalse(result.Succeeded);
+            Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await _service.Create(_currentUser, 1, vmTeam));
         }
 
         [TestCase(-1)]
         [TestCase(0)]
         [TestCase(int.MaxValue)]
-        public async Task UpdateForNotExistedTest(int id)
+        public void UpdateForNotExistedTest(int id)
         {
             //Arrange
             var team = _testData.Teams.First();
             team.Id = id;
             var vmTeam = _vmConverter.ToViewModel(team);
 
-            var result = await _service.Update(_testData.Users.First(), vmTeam);
-
-            Assert.IsFalse(result.Succeeded);
-            Assert.AreEqual(1, result.Errors.Count);
+            //Assert
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Update(_testData.Users.First(), vmTeam));
         }
 
         [TestCase("TeamNew1", "DescriptionNew1")]
@@ -253,19 +249,18 @@ namespace Workflow.Tests.Services
             var vmTeam = _vmConverter.ToViewModel(team);
 
             //Act
-            var result = await _service.Update(_currentUser, vmTeam);
+            await _service.Update(_currentUser, vmTeam);
+            var expectedTeam = _dataContext.Teams.First();
 
             //Assert
-            Assert.IsTrue(result.Succeeded);
-            Assert.AreEqual(name, result.Data.Name);
-            Assert.AreEqual(description, result.Data.Description);
+            Assert.AreEqual(name, expectedTeam.Name);
+            Assert.AreEqual(description, expectedTeam.Description);
         }
 
 
-        [TestCase(-1, false)]
-        [TestCase(0, false)]
-        [TestCase(1, true)]
-        public async Task DeleteTest(int teamId, bool isSucceed)
+        [TestCase(1)]
+        [TestCase(2)]
+        public async Task DeleteTest(int teamId)
         {
             //Arrange
 
@@ -273,9 +268,34 @@ namespace Workflow.Tests.Services
             var result = await _service.Delete(_currentUser, teamId);
 
             //Assert
-            Assert.AreEqual(result.Succeeded, isSucceed);
-            if(isSucceed)
-                Assert.AreEqual(teamId, result.Data.Id);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(teamId, result.Id);
+        }
+
+        [TestCase(0)]
+        [TestCase(-1)]
+        public void DeleteNotExistedTest(int teamId)
+        {
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Delete(_currentUser, teamId));
+        }
+
+
+        [TestCase(1)]
+        [TestCase(10)]
+        public async Task RestoreGoalTest(int teamId)
+        {
+            //Act
+            var result = await _service.Restore(_currentUser, teamId);
+
+            //Assert
+            Assert.IsFalse(result.IsRemoved);
+        }
+
+        [TestCase(-1)]
+        [TestCase(0)]
+        public void RestoreNotExistedGoalTest(int teamId)
+        {
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Restore(_currentUser, teamId));
         }
     }
 }

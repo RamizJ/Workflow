@@ -1,11 +1,12 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Internal;
 
-namespace WorkflowService.Common
+namespace Workflow.Services.Common
 {
     /// <summary>
-    /// Сортировка по полю
+    /// Фильтр по полю
     /// </summary>
-    public class FieldSort
+    public class FieldFilter
     {
         /// <summary>
         /// Имя поля
@@ -13,26 +14,26 @@ namespace WorkflowService.Common
         public string FieldName { get; set; }
 
         /// <summary>
-        /// Тип сортировки
+        /// Значения поля
         /// </summary>
-        public SortType SortType { get; set; }
+        public object[] Values { get; set; }
 
 
         /// <summary>
         /// 
         /// </summary>
-        public FieldSort()
+        public FieldFilter()
         { }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="fieldName">Имя поля по которому будет осуществляться сортировка</param>
-        /// <param name="sortType">Тип сортировки</param>
-        public FieldSort(string fieldName, SortType sortType)
+        /// <param name="fieldName">Имя поля</param>
+        /// <param name="values">Значение</param>
+        public FieldFilter(string fieldName, object[] values)
         {
             FieldName = fieldName;
-            SortType = sortType;
+            Values = values;
         }
 
 
@@ -41,9 +42,14 @@ namespace WorkflowService.Common
         /// </summary>
         /// <param name="fieldName">Имя поля</param>
         /// <returns></returns>
-        public bool Is(string fieldName)
+        public bool SameAs(string fieldName)
         {
             return FieldName.Equals(fieldName, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public bool HasValuesAndSameAs(string fieldName)
+        {
+            return SameAs(fieldName) && Values != null && Values.Length > 0;
         }
     }
 }
