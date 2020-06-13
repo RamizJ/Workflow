@@ -90,6 +90,30 @@ namespace WorkflowService.Controllers
         }
 
         /// <summary>
+        /// Проверка существования пользователя с указанным email
+        /// </summary>
+        /// <param name="email">Email пользователя</param>
+        /// <returns></returns>
+        [HttpGet("{email}")]
+        public async Task<ActionResult<bool>> IsEmailExist([FromQuery]string email)
+        {
+            var isExist = await _service.IsEmailExist(email);
+            return Ok(isExist);
+        }
+
+        /// <summary>
+        /// Проверка существования пользователя с указанным именем пользователя
+        /// </summary>
+        /// <param name="userName">Имя пользователя</param>
+        /// <returns></returns>
+        [HttpGet("{userName}")]
+        public async Task<ActionResult<bool>> IsUserNameExist(string userName)
+        {
+            var isExist = await _service.IsUserNameExist(userName);
+            return Ok(isExist);
+        }
+
+        /// <summary>
         /// Добавление нового пользователя
         /// </summary>
         /// <param name="user">Параметры пользователя. Пароль должен содержать не менее 6 символов, включая цифры</param>

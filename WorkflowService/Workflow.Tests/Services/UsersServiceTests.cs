@@ -233,6 +233,35 @@ namespace Workflow.Tests.Services
         }
 
 
+        [TestCase("Email1@email", true)]
+        [TestCase("email2@email", true)]
+        [TestCase("email101@email", false)]
+        public async Task IsEmailExistTest(string email, bool isExist)
+        {
+            //Arrange
+
+            //Act
+            var result = await _service.IsEmailExist(email);
+
+            //Assert
+            Assert.AreEqual(isExist, result);
+        }
+
+        [TestCase("User0", true)]
+        [TestCase("user1", true)]
+        [TestCase("user_", false)]
+        public async Task IsUserNameExistTest(string userName, bool isExist)
+        {
+            //Arrange
+
+            //Act
+            var result = await _service.IsUserNameExist(userName);
+
+            //Assert
+            Assert.AreEqual(isExist, result);
+        }
+
+
         [Test]
         public void CreateForNullInputTest()
         {

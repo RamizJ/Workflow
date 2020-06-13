@@ -160,6 +160,20 @@ namespace Workflow.Services
                 throw new InvalidOperationException(result.ToString());
         }
 
+        /// <inheritdoc />
+        public async Task<bool> IsEmailExist(string email)
+        {
+            return await _dataContext.Users
+                .AnyAsync(u => u.NormalizedEmail == email.ToUpper());
+        }
+
+        /// <inheritdoc />
+        public async Task<bool> IsUserNameExist(string userName)
+        {
+            return await _dataContext.Users
+                .AnyAsync(u => u.NormalizedUserName == userName.ToUpper());
+        }
+
         private IQueryable<ApplicationUser> GetQuery(bool withRemoved)
         {
             var query = _dataContext.Users

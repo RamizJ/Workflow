@@ -94,5 +94,19 @@ namespace Workflow.Services.Abstract
         /// <param name="newPassword">Новый пароль. Пароль должен содержать не менее 6 символов, включая цифры</param>
         /// <returns></returns>
         Task ResetPassword(string id, string newPassword);
+
+        /// <summary>
+        /// Проверка существования пользователя с указанным email
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        Task<bool> IsEmailExist(string email);
+
+        /// <summary>
+        /// Проверка существования пользователя с указанным именем пользователя
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        Task<bool> IsUserNameExist(string userName);
     }
 }

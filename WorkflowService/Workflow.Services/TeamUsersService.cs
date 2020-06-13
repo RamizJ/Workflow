@@ -94,36 +94,63 @@ namespace Workflow.Services
         {
             if (filterFields == null) return query;
 
-            foreach (var field in filterFields)
+            foreach (var field in filterFields.Where(ff => ff != null))
             {
-                if (field == null)
-                    continue;
+                var strValues = field.Values?.Select(v => v.ToString().ToLower()).ToList()
+                                ?? new List<string>();
 
-                var strValue = field.Values?.ToString()?.ToLower();
                 if (field.SameAs(nameof(VmUser.Email)))
                 {
-                    query = query.Where(tu => tu.User.Email.ToLower().Contains(strValue));
+                    var queries = strValues.Select(sv => query.Where(tu =>
+                        tu.User.Email.ToLower().Contains(sv))).ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
                 else if (field.SameAs(nameof(VmUser.Phone)))
                 {
-                    query = query.Where(tu => tu.User.PhoneNumber.ToLower().Contains(strValue));
+                    var queries = strValues.Select(sv => query.Where(tu =>
+                        tu.User.PhoneNumber.ToLower().Contains(sv))).ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
                 else if (field.SameAs(nameof(VmUser.Position)))
                 {
-                    query = query.Where(tu => tu.User.Position.Name.ToLower().Contains(strValue));
-                }
-                else if (field.SameAs(nameof(VmProject.OwnerFio)))
-                {
-                    var names = strValue?.Split();
-                    if (names == null || names.Length == 0)
-                        continue;
+                    var queries = strValues.Select(sv => query.Where(tu =>
+                            tu.User.Position.Name.ToLower().Contains(sv)
+                            || tu.User.PositionCustom.ToLower().Contains(sv)))
+                        .ToArray();
 
-                    foreach (var name in names)
-                    {
-                        query = query.Where(tu => tu.User.FirstName.ToLower().Contains(name)
-                                                 || tu.User.MiddleName.ToLower().Contains(name)
-                                                 || tu.User.LastName.ToLower().Contains(name));
-                    }
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
+                }
+                else if (field.SameAs(nameof(VmUser.LastName)))
+                {
+                    var queries = strValues.Select(sv => query.Where(tu =>
+                            tu.User.LastName.ToLower().Contains(sv)))
+                        .ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
+                }
+                else if (field.SameAs(nameof(VmUser.FirstName)))
+                {
+                    var queries = strValues.Select(sv => query.Where(tu =>
+                            tu.User.FirstName.ToLower().Contains(sv)))
+                        .ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
+                }
+                else if (field.SameAs(nameof(VmUser.MiddleName)))
+                {
+                    var queries = strValues.Select(sv => query.Where(tu =>
+                            tu.User.MiddleName.ToLower().Contains(sv)))
+                        .ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
             }
 

@@ -57,12 +57,12 @@ namespace Workflow.Tests.Services
             //Arrange
 
             //Act
-            var resultScopes = (await _service.GetPage(_currentUser, teamId,
+            var users = (await _service.GetPage(_currentUser, teamId,
                 pageNumber, pageSize,
                 "", null, null)).ToArray();
 
             //Assert
-            Assert.AreEqual(expectedCount, resultScopes.Length);
+            Assert.AreEqual(expectedCount, users.Length);
         }
 
 
@@ -76,12 +76,12 @@ namespace Workflow.Tests.Services
             //Arrange
 
             //Act
-            var resultScopes = (await _service.GetPage(_currentUser, teamId, 
+            var users = (await _service.GetPage(_currentUser, teamId, 
                 pageNumber, pageSize,
                 filter, null, null)).ToArray();
 
             //Assert
-            Assert.AreEqual(expectedCount, resultScopes.Length);
+            Assert.AreEqual(expectedCount, users.Length);
         }
 
 

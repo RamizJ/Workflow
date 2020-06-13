@@ -83,7 +83,7 @@ namespace WorkflowService.Controllers
             [FromQuery] FieldSort[] sortFields = null, [FromQuery]bool withRemoved = false)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            return await _projectTeamsService.GetProjectTeamsPage(currentUser, projectId, 
+            return await _projectTeamsService.GetPage(currentUser, projectId, 
                 pageNumber, pageSize, filter, filterFields, sortFields, withRemoved);
         }
 
@@ -148,7 +148,7 @@ namespace WorkflowService.Controllers
         [HttpPatch("{teamId}")]
         public async Task<IActionResult> AddTeam(int projectId, [FromBody] int teamId)
         {
-            await _projectTeamsService.AddTeam(projectId, teamId);
+            await _projectTeamsService.Add(projectId, teamId);
             return NoContent();
         }
 
@@ -161,7 +161,7 @@ namespace WorkflowService.Controllers
         [HttpPatch("{teamId}/{projectId}")]
         public async Task<IActionResult> RemoveTeam(int projectId, int teamId)
         {
-            await _projectTeamsService.RemoveTeam(projectId, teamId);
+            await _projectTeamsService.Remove(projectId, teamId);
             return NoContent();
         }
 
