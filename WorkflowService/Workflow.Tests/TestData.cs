@@ -62,8 +62,14 @@ namespace Workflow.Tests
             Projects = Builder<Project>.CreateListOfSize(10)
                 .All()
                 .With(s => s.OwnerId = Users.First().Id)
-                .TheFirst(6).With((s, i) => s.Name = $"Scope1{i}")
-                .TheNext(4).With((s, i) => s.Name = $"Scope2{i}")
+                .TheFirst(6).With((s, i) => { 
+                    s.Name = $"Scope1{i}"; 
+                    s.Description = $"ScopeDescription1{i}";
+                })
+                .TheNext(4).With((s, i) => {
+                    s.Name = $"Scope2{i}";
+                    s.Description = $"ScopeDescription2{i}";
+                })
                 .TheFirst(3).With(s => s.GroupId = Groups[0].Id)
                 .TheNext(7).With(s => s.GroupId = Groups[1].Id)
                 .TheFirst(9).With(s => s.IsRemoved = false)

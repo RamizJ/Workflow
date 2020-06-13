@@ -114,6 +114,7 @@ namespace WorkflowService
             services.AddTransient<ITeamsService, TeamsService>();
             services.AddTransient<ITeamUsersService, TeamUsersService>();
             services.AddTransient<IProjectTeamsService, ProjectTeamsService>();
+            services.AddTransient<ITeamProjectsService, TeamProjectsService>();
             services.AddTransient<IGoalsService, GoalsService>();
         }
 

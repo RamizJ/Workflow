@@ -23,15 +23,15 @@ namespace WorkflowService.Controllers
         /// <param name="userManager"></param>
         /// <param name="teamsService"></param>
         /// <param name="teamUsersService"></param>
-        /// <param name="projectTeamsService"></param>
+        /// <param name="teamProjectsService"></param>
         public TeamsController(UserManager<ApplicationUser> userManager, 
             ITeamsService teamsService, ITeamUsersService teamUsersService,
-            IProjectTeamsService projectTeamsService)
+            ITeamProjectsService teamProjectsService)
         {
             _userManager = userManager;
             _teamsService = teamsService;
             _teamUsersService = teamUsersService;
-            _projectTeamsService = projectTeamsService;
+            _teamProjectsService = teamProjectsService;
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace WorkflowService.Controllers
             [FromQuery] FieldSort[] sortFields, [FromQuery] bool withRemoved = false)
         {
             var user = await _userManager.GetUserAsync(User);
-            return await _projectTeamsService.GetTeamProjectsPage(user, teamId, 
+            return await _teamProjectsService.GetPage(user, teamId, 
                 pageNumber, pageSize, filter, filterFields, sortFields, withRemoved);
         }
 
@@ -203,7 +203,7 @@ namespace WorkflowService.Controllers
         [HttpPatch("{teamId}")]
         public async Task<IActionResult> AddProject(int teamId, [FromBody] int projectId)
         {
-            await _projectTeamsService.AddProject(teamId, projectId);
+            await _teamProjectsService.Add(teamId, projectId);
             return NoContent();
         }
 
@@ -216,7 +216,7 @@ namespace WorkflowService.Controllers
         [HttpPatch("{teamId}/{projectId}")]
         public async Task<IActionResult> RemoveProject(int teamId, int projectId)
         {
-            await _projectTeamsService.RemoveProject(teamId, projectId);
+            await _teamProjectsService.Remove(teamId, projectId);
             return NoContent();
         }
 
@@ -224,6 +224,6 @@ namespace WorkflowService.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ITeamsService _teamsService;
         private readonly ITeamUsersService _teamUsersService;
-        private readonly IProjectTeamsService _projectTeamsService;
+        private readonly ITeamProjectsService _teamProjectsService;
     }
 }

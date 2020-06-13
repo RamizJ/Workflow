@@ -7,15 +7,15 @@ using Workflow.VM.ViewModels;
 namespace Workflow.Services.Abstract
 {
     /// <summary>
-    /// Сервис управления командами проектов
+    /// Сервис управления проектами команд
     /// </summary>
-    public interface IProjectTeamsService
+    public interface ITeamProjectsService
     {
         /// <summary>
-        /// Получение команд проекта
+        /// Получение проектов команды
         /// </summary>
         /// <param name="currentUser">Текущий пользователь</param>
-        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="teamId">Идентификатор команды</param>
         /// <param name="pageNumber">Номер страницы</param>
         /// <param name="pageSize">Размер страницы</param>
         /// <param name="filter">Фильтр по всем полям</param>
@@ -23,25 +23,25 @@ namespace Workflow.Services.Abstract
         /// <param name="sortFields">Сортировка по полям</param>
         /// <param name="withRemoved">Вместе с удаленными</param>
         /// <returns>Коллеция пользователей команды</returns>
-        Task<IEnumerable<VmTeam>> GetPage(ApplicationUser currentUser,
-            int projectId, int pageNumber, int pageSize,
+        Task<IEnumerable<VmProject>> GetPage(ApplicationUser currentUser,
+            int teamId, int pageNumber, int pageSize,
             string filter, FieldFilter[] filterFields,
             FieldSort[] sortFields, bool withRemoved = false);
 
         /// <summary>
-        /// Добавление команды в список команд проект
+        /// Добавить проект в список проектов команды
         /// </summary>
-        /// <param name="projectId">Идентификатор проекта</param>
         /// <param name="teamId">Идентификатор команды</param>
-        /// <returns>Добавленный проект</returns>
-        Task Add(int projectId, int teamId);
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <returns></returns>
+        Task Add(int teamId, int projectId);
 
         /// <summary>
-        /// Удаление команды из списка команд проекта
+        /// Удаление проекта из списка проектов команды
         /// </summary>
-        /// <param name="projectId">Идентификатор проекта</param>
         /// <param name="teamId">Идентификатор команды</param>
-        /// <returns>Удаленный проект</returns>
-        Task Remove(int projectId, int teamId);
+        /// <param name="projectId">Идентификатор удаляемого проекта</param>
+        /// <returns></returns>
+        Task Remove(int teamId, int projectId);
     }
 }

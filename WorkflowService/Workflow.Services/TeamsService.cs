@@ -174,7 +174,10 @@ namespace Workflow.Services
                 query = query
                     .Where(team => team.Name.ToLower().Contains(word)
                                    || team.Description.ToLower().Contains(word)
-                                   || team.Group.Name.ToLower().Contains(word));
+                                   || team.Group.Name.ToLower().Contains(word)
+                                   || team.Creator.FirstName.ToLower().Contains(word)
+                                   || team.Creator.MiddleName.ToLower().Contains(word)
+                                   || team.Creator.LastName.ToLower().Contains(word));
             }
 
             return query;

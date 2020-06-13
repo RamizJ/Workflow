@@ -97,7 +97,7 @@
             </summary>
             <param name="userManager"></param>
             <param name="projectsService"></param>
-            <param name="projectTeamsService"></param>
+            <param name="teamProjectsService"></param>
         </member>
         <member name="M:WorkflowService.Controllers.ProjectsController.Get(System.Int32)">
             <summary>
@@ -187,7 +187,7 @@
             <param name="userManager"></param>
             <param name="teamsService"></param>
             <param name="teamUsersService"></param>
-            <param name="projectTeamsService"></param>
+            <param name="teamProjectsService"></param>
         </member>
         <member name="M:WorkflowService.Controllers.TeamsController.Get(System.Int32)">
             <summary>

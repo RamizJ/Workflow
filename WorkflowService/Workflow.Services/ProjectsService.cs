@@ -173,6 +173,7 @@ namespace Workflow.Services
                 bool isDate = DateTime.TryParse(word, out var creationDate);
                 query = query
                     .Where(p => p.Name.ToLower().Contains(word)
+                                || p.Description.ToLower().Contains(word)
                                 || p.Group.Name.ToLower().Contains(word)
                                 || isDate && p.CreationDate == creationDate
                                 || p.Owner.FirstName.ToLower().Contains(word)
