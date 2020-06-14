@@ -1,17 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Workflow.DAL.Models;
+using Workflow.Services.Abstract;
+using Workflow.Services.Common;
 using Workflow.VM.ViewModels;
-using WorkflowService.Common;
-using WorkflowService.Services.Abstract;
 
 namespace WorkflowService.Controllers
 {
     /// <summary>
     /// API-методы работы с проектами
     /// </summary>
+    [Authorize]
     [ApiController, Route("api/[controller]/[action]")]
     public class ProjectsController : ControllerBase
     {
@@ -20,10 +22,14 @@ namespace WorkflowService.Controllers
         /// </summary>
         /// <param name="userManager"></param>
         /// <param name="projectsService"></param>
-        public ProjectsController(UserManager<ApplicationUser> userManager, IProjectsService projectsService)
+        /// <param name="projectTeamsService"></param>
+        public ProjectsController(UserManager<ApplicationUser> userManager, 
+            IProjectsService projectsService,
+            IProjectTeamsService projectTeamsService)
         {
             _userManager = userManager;
             _projectsService = projectsService;
+            _projectTeamsService = projectTeamsService;
         }
 
 
@@ -60,6 +66,29 @@ namespace WorkflowService.Controllers
         }
 
         /// <summary>
+        /// Постраничная загрузка списка команд проекта с фильтрацией и сортировкой
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="pageNumber">Номер страницы</param>
+        /// <param name="pageSize">Размер страницы</param>
+        /// <param name="filter">Фильтр по всем полям</param>
+        /// <param name="filterFields">Конкретные поля фильтрации</param>
+        /// <param name="sortFields">Поля сортировки</param>
+        /// <param name="withRemoved">Вместе с удаленными</param>
+        /// <returns>Коллекция команд</returns>
+        [HttpGet]
+        public async Task<IEnumerable<VmTeam>> GetTeamsPage([FromQuery] int projectId,
+            [FromQuery] int pageNumber, [FromQuery] int pageSize,
+            [FromQuery] string filter = null, [FromQuery] FieldFilter[] filterFields = null,
+            [FromQuery] FieldSort[] sortFields = null, [FromQuery]bool withRemoved = false)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            return await _projectTeamsService.GetPage(currentUser, projectId, 
+                pageNumber, pageSize, filter, filterFields, sortFields, withRemoved);
+        }
+
+
+        /// <summary>
         /// Получение проектов по идентификаторам
         /// </summary>
         /// <param name="ids">Идентификаторы проектов</param>
@@ -77,25 +106,23 @@ namespace WorkflowService.Controllers
         /// <param name="project">Проект</param>
         /// <returns>Результат выполнения операции</returns>
         [HttpPost]
-        public async Task<ActionResult<VmProjectResult>> Create([FromBody] VmProject project)
+        public async Task<ActionResult<VmProject>> Create([FromBody] VmProject project)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            return await _projectsService.Create(currentUser, project);
+            var result = await _projectsService.Create(currentUser, project);
+            return Ok(result);
         }
 
         /// <summary>
         /// Обновление проектов
         /// </summary>
-        /// <param name="project">Updated project</param>
+        /// <param name="project">Обновляемый проект</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult<VmProjectResult>> Update([FromBody]VmProject project)
+        public async Task<IActionResult> Update([FromBody]VmProject project)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var updatedScope = await _projectsService.Update(currentUser, project);
-            if (updatedScope == null)
-                return NotFound();
-
+            await _projectsService.Update(currentUser, project);
             return NoContent();
         }
 
@@ -105,18 +132,42 @@ namespace WorkflowService.Controllers
         /// <param name="id">Идентификатор проекта</param>
         /// <returns>Результат выполнения операции</returns>
         [HttpDelete("{id}")]
-        public async Task<ActionResult<VmProjectResult>> Delete(int id)
+        public async Task<ActionResult<VmProject>> Delete(int id)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var deletedScope = await _projectsService.Delete(currentUser, id);
-            if (deletedScope == null)
-                return NotFound();
+            var result = await _projectsService.Delete(currentUser, id);
+            return Ok(result);
+        }
 
-            return Ok(deletedScope);
+        /// <summary>
+        /// Добавление команды в список команд проекта
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="teamId">Идентификатор команды</param>
+        /// <returns></returns>
+        [HttpPatch("{teamId}")]
+        public async Task<IActionResult> AddTeam(int projectId, [FromBody] int teamId)
+        {
+            await _projectTeamsService.Add(projectId, teamId);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Удаление команды из списка команд проекта
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="teamId">Идентификатор команды</param>
+        /// <returns></returns>
+        [HttpPatch("{teamId}/{projectId}")]
+        public async Task<IActionResult> RemoveTeam(int projectId, int teamId)
+        {
+            await _projectTeamsService.Remove(projectId, teamId);
+            return NoContent();
         }
 
 
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IProjectsService _projectsService;
+        private readonly IProjectTeamsService _projectTeamsService;
     }
 }

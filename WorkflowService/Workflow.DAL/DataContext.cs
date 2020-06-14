@@ -10,6 +10,7 @@ namespace Workflow.DAL
         public DbSet<Group> Groups { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamUser> TeamUsers { get; set; }
+        public DbSet<ProjectTeam> ProjectTeams { get; set; }
         public DbSet<Goal> Goals { get; set; }
         public DbSet<GoalObserver> GoalObservers { get; set; }
         public DbSet<Attachment> Attachments { get; set; }
@@ -27,6 +28,7 @@ namespace Workflow.DAL
             SetupGoalObserver(builder);
             SetupTeam(builder);
             SetupProject(builder);
+            SetupProjectTeam(builder);
             SetupGoal(builder);
             SetupAttachment(builder);
             SetupPosition(builder);
@@ -69,6 +71,22 @@ namespace Workflow.DAL
             entity.Property(t => t.Name)
                 .HasMaxLength(100)
                 .IsRequired();
+        }
+
+        private void SetupProjectTeam(ModelBuilder builder)
+        {
+            builder.Entity<ProjectTeam>()
+                .HasKey(pt => new { pt.ProjectId, pt.TeamId });
+
+            builder.Entity<ProjectTeam>()
+                .HasOne(pt => pt.Team)
+                .WithMany(t => t.TeamProjects)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<ProjectTeam>()
+                .HasOne(pt => pt.Project)
+                .WithMany(u => u.ProjectTeams)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         private void SetupProject(ModelBuilder builder)

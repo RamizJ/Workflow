@@ -1,17 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Workflow.DAL.Models;
+using Workflow.Services.Abstract;
+using Workflow.Services.Common;
 using Workflow.VM.ViewModels;
-using WorkflowService.Common;
-using WorkflowService.Services.Abstract;
 
 namespace WorkflowService.Controllers
 {
     /// <summary>
     /// API-методы работы с задачами
     /// </summary>
+    [Authorize]
     [ApiController, Route("api/[controller]/[action]")]
     public class GoalsController : ControllerBase
     {
@@ -91,10 +93,7 @@ namespace WorkflowService.Controllers
         public async Task<IActionResult> Update([FromBody]VmGoal goal)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var updatedScope = await _goalsService.Update(currentUser, goal);
-            if (updatedScope == null)
-                return NotFound();
-
+            await _goalsService.Update(currentUser, goal);
             return NoContent();
         }
 

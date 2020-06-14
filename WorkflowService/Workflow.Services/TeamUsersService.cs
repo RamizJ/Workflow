@@ -5,13 +5,15 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
+using Workflow.Services.Abstract;
+using Workflow.Services.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
-using WorkflowService.Common;
-using WorkflowService.Services.Abstract;
 
-namespace WorkflowService.Services
+namespace Workflow.Services
 {
+
+
     /// <inheritdoc />
     public class TeamUsersService : ITeamUsersService
     {
@@ -20,6 +22,7 @@ namespace WorkflowService.Services
             _dataContext = dataContext;
             _vmConverter = new VmUserConverter();
         }
+
         /// <inheritdoc />
         public async Task<IEnumerable<VmUser>> GetPage(ApplicationUser currentUser, 
             int teamId, int pageNumber, int pageSize, string filter,
@@ -41,37 +44,15 @@ namespace WorkflowService.Services
         }
 
         /// <inheritdoc />
-        public async Task Add(ApplicationUser currentUser, int teamId, string userId)
+        public async Task Add(int teamId, string userId)
         {
-            if (string.IsNullOrWhiteSpace(userId))
-                throw new ArgumentNullException(nameof(userId));
-
-            var isUserExist = await _dataContext.Users.AnyAsync(u => u.Id == userId);
-            if (!isUserExist)
-                throw new InvalidOperationException($"User with id '{userId}' not found");
-
-            var isTeamExist = await _dataContext.Teams.AnyAsync(t => t.Id == teamId);
-            if (!isTeamExist)
-                throw new InvalidOperationException($"Team with id '{teamId}' not found");
-
             await _dataContext.TeamUsers.AddAsync(new TeamUser(teamId, userId));
             await _dataContext.SaveChangesAsync();
         }
 
         /// <inheritdoc />
-        public async Task Remove(ApplicationUser currentUser, int teamId, string userId)
+        public async Task Remove(int teamId, string userId)
         {
-            if (string.IsNullOrWhiteSpace(userId))
-                throw new ArgumentNullException(nameof(userId));
-
-            var isUserExist = await _dataContext.Users.AnyAsync(u => u.Id == userId);
-            if (!isUserExist)
-                throw new InvalidOperationException($"User with id '{userId}' not found");
-
-            var isTeamExist = await _dataContext.Teams.AnyAsync(t => t.Id == teamId);
-            if (!isTeamExist)
-                throw new InvalidOperationException($"Team with id '{teamId}' not found");
-
             _dataContext.TeamUsers.Remove(new TeamUser(teamId, userId));
             await _dataContext.SaveChangesAsync();
         }
@@ -95,15 +76,15 @@ namespace WorkflowService.Services
             if (string.IsNullOrEmpty(filter)) return query;
 
             var words = filter.Split(" ");
-            foreach (var word in words)
+            foreach (var word in words.Select(w => w.ToLower()))
             {
                 query = query
-                    .Where(tu => tu.User.Email.Contains(word)
-                                 || tu.User.PhoneNumber.Contains(word)
-                                 || tu.User.Position.Name.Contains(word)
-                                 || tu.User.FirstName.Contains(word)
-                                 || tu.User.MiddleName.Contains(word)
-                                 || tu.User.LastName.Contains(word));
+                    .Where(tu => tu.User.Email.ToLower().Contains(word)
+                                 || tu.User.PhoneNumber.ToLower().Contains(word)
+                                 || tu.User.Position.Name.ToLower().Contains(word)
+                                 || tu.User.FirstName.ToLower().Contains(word)
+                                 || tu.User.MiddleName.ToLower().Contains(word)
+                                 || tu.User.LastName.ToLower().Contains(word));
             }
 
             return query;
@@ -113,36 +94,63 @@ namespace WorkflowService.Services
         {
             if (filterFields == null) return query;
 
-            foreach (var field in filterFields)
+            foreach (var field in filterFields.Where(ff => ff != null))
             {
-                if (field == null)
-                    continue;
+                var strValues = field.Values?.Select(v => v.ToString().ToLower()).ToList()
+                                ?? new List<string>();
 
-                var strValue = field.Value?.ToString()?.ToLower();
-                if (field.Is(nameof(VmUser.Email)))
+                if (field.SameAs(nameof(VmUser.Email)))
                 {
-                    query = query.Where(tu => tu.User.Email.ToLower().Contains(strValue));
-                }
-                else if (field.Is(nameof(VmUser.Phone)))
-                {
-                    query = query.Where(tu => tu.User.PhoneNumber.ToLower().Contains(strValue));
-                }
-                else if (field.Is(nameof(VmUser.Position)))
-                {
-                    query = query.Where(tu => tu.User.Position.Name.ToLower().Contains(strValue));
-                }
-                else if (field.Is(nameof(VmProject.OwnerFio)))
-                {
-                    var names = strValue?.Split();
-                    if (names == null || names.Length == 0)
-                        continue;
+                    var queries = strValues.Select(sv => query.Where(tu =>
+                        tu.User.Email.ToLower().Contains(sv))).ToArray();
 
-                    foreach (var name in names)
-                    {
-                        query = query.Where(tu => tu.User.FirstName.ToLower().Contains(name)
-                                                 || tu.User.MiddleName.ToLower().Contains(name)
-                                                 || tu.User.LastName.ToLower().Contains(name));
-                    }
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
+                }
+                else if (field.SameAs(nameof(VmUser.Phone)))
+                {
+                    var queries = strValues.Select(sv => query.Where(tu =>
+                        tu.User.PhoneNumber.ToLower().Contains(sv))).ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
+                }
+                else if (field.SameAs(nameof(VmUser.Position)))
+                {
+                    var queries = strValues.Select(sv => query.Where(tu =>
+                            tu.User.Position.Name.ToLower().Contains(sv)
+                            || tu.User.PositionCustom.ToLower().Contains(sv)))
+                        .ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
+                }
+                else if (field.SameAs(nameof(VmUser.LastName)))
+                {
+                    var queries = strValues.Select(sv => query.Where(tu =>
+                            tu.User.LastName.ToLower().Contains(sv)))
+                        .ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
+                }
+                else if (field.SameAs(nameof(VmUser.FirstName)))
+                {
+                    var queries = strValues.Select(sv => query.Where(tu =>
+                            tu.User.FirstName.ToLower().Contains(sv)))
+                        .ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
+                }
+                else if (field.SameAs(nameof(VmUser.MiddleName)))
+                {
+                    var queries = strValues.Select(sv => query.Where(tu =>
+                            tu.User.MiddleName.ToLower().Contains(sv)))
+                        .ToArray();
+
+                    if (queries.Any())
+                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
             }
 

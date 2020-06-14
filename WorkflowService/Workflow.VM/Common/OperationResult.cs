@@ -2,17 +2,9 @@
 
 namespace Workflow.VM.Common
 {
-    /// <summary>
-    /// Результат выполнения операции
-    /// </summary>
-    /// <typeparam name="TVm"></typeparam>
-    public class OperationResult<TVm>
-    {
-        /// <summary>
-        /// Данные
-        /// </summary>
-        public TVm Data { get; set; }
 
+    public class OperationResult
+    {
         /// <summary>
         /// Успешность выполнения операции
         /// </summary>
@@ -49,7 +41,7 @@ namespace Workflow.VM.Common
         public void AddError(string message, bool succeeded = false)
         {
             Succeeded = succeeded;
-            Errors = new List<string>(Errors) {message}.AsReadOnly();
+            Errors = new List<string>(Errors) { message }.AsReadOnly();
         }
 
         /// <summary>
@@ -57,12 +49,29 @@ namespace Workflow.VM.Common
         /// </summary>
         /// <param name="messages">Тексты ошибок</param>
         /// <param name="succeeded">Успешность операции</param>
-        public void AddErrorRange(IEnumerable<string> messages, bool succeeded = false)
+        public void AddErrors(IEnumerable<string> messages, bool succeeded = false)
         {
             Succeeded = succeeded;
             var errors = new List<string>(Errors);
             errors.AddRange(messages);
             Errors = errors.AsReadOnly();
         }
+    }
+
+
+    /// <inheritdoc />
+    public class OperationResult<TVm> : OperationResult
+    {
+        /// <summary>
+        /// Данные
+        /// </summary>
+        public TVm Data { get; set; }
+
+        public OperationResult()
+        { }
+
+        public OperationResult(IEnumerable<string> errorMessages, bool succeeded)
+        : base(errorMessages, succeeded)
+        { }
     }
 }

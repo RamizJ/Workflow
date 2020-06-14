@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Workflow.DAL.Models;
+using Workflow.Services.Common;
 using Workflow.VM.ViewModels;
-using WorkflowService.Common;
 
-namespace WorkflowService.Services.Abstract
+namespace Workflow.Services.Abstract
 {
     /// <summary>
     /// Сервис работы с пользователями
@@ -53,23 +53,31 @@ namespace WorkflowService.Services.Abstract
         /// Создание пользователя
         /// </summary>
         /// <param name="user">Новый пользователь</param>
-        /// <returns>Результат операции создания пользователя</returns>
-        Task<VmUserResult> Create(VmUser user);
+        /// <param name="password">Пароль должен содержать не менее 6 символов, включая цифры</param>
+        /// <returns></returns>
+        Task<VmUser> Create(VmUser user, string password);
 
         /// <summary>
         /// Обновление данных пользователя
         /// </summary>
         /// <param name="user">Параметры пользователя</param>
         /// <returns></returns>
-        Task<VmUserResult> Update(VmUser user);
+        Task Update(VmUser user);
 
         /// <summary>
         /// Удаление пользователя
         /// </summary>
         /// <param name="userId">Идентификатор пользователя</param>
         /// <returns></returns>
-        Task<VmUserResult> Delete(string userId);
+        Task<VmUser> Delete(string userId);
 
+        /// <summary>
+        /// Восстановление ранее удаленного пользователя
+        /// </summary>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="userId">Идентификатор пользователя</param>
+        /// <returns></returns>
+        Task<VmUser> Restore(ApplicationUser currentUser, string userId);
 
         /// <summary>
         /// Изменение пароля пользователя
@@ -77,14 +85,28 @@ namespace WorkflowService.Services.Abstract
         /// <param name="currentUser">Текущий пользователь</param>
         /// <param name="currentPassword">Старый пароль</param>
         /// <param name="newPassword">Новый пароль</param>
-        Task<VmUserResult> ChangePassword(ApplicationUser currentUser, string currentPassword, string newPassword);
+        Task ChangePassword(ApplicationUser currentUser, string currentPassword, string newPassword);
 
         /// <summary>
         /// Сброс пароля пользователя 
         /// </summary>
         /// <param name="id">Идентификатор пользователя</param>
-        /// <param name="newPassword">Новый пароль</param>
+        /// <param name="newPassword">Новый пароль. Пароль должен содержать не менее 6 символов, включая цифры</param>
         /// <returns></returns>
-        Task<VmUserResult> ResetPassword(string id, string newPassword);
+        Task ResetPassword(string id, string newPassword);
+
+        /// <summary>
+        /// Проверка существования пользователя с указанным email
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        Task<bool> IsEmailExist(string email);
+
+        /// <summary>
+        /// Проверка существования пользователя с указанным именем пользователя
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        Task<bool> IsUserNameExist(string userName);
     }
 }

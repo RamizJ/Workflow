@@ -2,21 +2,28 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Workflow.DAL.Models;
-using WorkflowService.Services.Abstract;
+using Workflow.Services.Abstract;
 
-namespace WorkflowService.Services
+namespace Workflow.Services
 {
+    /// <inheritdoc />
     public class DefaultDataInitializationService : IDefaultDataInitializationService
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
+        /// <summary>
+        /// Конструктор
+        /// </summary>
+        /// <param name="userManager"></param>
+        /// <param name="roleManager"></param>
         public DefaultDataInitializationService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
         }
 
+        /// <inheritdoc />
         public async Task InitializeRoles()
         {
             foreach (var roleName in RoleNames.GetAllRoleNames())
@@ -26,6 +33,7 @@ namespace WorkflowService.Services
             }
         }
 
+        /// <inheritdoc />
         public async Task InitializeAdmin()
         {
             ApplicationUser admin = _userManager.FindByEmailAsync("admin@admin.ru").Result;

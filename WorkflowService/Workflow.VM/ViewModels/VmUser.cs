@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Workflow.VM.Common;
 
 namespace Workflow.VM.ViewModels
 {
@@ -14,7 +13,6 @@ namespace Workflow.VM.ViewModels
         public string UserName { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public string Password { get; set; }
 
         public int? PositionId { get; set; }
         public string Position { get; set; }
@@ -24,16 +22,11 @@ namespace Workflow.VM.ViewModels
         public IEnumerable<string> Roles { get; set; }
     }
 
-
-    /// <inheritdoc />
-    public class VmUserResult : OperationResult<VmUser>
+    public class VmNewUser : VmUser
     {
-        public VmUserResult(IEnumerable<string> errorMessages, bool succeeded) 
-            : base(errorMessages, succeeded)
-        { }
-
-        public VmUserResult(string errorMessage, bool succeeded = false)
-            : base(new []{ errorMessage }, succeeded)
-        { }
+        /// <summary>
+        /// Пароль пользователя. Пароль должен содержать не менее 6 символов, включая цифры
+        /// </summary>
+        public string Password { get; set; }
     }
 }

@@ -4,15 +4,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Workflow.DAL.Models;
+using Workflow.Services.Abstract;
+using Workflow.Services.Common;
 using Workflow.VM.ViewModels;
-using WorkflowService.Common;
-using WorkflowService.Services.Abstract;
 
 namespace WorkflowService.Controllers
 {
     /// <summary>
     /// API работы с пользователями системы
     /// </summary>
+    [Authorize]
     [ApiController, Route("api/[controller]/[action]")]
     public class UsersController : ControllerBase
     {
@@ -89,14 +90,39 @@ namespace WorkflowService.Controllers
         }
 
         /// <summary>
+        /// Проверка существования пользователя с указанным email
+        /// </summary>
+        /// <param name="email">Email пользователя</param>
+        /// <returns></returns>
+        [HttpGet("{email}")]
+        public async Task<ActionResult<bool>> IsEmailExist([FromQuery]string email)
+        {
+            var isExist = await _service.IsEmailExist(email);
+            return Ok(isExist);
+        }
+
+        /// <summary>
+        /// Проверка существования пользователя с указанным именем пользователя
+        /// </summary>
+        /// <param name="userName">Имя пользователя</param>
+        /// <returns></returns>
+        [HttpGet("{userName}")]
+        public async Task<ActionResult<bool>> IsUserNameExist(string userName)
+        {
+            var isExist = await _service.IsUserNameExist(userName);
+            return Ok(isExist);
+        }
+
+        /// <summary>
         /// Добавление нового пользователя
         /// </summary>
-        /// <param name="user">Параметры пользователя</param>
+        /// <param name="user">Параметры пользователя. Пароль должен содержать не менее 6 символов, включая цифры</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<VmUserResult> Create([FromBody]VmUser user)
+        public async Task<ActionResult<VmUser>> Create([FromBody] VmNewUser user)
         {
-            return await _service.Create(user);
+            var result = await _service.Create(user, user.Password);
+            return Ok(result);
         }
 
         /// <summary>
@@ -105,9 +131,10 @@ namespace WorkflowService.Controllers
         /// <param name="user">Параметры пользователя</param>
         /// <returns>Результат</returns>
         [HttpPut]
-        public async Task<VmUserResult> Update(VmUser user)
+        public async Task<IActionResult> Update(VmUser user)
         {
-            return await _service.Update(user);
+            await _service.Update(user);
+            return NoContent();
         }
 
         /// <summary>
@@ -116,9 +143,10 @@ namespace WorkflowService.Controllers
         /// <param name="id">Идентификатор пользователя</param>
         /// <returns></returns>
         [HttpDelete]
-        public async Task<VmUserResult> Delete(string id)
+        public async Task<ActionResult<VmUser>> Delete(string id)
         {
-            return await _service.Delete(id);
+            var result = await _service.Delete(id);
+            return Ok(result);
         }
 
 
@@ -128,11 +156,12 @@ namespace WorkflowService.Controllers
         /// <param name="currentPassword">Текущий пароль</param>
         /// <param name="newPassword">Новый пароль</param>
         /// <returns></returns>
-        [HttpPost]
-        public async Task<VmUserResult> ChangePassword([FromQuery]string currentPassword, [FromQuery] string newPassword)
+        [HttpPatch]
+        public async Task<IActionResult> ChangePassword([FromQuery]string currentPassword, [FromQuery] string newPassword)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            return await _service.ChangePassword(currentUser, currentPassword, newPassword);
+            await _service.ChangePassword(currentUser, currentPassword, newPassword);
+            return NoContent();
         }
 
         /// <summary>
@@ -141,10 +170,11 @@ namespace WorkflowService.Controllers
         /// <param name="id">Идентификатор пользователя</param>
         /// <param name="newPassword">Новый пароль</param>
         /// <returns></returns>
-        [HttpPost("{id}"), Authorize(Roles = RoleNames.ADMINISTRATOR_ROLE)]
-        public async Task<VmUserResult> ResetPassword(string id, [FromQuery] string newPassword)
+        [HttpPatch("{id}"), Authorize(Roles = RoleNames.ADMINISTRATOR_ROLE)]
+        public async Task<IActionResult> ResetPassword(string id, [FromQuery] string newPassword)
         {
-            return await _service.ResetPassword(id, newPassword);
+            await _service.ResetPassword(id, newPassword);
+            return NoContent();
         }
     }
 }

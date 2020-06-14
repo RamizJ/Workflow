@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Workflow.DAL.Models;
+using Workflow.Services.Common;
 using Workflow.VM.ViewModels;
-using WorkflowService.Common;
 
-namespace WorkflowService.Services.Abstract
+namespace Workflow.Services.Abstract
 {
     /// <summary>
     /// 
@@ -48,7 +48,7 @@ namespace WorkflowService.Services.Abstract
         /// <param name="user"></param>
         /// <param name="project"></param>
         /// <returns></returns>
-        Task<VmProjectResult> Create(ApplicationUser user, VmProject project);
+        Task<VmProject> Create(ApplicationUser user, VmProject project);
 
         /// <summary>
         /// 
@@ -56,14 +56,24 @@ namespace WorkflowService.Services.Abstract
         /// <param name="user"></param>
         /// <param name="project"></param>
         /// <returns></returns>
-        Task<VmProjectResult> Update(ApplicationUser user, VmProject project);
+        Task Update(ApplicationUser user, VmProject project);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="scopeId"></param>
+        /// <param name="projectId"></param>
         /// <returns></returns>
-        Task<VmProjectResult> Delete(ApplicationUser user, int scopeId);
+        Task<VmProject> Delete(ApplicationUser user, int projectId);
+
+
+        /// <summary>
+        /// Восстановление ранее удаленного проекта
+        /// </summary>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <returns></returns>
+        Task<VmProject> Restore(ApplicationUser currentUser, int projectId);
+
     }
 }

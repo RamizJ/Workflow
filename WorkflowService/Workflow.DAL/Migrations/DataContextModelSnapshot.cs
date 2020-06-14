@@ -15,7 +15,7 @@ namespace Workflow.DAL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.3")
+                .HasAnnotation("ProductVersion", "3.1.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -264,9 +264,14 @@ namespace Workflow.DAL.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
+                    b.Property<int?>("GoalId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("FileDataId");
+
+                    b.HasIndex("GoalId");
 
                     b.ToTable("Attachments");
                 });
@@ -290,9 +295,6 @@ namespace Workflow.DAL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("AttachmentId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
@@ -300,9 +302,6 @@ namespace Workflow.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("GoalNumber")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GoalState")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsRemoved")
@@ -317,7 +316,13 @@ namespace Workflow.DAL.Migrations
                     b.Property<string>("PerformerId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
                     b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("State")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -325,8 +330,6 @@ namespace Workflow.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AttachmentId");
 
                     b.HasIndex("OwnerId");
 
@@ -403,7 +406,7 @@ namespace Workflow.DAL.Migrations
                     b.ToTable("Positions");
                 });
 
-            modelBuilder.Entity("Workflow.DAL.Models.Scope", b =>
+            modelBuilder.Entity("Workflow.DAL.Models.Project", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -423,6 +426,7 @@ namespace Workflow.DAL.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
@@ -440,7 +444,22 @@ namespace Workflow.DAL.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("Scopes");
+                    b.ToTable("Projects");
+                });
+
+            modelBuilder.Entity("Workflow.DAL.Models.ProjectTeam", b =>
+                {
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeamId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProjectId", "TeamId");
+
+                    b.HasIndex("TeamId");
+
+                    b.ToTable("ProjectTeams");
                 });
 
             modelBuilder.Entity("Workflow.DAL.Models.Team", b =>
@@ -449,6 +468,9 @@ namespace Workflow.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CreatorId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -460,10 +482,13 @@ namespace Workflow.DAL.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
 
                     b.HasIndex("GroupId");
 
@@ -550,14 +575,14 @@ namespace Workflow.DAL.Migrations
                         .HasForeignKey("FileDataId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Workflow.DAL.Models.Goal", null)
+                        .WithMany("Attachments")
+                        .HasForeignKey("GoalId");
                 });
 
             modelBuilder.Entity("Workflow.DAL.Models.Goal", b =>
                 {
-                    b.HasOne("Workflow.DAL.Models.Attachment", "Attachment")
-                        .WithMany()
-                        .HasForeignKey("AttachmentId");
-
                     b.HasOne("Workflow.DAL.Models.ApplicationUser", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId");
@@ -570,7 +595,7 @@ namespace Workflow.DAL.Migrations
                         .WithMany()
                         .HasForeignKey("PerformerId");
 
-                    b.HasOne("Workflow.DAL.Models.Scope", "Scope")
+                    b.HasOne("Workflow.DAL.Models.Project", "Project")
                         .WithMany("Goals")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -599,7 +624,7 @@ namespace Workflow.DAL.Migrations
                         .HasForeignKey("ParentGroupId");
                 });
 
-            modelBuilder.Entity("Workflow.DAL.Models.Scope", b =>
+            modelBuilder.Entity("Workflow.DAL.Models.Project", b =>
                 {
                     b.HasOne("Workflow.DAL.Models.Group", "Group")
                         .WithMany()
@@ -609,13 +634,32 @@ namespace Workflow.DAL.Migrations
                         .WithMany()
                         .HasForeignKey("OwnerId");
 
-                    b.HasOne("Workflow.DAL.Models.Team", "Team")
-                        .WithMany()
+                    b.HasOne("Workflow.DAL.Models.Team", null)
+                        .WithMany("Projects")
                         .HasForeignKey("TeamId");
+                });
+
+            modelBuilder.Entity("Workflow.DAL.Models.ProjectTeam", b =>
+                {
+                    b.HasOne("Workflow.DAL.Models.Project", "Project")
+                        .WithMany("ProjectTeams")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Workflow.DAL.Models.Team", "Team")
+                        .WithMany("TeamProjects")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Workflow.DAL.Models.Team", b =>
                 {
+                    b.HasOne("Workflow.DAL.Models.ApplicationUser", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
                     b.HasOne("Workflow.DAL.Models.Group", "Group")
                         .WithMany()
                         .HasForeignKey("GroupId");

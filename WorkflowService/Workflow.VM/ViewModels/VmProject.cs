@@ -1,5 +1,4 @@
 ﻿using System;
-using Workflow.VM.Common;
 
 namespace Workflow.VM.ViewModels
 {
@@ -13,14 +12,9 @@ namespace Workflow.VM.ViewModels
         public string Description { get; set; }
         public string OwnerId { get; set; }
         public string OwnerFio { get; set; }
-        public int? TeamId { get; set; }
-        public string TeamName { get; set; }
         public DateTime CreationDate { get; set; }
         public int? GroupId { get; set; }
         public string GroupName { get; set; }
         public bool IsRemoved { get; set; }
     }
-
-    public class VmProjectResult : OperationResult<VmProject>
-    { }
 }

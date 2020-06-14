@@ -2,17 +2,17 @@ import httpClient from './httpClient';
 import qs from 'qs';
 
 export default {
-  get: id => httpClient.get(`/api/Scopes/Get/${id}`),
-  getAll: () => httpClient.get(`/api/Scopes/GetAll`),
-  create: scope => httpClient.post(`/api/Scopes/Create`, scope),
-  update: scope => httpClient.put(`/api/Scopes/Update`, scope),
-  delete: id => httpClient.delete(`/api/Scopes/Delete`, id),
+  get: id => httpClient.get(`/api/Projects/Get/${id}`),
+  getAll: () => httpClient.get(`/api/Projects/GetAll`),
+  create: scope => httpClient.post(`/api/Projects/Create`, scope),
+  update: scope => httpClient.put(`/api/Projects/Update`, scope),
+  delete: id => httpClient.delete(`/api/Projects/Delete`, id),
   getPage: query =>
     httpClient.get(
-      `/api/Scopes/GetPage${qs.stringify(query, { addQueryPrefix: true })}`
+      `/api/Projects/GetPage${qs.stringify(query, { addQueryPrefix: true })}`
     ),
   getRange: query =>
     httpClient.get(
-      `/api/Scopes/GetRange${qs.stringify(query, { addQueryPrefix: true })}`
+      `/api/Projects/GetRange${qs.stringify(query, { addQueryPrefix: true })}`
     )
 };

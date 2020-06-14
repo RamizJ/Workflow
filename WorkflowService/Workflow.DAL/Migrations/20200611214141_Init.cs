@@ -92,49 +92,6 @@ namespace Workflow.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Attachments",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FileName = table.Column<string>(maxLength: 100, nullable: false),
-                    CreationDate = table.Column<DateTime>(nullable: false),
-                    FileDataId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Attachments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Attachments_FileData_FileDataId",
-                        column: x => x.FileDataId,
-                        principalTable: "FileData",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Teams",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(maxLength: 100, nullable: true),
-                    Description = table.Column<string>(nullable: true),
-                    GroupId = table.Column<int>(nullable: true),
-                    IsRemoved = table.Column<bool>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Teams", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Teams_Groups_GroupId",
-                        column: x => x.GroupId,
-                        principalTable: "Groups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetUsers",
                 columns: table => new
                 {
@@ -257,36 +214,65 @@ namespace Workflow.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Scopes",
+                name: "Teams",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(maxLength: 100, nullable: true),
+                    Name = table.Column<string>(maxLength: 100, nullable: false),
                     Description = table.Column<string>(nullable: true),
-                    OwnerId = table.Column<string>(nullable: true),
-                    CreationDate = table.Column<DateTime>(nullable: false),
-                    TeamId = table.Column<int>(nullable: true),
+                    CreatorId = table.Column<string>(nullable: true),
                     GroupId = table.Column<int>(nullable: true),
                     IsRemoved = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Scopes", x => x.Id);
+                    table.PrimaryKey("PK_Teams", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Scopes_Groups_GroupId",
+                        name: "FK_Teams_AspNetUsers_CreatorId",
+                        column: x => x.CreatorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Teams_Groups_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "Groups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Projects",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(maxLength: 100, nullable: false),
+                    Description = table.Column<string>(nullable: true),
+                    OwnerId = table.Column<string>(nullable: true),
+                    CreationDate = table.Column<DateTime>(nullable: false),
+                    GroupId = table.Column<int>(nullable: true),
+                    IsRemoved = table.Column<bool>(nullable: false),
+                    TeamId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Projects", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Projects_Groups_GroupId",
                         column: x => x.GroupId,
                         principalTable: "Groups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Scopes_AspNetUsers_OwnerId",
+                        name: "FK_Projects_AspNetUsers_OwnerId",
                         column: x => x.OwnerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Scopes_Teams_TeamId",
+                        name: "FK_Projects_Teams_TeamId",
                         column: x => x.TeamId,
                         principalTable: "Teams",
                         principalColumn: "Id",
@@ -326,24 +312,18 @@ namespace Workflow.DAL.Migrations
                     GoalNumber = table.Column<int>(nullable: false),
                     Title = table.Column<string>(nullable: false),
                     Description = table.Column<string>(nullable: true),
-                    ScopeId = table.Column<int>(nullable: false),
+                    ProjectId = table.Column<int>(nullable: false),
                     ParentGoalId = table.Column<int>(nullable: true),
                     CreationDate = table.Column<DateTime>(nullable: false),
-                    GoalState = table.Column<int>(nullable: false),
+                    State = table.Column<int>(nullable: false),
+                    Priority = table.Column<int>(nullable: false),
                     OwnerId = table.Column<string>(nullable: true),
                     PerformerId = table.Column<string>(nullable: true),
-                    AttachmentId = table.Column<int>(nullable: true),
                     IsRemoved = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Goals", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Goals_Attachments_AttachmentId",
-                        column: x => x.AttachmentId,
-                        principalTable: "Attachments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Goals_AspNetUsers_OwnerId",
                         column: x => x.OwnerId,
@@ -363,11 +343,63 @@ namespace Workflow.DAL.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Goals_Scopes_ScopeId",
-                        column: x => x.ScopeId,
-                        principalTable: "Scopes",
+                        name: "FK_Goals_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProjectTeams",
+                columns: table => new
+                {
+                    ProjectId = table.Column<int>(nullable: false),
+                    TeamId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectTeams", x => new { x.ProjectId, x.TeamId });
+                    table.ForeignKey(
+                        name: "FK_ProjectTeams_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProjectTeams_Teams_TeamId",
+                        column: x => x.TeamId,
+                        principalTable: "Teams",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Attachments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FileName = table.Column<string>(maxLength: 100, nullable: false),
+                    CreationDate = table.Column<DateTime>(nullable: false),
+                    FileDataId = table.Column<int>(nullable: false),
+                    GoalId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Attachments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Attachments_FileData_FileDataId",
+                        column: x => x.FileDataId,
+                        principalTable: "FileData",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Attachments_Goals_GoalId",
+                        column: x => x.GoalId,
+                        principalTable: "Goals",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -451,14 +483,14 @@ namespace Workflow.DAL.Migrations
                 column: "FileDataId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Attachments_GoalId",
+                table: "Attachments",
+                column: "GoalId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_GoalObservers_ObserverId",
                 table: "GoalObservers",
                 column: "ObserverId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Goals_AttachmentId",
-                table: "Goals",
-                column: "AttachmentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Goals_OwnerId",
@@ -476,7 +508,7 @@ namespace Workflow.DAL.Migrations
                 column: "PerformerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Goals_ScopeId",
+                name: "IX_Goals_ProjectId",
                 table: "Goals",
                 column: "ProjectId");
 
@@ -486,19 +518,29 @@ namespace Workflow.DAL.Migrations
                 column: "ParentGroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Scopes_GroupId",
-                table: "Scopes",
+                name: "IX_Projects_GroupId",
+                table: "Projects",
                 column: "GroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Scopes_OwnerId",
-                table: "Scopes",
+                name: "IX_Projects_OwnerId",
+                table: "Projects",
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Scopes_TeamId",
-                table: "Scopes",
+                name: "IX_Projects_TeamId",
+                table: "Projects",
                 column: "TeamId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectTeams_TeamId",
+                table: "ProjectTeams",
+                column: "TeamId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Teams_CreatorId",
+                table: "Teams",
+                column: "CreatorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Teams_GroupId",
@@ -529,7 +571,13 @@ namespace Workflow.DAL.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Attachments");
+
+            migrationBuilder.DropTable(
                 name: "GoalObservers");
+
+            migrationBuilder.DropTable(
+                name: "ProjectTeams");
 
             migrationBuilder.DropTable(
                 name: "TeamUsers");
@@ -538,28 +586,25 @@ namespace Workflow.DAL.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Goals");
-
-            migrationBuilder.DropTable(
-                name: "Attachments");
-
-            migrationBuilder.DropTable(
-                name: "Scopes");
-
-            migrationBuilder.DropTable(
                 name: "FileData");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Goals");
+
+            migrationBuilder.DropTable(
+                name: "Projects");
 
             migrationBuilder.DropTable(
                 name: "Teams");
 
             migrationBuilder.DropTable(
-                name: "Positions");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Groups");
+
+            migrationBuilder.DropTable(
+                name: "Positions");
         }
     }
 }

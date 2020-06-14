@@ -8,9 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Workflow.DAL;
 using Workflow.DAL.Models;
+using Workflow.Services;
+using Workflow.Services.Common;
 using Workflow.VM.ViewModelConverters;
-using WorkflowService.Common;
-using WorkflowService.Services;
 
 namespace Workflow.Tests.Services
 {
@@ -24,6 +24,7 @@ namespace Workflow.Tests.Services
         private VmUserConverter _vmConverter;
         private UserManager<ApplicationUser> _userManager;
         private ServiceProvider _serviceProvider;
+        private ApplicationUser _currentUser;
 
         [SetUp]
         public void Setup()
@@ -42,6 +43,7 @@ namespace Workflow.Tests.Services
             _userManager = _serviceProvider.GetService<UserManager<ApplicationUser>>();
             _service = new UsersService(_dataContext, _userManager);
             _vmConverter = new VmUserConverter();
+            _currentUser = _testData.Users.First();
         }
 
         [TearDown]
@@ -64,7 +66,7 @@ namespace Workflow.Tests.Services
         public async Task GetUserForNullIdTest(string emptyUserId)
         {
             //Arrange
-            var user = await _service.Get(_testData.Users.First(), emptyUserId);
+            var user = await _service.Get(_currentUser, emptyUserId);
 
             //Assert
             Assert.IsNull(user);
@@ -77,11 +79,10 @@ namespace Workflow.Tests.Services
         public async Task GetUserTest(int userIndex)
         {
             //Arrange
-            var currentUser = _testData.Users.First();
             var expectedUser = _testData.Users[userIndex];
 
             //Act
-            var resultUser = await _service.Get(currentUser, expectedUser.Id);
+            var resultUser = await _service.Get(_currentUser, expectedUser.Id);
 
             //Assert
             Assert.AreEqual(expectedUser.Id, resultUser.Id);
@@ -120,7 +121,7 @@ namespace Workflow.Tests.Services
             //Arrange
 
             //Act
-            var resultScopes = (await _service.GetPage(_testData.Users.First(),
+            var resultScopes = (await _service.GetPage(_currentUser,
                 pageNumber, pageSize,
                 "", null, null)).ToArray();
 
@@ -145,7 +146,8 @@ namespace Workflow.Tests.Services
             //Arrange
 
             //Act
-            var resultScopes = (await _service.GetPage(_testData.Users.First(), pageNumber, pageSize,
+            var resultScopes = (await _service.GetPage(_currentUser, 
+                pageNumber, pageSize,
                 filter, null, null)).ToArray();
 
             //Assert
@@ -153,25 +155,45 @@ namespace Workflow.Tests.Services
         }
 
 
-        [TestCase(0, 5, null, "Email", "Email", 5)]
-        [TestCase(1, 5, null, "Email", "Email", 4)]
-        [TestCase(0, 5, null, "Email", "Email1", 1)]
-        [TestCase(0, 5, null, "Phone", "Phone2", 3)]
-        [TestCase(1, 5, null, "FirstName", "Firstname1", 1)]
-        [TestCase(1, 5, null, "LastName", "lastname1", 1)]
-        [TestCase(1, 5, null, "MiddleName", "middlename1", 1)]
+        [TestCase(0, 5, null, "Email", new []{"Email"}, 5)]
+        [TestCase(1, 5, null, "Email", new[] { "Email" }, 4)]
+        [TestCase(0, 5, null, "Email", new[] { "Email", "Email1" }, 5)]
+        [TestCase(0, 5, null, "Email", new[] { "Email1" }, 1)]
+        [TestCase(0, 5, null, "Email", new[] { "1@", "2@", "3@" }, 3)]
+        [TestCase(0, 5, null, "Phone", new[] { "Phone2" }, 3)]
+        [TestCase(1, 5, null, "FirstName", new[] { "Firstname1" }, 1)]
+        [TestCase(1, 5, null, "LastName", new[] { "lastname1" }, 1)]
+        [TestCase(1, 5, null, "MiddleName", new[] { "middlename1" }, 1)]
         public async Task GetPageFilterFieldsTest(int pageNumber, int pageSize,
-            string filter, string fieldName, object value, int expectedCount)
+            string filter, string fieldName, object[] value, int expectedCount)
         {
             //Arrange
 
             //Act
             var filterField = new FieldFilter(fieldName, value);
-            var resultScopes = (await _service.GetPage(_testData.Users.First(), pageNumber, pageSize,
+            var result = (await _service.GetPage(_currentUser, 
+                pageNumber, pageSize,
                 filter, new[] { filterField }, null)).ToArray();
 
             //Assert
-            Assert.AreEqual(expectedCount, resultScopes.Length);
+            Assert.AreEqual(expectedCount, result.Length);
+        }
+
+        [TestCase(1, 5, null, "IsRemoved", new object[] { true, false }, 5)]
+        [TestCase(0, 5, null, "IsRemoved", new object[] { true }, 1)]
+        public async Task GetPageFilterFieldRemovedTest(int pageNumber, int pageSize,
+            string filter, string fieldName, object[] value, int expectedCount)
+        {
+            //Arrange
+
+            //Act
+            var filterField = new FieldFilter(fieldName, value);
+            var result = (await _service.GetPage(_currentUser,
+                pageNumber, pageSize,
+                filter, new[] { filterField }, null, true)).ToArray();
+
+            //Assert
+            Assert.AreEqual(expectedCount, result.Length);
         }
 
 
@@ -179,7 +201,7 @@ namespace Workflow.Tests.Services
         public async Task GetRangeForNullInputTest(string[] ids)
         {
             //Act
-            var resultScopes = await _service.GetRange(_testData.Users.First(), ids);
+            var resultScopes = await _service.GetRange(_currentUser, ids);
 
             //Assert
             Assert.IsNull(resultScopes);
@@ -198,7 +220,7 @@ namespace Workflow.Tests.Services
                 .ToArray();
 
             //Act
-            var resultUsers = (await _service.GetRange(_testData.Users.First(), ids))
+            var resultUsers = (await _service.GetRange(_currentUser, ids))
                 .OrderBy(u => u.Id)
                 .ToArray();
 
@@ -211,10 +233,39 @@ namespace Workflow.Tests.Services
         }
 
 
+        [TestCase("Email1@email", true)]
+        [TestCase("email2@email", true)]
+        [TestCase("email101@email", false)]
+        public async Task IsEmailExistTest(string email, bool isExist)
+        {
+            //Arrange
+
+            //Act
+            var result = await _service.IsEmailExist(email);
+
+            //Assert
+            Assert.AreEqual(isExist, result);
+        }
+
+        [TestCase("User0", true)]
+        [TestCase("user1", true)]
+        [TestCase("user_", false)]
+        public async Task IsUserNameExistTest(string userName, bool isExist)
+        {
+            //Arrange
+
+            //Act
+            var result = await _service.IsUserNameExist(userName);
+
+            //Assert
+            Assert.AreEqual(isExist, result);
+        }
+
+
         [Test]
         public void CreateForNullInputTest()
         {
-            Assert.ThrowsAsync<ArgumentNullException>(async () => await _service.Create(null));
+            Assert.ThrowsAsync<ArgumentNullException>(async () => await _service.Create(null, "Aa010110!"));
         }
 
         [Test]
@@ -235,14 +286,14 @@ namespace Workflow.Tests.Services
                 .Build();
 
             var vmUser = _vmConverter.ToViewModel(user);
-            vmUser.Password = "Aa010110!";
+            string password = "Aa010110!";
 
 
             //Act
-            var result = await _service.Create(vmUser);
+            var result = await _service.Create(vmUser, password);
 
             //Assert
-            Assert.IsTrue(result.Succeeded);
+            Assert.IsNotNull(result);
         }
 
         [Test]
@@ -265,14 +316,13 @@ namespace Workflow.Tests.Services
             Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Update(vmUser));
         }
 
-        [TestCase("UserNameNew1", "EmailNew1@email", "PhoneNew1", "LastNameNew1", "FirstNameNew1", "MiddleNameNew1", 1, "Pos1")]
-        [TestCase("UserNameNew2", "EmailNew2@email", "PhoneNew2", "LastNameNew2", "FirstNameNew2", "MiddleNameNew2", 2, "Pos2")]
+        [TestCase("UserNameNew1", "EmailNew1@email", "PhoneNew1", "LastNameNew1", "FirstNameNew1", "MiddleNameNew1", null, "Pos1")]
+        [TestCase("UserNameNew2", "EmailNew2@email", "PhoneNew2", "LastNameNew2", "FirstNameNew2", "MiddleNameNew2", 2, null)]
         public async Task UpdateTest(string userName, string email, string phone,
             string lastName, string firstName, string middleName, 
-            int positionIndex, string positionCustom)
+            int? posId, string positionCustom)
         {
             //Arrange
-            int posId = _testData.Positions[positionIndex].Id;
             var user = _testData.Users.First();
             user.UserName = userName;
             user.Email = email;
@@ -285,18 +335,18 @@ namespace Workflow.Tests.Services
             var vmUser = _vmConverter.ToViewModel(user);
 
             //Act
-            var result = await _service.Update(vmUser);
+            await _service.Update(vmUser);
+            var expectedUser = _dataContext.Users.First();
 
             //Assert
-            Assert.IsTrue(result.Succeeded);
-            Assert.AreEqual(userName, result.Data.UserName);
-            Assert.AreEqual(email, result.Data.Email);
-            Assert.AreEqual(phone, result.Data.Phone);
-            Assert.AreEqual(lastName, result.Data.LastName);
-            Assert.AreEqual(firstName, result.Data.FirstName);
-            Assert.AreEqual(middleName, result.Data.MiddleName);
-            Assert.AreEqual(posId, result.Data.PositionId);
-            Assert.AreEqual(positionCustom, result.Data.Position);
+            Assert.AreEqual(userName, expectedUser.UserName);
+            Assert.AreEqual(email, expectedUser.Email);
+            Assert.AreEqual(phone, expectedUser.PhoneNumber);
+            Assert.AreEqual(lastName, expectedUser.LastName);
+            Assert.AreEqual(firstName, expectedUser.FirstName);
+            Assert.AreEqual(middleName, expectedUser.MiddleName);
+            Assert.AreEqual(posId, expectedUser.PositionId);
+            Assert.AreEqual(positionCustom, expectedUser.PositionCustom);
         }
 
         [TestCase(null)]
@@ -318,7 +368,7 @@ namespace Workflow.Tests.Services
             var result = await _service.Delete(userId);
 
             //Assert
-            Assert.IsTrue(result.Succeeded);
+            Assert.IsNotNull(result);
         }
 
 
@@ -333,10 +383,18 @@ namespace Workflow.Tests.Services
             var user = await _userManager.FindByIdAsync(_testData.Users.First().Id);
 
             //Act
-            var result = await _service.ChangePassword(user, "Aa010110!", newPassword);
+            bool result = true;
+            try
+            {
+                await _service.ChangePassword(user, "Aa010110!", newPassword);
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
 
             //Assert
-            Assert.AreEqual(isSucceed, result.Succeeded);
+            Assert.AreEqual(isSucceed, result);
         }
 
         [TestCase("", false)]
@@ -350,10 +408,18 @@ namespace Workflow.Tests.Services
             var user = _testData.Users.First();
 
             //Act
-            var result = await _service.ResetPassword(user.Id, newPassword);
+            bool result = true;
+            try
+            {
+                await _service.ResetPassword(user.Id, newPassword);
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
 
             //Assert
-            Assert.AreEqual(isSucceed, result.Succeeded);
+            Assert.AreEqual(isSucceed, result);
         }
     }
 }

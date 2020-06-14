@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Workflow.DAL.Models;
+using Workflow.Services.Common;
 using Workflow.VM.ViewModels;
-using WorkflowService.Common;
 
-namespace WorkflowService.Services.Abstract
+namespace Workflow.Services.Abstract
 {
     /// <summary>
     /// Сервис команд
@@ -53,9 +53,10 @@ namespace WorkflowService.Services.Abstract
         /// Создание команды
         /// </summary>
         /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="projectId">Идентификатор проекта</param>
         /// <param name="team">Команда</param>
         /// <returns>Результат выполнения операции</returns>
-        Task<VmTeamResult> Create(ApplicationUser currentUser, VmTeam team);
+        Task<VmTeam> Create(ApplicationUser currentUser, int projectId, VmTeam team);
 
         /// <summary>
         /// Обновление команды
@@ -63,7 +64,7 @@ namespace WorkflowService.Services.Abstract
         /// <param name="currentUser">Текущий пользователь</param>
         /// <param name="team">Обновленная команда</param>
         /// <returns>Результат выполнения операции</returns>
-        Task<VmTeamResult> Update(ApplicationUser currentUser, VmTeam team);
+        Task Update(ApplicationUser currentUser, VmTeam team);
 
         /// <summary>
         /// Удаление команды
@@ -71,6 +72,14 @@ namespace WorkflowService.Services.Abstract
         /// <param name="currentUser">Текущий пользователь</param>
         /// <param name="teamId">Идентификатор команды</param>
         /// <returns>Результат выполнения операции</returns>
-        Task<VmTeamResult> Delete(ApplicationUser currentUser, int teamId);
+        Task<VmTeam> Delete(ApplicationUser currentUser, int teamId);
+
+        /// <summary>
+        /// Восстановление ранее удаленной команды
+        /// </summary>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="teamId">Идентификатор команды</param>
+        /// <returns></returns>
+        Task<VmTeam> Restore(ApplicationUser currentUser, int teamId);
     }
 }

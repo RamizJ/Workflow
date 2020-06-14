@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace WorkflowService.Common
+namespace Workflow.Services.Common
 {
     /// <summary>
-    /// Фильтр по полю
+    /// Сортировка по полю
     /// </summary>
-    public class FieldFilter
+    public class FieldSort
     {
         /// <summary>
         /// Имя поля
@@ -13,26 +13,26 @@ namespace WorkflowService.Common
         public string FieldName { get; set; }
 
         /// <summary>
-        /// Значение поля
+        /// Тип сортировки
         /// </summary>
-        public object Value { get; set; }
+        public SortType SortType { get; set; }
 
 
         /// <summary>
         /// 
         /// </summary>
-        public FieldFilter()
+        public FieldSort()
         { }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="fieldName">Имя поля</param>
-        /// <param name="value">Значение</param>
-        public FieldFilter(string fieldName, object value)
+        /// <param name="fieldName">Имя поля по которому будет осуществляться сортировка</param>
+        /// <param name="sortType">Тип сортировки</param>
+        public FieldSort(string fieldName, SortType sortType)
         {
             FieldName = fieldName;
-            Value = value;
+            SortType = sortType;
         }
 
 

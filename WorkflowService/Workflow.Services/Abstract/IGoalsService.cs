@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Workflow.DAL.Models;
+using Workflow.Services.Common;
 using Workflow.VM.ViewModels;
-using WorkflowService.Common;
 
-namespace WorkflowService.Services.Abstract
+namespace Workflow.Services.Abstract
 {
     /// <summary>
     /// 
@@ -24,7 +24,7 @@ namespace WorkflowService.Services.Abstract
         /// 
         /// </summary>
         /// <param name="currentUser"></param>
-        /// <param name="scopeId"></param>
+        /// <param name="projectId"></param>
         /// <param name="pageNumber"></param>
         /// <param name="pageSize"></param>
         /// <param name="filter"></param>
@@ -32,7 +32,7 @@ namespace WorkflowService.Services.Abstract
         /// <param name="sortFields"></param>
         /// <param name="withRemoved"></param>
         /// <returns></returns>
-        Task<IEnumerable<VmGoal>> GetPage(ApplicationUser currentUser, int scopeId,
+        Task<IEnumerable<VmGoal>> GetPage(ApplicationUser currentUser, int projectId,
             int pageNumber, int pageSize,
             string filter, FieldFilter[] filterFields, FieldSort[] sortFields, bool withRemoved = false);
 
@@ -58,7 +58,7 @@ namespace WorkflowService.Services.Abstract
         /// <param name="user"></param>
         /// <param name="goal"></param>
         /// <returns></returns>
-        Task<VmGoal> Update(ApplicationUser user, VmGoal goal);
+        Task Update(ApplicationUser user, VmGoal goal);
 
         /// <summary>
         /// 
@@ -67,5 +67,13 @@ namespace WorkflowService.Services.Abstract
         /// <param name="goalId"></param>
         /// <returns></returns>
         Task<VmGoal> Delete(ApplicationUser currentUser, int goalId);
+
+        /// <summary>
+        /// Восстановление ранее удаленной задачи
+        /// </summary>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="goalId">Идентификатор задачи</param>
+        /// <returns></returns>
+        Task<VmGoal> Restore(ApplicationUser currentUser, int goalId);
     }
 }

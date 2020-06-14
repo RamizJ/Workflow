@@ -1,4 +1,4 @@
-﻿namespace WorkflowService.Services.Abstract
+﻿namespace Workflow.Services.Abstract
 {
     public interface IPositionsService
     {
