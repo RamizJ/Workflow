@@ -17,9 +17,12 @@
               el-select(v-model="form.teamMembers" size="medium" placeholder="Участники" multiple)
                 el-option(v-for="item in users" :key="item.value" :label="item.label" :value="item.value")
           el-col(:span="8")
-            el-form-item(prop="scopeId")
-              el-select(v-model="form.scopeId" size="medium" placeholder="Проект")
-                el-option(v-for="item in scopes" :key="item.value" :label="item.label" :value="item.value")
+            el-form-item(prop="projectId")
+              el-autocomplete(
+                v-model="form.projectId"
+                :fetch-suggestions="searchProjects"
+                size="medium"
+                placeholder="Проект")
     div(slot="footer")
       el-button(size="medium" type="primary" @click="submit") Создать
 
@@ -50,15 +53,6 @@ export default {
         dateStart: null,
         dateEnd: null
       },
-      users: [
-        { value: 0, label: 'Виталий' },
-        { value: 1, label: 'Алексей' },
-        { value: 2, label: 'Иван' },
-        { value: 3, label: 'Константин' },
-        { value: 4, label: 'Олег' },
-        { value: 5, label: 'Николай' },
-        { value: 6, label: 'Андрей' }
-      ],
       scopes: [
         { value: 0, label: 'Виталий' },
         { value: 1, label: 'Алексей' },
@@ -85,14 +79,48 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ team: 'teams/getTeam' })
+    ...mapGetters({
+      team: 'teams/getTeam',
+      users: 'users/getUsers',
+      projects: 'projects/getProjects'
+    })
   },
   methods: {
     ...mapActions({
       fetchTeam: 'teams/fetchTeam',
       createTeam: 'teams/createTeam',
-      updateTeam: 'teams/updateTeam'
+      updateTeam: 'teams/updateTeam',
+      fetchUsers: 'users/fetchUsers',
+      fetchProjects: 'projects/fetchProjects'
     }),
+    async searchUsers(query, callback) {
+      await this.fetchUsers({
+        filter: query,
+        pageNumber: 1,
+        pageSize: 10
+      });
+      const results = this.users.map(user => {
+        return {
+          value: `${user.lastName} ${user.firstName}`,
+          id: user.id
+        };
+      });
+      callback(results);
+    },
+    async searchProjects(query, callback) {
+      await this.fetchProjects({
+        filter: query,
+        pageNumber: 1,
+        pageSize: 10
+      });
+      const results = this.projects.map(project => {
+        return {
+          value: project.name,
+          id: project.id
+        };
+      });
+      callback(results);
+    },
     submit() {
       const payload = { ...this.form };
       const form = this.$refs.form;

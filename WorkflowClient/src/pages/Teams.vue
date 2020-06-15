@@ -127,6 +127,7 @@ export default {
   },
   methods: {
     ...mapActions({ fetchTeams: 'teams/fetchTeams' }),
+    async applyFilters() {},
     async refresh() {
       this.tableData = [];
       this.$refs.loader.stateChanger.reset();

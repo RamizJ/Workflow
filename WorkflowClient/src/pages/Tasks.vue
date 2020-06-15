@@ -18,7 +18,8 @@
             v-model="filters.sort.value"
             size="small"
             placeholder="Сортировать"
-            @change="applyFilters" clearable)
+            @change="applyFilters"
+            clearable)
             el-option(v-for="option in filters.sort.items" :key="option.value" :value="option.value", :label="option.label")
         base-toolbar-item
           el-select(
@@ -110,9 +111,9 @@ export default {
       dialogOpened: false,
       selectedItemId: null,
       query: {
+        filter: '',
         pageNumber: 1,
-        pageSize: 30,
-        filter: ''
+        pageSize: 30
       },
       filters: {
         sort: {

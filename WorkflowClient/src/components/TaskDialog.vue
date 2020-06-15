@@ -29,18 +29,18 @@
         el-row(:gutter="20")
           el-col(:span="8")
             el-form-item(prop="performerId")
-              el-select(
+              el-autocomplete(
                 v-model="form.performerId"
+                :fetch-suggestions="searchUsers"
                 size="medium"
                 placeholder="Ответственный")
-                el-option(v-for="item in users" :key="item.value" :label="item.label" :value="item.value")
           el-col(:span="8")
-            el-form-item(prop="scopeId")
-              el-select(
-                v-model="form.scopeId"
+            el-form-item(prop="projectId")
+              el-autocomplete(
+                v-model="form.projectId"
+                :fetch-suggestions="searchProjects"
                 size="medium"
                 placeholder="Проект")
-                el-option(v-for="item in projects" :key="item.value" :label="item.label" :value="item.value")
           el-col(:span="8")
             el-form-item(prop="dateEnd")
               el-date-picker(
@@ -61,7 +61,7 @@ import BaseDialog from '~/components/BaseDialog';
 export default {
   components: { BaseDialog },
   props: {
-    id: Number,
+    id: Number
   },
   data() {
     return {
@@ -69,32 +69,36 @@ export default {
       loading: false,
       isEdit: !!this.id,
       form: {
-        title: "",
-        description: "",
+        title: '',
+        description: '',
         tags: [],
         observers: [],
         priority: null,
         ownerId: null,
         performerId: null,
-        scopeId: null,
+        projectId: null,
         creationDate: new Date(),
         dateEnd: null
       },
       priorities: [
-        { value: 0, label: "Важно" },
-        { value: 1, label: "Срочно" }
+        { value: 0, label: 'Важно' },
+        { value: 1, label: 'Срочно' }
       ],
-      users: [
-        { value: 0, label: "Виталий" },
-        { value: 1, label: "Алексей" },
-        { value: 2, label: "Андрей" }
-      ],
-      projects: [],
       rules: {
-        title: [ { required: true, message: 'Введите название задачи', trigger: 'blur', } ],
-        performerId: [ { required: true, message: 'Укажите ответственного', trigger: 'blur', } ],
-        scopeId: [ { required: true, message: 'Укажите проект', trigger: 'blur', } ],
-      },
+        title: [
+          {
+            required: true,
+            message: 'Введите название задачи',
+            trigger: 'blur'
+          }
+        ],
+        performerId: [
+          { required: true, message: 'Укажите ответственного', trigger: 'blur' }
+        ],
+        scopeId: [
+          { required: true, message: 'Укажите проект', trigger: 'blur' }
+        ]
+      }
     };
   },
   async mounted() {
@@ -107,24 +111,56 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ task: 'tasks/getTask' })
+    ...mapGetters({
+      task: 'tasks/getTask',
+      users: 'users/getUsers',
+      projects: 'projects/getProjects'
+    })
   },
   methods: {
     ...mapActions({
       fetchTask: 'tasks/fetchTask',
       createTask: 'tasks/createTask',
-      updateTask: 'tasks/updateTask'
+      updateTask: 'tasks/updateTask',
+      fetchUsers: 'users/fetchUsers',
+      fetchProjects: 'projects/fetchProjects'
     }),
+    async searchUsers(query, callback) {
+      await this.fetchUsers({
+        filter: query,
+        pageNumber: 1,
+        pageSize: 10
+      });
+      const results = this.users.map(user => {
+        return {
+          value: `${user.lastName} ${user.firstName}`,
+          id: user.id
+        };
+      });
+      callback(results);
+    },
+    async searchProjects(query, callback) {
+      await this.fetchProjects({
+        filter: query,
+        pageNumber: 1,
+        pageSize: 10
+      });
+      const results = this.projects.map(project => {
+        return {
+          value: project.name,
+          id: project.id
+        };
+      });
+      callback(results);
+    },
     submit() {
       const payload = { ...this.form };
       const form = this.$refs.form;
-      form.validate(async (valid) => {
+      form.validate(async valid => {
         if (valid) {
           try {
-            if (this.isEdit)
-              await this.updateTask(payload);
-            else
-              await this.createTask(payload);
+            if (this.isEdit) await this.updateTask(payload);
+            else await this.createTask(payload);
             form.resetFields();
             this.$emit('close');
           } catch (e) {

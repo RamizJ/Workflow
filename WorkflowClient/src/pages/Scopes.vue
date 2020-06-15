@@ -87,6 +87,7 @@ export default {
   },
   methods: {
     ...mapActions({ fetchScopes: 'scopes/fetchScopes' }),
+    async applyFilters() {},
     async refresh() {
       this.tableData = [];
       this.$refs.loader.stateChanger.reset();

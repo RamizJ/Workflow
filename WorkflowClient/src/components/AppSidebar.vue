@@ -14,7 +14,7 @@
       el-menu-item(index="/teams")
         i.el-icon-user
         span Команды
-      el-menu-item(index="/scopes")
+      // el-menu-item(index="/scopes")
         i.el-icon-files
         span Области
       div.divider
@@ -48,10 +48,19 @@ export default {
     ...mapGetters({ me: 'auth/me' })
   },
   async created() {
-    if (!this.me) await this.fetchMe();
+    if (!this.me) {
+      try {
+        await this.fetchMe();
+      } catch (e) {
+        await this.logout();
+      }
+    }
   },
   methods: {
-    ...mapActions({ fetchMe: 'auth/fetchMe' })
+    ...mapActions({
+      fetchMe: 'auth/fetchMe',
+      logout: 'auth/logout'
+    })
   }
 };
 </script>
@@ -103,7 +112,7 @@ export default {
   width: var(--header-height);
 }
 .divider {
-  height: 15px;
+  height: 18px;
 }
 .profile {
   cursor: pointer;
@@ -124,13 +133,9 @@ export default {
     margin-bottom: 5px;
   }
   .profile__subtitle {
-    font-size: 9px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    background: var(--sidebar-item-active-background);
-    border-radius: 3px;
-    padding: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    opacity: 0.9;
     width: fit-content;
   }
 }

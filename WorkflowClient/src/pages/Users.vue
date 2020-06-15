@@ -8,7 +8,15 @@
     base-toolbar
       template(slot="filters")
         base-toolbar-item
-          el-input(size="small" placeholder="Поиск" v-model="query.search" @change="refresh")
+          el-input(v-model="query.filter" size="small" placeholder="Поиск" @change="refresh")
+        base-toolbar-item
+          el-select(
+            v-model="filters.position.value"
+            size="small"
+            placeholder="Должность"
+            @change="applyFilters"
+            multiple collapse-tags)
+            el-option(v-for="option in filters.position.items" :key="option.value" :value="option.value", :label="option.label")
 
     div.content
       el-table(
@@ -56,7 +64,13 @@ export default {
       },
       dialogOpened: false,
       selectedItemId: null,
-      filters: {},
+      filters: {
+        position: {
+          value: null,
+          fieldName: 'position',
+          items: []
+        }
+      },
       value: ''
     };
   },
@@ -65,6 +79,15 @@ export default {
   },
   methods: {
     ...mapActions({ fetchUsers: 'users/fetchUsers' }),
+    async applyFilters() {
+      this.query.filterFields = [];
+      if (this.filters.position.value)
+        this.query.filterFields.push({
+          fieldName: this.filters.position.fieldName,
+          value: this.filters.position.value
+        });
+      await this.refresh();
+    },
     async refresh() {
       this.tableData = [];
       this.$refs.loader.stateChanger.reset();

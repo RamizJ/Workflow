@@ -134,6 +134,7 @@ export default {
   },
   methods: {
     ...mapActions({ fetchProjects: 'projects/fetchProjects' }),
+    async applyFilters() {},
     async refresh() {
       this.tableData = [];
       this.$refs.loader.stateChanger.reset();

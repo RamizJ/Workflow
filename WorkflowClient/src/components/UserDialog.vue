@@ -25,9 +25,9 @@
               el-input(v-model="form.email" size="medium" placeholder="Почта")
         el-row(:gutter="20")
           el-col(:span="16")
-            el-form-item(prop="scopes")
-              el-select(v-model="form.scopeIds" size="medium" placeholder="Проекты" multiple)
-                el-option(v-for="item in projects" :key="item.value" :label="item.label" :value="item.value")
+            el-form-item(prop="teams")
+              el-select(v-model="form.teamIds" size="medium" placeholder="Команды" multiple)
+                el-option(v-for="item in teams" :key="item.value" :label="item.label" :value="item.value")
           el-col(:span="8")
             el-form-item(prop="phone")
               el-input(v-model="form.phone" size="medium" placeholder="Телефон")
@@ -52,7 +52,7 @@ import BaseDialog from '~/components/BaseDialog';
 export default {
   components: { BaseDialog },
   props: {
-    id: Number,
+    id: Number
   },
   data() {
     return {
@@ -69,37 +69,48 @@ export default {
         phone: '',
         positionId: null,
         position: '',
-        scopeIds: [],
+        teamIds: [],
         roles: []
       },
-      projects: [
-        { value: 0, label: "Проект1" },
-        { value: 1, label: "Проект2" },
-        { value: 2, label: "Проект3" },
-        { value: 3, label: "Проект4" }
+      teams: [
+        { value: 0, label: 'Команда1' },
+        { value: 1, label: 'Команда2' },
+        { value: 2, label: 'Команда3' },
+        { value: 3, label: 'Команда4' }
       ],
       roles: [
-        { value: 0, label: "Управление проектами" },
-        { value: 1, label: "Управление пользователями" },
-        { value: 2, label: "Управление областями" }
+        { value: 0, label: 'Управление проектами' },
+        { value: 1, label: 'Управление пользователями' },
+        { value: 2, label: 'Управление областями' }
       ],
       positions: [
-        { value: 0, label: "Начальник" },
-        { value: 1, label: "Уборщик" },
-        { value: 2, label: "Оператор" }
+        { value: 0, label: 'Начальник' },
+        { value: 1, label: 'Уборщик' },
+        { value: 2, label: 'Оператор' }
       ],
       rules: {
-        lastName: [ { required: true, message: 'Введите фамилию', trigger: 'blur', } ],
-        firstName: [ { required: true, message: 'Введите имя', trigger: 'blur', } ],
-        userName: [ { required: true, message: 'Введите логин', trigger: 'blur', } ],
-        password: [ { validator: this.validatePassword, trigger: 'blur' } ],
-        email: [
-          { required: true, message: 'Введите эл. почту', trigger: 'blur', },
-          { type: 'email', message: 'Некорректный адрес эл. почты', trigger: 'blur' }
+        lastName: [
+          { required: true, message: 'Введите фамилию', trigger: 'blur' }
         ],
-        phone: [ { required: true, message: 'Введите номер телефона', trigger: 'blur', } ],
-        positionId: [ { required: true, message: 'Введите должность', trigger: 'blur', } ],
-      },
+        firstName: [
+          { required: true, message: 'Введите имя', trigger: 'blur' }
+        ],
+        userName: [
+          { required: true, message: 'Введите логин', trigger: 'blur' }
+        ],
+        password: [{ validator: this.validatePassword, trigger: 'blur' }],
+        email: [
+          { required: true, message: 'Введите эл. почту', trigger: 'blur' },
+          {
+            type: 'email',
+            message: 'Некорректный адрес эл. почты',
+            trigger: 'blur'
+          }
+        ],
+        phone: [
+          { required: true, message: 'Введите номер телефона', trigger: 'blur' }
+        ]
+      }
     };
   },
   async mounted() {
@@ -123,26 +134,30 @@ export default {
     validatePassword(rule, value, callback) {
       const length = value.trim().length;
       const symbolsLeft = 6 - length;
-      if (!value)
-        callback(new Error('Введите пароль'));
+      if (!value) callback(new Error('Введите пароль'));
       else if (length < 6)
-        callback(new Error(`Введите ещё ${symbolsLeft}
-        ${symbolsLeft > 1 ? (symbolsLeft > 4 ? 'символов' : 'символа') : 'символ'}`));
+        callback(
+          new Error(`Введите ещё ${symbolsLeft}
+        ${
+          symbolsLeft > 1
+            ? symbolsLeft > 4
+              ? 'символов'
+              : 'символа'
+            : 'символ'
+        }`)
+        );
       else if (!/[a-z]/.test(value))
         callback(new Error('Введите хотя бы одну букву'));
-      else
-        callback();
+      else callback();
     },
     submit() {
       const payload = { ...this.form };
       const form = this.$refs.form;
-      form.validate(async (valid) => {
+      form.validate(async valid => {
         if (valid) {
           try {
-            if (this.isEdit)
-              await this.updateUser(payload);
-            else
-              await this.createUser(payload);
+            if (this.isEdit) await this.updateUser(payload);
+            else await this.createUser(payload);
             form.resetFields();
             this.$emit('close');
           } catch (e) {
