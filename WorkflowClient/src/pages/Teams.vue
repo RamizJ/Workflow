@@ -72,7 +72,7 @@ export default {
       tableData: [],
       query: {
         filter: '',
-        pageNumber: 1,
+        pageNumber: 0,
         pageSize: 15
       },
       dialogOpened: false,

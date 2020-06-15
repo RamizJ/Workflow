@@ -2,7 +2,7 @@
   base-dialog(v-if="visible" @close="$emit('close')")
     div(slot="title") Пользователь
     div(slot="body")
-      el-form(:model="form" :rules="rules" ref="form")
+      el-form(:model="form" :rules="rules" ref="form" v-loading="loading")
         el-row(:gutter="20")
           el-col(:span="8")
             el-form-item(prop="lastName")

@@ -112,7 +112,7 @@ export default {
       selectedItemId: null,
       query: {
         filter: '',
-        pageNumber: 1,
+        pageNumber: 0,
         pageSize: 30
       },
       filters: {

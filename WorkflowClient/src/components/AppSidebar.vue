@@ -53,6 +53,7 @@ export default {
         await this.fetchMe();
       } catch (e) {
         await this.logout();
+        await this.$router.push({ name: 'Login' });
       }
     }
   },
