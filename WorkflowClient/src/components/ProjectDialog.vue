@@ -2,7 +2,7 @@
   base-dialog(v-if="visible" @close="$emit('close')")
     div(slot="title") Проект
     div(slot="body")
-      el-form(:model="form" :rules="rules" ref="form")
+      el-form(:model="form" :rules="rules" ref="form" v-loading="loading")
         el-row(:gutter="20")
           el-col(:span="24")
             el-form-item(prop="name")
@@ -51,7 +51,7 @@ export default {
   data() {
     return {
       visible: false,
-      loading: false,
+      loading: true,
       isEdit: !!this.id,
       form: {
         name: '',

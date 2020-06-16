@@ -57,7 +57,7 @@
           el-select(
             v-model="filters.tags.value"
             size="small"
-            placeholder="Метка"
+            placeholder="Тег"
             @change="applyFilters"
             multiple collapse-tags)
             el-option(v-for="option in filters.tags.items" :key="option.value" :value="option.value", :label="option.label")
@@ -72,10 +72,9 @@
         @row-dblclick="onItemDoubleClick"
         highlight-current-row)
         el-table-column(type="selection" width="55")
-        el-table-column(prop="description" label="Заголовок")
-        el-table-column(prop="language" label="Статус")
-        el-table-column(prop="language" label="Проект")
-        el-table-column(prop="name" label="Добавлено")
+        el-table-column(prop="title" label="Название")
+        el-table-column(prop="description" label="Заметки")
+        el-table-column(prop="creationDate" label="Добавлено")
         infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
           div(slot="no-more")
           div(slot="no-results")
@@ -129,8 +128,8 @@ export default {
           fieldName: 'goalState',
           value: null,
           items: [
-            { value: 0, label: 'Новое' },
-            { value: 1, label: 'Завершённое' }
+            { value: 'New', label: 'Новое' },
+            { value: 'Completed', label: 'Завершённое' }
           ]
         },
         performer: {
@@ -139,7 +138,7 @@ export default {
           items: []
         },
         project: {
-          fieldName: 'scopeId',
+          fieldName: 'projectId',
           value: null,
           items: []
         },
@@ -147,9 +146,9 @@ export default {
           fieldName: 'priority',
           value: null,
           items: [
-            { value: 0, label: 'Низкий' },
-            { value: 1, label: 'Средний' },
-            { value: 2, label: 'Высокий' }
+            { value: 'Low', label: 'Низкий' },
+            { value: 'Normal', label: 'Обычный' },
+            { value: 'High', label: 'Высокий' }
           ]
         },
         tags: {
@@ -196,6 +195,7 @@ export default {
     },
     async refresh() {
       this.tableData = [];
+      this.query.pageNumber = 0;
       this.$refs.loader.stateChanger.reset();
     },
     async load($state) {

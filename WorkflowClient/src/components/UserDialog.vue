@@ -52,12 +52,12 @@ import BaseDialog from '~/components/BaseDialog';
 export default {
   components: { BaseDialog },
   props: {
-    id: Number
+    id: String
   },
   data() {
     return {
       visible: false,
-      loading: false,
+      loading: true,
       isEdit: !!this.id,
       form: {
         lastName: '',

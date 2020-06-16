@@ -26,7 +26,7 @@
           el-select(v-model="filters.performer.value" size="small" placeholder="Руководитель")
             el-option(v-for="option in filters.performer.items" :key="option.value" :value="option.value", :label="option.label")
         base-toolbar-item
-          el-select(v-model="filters.tag.value" size="small" placeholder="Метка")
+          el-select(v-model="filters.tag.value" size="small" placeholder="Тег")
             el-option(v-for="option in filters.tag.items" :key="option.value" :value="option.value", :label="option.label")
 
     div.content
@@ -37,12 +37,10 @@
         v-loading="loading"
         @row-contextmenu="onItemRightClick"
         @row-dblclick="onItemDoubleClick"
-        highlight-current-row
-        stripe)
+        highlight-current-row)
         el-table-column(type="selection" width="55")
-        el-table-column(prop="name" label="Дата добавления")
-        el-table-column(prop="description" label="Заголовок")
-        el-table-column(prop="language" label="Статус")
+        el-table-column(prop="name" label="Название")
+        el-table-column(prop="ownerFio" label="Руководитель")
         infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="400" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
           div(slot="no-more")
           div(slot="no-results")
@@ -137,6 +135,7 @@ export default {
     async applyFilters() {},
     async refresh() {
       this.tableData = [];
+      this.query.pageNumber = 0;
       this.$refs.loader.stateChanger.reset();
     },
     async load($state) {
@@ -146,8 +145,8 @@ export default {
       if (this.projects.length) $state.loaded();
       else $state.complete();
       this.tableData = firstLoad
-        ? this.getProjects
-        : this.tableData.concat(this.getProjects);
+        ? this.projects
+        : this.tableData.concat(this.projects);
       if (firstLoad) this.loading = false;
     },
     async fetch(params) {

@@ -41,7 +41,7 @@
       vue-context(ref="contextMenu")
         template(slot-scope="child")
           li(@click.prevent="onItemEdit($event, child.data.row)") Редактировать
-          li Завершить
+          li Добавить в команду...
           li Удалить
 
     user-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false")
@@ -100,6 +100,7 @@ export default {
     },
     async refresh() {
       this.tableData = [];
+      this.query.pageNumber = 0;
       this.$refs.loader.stateChanger.reset();
     },
     async load($state) {

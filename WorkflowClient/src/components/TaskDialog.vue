@@ -29,18 +29,14 @@
         el-row(:gutter="20")
           el-col(:span="8")
             el-form-item(prop="performerId")
-              el-autocomplete(
-                v-model="form.performerId"
-                :fetch-suggestions="searchUsers"
-                size="medium"
-                placeholder="Ответственный")
+              el-select(v-model="form.performerId" size="medium" placeholder="Ответственный" filterable)
+                el-option(v-for="item in userList" :key="item.id" :label="item.value" :value="item.id")
+
           el-col(:span="8")
             el-form-item(prop="projectId")
-              el-autocomplete(
-                v-model="form.projectId"
-                :fetch-suggestions="searchProjects"
-                size="medium"
-                placeholder="Проект")
+              el-select(v-model="form.projectId" size="medium" placeholder="Проект" filterable)
+                el-option(v-for="item in projectList" :key="item.id" :label="item.value" :value="item.id")
+
           el-col(:span="8")
             el-form-item(prop="dateEnd")
               el-date-picker(
@@ -61,7 +57,7 @@ import BaseDialog from '~/components/BaseDialog';
 export default {
   components: { BaseDialog },
   props: {
-    id: Number
+    id: String
   },
   data() {
     return {
@@ -81,8 +77,9 @@ export default {
         dateEnd: null
       },
       priorities: [
-        { value: 0, label: 'Важно' },
-        { value: 1, label: 'Срочно' }
+        { value: 'High', label: 'Высокий' },
+        { value: 'Normal', label: 'Обычный' },
+        { value: 'Low', label: 'Низкий' }
       ],
       rules: {
         title: [
@@ -95,7 +92,7 @@ export default {
         performerId: [
           { required: true, message: 'Укажите ответственного', trigger: 'blur' }
         ],
-        scopeId: [
+        projectId: [
           { required: true, message: 'Укажите проект', trigger: 'blur' }
         ]
       }
@@ -109,13 +106,37 @@ export default {
       this.form = this.task;
       this.loading = false;
     }
+    await this.fetchUsers({
+      pageNumber: 0,
+      pageSize: 10
+    });
+    await this.fetchProjects({
+      pageNumber: 0,
+      pageSize: 10
+    });
   },
   computed: {
     ...mapGetters({
       task: 'tasks/getTask',
       users: 'users/getUsers',
       projects: 'projects/getProjects'
-    })
+    }),
+    userList() {
+      return this.users.map(user => {
+        return {
+          value: `${user.lastName} ${user.firstName}`,
+          id: user.id
+        };
+      });
+    },
+    projectList() {
+      return this.projects.map(project => {
+        return {
+          value: project.name,
+          id: project.id
+        };
+      });
+    }
   },
   methods: {
     ...mapActions({
@@ -128,7 +149,7 @@ export default {
     async searchUsers(query, callback) {
       await this.fetchUsers({
         filter: query,
-        pageNumber: 1,
+        pageNumber: 0,
         pageSize: 10
       });
       const results = this.users.map(user => {
@@ -142,7 +163,7 @@ export default {
     async searchProjects(query, callback) {
       await this.fetchProjects({
         filter: query,
-        pageNumber: 1,
+        pageNumber: 0,
         pageSize: 10
       });
       const results = this.projects.map(project => {
