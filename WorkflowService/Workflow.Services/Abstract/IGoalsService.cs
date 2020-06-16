@@ -75,5 +75,31 @@ namespace Workflow.Services.Abstract
         /// <param name="goalId">Идентификатор задачи</param>
         /// <returns></returns>
         Task<VmGoal> Restore(ApplicationUser currentUser, int goalId);
+
+        /// <summary>
+        /// Получение вложений задачи
+        /// </summary>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="goalId">Идентификатор задачи</param>
+        /// <returns></returns>
+        Task<IEnumerable<VmAttachment>> GetAttachments(ApplicationUser currentUser, int goalId);
+
+        /// <summary>
+        /// Добавление вложений задачи
+        /// </summary>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="goalId">Идентификатор задачи</param>
+        /// <param name="attachments">Вложения</param>
+        /// <returns></returns>
+        Task AddAttachments(ApplicationUser currentUser, int goalId, ICollection<Attachment> attachments);
+
+
+        /// <summary>
+        /// Удаление вложений
+        /// </summary>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="attachmentIds">Идентификаторы вложений</param>
+        /// <returns></returns>
+        Task RemoveAttachments(ApplicationUser currentUser, IEnumerable<int> attachmentIds);
     }
 }

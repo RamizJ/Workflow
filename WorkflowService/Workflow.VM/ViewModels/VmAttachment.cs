@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Workflow.DAL.Models
+namespace Workflow.VM.ViewModels
 {
-    public class Attachment
+    public class VmAttachment
     {
         public int Id { get; set; }
 
@@ -13,6 +13,5 @@ namespace Workflow.DAL.Models
         public DateTime CreationDate { get; set; }
 
         public int FileDataId { get; set; }
-        public FileData FileData { get; set; }
     }
 }

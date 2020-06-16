@@ -97,7 +97,7 @@
             </summary>
             <param name="userManager"></param>
             <param name="projectsService"></param>
-            <param name="teamProjectsService"></param>
+            <param name="projectTeamsService"></param>
         </member>
         <member name="M:WorkflowService.Controllers.ProjectsController.Get(System.Int32)">
             <summary>
@@ -180,7 +180,7 @@
             API-методы работы с командами
             </summary>
         </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},Workflow.Services.Abstract.ITeamsService,Workflow.Services.Abstract.ITeamUsersService,Workflow.Services.Abstract.IProjectTeamsService)">
+        <member name="M:WorkflowService.Controllers.TeamsController.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},Workflow.Services.Abstract.ITeamsService,Workflow.Services.Abstract.ITeamUsersService,Workflow.Services.Abstract.ITeamProjectsService)">
             <summary>
             Конструктор
             </summary>
@@ -337,6 +337,20 @@
             Получение коллекции пользователей по идентификаторам
             </summary>
             <param name="ids">Идентификаторы пользователей</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.IsEmailExist(System.String)">
+            <summary>
+            Проверка существования пользователя с указанным email
+            </summary>
+            <param name="email">Email пользователя</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.IsUserNameExist(System.String)">
+            <summary>
+            Проверка существования пользователя с указанным именем пользователя
+            </summary>
+            <param name="userName">Имя пользователя</param>
             <returns></returns>
         </member>
         <member name="M:WorkflowService.Controllers.UsersController.Create(Workflow.VM.ViewModels.VmNewUser)">

@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
 using Workflow.Services.Common;
 using Workflow.VM.ViewModels;
+using WorkflowService.Services;
 
 namespace WorkflowService.Controllers
 {
@@ -20,10 +23,13 @@ namespace WorkflowService.Controllers
         /// <summary>
         /// Конструктор
         /// </summary>
-        public GoalsController(UserManager<ApplicationUser> userManager, IGoalsService goalsService)
+        public GoalsController(UserManager<ApplicationUser> userManager, 
+            IGoalsService goalsService,
+            IFormFilesService formFilesService)
         {
             _userManager = userManager;
             _goalsService = goalsService;
+            _formFilesService = formFilesService;
         }
 
         /// <summary>
@@ -114,7 +120,20 @@ namespace WorkflowService.Controllers
         }
 
 
+        /// <summary>
+        /// Добавление вложения
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("{goalId}")]
+        public async Task<IActionResult> AddAttachments(int goalId, IFormFileCollection files)
+        {
+            var attachments = _formFilesService.GetAttachments(files);
+            await _goalsService.AddAttachments(goalId, attachments.ToArray());
+            return NoContent();
+        }
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IGoalsService _goalsService;
+        private readonly IFormFilesService _formFilesService;
     }
 }

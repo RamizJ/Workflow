@@ -27,6 +27,7 @@ namespace Workflow.Services
             _dataContext = dataContext;
             _userManager = userManager;
             _vmConverter = new VmGoalConverter();
+            _vmAttachmentConverter = new VmAttachmentConverter();
         }
 
 
@@ -131,7 +132,38 @@ namespace Workflow.Services
             return await RemoveRestore(currentUser, goalId, false);
         }
 
-       private async Task<IQueryable<Goal>> GetQuery(ApplicationUser currentUser, bool withRemoved)
+        public async Task<IEnumerable<VmAttachment>> GetAttachments(ApplicationUser currentUser, int goalId)
+        {
+            var query = await GetQuery(currentUser, true);
+            query.Include(g => g.Attachments);
+            var goal = await query.FirstOrDefaultAsync(g => g.Id == goalId);
+
+            var attachments = goal?.Attachments?.Select(a => _vmAttachmentConverter.ToViewModel(a));
+            return attachments;
+        }
+
+        public async Task AddAttachments(ApplicationUser currentUser, 
+            int goalId, ICollection<Attachment> attachments)
+        {
+            var query = await GetQuery(currentUser, true);
+            query.Include(g => g.Attachments);
+            var goal = await query.FirstOrDefaultAsync(g => g.Id == goalId);
+
+            if(goal == null)
+                throw new InvalidOperationException("Cannot add attachments to goal. Goal for current user not found");
+
+            goal.Attachments.AddRange(attachments);
+            await _dataContext.SaveChangesAsync();
+        }
+
+        public async Task RemoveAttachments(ApplicationUser currentUser, IEnumerable<int> attachmentIds)
+        {
+            var query = await GetQuery(currentUser, true);
+            query.Include(g => g.Attachments);
+            var goal = await query.FirstOrDefaultAsync(g => g.Id == );
+        }
+
+        private async Task<IQueryable<Goal>> GetQuery(ApplicationUser currentUser, bool withRemoved)
         {
             bool isAdmin = await _userManager.IsInRoleAsync(currentUser, RoleNames.ADMINISTRATOR_ROLE);
             var query = _dataContext.Goals.AsNoTracking()
@@ -411,5 +443,6 @@ namespace Workflow.Services
         private readonly DataContext _dataContext;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly VmGoalConverter _vmConverter;
+        private readonly VmAttachmentConverter _vmAttachmentConverter;
     }
 }
