@@ -2,7 +2,7 @@
   section
     app-sidebar
     main
-      transition(name="fade-up" mode="out-in")
+      transition(name="slide-fade" mode="out-in")
         keep-alive
           router-view
 </template>
@@ -14,7 +14,7 @@ export default {
   name: 'LayoutDefault',
   components: {
     AppSidebar
-  },
+  }
 };
 </script>
 

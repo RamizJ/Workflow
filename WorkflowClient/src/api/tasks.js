@@ -3,10 +3,9 @@ import qs from 'qs';
 
 export default {
   get: id => httpClient.get(`/api/Goals/Get/${id}`),
-  getAll: () => httpClient.get(`/api/Goals/GetAll`),
   create: goal => httpClient.post(`/api/Goals/Create`, goal),
   update: goal => httpClient.put(`/api/Goals/Update`, goal),
-  delete: id => httpClient.delete(`/api/Goals/Delete`, id),
+  delete: id => httpClient.delete(`/api/Goals/Delete/${id}`),
   getPage: query =>
     httpClient.get(
       `/api/Goals/GetPage${qs.stringify(query, { addQueryPrefix: true })}`

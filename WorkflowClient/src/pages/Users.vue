@@ -8,7 +8,15 @@
     base-toolbar
       template(slot="filters")
         base-toolbar-item
-          el-input(size="small" placeholder="Поиск" v-model="query.search" @change="refresh")
+          el-input(v-model="query.filter" size="small" placeholder="Поиск" @change="refresh")
+        base-toolbar-item
+          el-select(
+            v-model="filters.position.value"
+            size="small"
+            placeholder="Должность"
+            @change="applyFilters"
+            multiple collapse-tags)
+            el-option(v-for="option in filters.position.items" :key="option.value" :value="option.value", :label="option.label")
 
     div.content
       el-table(
@@ -16,15 +24,25 @@
         ref="table"
         height="auto"
         v-loading="loading"
-        highlight-current-row
-        stripe)
+        @row-contextmenu="onItemRightClick"
+        @row-dblclick="onItemDoubleClick"
+        highlight-current-row)
         el-table-column(type="selection" width="55")
-        el-table-column(prop="name" label="Дата добавления")
-        el-table-column(prop="description" label="Заголовок")
-        el-table-column(prop="language" label="Статус")
+        el-table-column(prop="lastName" label="Фамилия")
+        el-table-column(prop="firstName" label="Имя")
+        el-table-column(prop="middleName" label="Отчество")
+        el-table-column(prop="userName" label="Логин")
+        el-table-column(prop="email" label="Почта")
+        el-table-column(prop="phone" label="Телефон")
         infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="400" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
           div(slot="no-more")
           div(slot="no-results")
+
+      vue-context(ref="contextMenu")
+        template(slot-scope="child")
+          li(@click.prevent="onItemEdit($event, child.data.row)") Редактировать
+          li Добавить в команду...
+          li Удалить
 
     user-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false")
 
@@ -51,12 +69,18 @@ export default {
       tableData: [],
       query: {
         filter: '',
-        pageNumber: 1,
+        pageNumber: 0,
         pageSize: 15
       },
       dialogOpened: false,
       selectedItemId: null,
-      filters: {},
+      filters: {
+        position: {
+          value: null,
+          fieldName: 'position',
+          items: []
+        }
+      },
       value: ''
     };
   },
@@ -65,8 +89,18 @@ export default {
   },
   methods: {
     ...mapActions({ fetchUsers: 'users/fetchUsers' }),
+    async applyFilters() {
+      this.query.filterFields = [];
+      if (this.filters.position.value)
+        this.query.filterFields.push({
+          fieldName: this.filters.position.fieldName,
+          value: this.filters.position.value
+        });
+      await this.refresh();
+    },
     async refresh() {
       this.tableData = [];
+      this.query.pageNumber = 0;
       this.$refs.loader.stateChanger.reset();
     },
     async load($state) {
@@ -87,6 +121,17 @@ export default {
       } catch (e) {
         this.$message.error('Ошибка получения данных');
       }
+    },
+    onItemRightClick(row, column, event) {
+      this.$refs.contextMenu.open(event, { row, column });
+      event.preventDefault();
+    },
+    onItemDoubleClick(row, column, event) {
+      this.onItemEdit(event, row);
+    },
+    onItemEdit(event, row) {
+      this.selectedItemId = row.id;
+      this.dialogOpened = true;
     }
   }
 };

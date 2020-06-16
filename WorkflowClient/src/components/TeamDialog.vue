@@ -14,12 +14,13 @@
         el-row(:gutter="20")
           el-col(:span="16")
             el-form-item(prop="teamMembers")
-              el-select(v-model="form.teamMembers" size="medium" placeholder="Участники" multiple)
-                el-option(v-for="item in users" :key="item.value" :label="item.label" :value="item.value")
+              el-select(v-model="form.teamMembers" size="medium" placeholder="Участники" multiple filterable)
+                el-option(v-for="item in userList" :key="item.id" :label="item.value" :value="item.id")
           el-col(:span="8")
-            el-form-item(prop="scopeId")
-              el-select(v-model="form.scopeId" size="medium" placeholder="Проект")
-                el-option(v-for="item in scopes" :key="item.value" :label="item.label" :value="item.value")
+            el-form-item(prop="projectId")
+              el-select(v-model="form.projectId" size="medium" placeholder="Проект" filterable)
+                el-option(v-for="item in projectList" :key="item.id" :label="item.value" :value="item.id")
+
     div(slot="footer")
       el-button(size="medium" type="primary" @click="submit") Создать
 
@@ -32,38 +33,20 @@ import BaseDialog from '~/components/BaseDialog';
 export default {
   components: { BaseDialog },
   props: {
-    id: Number
+    id: String
   },
   data() {
     return {
       visible: false,
-      loading: false,
+      loading: true,
       isEdit: !!this.id,
       form: {
-        title: '',
-        priority: null,
+        name: '',
         description: '',
         teamMembers: [],
-        responsible: null,
-        team: null,
-        scopeId: null,
-        dateStart: null,
-        dateEnd: null
+        projectId: null,
+        priority: null
       },
-      users: [
-        { value: 0, label: 'Виталий' },
-        { value: 1, label: 'Алексей' },
-        { value: 2, label: 'Иван' },
-        { value: 3, label: 'Константин' },
-        { value: 4, label: 'Олег' },
-        { value: 5, label: 'Николай' },
-        { value: 6, label: 'Андрей' }
-      ],
-      scopes: [
-        { value: 0, label: 'Виталий' },
-        { value: 1, label: 'Алексей' },
-        { value: 2, label: 'Андрей' }
-      ],
       rules: {
         name: [
           {
@@ -83,24 +66,83 @@ export default {
       this.form = this.team;
       this.loading = false;
     }
+    await this.fetchUsers({
+      pageNumber: 0,
+      pageSize: 10
+    });
+    await this.fetchProjects({
+      pageNumber: 0,
+      pageSize: 10
+    });
   },
   computed: {
-    ...mapGetters({ team: 'teams/getTeam' })
+    ...mapGetters({
+      team: 'teams/getTeam',
+      users: 'users/getUsers',
+      projects: 'projects/getProjects'
+    }),
+    userList() {
+      return this.users.map(user => {
+        return {
+          value: `${user.lastName} ${user.firstName}`,
+          id: user.id
+        };
+      });
+    },
+    projectList() {
+      return this.projects.map(project => {
+        return {
+          value: project.name,
+          id: project.id
+        };
+      });
+    }
   },
   methods: {
     ...mapActions({
       fetchTeam: 'teams/fetchTeam',
       createTeam: 'teams/createTeam',
-      updateTeam: 'teams/updateTeam'
+      updateTeam: 'teams/updateTeam',
+      fetchUsers: 'users/fetchUsers',
+      fetchProjects: 'projects/fetchProjects'
     }),
+    async searchUsers(query, callback) {
+      await this.fetchUsers({
+        filter: query,
+        pageNumber: 0,
+        pageSize: 10
+      });
+      const results = this.users.map(user => {
+        return {
+          value: `${user.lastName} ${user.firstName}`,
+          id: user.id
+        };
+      });
+      callback(results);
+    },
+    async searchProjects(query, callback) {
+      await this.fetchProjects({
+        filter: query,
+        pageNumber: 0,
+        pageSize: 10
+      });
+      const results = this.projects.map(project => {
+        return {
+          value: project.name,
+          id: project.id
+        };
+      });
+      callback(results);
+    },
     submit() {
       const payload = { ...this.form };
       const form = this.$refs.form;
       form.validate(async valid => {
         if (valid) {
           try {
+            const projectId = payload.projectId;
             if (this.isEdit) await this.updateTeam(payload);
-            else await this.createTeam(payload);
+            else await this.createTeam({ payload, projectId });
             form.resetFields();
             this.$emit('close');
           } catch (e) {
