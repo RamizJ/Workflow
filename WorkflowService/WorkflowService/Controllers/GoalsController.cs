@@ -17,7 +17,7 @@ namespace WorkflowService.Controllers
     /// <summary>
     /// API-методы работы с задачами
     /// </summary>
-    [Authorize]
+    //[Authorize]
     [ApiController, Route("api/[controller]/[action]")]
     public class GoalsController : ControllerBase
     {

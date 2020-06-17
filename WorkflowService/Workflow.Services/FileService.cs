@@ -24,11 +24,11 @@ namespace Workflow.Services
         /// <inheritdoc />
         public async Task Download(Stream stream, int fileDataId)
         {
-            var attachment = await _dataContext.FileData.FirstOrDefaultAsync(a => a.Id == fileDataId);
-            if(attachment == null)
+            var fileData = await _dataContext.FileData.FirstOrDefaultAsync(a => a.Id == fileDataId);
+            if(fileData == null)
                 throw new InvalidOperationException($"File with id='{fileDataId}' not found");
 
-            await stream.WriteAsync(attachment.Data);
+            await stream.WriteAsync(fileData.Data);
         }
     }
 }
