@@ -7,16 +7,16 @@ using Workflow.VM.ViewModels;
 namespace Workflow.Services.Abstract
 {
     /// <summary>
-    /// 
+    /// Сервис работы с задачами
     /// </summary>
     public interface IGoalsService
     {
         /// <summary>
-        /// 
+        /// Получение задачи пользователь
         /// </summary>
-        /// <param name="currentUser"></param>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="id">Идентификатор задачи</param>
+        /// <returns>Задача</returns>
         Task<VmGoal> Get(ApplicationUser currentUser, int id);
 
 

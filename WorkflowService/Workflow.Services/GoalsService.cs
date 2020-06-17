@@ -171,8 +171,6 @@ namespace Workflow.Services
                 .Include(x => x.Observers)
                 .Include(x => x.Performer)
                 .Include(x => x.Project)
-                //.ThenInclude(x => x.Team)
-                //.ThenInclude(x => x.TeamUsers)
                 .Where(x => isAdmin
                             || x.Project.OwnerId == currentUser.Id
                             || x.Project.ProjectTeams

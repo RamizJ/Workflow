@@ -8,10 +8,7 @@ namespace Workflow.VM.ViewModelConverters
     {
         public Attachment ToModel(VmAttachment viewModel)
         {
-            return new Attachment
-            {
-                Id = viewModel.Id
-            };
+            return new Attachment { Id = viewModel.Id };
         }
 
         public VmAttachment ToViewModel(Attachment model)
@@ -20,7 +17,7 @@ namespace Workflow.VM.ViewModelConverters
             {
                 Id = model.Id,
                 FileDataId = model.FileDataId,
-                CreationDate = model.CreationDate, 
+                CreationDate = model.CreationDate,
                 FileName = model.FileName,
                 FileSize = model.FileSize,
                 FileType = model.FileType

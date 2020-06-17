@@ -13,7 +13,7 @@ namespace WorkflowService.Controllers
     /// <summary>
     /// API работы с пользователями системы
     /// </summary>
-    [Authorize]
+    //[Authorize]
     [ApiController, Route("api/[controller]/[action]")]
     public class UsersController : ControllerBase
     {

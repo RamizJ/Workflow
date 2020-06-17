@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 using Workflow.DAL.Models;
-using Microsoft.AspNetCore.Http;
 
 namespace WorkflowService.Services
 {
@@ -9,9 +9,7 @@ namespace WorkflowService.Services
     /// </summary>
     public interface IFormFilesService
     {
-        /// <summary>
-        /// Преобразование файлов во вложения
-        /// </summary>
+        /// <summary>Преобразование файлов во вложения</summary>
         /// <param name="files">Файлы</param>
         /// <returns>Коллекция вложений</returns>
         IEnumerable<Attachment> GetAttachments(IFormFileCollection files);

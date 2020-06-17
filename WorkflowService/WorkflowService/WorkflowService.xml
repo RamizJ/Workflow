@@ -33,7 +33,7 @@
             API-методы работы с задачами
             </summary>
         </member>
-        <member name="M:WorkflowService.Controllers.GoalsController.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},Workflow.Services.Abstract.IGoalsService)">
+        <member name="M:WorkflowService.Controllers.GoalsController.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},Workflow.Services.Abstract.IGoalsService,Workflow.Services.Abstract.IGoalAttachmentsService,WorkflowService.Services.IFormFilesService)">
             <summary>
             Конструктор
             </summary>
@@ -84,6 +84,35 @@
             Удаление задачи
             </summary>
             <param name="id">Идентификатор удаляемой задачи</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.GetAttachments(System.Int32)">
+            <summary>
+            Получение вложений задачи
+            </summary>
+            <param name="goalId">Идентификатор задачи</param>
+            <returns>Коллекция вложений</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.AddAttachments(System.Int32,Microsoft.AspNetCore.Http.IFormFileCollection)">
+            <summary>
+            Добавление вложения
+            </summary>
+            <param name="goalId">Идентификатор задачи</param>
+            <param name="files">Коллекция файлов</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.RemoveAttachments(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Удаление вложений. Удаляются только те вложения тех задач, которые доступны пользователю
+            </summary>
+            <param name="attachmentIds">Идентификаторы вложений</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.DownloadAttachmentFile(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="attachmentId"></param>
             <returns></returns>
         </member>
         <member name="T:WorkflowService.Controllers.ProjectsController">
@@ -401,6 +430,24 @@
             </summary>
             <param name="host"></param>
             <returns></returns>
+        </member>
+        <member name="T:WorkflowService.Services.FormFilesService">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.FormFilesService.GetAttachments(Microsoft.AspNetCore.Http.IFormFileCollection)">
+            <inheritdoc />
+        </member>
+        <member name="T:WorkflowService.Services.IFormFilesService">
+            <summary>
+            Преобразование файлов во вложения
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Services.IFormFilesService.GetAttachments(Microsoft.AspNetCore.Http.IFormFileCollection)">
+            <summary>
+            Преобразование файлов во вложения
+            </summary>
+            <param name="files">Файлы</param>
+            <returns>Коллекция вложений</returns>
         </member>
     </members>
 </doc>

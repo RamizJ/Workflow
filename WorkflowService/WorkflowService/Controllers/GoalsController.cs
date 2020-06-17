@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -16,7 +17,7 @@ namespace WorkflowService.Controllers
     /// <summary>
     /// API-методы работы с задачами
     /// </summary>
-    [Authorize]
+    //[Authorize]
     [ApiController, Route("api/[controller]/[action]")]
     public class GoalsController : ControllerBase
     {
@@ -25,10 +26,12 @@ namespace WorkflowService.Controllers
         /// </summary>
         public GoalsController(UserManager<ApplicationUser> userManager, 
             IGoalsService goalsService,
+            IGoalAttachmentsService attachmentsService,
             IFormFilesService formFilesService)
         {
             _userManager = userManager;
-            _goalsService = goalsService;
+            _service = goalsService;
+            _attachmentsService = attachmentsService;
             _formFilesService = formFilesService;
         }
 
@@ -41,7 +44,7 @@ namespace WorkflowService.Controllers
         public async Task<ActionResult<VmGoal>> Get(int id)
         {
             var user = await _userManager.GetUserAsync(User);
-            return Ok(await _goalsService.Get(user, id));
+            return Ok(await _service.Get(user, id));
         }
 
         /// <summary>
@@ -62,7 +65,7 @@ namespace WorkflowService.Controllers
             [FromQuery]FieldSort[] sortFields = null, [FromQuery] bool withRemoved = false)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            return await _goalsService.GetPage(currentUser, scopeId, 
+            return await _service.GetPage(currentUser, scopeId, 
                 pageNumber, pageSize, filter, filterFields, sortFields, withRemoved);
         }
 
@@ -75,7 +78,7 @@ namespace WorkflowService.Controllers
         public async Task<IEnumerable<VmGoal>> GetRange([FromQuery]int[] ids)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            return await _goalsService.GetRange(currentUser, ids);
+            return await _service.GetRange(currentUser, ids);
         }
 
         /// <summary>
@@ -87,7 +90,7 @@ namespace WorkflowService.Controllers
         public async Task<ActionResult<VmGoal>> Create([FromBody]VmGoal goal)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            return await _goalsService.Create(currentUser, goal);
+            return await _service.Create(currentUser, goal);
         }
 
         /// <summary>
@@ -99,7 +102,7 @@ namespace WorkflowService.Controllers
         public async Task<IActionResult> Update([FromBody]VmGoal goal)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            await _goalsService.Update(currentUser, goal);
+            await _service.Update(currentUser, goal);
             return NoContent();
         }
 
@@ -112,7 +115,7 @@ namespace WorkflowService.Controllers
         public async Task<ActionResult<VmGoal>> Delete(int id)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var deletedScope = await _goalsService.Delete(currentUser, id);
+            var deletedScope = await _service.Delete(currentUser, id);
             if (deletedScope == null)
                 return NotFound();
 
@@ -121,19 +124,67 @@ namespace WorkflowService.Controllers
 
 
         /// <summary>
+        /// Получение вложений задачи
+        /// </summary>
+        /// <param name="goalId">Идентификатор задачи</param>
+        /// <returns>Коллекция вложений</returns>
+        [HttpGet("{goalId}")]
+        public async Task<ActionResult<IEnumerable<VmGoal>>> GetAttachments(int goalId)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var attachments = await _attachmentsService.GetAll(currentUser, goalId);
+            return Ok(attachments);
+        }
+
+
+        /// <summary>
         /// Добавление вложения
         /// </summary>
+        /// <param name="goalId">Идентификатор задачи</param>
+        /// <param name="files">Коллекция файлов</param>
         /// <returns></returns>
-        [HttpPost("{goalId}")]
+        [HttpPatch("{goalId}")]
         public async Task<IActionResult> AddAttachments(int goalId, IFormFileCollection files)
         {
+            var currentUser = await _userManager.GetUserAsync(User);
             var attachments = _formFilesService.GetAttachments(files);
-            await _goalsService.AddAttachments(goalId, attachments.ToArray());
+            await _attachmentsService.Add(currentUser, goalId, attachments.ToArray());
             return NoContent();
         }
 
+        /// <summary>
+        /// Удаление вложений. Удаляются только те вложения тех задач, которые доступны пользователю
+        /// </summary>
+        /// <param name="attachmentIds">Идентификаторы вложений</param>
+        /// <returns></returns>
+        [HttpPatch]
+        public async Task<IActionResult> RemoveAttachments([FromBody] IEnumerable<int> attachmentIds)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            await _attachmentsService.Remove(currentUser, attachmentIds);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="attachmentId"></param>
+        /// <returns></returns>
+        [HttpGet("{attachmentId}")]
+        public async Task<FileResult> DownloadAttachmentFile(int attachmentId)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var memoryStream = new MemoryStream();
+            var attachment = await _attachmentsService.DowloadAttachmentFile(currentUser, memoryStream, attachmentId);
+            memoryStream.Position = 0;
+            return File(memoryStream, attachment.FileType ?? "*/*");
+        }
+
+
+
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IGoalsService _goalsService;
+        private readonly IGoalsService _service;
+        private readonly IGoalAttachmentsService _attachmentsService;
         private readonly IFormFilesService _formFilesService;
     }
 }

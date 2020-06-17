@@ -1,5 +1,6 @@
 ﻿using System;
 
+
 namespace Workflow.DAL.Models
 {
     public class Attachment
