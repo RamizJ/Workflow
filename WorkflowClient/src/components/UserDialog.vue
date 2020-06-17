@@ -48,17 +48,16 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import BaseDialog from '~/components/BaseDialog';
+import dialogMixin from '~/mixins/dialog.mixin';
 
 export default {
   components: { BaseDialog },
   props: {
     id: String
   },
+  mixins: [dialogMixin],
   data() {
     return {
-      visible: false,
-      loading: true,
-      isEdit: !!this.id,
       form: {
         lastName: '',
         firstName: '',
@@ -113,27 +112,19 @@ export default {
       }
     };
   },
-  async mounted() {
-    this.visible = true;
-    if (this.isEdit) {
-      this.loading = true;
-      await this.fetchUser(this.id);
-      this.form = this.user;
-      this.loading = false;
-    }
-  },
   computed: {
-    ...mapGetters({ user: 'users/getUser' })
+    ...mapGetters({ item: 'users/getUser' })
   },
   methods: {
     ...mapActions({
-      fetchUser: 'users/fetchUser',
-      createUser: 'users/createUser',
-      updateUser: 'users/updateUser'
+      fetchItem: 'users/fetchUser',
+      createItem: 'users/createUser',
+      updateItem: 'users/updateUser'
     }),
     validatePassword(rule, value, callback) {
-      const length = value.trim().length;
+      const length = value?.trim().length;
       const symbolsLeft = 6 - length;
+      if (!value && this.isEdit) callback();
       if (!value) callback(new Error('Введите пароль'));
       else if (length < 6)
         callback(
@@ -149,24 +140,6 @@ export default {
       else if (!/[a-z]/.test(value))
         callback(new Error('Введите хотя бы одну букву'));
       else callback();
-    },
-    submit() {
-      const payload = { ...this.form };
-      const form = this.$refs.form;
-      form.validate(async valid => {
-        if (valid) {
-          try {
-            if (this.isEdit) await this.updateUser(payload);
-            else await this.createUser(payload);
-            form.resetFields();
-            this.$emit('close');
-          } catch (e) {
-            this.$message.error('Ошибка отправки запроса');
-          }
-        } else {
-          this.$message.error('Укажите корректные данные');
-        }
-      });
     }
   }
 };

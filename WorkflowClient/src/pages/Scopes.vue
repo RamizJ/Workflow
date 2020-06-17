@@ -17,7 +17,7 @@
             @change="applyFilters" clearable)
             el-option(v-for="option in filters.sort.items" :key="option.value" :value="option.value", :label="option.label")
 
-    div.content
+    base-list
       el-table(
         :data="tableData"
         ref="table"
@@ -31,7 +31,7 @@
         el-table-column(prop="name" label="Дата добавления")
         el-table-column(prop="description" label="Заголовок")
         el-table-column(prop="language" label="Статус")
-        infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="400" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
+        infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
           div(slot="no-more")
           div(slot="no-results")
 
@@ -39,7 +39,7 @@
         template(slot-scope="child")
           li(@click.prevent="onItemEdit($event, child.data.row)") Редактировать
           li Добавить проект
-          li Удалить
+          li(@click.prevent="onItemDelete($event, child.data.row)") Удалить
 
     scope-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false")
 
@@ -50,7 +50,9 @@ import { mapActions, mapGetters } from 'vuex';
 import BaseHeader from '~/components/BaseHeader';
 import BaseToolbar from '~/components/BaseToolbar';
 import BaseToolbarItem from '~/components/BaseToolbarItem';
+import BaseList from '~/components/BaseList';
 import ScopeDialog from '~/components/ScopeDialog';
+import tableMixin from '~/mixins/table.mixin';
 
 export default {
   name: 'Teams',
@@ -58,19 +60,17 @@ export default {
     BaseHeader,
     BaseToolbar,
     BaseToolbarItem,
+    BaseList,
     ScopeDialog
   },
+  mixins: [tableMixin],
   data() {
     return {
-      loading: false,
-      tableData: [],
       query: {
         filter: '',
         pageNumber: 1,
-        pageSize: 15
+        pageSize: 30
       },
-      dialogOpened: false,
-      selectedItemId: null,
       filters: {
         sort: {
           value: null,
@@ -83,45 +83,14 @@ export default {
     };
   },
   computed: {
-    ...mapGetters({ scopes: 'scopes/getScopes' })
+    ...mapGetters({ items: 'scopes/getScopes' })
   },
   methods: {
-    ...mapActions({ fetchScopes: 'scopes/fetchScopes' }),
-    async applyFilters() {},
-    async refresh() {
-      this.tableData = [];
-      this.$refs.loader.stateChanger.reset();
-    },
-    async load($state) {
-      const firstLoad = !this.tableData.length;
-      if (firstLoad) this.loading = true;
-      await this.fetch(this.query);
-      if (this.scopes.length) $state.loaded();
-      else $state.complete();
-      this.tableData = firstLoad
-        ? this.scopes
-        : this.tableData.concat(this.scopes);
-      if (firstLoad) this.loading = false;
-    },
-    async fetch(params) {
-      try {
-        await this.fetchScopes(params);
-        this.query.pageNumber++;
-      } catch (e) {
-        this.$message.error('Ошибка получения данных');
-      }
-    },
-    onItemRightClick(row, column, event) {
-      this.$refs.contextMenu.open(event, { row, column });
-      event.preventDefault();
-    },
-    onItemDoubleClick(row, column, event) {
-      this.onItemEdit(event, row);
-    },
-    onItemEdit(event, row) {
-      this.selectedItemId = row.id;
-      this.dialogOpened = true;
-    }
+    ...mapActions({
+      fetchItems: 'scopes/fetchScopes',
+      deleteItem: 'scopes/deleteScope'
+    }),
+    async applyFilters() {}
   }
 };
 </script>

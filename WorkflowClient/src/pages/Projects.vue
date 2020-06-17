@@ -29,7 +29,7 @@
           el-select(v-model="filters.tag.value" size="small" placeholder="Тег")
             el-option(v-for="option in filters.tag.items" :key="option.value" :value="option.value", :label="option.label")
 
-    div.content
+    base-list
       el-table(
         :data="tableData"
         ref="table"
@@ -41,7 +41,7 @@
         el-table-column(type="selection" width="55")
         el-table-column(prop="name" label="Название")
         el-table-column(prop="ownerFio" label="Руководитель")
-        infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="400" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
+        infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
           div(slot="no-more")
           div(slot="no-results")
 
@@ -49,7 +49,7 @@
         template(slot-scope="child")
           li(@click.prevent="onItemEdit($event, child.data.row)") Редактировать
           li Добавить задачу
-          li Удалить
+          li(@click.prevent="onItemDelete($event, child.data.row)") Удалить
 
     project-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false")
 
@@ -60,7 +60,9 @@ import { mapActions, mapGetters } from 'vuex';
 import BaseHeader from '~/components/BaseHeader';
 import BaseToolbar from '~/components/BaseToolbar';
 import BaseToolbarItem from '~/components/BaseToolbarItem';
+import BaseList from '~/components/BaseList';
 import ProjectDialog from '~/components/ProjectDialog';
+import tableMixin from '~/mixins/table.mixin';
 
 export default {
   name: 'Projects',
@@ -68,19 +70,17 @@ export default {
     BaseHeader,
     BaseToolbar,
     BaseToolbarItem,
+    BaseList,
     ProjectDialog
   },
+  mixins: [tableMixin],
   data() {
     return {
-      loading: false,
-      tableData: [],
       query: {
         filter: '',
         pageNumber: 0,
-        pageSize: 15
+        pageSize: 30
       },
-      dialogOpened: false,
-      selectedItemId: null,
       filters: {
         sort: {
           value: null,
@@ -128,62 +128,14 @@ export default {
     };
   },
   computed: {
-    ...mapGetters({ projects: 'projects/getProjects' })
+    ...mapGetters({ items: 'projects/getProjects' })
   },
   methods: {
-    ...mapActions({ fetchProjects: 'projects/fetchProjects' }),
-    async applyFilters() {},
-    async refresh() {
-      this.tableData = [];
-      this.query.pageNumber = 0;
-      this.$refs.loader.stateChanger.reset();
-    },
-    async load($state) {
-      const firstLoad = !this.tableData.length;
-      if (firstLoad) this.loading = true;
-      await this.fetch(this.query);
-      if (this.projects.length) $state.loaded();
-      else $state.complete();
-      this.tableData = firstLoad
-        ? this.projects
-        : this.tableData.concat(this.projects);
-      if (firstLoad) this.loading = false;
-    },
-    async fetch(params) {
-      try {
-        await this.fetchProjects(params);
-        this.query.pageNumber++;
-      } catch (e) {
-        console.error(e);
-        this.$message.error('Ошибка получения данных');
-      }
-    },
-    onItemRightClick(row, column, event) {
-      this.$refs.contextMenu.open(event, { row, column });
-      event.preventDefault();
-    },
-    onItemDoubleClick(row, column, event) {
-      this.onItemEdit(event, row);
-    },
-    onItemEdit(event, row) {
-      this.selectedItemId = row.id;
-      this.dialogOpened = true;
-    }
+    ...mapActions({
+      fetchItems: 'projects/fetchProjects',
+      deleteItem: 'projects/deleteProject'
+    }),
+    async applyFilters() {}
   }
 };
 </script>
-
-<style lang="scss" scoped>
-.content {
-  display: flex;
-  position: relative;
-  overflow: hidden;
-  flex: 1;
-  height: 100%;
-  padding: 0 30px;
-  .el-table {
-    overflow: auto;
-    position: unset !important;
-  }
-}
-</style>

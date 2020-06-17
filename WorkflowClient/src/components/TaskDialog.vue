@@ -53,17 +53,16 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import BaseDialog from '~/components/BaseDialog';
+import dialogMixin from '~/mixins/dialog.mixin';
 
 export default {
   components: { BaseDialog },
   props: {
     id: String
   },
+  mixins: [dialogMixin],
   data() {
     return {
-      visible: false,
-      loading: false,
-      isEdit: !!this.id,
       form: {
         title: '',
         description: '',
@@ -99,13 +98,6 @@ export default {
     };
   },
   async mounted() {
-    this.visible = true;
-    if (this.isEdit) {
-      this.loading = true;
-      await this.fetchTask(this.id);
-      this.form = this.task;
-      this.loading = false;
-    }
     await this.fetchUsers({
       pageNumber: 0,
       pageSize: 10
@@ -117,7 +109,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      task: 'tasks/getTask',
+      item: 'tasks/getTask',
+
       users: 'users/getUsers',
       projects: 'projects/getProjects'
     }),
@@ -140,9 +133,10 @@ export default {
   },
   methods: {
     ...mapActions({
-      fetchTask: 'tasks/fetchTask',
-      createTask: 'tasks/createTask',
-      updateTask: 'tasks/updateTask',
+      fetchItem: 'tasks/fetchTask',
+      createItem: 'tasks/createTask',
+      updateItem: 'tasks/updateTask',
+
       fetchUsers: 'users/fetchUsers',
       fetchProjects: 'projects/fetchProjects'
     }),
@@ -173,24 +167,6 @@ export default {
         };
       });
       callback(results);
-    },
-    submit() {
-      const payload = { ...this.form };
-      const form = this.$refs.form;
-      form.validate(async valid => {
-        if (valid) {
-          try {
-            if (this.isEdit) await this.updateTask(payload);
-            else await this.createTask(payload);
-            form.resetFields();
-            this.$emit('close');
-          } catch (e) {
-            this.$message.error('Ошибка отправки запроса');
-          }
-        } else {
-          this.$message.error('Укажите корректные данные');
-        }
-      });
     }
   }
 };

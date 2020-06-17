@@ -23,7 +23,7 @@
           el-select(v-model="filters.performer.value" size="small" placeholder="Проект")
             el-option(v-for="option in filters.performer.items" :key="option.value" :value="option.value", :label="option.label")
 
-    div.content
+    base-list
       el-table(
         :data="tableData"
         ref="table"
@@ -35,7 +35,7 @@
         stripe)
         el-table-column(type="selection" width="55")
         el-table-column(prop="name" label="Название")
-        infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="400" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
+        infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
           div(slot="no-more")
           div(slot="no-results")
 
@@ -43,7 +43,7 @@
         template(slot-scope="child")
           li(@click.prevent="onItemEdit($event, child.data.row)") Редактировать
           li Добавить участника
-          li Удалить
+          li(@click.prevent="onItemDelete($event, child.data.row)") Удалить
 
     team-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false")
 
@@ -54,7 +54,9 @@ import { mapActions, mapGetters } from 'vuex';
 import BaseHeader from '~/components/BaseHeader';
 import BaseToolbar from '~/components/BaseToolbar';
 import BaseToolbarItem from '~/components/BaseToolbarItem';
+import BaseList from '~/components/BaseList';
 import TeamDialog from '~/components/TeamDialog';
+import tableMixin from '~/mixins/table.mixin';
 
 export default {
   name: 'Teams',
@@ -62,19 +64,17 @@ export default {
     BaseHeader,
     BaseToolbar,
     BaseToolbarItem,
+    BaseList,
     TeamDialog
   },
+  mixins: [tableMixin],
   data() {
     return {
-      loading: false,
-      tableData: [],
       query: {
         filter: '',
         pageNumber: 0,
-        pageSize: 15
+        pageSize: 30
       },
-      dialogOpened: false,
-      selectedItemId: null,
       filters: {
         sort: {
           value: null,
@@ -121,46 +121,14 @@ export default {
     };
   },
   computed: {
-    ...mapGetters({ teams: 'teams/getTeams' })
+    ...mapGetters({ items: 'teams/getTeams' })
   },
   methods: {
-    ...mapActions({ fetchTeams: 'teams/fetchTeams' }),
-    async applyFilters() {},
-    async refresh() {
-      this.tableData = [];
-      this.query.pageNumber = 0;
-      this.$refs.loader.stateChanger.reset();
-    },
-    async load($state) {
-      const firstLoad = !this.tableData.length;
-      if (firstLoad) this.loading = true;
-      await this.fetch(this.query);
-      if (this.teams.length) $state.loaded();
-      else $state.complete();
-      this.tableData = firstLoad
-        ? this.teams
-        : this.tableData.concat(this.teams);
-      if (firstLoad) this.loading = false;
-    },
-    async fetch(params) {
-      try {
-        await this.fetchTeams(params);
-        this.query.pageNumber++;
-      } catch (e) {
-        this.$message.error('Ошибка получения данных');
-      }
-    },
-    onItemRightClick(row, column, event) {
-      this.$refs.contextMenu.open(event, { row, column });
-      event.preventDefault();
-    },
-    onItemDoubleClick(row, column, event) {
-      this.onItemEdit(event, row);
-    },
-    onItemEdit(event, row) {
-      this.selectedItemId = row.id;
-      this.dialogOpened = true;
-    }
+    ...mapActions({
+      fetchItems: 'teams/fetchTeams',
+      deleteItem: 'teams/deleteTeam'
+    }),
+    async applyFilters() {}
   }
 };
 </script>

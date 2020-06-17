@@ -18,7 +18,7 @@
             multiple collapse-tags)
             el-option(v-for="option in filters.position.items" :key="option.value" :value="option.value", :label="option.label")
 
-    div.content
+    base-list
       el-table(
         :data="tableData"
         ref="table"
@@ -41,10 +41,10 @@
       vue-context(ref="contextMenu")
         template(slot-scope="child")
           li(@click.prevent="onItemEdit($event, child.data.row)") Редактировать
-          li Добавить в команду...
-          li Удалить
+          li(@click.prevent="onItemAddToTeam($event, child.data.row)") Добавить в команду...
+          li(@click.prevent="onItemDelete($event, child.data.row)") Удалить
 
-    user-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false")
+    user-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false" @submit="refresh")
 
 </template>
 
@@ -53,7 +53,9 @@ import { mapActions, mapGetters } from 'vuex';
 import BaseHeader from '~/components/BaseHeader';
 import BaseToolbar from '~/components/BaseToolbar';
 import BaseToolbarItem from '~/components/BaseToolbarItem';
+import BaseList from '~/components/BaseList';
 import UserDialog from '~/components/UserDialog';
+import tableMixin from '~/mixins/table.mixin';
 
 export default {
   name: 'Users',
@@ -61,34 +63,34 @@ export default {
     BaseHeader,
     BaseToolbar,
     BaseToolbarItem,
+    BaseList,
     UserDialog
   },
+  mixins: [tableMixin],
   data() {
     return {
-      loading: false,
-      tableData: [],
       query: {
         filter: '',
         pageNumber: 0,
         pageSize: 15
       },
-      dialogOpened: false,
-      selectedItemId: null,
       filters: {
         position: {
           value: null,
           fieldName: 'position',
           items: []
         }
-      },
-      value: ''
+      }
     };
   },
   computed: {
-    ...mapGetters({ users: 'users/getUsers' })
+    ...mapGetters({ items: 'users/getUsers' })
   },
   methods: {
-    ...mapActions({ fetchUsers: 'users/fetchUsers' }),
+    ...mapActions({
+      fetchItems: 'users/fetchUsers',
+      deleteItem: 'users/deleteUser'
+    }),
     async applyFilters() {
       this.query.filterFields = [];
       if (this.filters.position.value)
@@ -98,56 +100,7 @@ export default {
         });
       await this.refresh();
     },
-    async refresh() {
-      this.tableData = [];
-      this.query.pageNumber = 0;
-      this.$refs.loader.stateChanger.reset();
-    },
-    async load($state) {
-      const firstLoad = !this.tableData.length;
-      if (firstLoad) this.loading = true;
-      await this.fetch(this.query);
-      if (this.users.length) $state.loaded();
-      else $state.complete();
-      this.tableData = firstLoad
-        ? this.users
-        : this.tableData.concat(this.users);
-      if (firstLoad) this.loading = false;
-    },
-    async fetch(params) {
-      try {
-        await this.fetchUsers(params);
-        this.query.pageNumber++;
-      } catch (e) {
-        this.$message.error('Ошибка получения данных');
-      }
-    },
-    onItemRightClick(row, column, event) {
-      this.$refs.contextMenu.open(event, { row, column });
-      event.preventDefault();
-    },
-    onItemDoubleClick(row, column, event) {
-      this.onItemEdit(event, row);
-    },
-    onItemEdit(event, row) {
-      this.selectedItemId = row.id;
-      this.dialogOpened = true;
-    }
+    onItemAddToTeam(event, row) {}
   }
 };
 </script>
-
-<style lang="scss" scoped>
-.content {
-  display: flex;
-  position: relative;
-  overflow: hidden;
-  flex: 1;
-  height: 100%;
-  padding: 0 30px;
-  .el-table {
-    overflow: auto;
-    position: unset !important;
-  }
-}
-</style>

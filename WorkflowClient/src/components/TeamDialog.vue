@@ -29,17 +29,16 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import BaseDialog from '~/components/BaseDialog';
+import dialogMixin from '~/mixins/dialog.mixin';
 
 export default {
   components: { BaseDialog },
   props: {
-    id: String
+    id: Number
   },
+  mixins: [dialogMixin],
   data() {
     return {
-      visible: false,
-      loading: true,
-      isEdit: !!this.id,
       form: {
         name: '',
         description: '',
@@ -58,13 +57,6 @@ export default {
     };
   },
   async mounted() {
-    this.visible = true;
-    if (this.isEdit) {
-      this.loading = true;
-      await this.fetchTeam(this.id);
-      this.form = this.team;
-      this.loading = false;
-    }
     await this.fetchUsers({
       pageNumber: 0,
       pageSize: 10
@@ -76,7 +68,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      team: 'teams/getTeam',
+      item: 'teams/getTeam',
+
       users: 'users/getUsers',
       projects: 'projects/getProjects'
     }),
@@ -99,9 +92,10 @@ export default {
   },
   methods: {
     ...mapActions({
-      fetchTeam: 'teams/fetchTeam',
-      createTeam: 'teams/createTeam',
-      updateTeam: 'teams/updateTeam',
+      fetchItem: 'teams/fetchTeam',
+      createItem: 'teams/createTeam',
+      updateItem: 'teams/updateTeam',
+
       fetchUsers: 'users/fetchUsers',
       fetchProjects: 'projects/fetchProjects'
     }),
@@ -132,26 +126,6 @@ export default {
         };
       });
       callback(results);
-    },
-    submit() {
-      const payload = { ...this.form };
-      const form = this.$refs.form;
-      form.validate(async valid => {
-        if (valid) {
-          try {
-            const projectId = payload.projectId;
-            if (this.isEdit) await this.updateTeam(payload);
-            else await this.createTeam({ payload, projectId });
-            form.resetFields();
-            this.$emit('close');
-          } catch (e) {
-            this.$message.error('Ошибка отправки запроса');
-            console.error(e);
-          }
-        } else {
-          this.$message.error('Укажите корректные данные');
-        }
-      });
     }
   }
 };

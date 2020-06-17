@@ -25,8 +25,8 @@ export default {
       const team = response.data;
       commit('setTeam', team);
     },
-    async createTeam({ commit }, { payload, projectId }) {
-      const response = await teamsAPI.create(payload, projectId);
+    async createTeam({ commit }, payload) {
+      const response = await teamsAPI.create(payload, payload.projectId);
       const team = response.data;
       commit('setTeam', team);
     },

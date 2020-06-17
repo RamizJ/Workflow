@@ -42,17 +42,16 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import BaseDialog from '~/components/BaseDialog';
+import dialogMixin from '~/mixins/dialog.mixin';
 
 export default {
   components: { BaseDialog },
   props: {
     id: Number
   },
+  mixins: [dialogMixin],
   data() {
     return {
-      visible: false,
-      loading: true,
-      isEdit: !!this.id,
       form: {
         name: '',
         description: '',
@@ -79,18 +78,10 @@ export default {
       }
     };
   },
-  async mounted() {
-    this.visible = true;
-    if (this.isEdit) {
-      this.loading = true;
-      await this.fetchProject(this.id);
-      this.form = this.project;
-      this.loading = false;
-    }
-  },
   computed: {
     ...mapGetters({
-      project: 'projects/getProject',
+      item: 'projects/getProject',
+
       users: 'users/getUsers',
       teams: 'teams/getTeams',
       me: 'auth/me'
@@ -98,9 +89,10 @@ export default {
   },
   methods: {
     ...mapActions({
-      fetchProject: 'projects/fetchProject',
-      createProject: 'projects/createProject',
-      updateProject: 'projects/updateProject',
+      fetchItem: 'projects/fetchProject',
+      createItem: 'projects/createProject',
+      updateItem: 'projects/updateProject',
+
       fetchUsers: 'users/fetchUsers',
       fetchTeams: 'teams/fetchTeams'
     }),
@@ -131,24 +123,6 @@ export default {
         };
       });
       callback(results);
-    },
-    submit() {
-      const payload = { ...this.form };
-      const form = this.$refs.form;
-      form.validate(async valid => {
-        if (valid) {
-          try {
-            if (this.isEdit) await this.updateProject(payload);
-            else await this.createProject(payload);
-            form.resetFields();
-            this.$emit('close');
-          } catch (e) {
-            this.$message.error('Ошибка отправки запроса');
-          }
-        } else {
-          this.$message.error('Укажите корректные данные');
-        }
-      });
     }
   }
 };

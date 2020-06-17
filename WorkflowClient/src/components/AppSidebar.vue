@@ -2,8 +2,7 @@
   div.sidebar
     el-menu(
       :router="true"
-      :default-active="$route.path"
-      :collapse="isCollapsed")
+      :default-active="$route.path")
       el-menu-item(index="/tasks")
         i.el-icon-news
         span Задачи
@@ -35,7 +34,10 @@
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
-  name: 'AppSidebar'
+  name: 'AppSidebar',
+  computed: {
+    ...mapGetters({ me: 'auth/me' })
+  }
 };
 </script>
 
