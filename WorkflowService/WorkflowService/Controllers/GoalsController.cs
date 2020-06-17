@@ -171,7 +171,7 @@ namespace WorkflowService.Controllers
         /// <param name="attachmentId"></param>
         /// <returns></returns>
         [HttpGet("{attachmentId}")]
-        async Task<FileResult> DownloadAttachmentFile(int attachmentId)
+        public async Task<FileResult> DownloadAttachmentFile(int attachmentId)
         {
             var currentUser = await _userManager.GetUserAsync(User);
             var memoryStream = new MemoryStream();
