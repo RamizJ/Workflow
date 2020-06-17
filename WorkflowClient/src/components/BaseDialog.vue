@@ -21,7 +21,7 @@ export default {
   data() {
     return {
       showDialog: this.visible
-    }
+    };
   }
 };
 </script>
@@ -55,7 +55,8 @@ export default {
   border-width: var(--border-width);
   border-color: var(--card-border);
   background-color: var(--card-background);
-  .el-select {
+  .el-select,
+  .el-autocomplete {
     width: 100%;
   }
   .el-form-item {
@@ -65,8 +66,13 @@ export default {
     font-size: 10px;
     padding-top: 0;
   }
-  .el-form-item.is-error .el-input__inner, .el-form-item.is-error .el-input__inner:focus, .el-form-item.is-error .el-textarea__inner, .el-form-item.is-error .el-textarea__inner:focus, .el-message-box__input input.invalid, .el-message-box__input input.invalid:focus {
-    background-color: #F56C6C26;
+  .el-form-item.is-error .el-input__inner,
+  .el-form-item.is-error .el-input__inner:focus,
+  .el-form-item.is-error .el-textarea__inner,
+  .el-form-item.is-error .el-textarea__inner:focus,
+  .el-message-box__input input.invalid,
+  .el-message-box__input input.invalid:focus {
+    background-color: #f56c6c26;
     border-color: transparent;
   }
   .el-range-editor.el-input__inner {

@@ -2,7 +2,7 @@
   base-dialog(v-if="visible" @close="$emit('close')")
     div(slot="title") Проект
     div(slot="body")
-      el-form(:model="form" :rules="rules" ref="form")
+      el-form(:model="form" :rules="rules" ref="form" v-loading="loading")
         el-row(:gutter="20")
           el-col(:span="24")
             el-form-item(prop="name")
@@ -20,18 +20,20 @@
                 placeholder="Теги"
                 multiple filterable allow-create default-first-option)
         el-row(:gutter="20")
-          el-col(:span="8")
+          el-col(:span="12")
             el-form-item(prop="ownerId")
-              el-select(v-model="form.ownerId" size="medium" placeholder="Руководитель")
-                el-option(v-for="item in users" :key="item.id" :label="item.name" :value="item.id")
-          el-col(:span="8")
+              el-autocomplete(
+                v-model="form.ownerId"
+                :fetch-suggestions="searchUsers"
+                size="medium"
+                placeholder="Руководитель")
+          el-col(:span="12")
             el-form-item(prop="teamId")
-              el-select(v-model="form.teamId" size="medium" placeholder="Команда")
-                el-option(v-for="item in teams" :key="item.id" :label="item.name" :value="item.id")
-          el-col(:span="8")
-            el-form-item(prop="groupId")
-              el-select(v-model="form.groupId" size="medium" placeholder="Область")
-                el-option(v-for="item in scopes" :key="item.id" :label="item.name" :value="item.id")
+              el-autocomplete(
+                v-model="form.teamId"
+                :fetch-suggestions="searchTeams"
+                size="medium"
+                placeholder="Команда")
     div(slot="footer")
       el-button(size="medium" type="primary" @click="submit") Создать
 
@@ -49,7 +51,7 @@ export default {
   data() {
     return {
       visible: false,
-      loading: false,
+      loading: true,
       isEdit: !!this.id,
       form: {
         name: '',
@@ -63,21 +65,6 @@ export default {
         groupName: null,
         creationDate: new Date()
       },
-      users: [
-        { id: 0, name: 'Виталий' },
-        { id: 1, name: 'Алексей' },
-        { id: 2, name: 'Андрей' }
-      ],
-      teams: [
-        { id: 0, name: 'Виталий' },
-        { id: 1, name: 'Алексей' },
-        { id: 2, name: 'Андрей' }
-      ],
-      scopes: [
-        { id: 0, name: 'Виталий' },
-        { id: 1, name: 'Алексей' },
-        { id: 2, name: 'Андрей' }
-      ],
       rules: {
         name: [
           {
@@ -88,9 +75,6 @@ export default {
         ],
         ownerId: [
           { required: true, message: 'Укажите руководителя', trigger: 'blur' }
-        ],
-        groupId: [
-          { required: true, message: 'Укажите область', trigger: 'blur' }
         ]
       }
     };
@@ -105,14 +89,49 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ project: 'projects/getProject' })
+    ...mapGetters({
+      project: 'projects/getProject',
+      users: 'users/getUsers',
+      teams: 'teams/getTeams',
+      me: 'auth/me'
+    })
   },
   methods: {
     ...mapActions({
       fetchProject: 'projects/fetchProject',
       createProject: 'projects/createProject',
-      updateProject: 'projects/updateProject'
+      updateProject: 'projects/updateProject',
+      fetchUsers: 'users/fetchUsers',
+      fetchTeams: 'teams/fetchTeams'
     }),
+    async searchUsers(query, callback) {
+      await this.fetchUsers({
+        filter: query,
+        pageNumber: 1,
+        pageSize: 10
+      });
+      const results = this.users.map(user => {
+        return {
+          value: `${user.lastName} ${user.firstName}`,
+          id: user.id
+        };
+      });
+      callback(results);
+    },
+    async searchTeams(query, callback) {
+      await this.fetchTeams({
+        filter: query,
+        pageNumber: 1,
+        pageSize: 10
+      });
+      const results = this.teams.map(team => {
+        return {
+          value: team.name,
+          id: team.id
+        };
+      });
+      callback(results);
+    },
     submit() {
       const payload = { ...this.form };
       const form = this.$refs.form;

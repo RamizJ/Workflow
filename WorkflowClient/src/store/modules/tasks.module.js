@@ -1,5 +1,3 @@
-import axios from 'axios';
-import qs from 'qs';
 import tasksAPI from '~/api/tasks';
 
 export default {
@@ -18,28 +16,8 @@ export default {
   },
   actions: {
     async fetchTasks({ commit }, params) {
-      // try {
-      //   const response = await tasksAPI.getPage(params);
-      //   console.log(response);
-      //   const tasks = response.data;
-      //   commit('setTasks', tasks);
-      // } catch (e) {
-      //   console.log(e)
-      // }
-
-
-      let response;
-      let query = {};
-      if (params.search) query.q = params.search;
-      else query.q = 'test';
-      if (params.pageNumber) query.page = params.page;
-      if (params.pageSize) query.per_page = params.limit;
-      const queryString = qs.stringify(query, { addQueryPrefix: true });
-      // const response = await axios.get(`/api/Goals/GetPage${queryString}`);
-      response = await axios.get(
-        `https://api.github.com/search/repositories${queryString}`
-      );
-      const tasks = response.data.items;
+      const response = await tasksAPI.getPage(params);
+      const tasks = response.data;
       commit('setTasks', tasks);
     },
     async fetchTask({ commit }, id) {

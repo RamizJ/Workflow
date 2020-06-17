@@ -34,9 +34,7 @@
         highlight-current-row
         stripe)
         el-table-column(type="selection" width="55")
-        el-table-column(prop="name" label="Дата добавления")
-        el-table-column(prop="description" label="Заголовок")
-        el-table-column(prop="language" label="Статус")
+        el-table-column(prop="name" label="Название")
         infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="400" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
           div(slot="no-more")
           div(slot="no-results")
@@ -72,7 +70,7 @@ export default {
       tableData: [],
       query: {
         filter: '',
-        pageNumber: 1,
+        pageNumber: 0,
         pageSize: 15
       },
       dialogOpened: false,
@@ -127,8 +125,10 @@ export default {
   },
   methods: {
     ...mapActions({ fetchTeams: 'teams/fetchTeams' }),
+    async applyFilters() {},
     async refresh() {
       this.tableData = [];
+      this.query.pageNumber = 0;
       this.$refs.loader.stateChanger.reset();
     },
     async load($state) {
