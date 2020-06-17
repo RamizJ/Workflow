@@ -131,7 +131,7 @@ namespace Workflow.Services
             return await RemoveRestore(currentUser, goalId, false);
         }
 
-       private async Task<IQueryable<Goal>> GetQuery(ApplicationUser currentUser, bool withRemoved)
+        private async Task<IQueryable<Goal>> GetQuery(ApplicationUser currentUser, bool withRemoved)
         {
             bool isAdmin = await _userManager.IsInRoleAsync(currentUser, RoleNames.ADMINISTRATOR_ROLE);
             var query = _dataContext.Goals.AsNoTracking()
@@ -139,8 +139,6 @@ namespace Workflow.Services
                 .Include(x => x.Observers)
                 .Include(x => x.Performer)
                 .Include(x => x.Project)
-                //.ThenInclude(x => x.Team)
-                //.ThenInclude(x => x.TeamUsers)
                 .Where(x => isAdmin
                             || x.Project.OwnerId == currentUser.Id
                             || x.Project.ProjectTeams

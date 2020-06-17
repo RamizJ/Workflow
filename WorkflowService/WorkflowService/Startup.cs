@@ -116,6 +116,8 @@ namespace WorkflowService
             services.AddTransient<IProjectTeamsService, ProjectTeamsService>();
             services.AddTransient<ITeamProjectsService, TeamProjectsService>();
             services.AddTransient<IGoalsService, GoalsService>();
+            services.AddTransient<IGoalAttachmentsService, GoalAttachmentsService>();
+            services.AddTransient<IFileService, FileService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
