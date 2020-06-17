@@ -18,15 +18,69 @@ export default {
     this.visible = true;
   },
   computed: {
-    ...mapGetters({ item: '' })
+    ...mapGetters({
+      item: '',
+      projects: 'projects/getProjects',
+      teams: 'teams/getTeams',
+      users: 'users/getUsers',
+      me: 'auth/me'
+    }),
+    projectList() {
+      return this.projects.map(project => {
+        return {
+          value: project.name,
+          id: project.id
+        };
+      });
+    },
+    teamList() {
+      return this.teams.map(project => {
+        return {
+          value: project.name,
+          id: project.id
+        };
+      });
+    },
+    userList() {
+      return this.users.map(user => {
+        return {
+          value: `${user.lastName} ${user.firstName}`,
+          id: user.id
+        };
+      });
+    }
   },
   methods: {
     ...mapActions({
       fetchItem: '',
       createItem: '',
       updateItem: '',
-      deleteItem: ''
+      deleteItem: '',
+      fetchProjects: 'projects/fetchProjects',
+      fetchTeams: 'teams/fetchTeams',
+      fetchUsers: 'users/fetchUsers'
     }),
+    async searchProjects(query) {
+      await this.fetchProjects({
+        filter: query,
+        pageNumber: 0,
+        pageSize: 10
+      });
+    },
+    async searchTeams(query) {
+      await this.fetchTeams({
+        filter: query,
+        pageNumber: 0,
+        pageSize: 10
+      });
+    },
+    async searchUsers(query) {
+      await this.fetchUsers({
+        filter: query,
+        pageNumber: 0,
+        pageSize: 10
+      });
+    },
     submit() {
       const payload = { ...this.form };
       const form = this.$refs.form;

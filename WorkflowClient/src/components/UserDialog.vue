@@ -26,8 +26,13 @@
         el-row(:gutter="20")
           el-col(:span="16")
             el-form-item(prop="teams")
-              el-select(v-model="form.teamIds" size="medium" placeholder="Команды" multiple)
-                el-option(v-for="item in teams" :key="item.value" :label="item.label" :value="item.value")
+              el-select(
+                v-model="form.teamIds"
+                size="medium"
+                placeholder="Команды"
+                :remote-method="searchTeams"
+                multiple filterable remote clearable default-first-option)
+                el-option(v-for="item in teamList" :key="item.id" :label="item.value" :value="item.id")
           el-col(:span="8")
             el-form-item(prop="phone")
               el-input(v-model="form.phone" size="medium" placeholder="Телефон")
@@ -71,12 +76,6 @@ export default {
         teamIds: [],
         roles: []
       },
-      teams: [
-        { value: 0, label: 'Команда1' },
-        { value: 1, label: 'Команда2' },
-        { value: 2, label: 'Команда3' },
-        { value: 3, label: 'Команда4' }
-      ],
       roles: [
         { value: 0, label: 'Управление проектами' },
         { value: 1, label: 'Управление пользователями' },

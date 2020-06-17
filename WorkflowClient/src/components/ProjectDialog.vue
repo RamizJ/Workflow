@@ -22,18 +22,22 @@
         el-row(:gutter="20")
           el-col(:span="12")
             el-form-item(prop="ownerId")
-              el-autocomplete(
+              el-select(
                 v-model="form.ownerId"
-                :fetch-suggestions="searchUsers"
                 size="medium"
-                placeholder="Руководитель")
+                placeholder="Руководитель"
+                :remote-method="searchUsers"
+                filterable remote clearable default-first-option)
+                el-option(v-for="item in userList" :key="item.id" :label="item.value" :value="item.id")
           el-col(:span="12")
             el-form-item(prop="teamId")
-              el-autocomplete(
+              el-select(
                 v-model="form.teamId"
-                :fetch-suggestions="searchTeams"
                 size="medium"
-                placeholder="Команда")
+                placeholder="Команда"
+                :remote-method="searchTeams"
+                filterable remote clearable default-first-option)
+                el-option(v-for="item in teamList" :key="item.id" :label="item.value" :value="item.id")
     div(slot="footer")
       el-button(size="medium" type="primary" @click="submit") Создать
 
@@ -80,50 +84,15 @@ export default {
   },
   computed: {
     ...mapGetters({
-      item: 'projects/getProject',
-
-      users: 'users/getUsers',
-      teams: 'teams/getTeams',
-      me: 'auth/me'
+      item: 'projects/getProject'
     })
   },
   methods: {
     ...mapActions({
       fetchItem: 'projects/fetchProject',
       createItem: 'projects/createProject',
-      updateItem: 'projects/updateProject',
-
-      fetchUsers: 'users/fetchUsers',
-      fetchTeams: 'teams/fetchTeams'
-    }),
-    async searchUsers(query, callback) {
-      await this.fetchUsers({
-        filter: query,
-        pageNumber: 1,
-        pageSize: 10
-      });
-      const results = this.users.map(user => {
-        return {
-          value: `${user.lastName} ${user.firstName}`,
-          id: user.id
-        };
-      });
-      callback(results);
-    },
-    async searchTeams(query, callback) {
-      await this.fetchTeams({
-        filter: query,
-        pageNumber: 1,
-        pageSize: 10
-      });
-      const results = this.teams.map(team => {
-        return {
-          value: team.name,
-          id: team.id
-        };
-      });
-      callback(results);
-    }
+      updateItem: 'projects/updateProject'
+    })
   }
 };
 </script>
