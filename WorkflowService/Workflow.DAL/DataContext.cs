@@ -14,6 +14,7 @@ namespace Workflow.DAL
         public DbSet<Goal> Goals { get; set; }
         public DbSet<GoalObserver> GoalObservers { get; set; }
         public DbSet<Attachment> Attachments { get; set; }
+        public DbSet<FileData> FileData { get; set; }
         public DbSet<Position> Positions { get; set; }
 
 

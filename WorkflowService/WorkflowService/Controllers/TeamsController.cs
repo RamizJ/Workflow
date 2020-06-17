@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Workflow.DAL.Models;
@@ -13,7 +12,7 @@ namespace WorkflowService.Controllers
     /// <summary>
     /// API-методы работы с командами
     /// </summary>
-    [Authorize]
+    //[Authorize]
     [ApiController, Route("api/[controller]/[action]")]
     public class TeamsController : ControllerBase
     {
@@ -132,7 +131,7 @@ namespace WorkflowService.Controllers
         /// <param name="projectId">Идентификатор проекта</param>
         /// <param name="team">Новая команда</param>
         /// <returns>Команда</returns>
-        [HttpPost("projectId")]
+        [HttpPost("{projectId}")]
         public async Task<ActionResult<VmTeam>> Create(int projectId, [FromBody]VmTeam team)
         {
             var currentUser = await _userManager.GetUserAsync(User);
