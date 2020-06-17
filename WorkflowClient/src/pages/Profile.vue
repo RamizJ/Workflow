@@ -104,7 +104,6 @@ export default {
     };
   },
   async mounted() {
-    if (!this.me) await this.fetchMe();
     this.form = { ...this.me };
   },
   computed: {

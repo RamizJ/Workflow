@@ -43,9 +43,8 @@ export default {
       form: {
         name: '',
         description: '',
-        teamMembers: [],
         projectId: null,
-        priority: null
+        teamMembers: []
       },
       rules: {
         name: [

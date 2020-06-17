@@ -4,7 +4,6 @@
       :router="true"
       :default-active="$route.path"
       :collapse="isCollapsed")
-
       el-menu-item(index="/tasks")
         i.el-icon-news
         span Задачи
@@ -36,33 +35,7 @@
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
-  name: 'AppSidebar',
-  components: {},
-  data() {
-    return {
-      isCollapsed: false,
-      collapseState: 'rotate'
-    };
-  },
-  computed: {
-    ...mapGetters({ me: 'auth/me' })
-  },
-  async created() {
-    if (!this.me) {
-      try {
-        await this.fetchMe();
-      } catch (e) {
-        await this.logout();
-        await this.$router.push({ name: 'Login' });
-      }
-    }
-  },
-  methods: {
-    ...mapActions({
-      fetchMe: 'auth/fetchMe',
-      logout: 'auth/logout'
-    })
-  }
+  name: 'AppSidebar'
 };
 </script>
 

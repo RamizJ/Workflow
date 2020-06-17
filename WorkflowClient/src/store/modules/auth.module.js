@@ -49,7 +49,7 @@ export default {
     }
   },
   getters: {
-    loggedIn: state => !!state.token,
+    loggedIn: state => !!state.token && !!state.user.id,
     token: state => state.token,
     me: state => state.user
   }
