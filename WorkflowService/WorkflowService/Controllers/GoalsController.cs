@@ -129,7 +129,7 @@ namespace WorkflowService.Controllers
         /// <param name="goalId">Идентификатор задачи</param>
         /// <returns>Коллекция вложений</returns>
         [HttpGet("{goalId}")]
-        public async Task<ActionResult<IEnumerable<VmGoal>>> GetAttachments(int goalId)
+        public async Task<ActionResult<IEnumerable<VmAttachment>>> GetAttachments(int goalId)
         {
             var currentUser = await _userManager.GetUserAsync(User);
             var attachments = await _attachmentsService.GetAll(currentUser, goalId);
