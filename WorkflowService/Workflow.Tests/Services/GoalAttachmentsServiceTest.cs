@@ -113,11 +113,27 @@ namespace Workflow.Tests.Services
         }
 
         [Test]
+        public void AddFoNullCurrentUser()
+        {
+            Assert.ThrowsAsync<ArgumentNullException>(async () => 
+                await _service.Add(null, 1, new List<Attachment>()));
+        }
+
+        [TestCase(0)]
+        [TestCase(-1)]
+        [TestCase(int.MaxValue)]
+        public void AddFoNotExistedGoalTest(int goalId)
+        {
+
+            Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await _service.Add(_currentUser, goalId, new List<Attachment>()));
+        }
+
+        [Test]
         public async Task AddTest()
         {
             //Arrange
             //var goal = _dataContext.Goals.First();
-
             var creationDate = DateTime.Now;
             var fileData = Builder<FileData>.CreateNew()
                 .With(f => f.Id = 0)
@@ -153,10 +169,50 @@ namespace Workflow.Tests.Services
         }
 
         [Test]
-        public void AddFoNullCurrentUser()
+        public void RemoveFoNullCurrentUser()
         {
-            Assert.ThrowsAsync<ArgumentNullException>(async () => await _service.Add(null, 1, new List<Attachment>()));
+            Assert.ThrowsAsync<ArgumentNullException>(async () =>
+                await _service.Remove(null,new List<int>()));
         }
+
+        [Test]
+        public async Task RemoveTest()
+        {
+            //Arrange
+            var dataContext = ContextHelper.CreateContext(_dbConnection, false);
+
+            var creationDate = DateTime.Now;
+            var fileData = Builder<FileData>.CreateNew()
+                .With(f => f.Id = 0)
+                .With(f => f.Data = new byte[] { 1, 2, 3 })
+                .Build();
+            var attachments = Builder<Attachment>.CreateListOfSize(5)
+                .All()
+                .With(a => a.Id = 0)
+                .With(a => a.CreationDate = creationDate)
+                .With(a => a.FileName = $"file{a.Id}")
+                .With(a => a.FileType = $"ext{a.Id}")
+                .With(a => a.FileSize = a.Id)
+                .With(a => a.FileData = fileData)
+                .Build();
+
+            var goal = dataContext.Goals.First();
+            goal.Attachments.AddRange(attachments);
+
+            await dataContext.SaveChangesAsync();
+
+            //Act
+            await _service.Remove(_currentUser, new []{1,2,3});
+            var resultAttachments = await _dataContext.Attachments
+                .OrderBy(a => a.Id)
+                .ToArrayAsync();
+
+            //Assert
+            Assert.AreEqual(2, resultAttachments.Length);
+            Assert.AreEqual(4, resultAttachments[0].Id);
+            Assert.AreEqual(5, resultAttachments[1].Id);
+        }
+
 
 
         private SqliteConnection _dbConnection;
