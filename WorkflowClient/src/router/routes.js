@@ -22,6 +22,12 @@ export const routes = [
     meta: { layout: LayoutDefault }
   },
   {
+    path: '/projects/:id',
+    name: 'Project',
+    component: () => import('~/pages/Project.vue'),
+    meta: { layout: LayoutDefault }
+  },
+  {
     path: '/teams',
     name: 'Teams',
     component: () => import('~/pages/Teams.vue'),

@@ -29,7 +29,7 @@ header {
       margin-left: 12px;
       font-size: 13px;
       font-weight: 500;
-      i {
+      i.el-icon-arrow-right {
         color: var(--link-hover);
         margin-left: -10px;
         font-size: 10px;
@@ -37,7 +37,7 @@ header {
         transition: 0.3s;
         opacity: 0;
       }
-      a:hover ~ i {
+      a:hover ~ i.el-icon-arrow-right {
         margin-left: 0;
         transform: scale(1.3);
         opacity: 0.95;

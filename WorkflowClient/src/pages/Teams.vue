@@ -3,7 +3,7 @@
     base-header
       template(slot="title") Команды
       template(slot="action")
-        a(href="#" @click="dialogOpened = true") Создать
+        a(href="#" @click="dialogOpened = true; selectedItemId = null") Создать
 
     base-toolbar
       template(slot="filters")

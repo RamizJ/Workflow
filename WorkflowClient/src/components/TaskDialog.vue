@@ -1,5 +1,5 @@
 <template lang="pug">
-  base-dialog(v-if="visible" @close="$emit('close')")
+  base-dialog(v-if="visible" @close="exit")
     div(slot="title") Задача
     div(slot="body")
       el-form(:model="form" :rules="rules" ref="form" v-loading="loading")
@@ -54,7 +54,7 @@
                 suffix-icon="el-icon-arrow-down"
                 placeholder="Крайний срок")
     div(slot="footer")
-      el-button(size="medium" type="primary" @click="submit") Создать
+      el-button(size="medium" type="primary" @click="submit") {{ isEdit ? 'Сохранить' : 'Создать' }}
 </template>
 
 <script>

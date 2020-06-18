@@ -98,6 +98,11 @@ export default {
           this.$message.error('Укажите корректные данные');
         }
       });
+    },
+    exit() {
+      this.$refs.form.resetFields();
+      this.visible = false;
+      this.$emit('close');
     }
   }
 };
