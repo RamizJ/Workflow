@@ -27,7 +27,6 @@ namespace Workflow.Services
             _dataContext = dataContext;
             _userManager = userManager;
             _vmConverter = new VmGoalConverter();
-            _vmAttachmentConverter = new VmAttachmentConverter();
         }
 
 
@@ -44,14 +43,14 @@ namespace Workflow.Services
 
         /// <inheritdoc />
         public async Task<IEnumerable<VmGoal>> GetPage(ApplicationUser currentUser, 
-            int projectId, int pageNumber, int pageSize, string filter, 
+            int? projectId, int pageNumber, int pageSize, string filter, 
             FieldFilter[] filterFields, FieldSort[] sortFields, bool withRemoved = false)
         {
             if (currentUser == null)
                 throw new ArgumentNullException(nameof(currentUser));
 
             var query = await GetQuery(currentUser, withRemoved);
-            query = query.Where(x => x.ProjectId == projectId);
+            query = query.Where(x => projectId == null || x.ProjectId == projectId);
             query = Filter(filter, query);
             query = FilterByFields(filterFields, query);
             query = SortByFields(sortFields, query);
@@ -130,37 +129,6 @@ namespace Workflow.Services
         public async Task<VmGoal> Restore(ApplicationUser currentUser, int goalId)
         {
             return await RemoveRestore(currentUser, goalId, false);
-        }
-
-        public async Task<IEnumerable<VmAttachment>> GetAttachments(ApplicationUser currentUser, int goalId)
-        {
-            var query = await GetQuery(currentUser, true);
-            query.Include(g => g.Attachments);
-            var goal = await query.FirstOrDefaultAsync(g => g.Id == goalId);
-
-            var attachments = goal?.Attachments?.Select(a => _vmAttachmentConverter.ToViewModel(a));
-            return attachments;
-        }
-
-        public async Task AddAttachments(ApplicationUser currentUser, 
-            int goalId, ICollection<Attachment> attachments)
-        {
-            var query = await GetQuery(currentUser, true);
-            query.Include(g => g.Attachments);
-            var goal = await query.FirstOrDefaultAsync(g => g.Id == goalId);
-
-            if(goal == null)
-                throw new InvalidOperationException("Cannot add attachments to goal. Goal for current user not found");
-
-            goal.Attachments.AddRange(attachments);
-            await _dataContext.SaveChangesAsync();
-        }
-
-        public async Task RemoveAttachments(ApplicationUser currentUser, IEnumerable<int> attachmentIds)
-        {
-            var query = await GetQuery(currentUser, true);
-            query.Include(g => g.Attachments);
-            var goal = await query.FirstOrDefaultAsync(g => g.Id == );
         }
 
         private async Task<IQueryable<Goal>> GetQuery(ApplicationUser currentUser, bool withRemoved)
@@ -245,12 +213,12 @@ namespace Workflow.Services
                 }
                 else if (field.SameAs(nameof(VmGoal.GoalNumber)))
                 {
-                    var vals = field.Values.OfType<int>().ToArray();
-                    query = query.Where(g => vals.Any(v => v == g.GoalNumber));
+                    var values = field.Values.OfType<int>().ToArray();
+                    query = query.Where(g => values.Any(v => v == g.GoalNumber));
                 }
                 else if (field.SameAs(nameof(VmGoal.State)))
                 {
-                    var vals = field.Values.Select(v =>
+                    var values = field.Values.Select(v =>
                     {
                         GoalState? state = null;
                         if (Enum.TryParse<GoalState>(v.ToString(), out var s))
@@ -259,7 +227,7 @@ namespace Workflow.Services
                         return state;
                     }).Where(s => s != null).Cast<GoalState>().ToArray();
 
-                    query = query.Where(g => vals.Any(v => v == g.State));
+                    query = query.Where(g => values.Any(v => v == g.State));
                 }
                 else if (field.SameAs(nameof(VmGoal.Priority)))
                 {
@@ -441,6 +409,5 @@ namespace Workflow.Services
         private readonly DataContext _dataContext;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly VmGoalConverter _vmConverter;
-        private readonly VmAttachmentConverter _vmAttachmentConverter;
     }
 }

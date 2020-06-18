@@ -45,11 +45,11 @@
             <param name="id">Идентификатор задачи</param>
             <returns>Задача</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.GoalsController.GetPage(System.Int32,System.Int32,System.Int32,System.String,Workflow.Services.Common.FieldFilter[],Workflow.Services.Common.FieldSort[],System.Boolean)">
+        <member name="M:WorkflowService.Controllers.GoalsController.GetPage(System.Nullable{System.Int32},System.Int32,System.Int32,System.String,Workflow.Services.Common.FieldFilter[],Workflow.Services.Common.FieldSort[],System.Boolean)">
             <summary>
             Постраничная загрузка задач с фильтрацией и сортировкой
             </summary>
-            <param name="scopeId">Идентификатор проекта</param>
+            <param name="projectId">Идентификатор проекта. Если не указан, то загружаются задачи по всем проектам</param>
             <param name="pageNumber">Номер страницы</param>
             <param name="pageSize">Размер страницы</param>
             <param name="filter">Фильтр по всем полям</param>
@@ -443,9 +443,7 @@
             </summary>
         </member>
         <member name="M:WorkflowService.Services.IFormFilesService.GetAttachments(Microsoft.AspNetCore.Http.IFormFileCollection)">
-            <summary>
-            Преобразование файлов во вложения
-            </summary>
+            <summary>Преобразование файлов во вложения</summary>
             <param name="files">Файлы</param>
             <returns>Коллекция вложений</returns>
         </member>

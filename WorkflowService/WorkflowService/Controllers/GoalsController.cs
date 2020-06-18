@@ -50,7 +50,7 @@ namespace WorkflowService.Controllers
         /// <summary>
         /// Постраничная загрузка задач с фильтрацией и сортировкой
         /// </summary>
-        /// <param name="scopeId">Идентификатор проекта</param>
+        /// <param name="projectId">Идентификатор проекта. Если не указан, то загружаются задачи по всем проектам</param>
         /// <param name="pageNumber">Номер страницы</param>
         /// <param name="pageSize">Размер страницы</param>
         /// <param name="filter">Фильтр по всем полям</param>
@@ -59,13 +59,13 @@ namespace WorkflowService.Controllers
         /// <param name="withRemoved">Вместе с удаленными</param>
         /// <returns>Коллеция задач</returns>
         [HttpGet]
-        public async Task<IEnumerable<VmGoal>> GetPage([FromQuery]int scopeId, 
+        public async Task<IEnumerable<VmGoal>> GetPage([FromQuery]int? projectId, 
             [FromQuery]int pageNumber, [FromQuery]int pageSize, 
             [FromQuery]string filter = null, [FromQuery]FieldFilter[] filterFields = null, 
             [FromQuery]FieldSort[] sortFields = null, [FromQuery] bool withRemoved = false)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            return await _service.GetPage(currentUser, scopeId, 
+            return await _service.GetPage(currentUser, projectId, 
                 pageNumber, pageSize, filter, filterFields, sortFields, withRemoved);
         }
 
