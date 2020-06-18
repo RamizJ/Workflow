@@ -175,7 +175,7 @@ namespace WorkflowService.Controllers
         {
             var currentUser = await _userManager.GetUserAsync(User);
             var memoryStream = new MemoryStream();
-            var attachment = await _attachmentsService.DowloadAttachmentFile(currentUser, memoryStream, attachmentId);
+            var attachment = await _attachmentsService.DownloadAttachmentFile(currentUser, memoryStream, attachmentId);
             memoryStream.Position = 0;
             return File(memoryStream, attachment.FileType ?? "*/*");
         }

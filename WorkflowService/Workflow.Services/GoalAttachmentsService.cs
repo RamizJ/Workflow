@@ -30,6 +30,9 @@ namespace Workflow.Services
         /// <inheritdoc />
         public async Task<IEnumerable<VmAttachment>> GetAll(ApplicationUser currentUser, int goalId)
         {
+            if(currentUser == null)
+                throw new ArgumentNullException(nameof(currentUser));
+
             var query = await GetQuery(currentUser, true);
             var attachments = query
                 .Where(g => g.Id == goalId)
@@ -43,11 +46,17 @@ namespace Workflow.Services
         public async Task Add(ApplicationUser currentUser,
             int goalId, ICollection<Attachment> attachments)
         {
+            if(currentUser == null)
+                throw new ArgumentNullException(nameof(currentUser));
+
             var query = await GetQuery(currentUser, true);
             var goal = await query.FirstOrDefaultAsync(g => g.Id == goalId);
 
             if (goal == null)
                 throw new InvalidOperationException("Cannot add attachments to goal. Goal for current user not found");
+
+            foreach (var attachment in attachments) 
+                attachment.CreationDate = DateTime.Now;
 
             goal.Attachments.AddRange(attachments);
             await _dataContext.SaveChangesAsync();
@@ -68,7 +77,7 @@ namespace Workflow.Services
             }
         }
 
-        public async Task<Attachment> DowloadAttachmentFile(ApplicationUser currentUser, Stream stream, int attachmentId)
+        public async Task<Attachment> DownloadAttachmentFile(ApplicationUser currentUser, Stream stream, int attachmentId)
         {
             var query = await GetQuery(currentUser, true);
             var attachment = await query
@@ -85,7 +94,7 @@ namespace Workflow.Services
         private async Task<IQueryable<Goal>> GetQuery(ApplicationUser currentUser, bool withRemoved)
         {
             bool isAdmin = await _userManager.IsInRoleAsync(currentUser, RoleNames.ADMINISTRATOR_ROLE);
-            var query = _dataContext.Goals.AsNoTracking()
+            var query = _dataContext.Goals
                 .Include(g => g.Attachments)
                 .Where(x => isAdmin
                             || x.Project.OwnerId == currentUser.Id

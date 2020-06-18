@@ -44,6 +44,6 @@ namespace Workflow.Services.Abstract
         /// <param name="stream">Поток файла</param>
         /// <param name="attachmentId">Идентификатор вложения</param>
         /// <returns></returns>
-        Task<Attachment> DowloadAttachmentFile(ApplicationUser currentUser, Stream stream, int attachmentId);
+        Task<Attachment> DownloadAttachmentFile(ApplicationUser currentUser, Stream stream, int attachmentId);
     }
 }
