@@ -76,10 +76,11 @@ namespace Workflow.Services
         }
 
         /// <inheritdoc />
-        public async Task<VmProject> Create(ApplicationUser user, VmProject project)
+        public async Task<VmProject> Create(ApplicationUser user, VmProjectForm projectForm)
         {
-            if(project == null)
-                throw new ArgumentNullException(nameof(project));
+            var project = projectForm?.Project;
+            if (project == null)
+                throw new ArgumentNullException(nameof(VmProjectForm.Project));
 
             if (string.IsNullOrWhiteSpace(project.Name))
                 throw new InvalidOperationException("Cannot create project. The name cannot be empty");
@@ -87,6 +88,9 @@ namespace Workflow.Services
             var model = _vmConverter.ToModel(project);
             model.Id = 0;
             model.OwnerId = user.Id;
+            model.ProjectTeams = projectForm.TeamIds?
+                .Select(tId => new ProjectTeam(0, tId))
+                .ToList();
 
             await _dataContext.Projects.AddAsync(model);
             await _dataContext.SaveChangesAsync();
@@ -95,26 +99,24 @@ namespace Workflow.Services
         }
 
         /// <inheritdoc />
-        public async Task Update(ApplicationUser user, VmProject project)
+        public async Task Update(ApplicationUser user, VmProjectForm projectForm)
         {
-            if (project == null)
-                throw new ArgumentNullException(nameof(project));
+            await UpdateProject(user, projectForm);
+        }
 
-            if (string.IsNullOrWhiteSpace(project.Name))
-                throw new InvalidOperationException("Cannot create project. The name cannot be empty");
-
-            var model = _vmConverter.ToModel(project);
-            try
+        public async Task UpdateRange(ApplicationUser currentUser, 
+            IEnumerable<VmProjectForm> projectForms)
+        {
+            foreach (var projectForm in projectForms)
             {
-                _dataContext.Entry(model).State = EntityState.Modified;
-                await _dataContext.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                bool isExist = await _dataContext.Teams.AnyAsync(t => t.Id == project.Id);
-                throw new InvalidOperationException(isExist 
-                    ? "Cannot update project"
-                    : "Cannot update project. Project not found");
+                try
+                {
+                    await UpdateProject(currentUser, projectForm);
+                }
+                catch
+                {
+                    //Ignored
+                }
             }
         }
 
@@ -124,12 +126,25 @@ namespace Workflow.Services
             return await RemoveRestore(user, projectId, true);
         }
 
+        /// <inheritdoc />
+        public async Task DeleteRange(ApplicationUser currentUser, IEnumerable<int> ids)
+        {
+            await RemoveRestore(currentUser, ids, true);
+        }
+
         public async Task<VmProject> Restore(ApplicationUser currentUser, int projectId)
         {
             return await RemoveRestore(currentUser, projectId, false);
         }
 
-        private async Task<VmProject> RemoveRestore(ApplicationUser user, int projectId, bool isRemoved)
+        /// <inheritdoc />
+        public async Task RestoreRange(ApplicationUser currentUser, IEnumerable<int> ids)
+        {
+            await RemoveRestore(currentUser, ids, false);
+        }
+
+        private async Task<VmProject> RemoveRestore(ApplicationUser user, int projectId, 
+            bool isRemoved)
         {
             var query = await GetQuery(user, true);
             var model = await query.FirstOrDefaultAsync(s => s.Id == projectId);
@@ -138,9 +153,26 @@ namespace Workflow.Services
 
             model.IsRemoved = isRemoved;
             _dataContext.Entry(model).State = EntityState.Modified;
+
             await _dataContext.SaveChangesAsync();
 
             return _vmConverter.ToViewModel(model);
+        }
+
+        private async Task RemoveRestore(ApplicationUser user, IEnumerable<int> projectIds, bool isRemoved)
+        {
+            var query = await GetQuery(user, !isRemoved);
+            var models = await query
+                .Where(p => projectIds.Any(pId => p.Id == pId))
+                .ToArrayAsync();
+
+            foreach (var model in models)
+            {
+                model.IsRemoved = isRemoved;
+                _dataContext.Entry(model).State = EntityState.Modified;
+            }
+
+            await _dataContext.SaveChangesAsync();
         }
 
         private async Task<IQueryable<Project>> GetQuery(ApplicationUser currentUser, bool withRemoved)
@@ -214,13 +246,13 @@ namespace Workflow.Services
                 }
                 else if (field.SameAs(nameof(VmProject.IsRemoved)))
                 {
-                    var vals = field.Values.OfType<bool>().ToArray();
-                    query = query.Where(p => vals.Any(v => v == p.IsRemoved));
+                    var values = field.Values.OfType<bool>().ToArray();
+                    query = query.Where(p => values.Any(v => v == p.IsRemoved));
                 }
                 else if (field.SameAs(nameof(VmProject.CreationDate)))
                 {
-                    var vals = field.Values.OfType<DateTime>().ToArray();
-                    query = query.Where(p => vals.Any(v => v == p.CreationDate));
+                    var values = field.Values.OfType<DateTime>().ToArray();
+                    query = query.Where(p => values.Any(v => v == p.CreationDate));
                 }
                 else if (field.SameAs(nameof(VmProject.OwnerFio)))
                 {
@@ -330,6 +362,27 @@ namespace Workflow.Services
             return orderedQuery ?? query;
         }
 
+        private async Task UpdateProject(ApplicationUser user, VmProjectForm projectForm)
+        {
+            var project = projectForm?.Project;
+            if (project == null)
+                throw new ArgumentNullException(nameof(project));
+
+            if (string.IsNullOrWhiteSpace(project.Name))
+                throw new InvalidOperationException("Cannot create project. The name cannot be empty");
+
+            var query = await GetQuery(user, true);
+            var model = await query.FirstOrDefaultAsync(p => p.Id == project.Id);
+            if (model == null)
+                throw new InvalidOperationException("Cannot update project. Project not found");
+
+            model.Name = project.Name;
+            model.Description = project.Description;
+            model.ProjectTeams = projectForm.TeamIds?
+                .Select(tId => new ProjectTeam(model.Id, tId))
+                .ToList();
+            await _dataContext.SaveChangesAsync();
+        }
 
         private readonly DataContext _dataContext;
         private readonly UserManager<ApplicationUser> _userManager;

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Workflow.DAL;
@@ -181,7 +182,7 @@ namespace Workflow.Tests.Services
         public void CreateForNullInvalidNameTest(string name)
         {
             //Arrange
-            var vmScope = new VmProject
+            var vmProject = new VmProject
             {
                 Id = 0,
                 Name = name,
@@ -191,7 +192,8 @@ namespace Workflow.Tests.Services
             };
 
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Create(_testData.Users.First(), vmScope));
+            Assert.ThrowsAsync<InvalidOperationException>(async () => 
+                await _service.Create(_testData.Users.First(), new VmProjectForm(vmProject, null)));
         }
 
         [TestCase(0)]
@@ -201,7 +203,7 @@ namespace Workflow.Tests.Services
         {
             //Arrange
             var groupId = _testData.Groups.First().Id;
-            var vmScope = new VmProject
+            var vmProject = new VmProject
             {
                 Id = id,
                 Name = "new project",
@@ -212,13 +214,39 @@ namespace Workflow.Tests.Services
             var currentUser = _testData.Users.First();
 
             //Act
-            var result = await _service.Create(currentUser, vmScope);
+            var result = await _service.Create(currentUser, new VmProjectForm(vmProject, null));
 
             //Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(_testData.Projects.Count + 1, result.Id);
             Assert.AreEqual(currentUser.Id, result.OwnerId);
             Assert.AreEqual(groupId, result.GroupId);
+        }
+
+        [Test]
+        public async Task CreateWithTeamsTest()
+        {
+            //Arrange
+            var teamIds = new[] {1, 2, 3};
+            var vmProject = new VmProject
+            {
+                Id = 0,
+                Name = "new project",
+                OwnerId = _testData.Users[1].Id,
+                IsRemoved = false
+            };
+            var currentUser = _testData.Users.First();
+
+            //Act
+            var result = await _service.Create(currentUser, new VmProjectForm(vmProject, teamIds));
+            var projectTeams = await _dataContext.ProjectTeams
+                .Where(pt => pt.ProjectId == result.Id)
+                .ToArrayAsync();
+
+            //Assert
+            Assert.AreEqual(teamIds.Length, projectTeams.Length);
+            for (int i = 0; i < teamIds.Length; i++) 
+                Assert.AreEqual(teamIds[i], projectTeams[i].TeamId);
         }
 
         [Test]
@@ -232,7 +260,7 @@ namespace Workflow.Tests.Services
             var vmProject = _vmConverter.ToViewModel(project);
 
             //Act
-            await _service.Update(_currentUser, vmProject);
+            await _service.Update(_currentUser, new VmProjectForm(vmProject, null));
             var result = _dataContext.Projects.First(x => x.Id == 1);
 
             //Assert
@@ -240,6 +268,47 @@ namespace Workflow.Tests.Services
             Assert.AreEqual(project.Id, result.Id);
             Assert.AreEqual(project.Name, result.Name);
             Assert.AreEqual(project.Description, result.Description);
+        }
+
+        [Test]
+        public async Task UpdateWithTeamsTest()
+        {
+            //Arrange
+            var project = _testData.Projects.First();
+            project.Id = 1;
+            project.Name = "New project";
+            project.Description = "New project description";
+            var vmProject = _vmConverter.ToViewModel(project);
+            var oldProjectTeams = new[]
+            {
+                new ProjectTeam(1, 1),
+                new ProjectTeam(1, 2),
+                new ProjectTeam(1, 3)
+            };
+            var newProjectTeams = new[]
+            {
+                new ProjectTeam(1, 5),
+                new ProjectTeam(1, 6),
+                new ProjectTeam(1, 7)
+            };
+
+            await using var dataContext = ContextHelper.CreateContext(_dbConnection, false); 
+            dataContext.ProjectTeams.RemoveRange(_dataContext.ProjectTeams);
+            await dataContext.ProjectTeams.AddRangeAsync(oldProjectTeams);
+            await dataContext.SaveChangesAsync();
+
+                //Act
+            await _service.Update(_currentUser, new VmProjectForm(vmProject, 
+                newProjectTeams.Select(pt => pt.TeamId)));
+            var resultProjectTeams = await _dataContext.ProjectTeams
+                .Where(pt => pt.ProjectId == 1)
+                .OrderBy(pt => pt.TeamId)
+                .ToArrayAsync();
+
+            //Assert
+            Assert.AreEqual(newProjectTeams.Length, resultProjectTeams.Length);
+            for (int i = 0; i < newProjectTeams.Length; i++)
+                Assert.AreEqual(newProjectTeams[i].TeamId, resultProjectTeams[i].TeamId);
         }
 
         [TestCase(null)]
@@ -256,7 +325,103 @@ namespace Workflow.Tests.Services
 
             //Assert
             Assert.ThrowsAsync<InvalidOperationException>(async () => 
-                await _service.Update(_currentUser, vmProject));
+                await _service.Update(_currentUser, new VmProjectForm(vmProject, null)));
+        }
+
+        [Test]
+        public async Task UpdateRangeTest()
+        {
+            //Arrange
+            string updatedName = "UpdatedName";
+            string updatedDescription = "UpdatedDescription";
+            var vmProjects = _testData.Projects.Select(p =>
+            {
+                p.Name = updatedName;
+                p.Description = updatedDescription;
+                return _vmConverter.ToViewModel(p);
+            }).ToArray();
+            var vmProjectForms = vmProjects
+                .Select(vmP => new VmProjectForm(vmP, new [] {5,6}));
+
+            //Act
+            await _service.UpdateRange(_currentUser, vmProjectForms);
+            var projects = await _dataContext.Projects.Include(p => p.ProjectTeams).ToArrayAsync();
+
+            //Assert
+            foreach (var project in projects)
+            {
+                Assert.AreEqual(updatedName, project.Name);
+                Assert.AreEqual(updatedDescription, project.Description);
+                Assert.AreEqual(2, project.ProjectTeams.Count);
+                Assert.AreEqual(5, project.ProjectTeams[0].TeamId);
+                Assert.AreEqual(6, project.ProjectTeams[1].TeamId);
+            }
+        }
+
+        [Test]
+        public async Task DeleteTest()
+        {
+            //Arrange
+            int id = 1;
+
+            //Act
+            await _service.Delete(_currentUser, id);
+            var resultProject = await _dataContext.Projects
+                .SingleOrDefaultAsync(p => p.Id == id);
+
+            //Assert
+            Assert.IsTrue(resultProject.IsRemoved);
+        }
+
+        [Test]
+        public async Task RestoreTest()
+        {
+            //Arrange
+            var project = _testData.Projects.First(p => p.IsRemoved);
+
+            //Act
+            await _service.Restore(_currentUser, project.Id);
+            var resultProject = await _dataContext.Projects
+                .SingleOrDefaultAsync(p => p.Id == project.Id);
+
+            //Assert
+            Assert.IsFalse(resultProject.IsRemoved);
+        }
+
+        [Test]
+        public async Task DeleteRangeTest()
+        {
+            //Arrange
+            var ids = new[] {1,2,3};
+
+            //Act
+            await _service.DeleteRange(_currentUser, ids);
+            var resultProjects = await _dataContext.Projects
+                .Where(p => ids.Any(pId => p.Id == pId))
+                .ToArrayAsync();
+
+            //Assert
+            Assert.AreEqual(ids.Length, resultProjects.Length);
+            foreach (var resultProject in resultProjects) 
+                Assert.IsTrue(resultProject.IsRemoved);
+        }
+
+        [Test]
+        public async Task RestoreRangeTest()
+        {
+            //Arrange
+            var ids = new[] { 10 };
+
+            //Act
+            await _service.RestoreRange(_currentUser, ids);
+            var resultProjects = await _dataContext.Projects
+                .Where(p => ids.Any(pId => p.Id == pId))
+                .ToArrayAsync();
+
+            //Assert
+            Assert.AreEqual(ids.Length, resultProjects.Length);
+            foreach (var resultProject in resultProjects)
+                Assert.IsFalse(resultProject.IsRemoved);
         }
 
 
