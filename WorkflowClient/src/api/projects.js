@@ -6,7 +6,8 @@ export default {
   create: project => httpClient.post(`/api/Projects/Create`, project),
   update: project => httpClient.post(`/api/Projects/Update`, project),
   delete: id => httpClient.delete(`/api/Projects/Delete/${id}`),
-  addTeam: teamId => httpClient.patch(`/api/Projects/AddTeam/${teamId}`),
+  addTeam: (teamId, projectId) =>
+    httpClient.patch(`/api/Projects/AddTeam/${teamId}?projectId=${projectId}`),
   removeTeam: (teamId, projectId) =>
     httpClient.patch(`/api/Projects/RemoveTeam/${teamId}/${projectId}`),
   getPage: query =>

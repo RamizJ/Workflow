@@ -106,7 +106,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      item: 'tasks/getTask'
+      item: 'tasks/getTask',
+      me: 'auth/me'
     })
   },
   methods: {

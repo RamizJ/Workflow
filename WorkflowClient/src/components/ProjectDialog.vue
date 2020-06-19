@@ -30,13 +30,13 @@
                 filterable remote clearable default-first-option)
                 el-option(v-for="item in userList" :key="item.id" :label="item.value" :value="item.id")
           el-col(:span="12")
-            el-form-item(prop="teamId")
+            el-form-item(prop="teamIds")
               el-select(
-                v-model="form.teamId"
+                v-model="form.teamIds"
                 size="medium"
-                placeholder="Команда"
+                placeholder="Команды"
                 :remote-method="searchTeams"
-                filterable remote clearable default-first-option)
+                multiple filterable remote clearable default-first-option)
                 el-option(v-for="item in teamList" :key="item.id" :label="item.value" :value="item.id")
     div(slot="footer")
       el-button(size="medium" type="primary" @click="submit") {{ isEdit ? 'Сохранить' : 'Создать' }}
@@ -86,6 +86,12 @@ export default {
     ...mapGetters({
       item: 'projects/getProject'
     })
+  },
+  mounted() {
+    if (this.isEdit) {
+      this.searchUsers();
+      this.searchTeams();
+    }
   },
   methods: {
     ...mapActions({

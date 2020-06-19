@@ -41,6 +41,7 @@ export default {
         this.query.pageNumber++;
       } catch (e) {
         this.$message.error('Не удалось получить данные');
+        console.log(e);
       }
     },
     onItemRightClick(row, column, event) {
