@@ -18,6 +18,7 @@ using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
 using Workflow.Services.Abstract;
+using WorkflowService.Services;
 using static WorkflowService.ConfigKeys;
 
 #pragma warning disable 1591    //Disable xml documentation for this file
@@ -118,6 +119,7 @@ namespace WorkflowService
             services.AddTransient<IGoalsService, GoalsService>();
             services.AddTransient<IGoalAttachmentsService, GoalAttachmentsService>();
             services.AddTransient<IFileService, FileService>();
+            services.AddTransient<IFormFilesService, FormFilesService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
