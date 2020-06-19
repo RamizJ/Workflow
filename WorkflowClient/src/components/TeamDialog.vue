@@ -1,5 +1,5 @@
 <template lang="pug">
-  base-dialog(v-if="visible" @close="$emit('close')")
+  base-dialog(v-if="visible" @close="exit")
     div(slot="title") Команда
     div(slot="body")
       el-form(:model="form" :rules="rules" ref="form")
@@ -32,7 +32,7 @@
                 el-option(v-for="item in projectList" :key="item.id" :label="item.value" :value="item.id")
 
     div(slot="footer")
-      el-button(size="medium" type="primary" @click="submit") Создать
+      el-button(size="medium" type="primary" @click="submit") {{ isEdit ? 'Сохранить' : 'Создать' }}
 
 </template>
 

@@ -1,5 +1,5 @@
 <template lang="pug">
-  base-dialog(v-if="visible" @close="$emit('close')")
+  base-dialog(v-if="visible" @close="exit")
     div(slot="title") Область
     div(slot="body")
       el-form(:model="form" :rules="rules" ref="form")
@@ -17,7 +17,7 @@
               el-select(v-model="form.projects" size="medium" placeholder="Проекты" multiple)
                 el-option(v-for="item in projects" :key="item.value" :label="item.label" :value="item.value")
     div(slot="footer")
-      el-button(size="medium" type="primary" @click="submit") Создать
+      el-button(size="medium" type="primary" @click="submit") {{ isEdit ? 'Сохранить' : 'Создать' }}
 
 </template>
 
@@ -28,7 +28,7 @@ import BaseDialog from '~/components/BaseDialog';
 export default {
   components: { BaseDialog },
   props: {
-    id: Number,
+    id: Number
   },
   data() {
     return {
@@ -36,9 +36,9 @@ export default {
       loading: false,
       isEdit: !!this.id,
       form: {
-        title: "",
+        title: '',
         priority: null,
-        description: "",
+        description: '',
         projects: [],
         responsible: null,
         team: null,
@@ -47,14 +47,20 @@ export default {
         dateEnd: null
       },
       projects: [
-        { value: 0, label: "Проект1" },
-        { value: 1, label: "Проект2" },
-        { value: 2, label: "Проект3" },
-        { value: 3, label: "Проект4" }
+        { value: 0, label: 'Проект1' },
+        { value: 1, label: 'Проект2' },
+        { value: 2, label: 'Проект3' },
+        { value: 3, label: 'Проект4' }
       ],
       rules: {
-        name: [ { required: true, message: 'Введите название области', trigger: 'blur', } ],
-      },
+        name: [
+          {
+            required: true,
+            message: 'Введите название области',
+            trigger: 'blur'
+          }
+        ]
+      }
     };
   },
   async mounted() {
@@ -78,13 +84,11 @@ export default {
     submit() {
       const payload = { ...this.form };
       const form = this.$refs.form;
-      form.validate(async (valid) => {
+      form.validate(async valid => {
         if (valid) {
           try {
-            if (this.isEdit)
-              await this.updateScope(payload);
-            else
-              await this.createScope(payload);
+            if (this.isEdit) await this.updateScope(payload);
+            else await this.createScope(payload);
             form.resetFields();
             this.$emit('close');
           } catch (e) {

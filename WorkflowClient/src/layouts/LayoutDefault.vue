@@ -3,8 +3,7 @@
     app-sidebar
     main
       transition(name="slide-fade" mode="out-in")
-        keep-alive
-          router-view
+        router-view(:key="$route.path")
 </template>
 
 <script>

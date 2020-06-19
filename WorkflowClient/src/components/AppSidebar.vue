@@ -12,7 +12,7 @@
       el-menu-item(index="/teams")
         i.el-icon-user
         span Команды
-      // el-menu-item(index="/scopes")
+      el-menu-item(index="/scopes" disabled)
         i.el-icon-files
         span Области
       div.divider
@@ -22,6 +22,10 @@
       el-menu-item(index="/users")
         i.el-icon-user
         span Пользователи
+      div.divider
+      el-menu-item(v-for="item in favorites" :index="`/projects/${item.id}`")
+        i.el-icon-notebook-2
+        span {{ item.name }}
 
       div.profile(v-if="!!me" @click="$router.push({ name: 'Profile' })")
         el-avatar(:size="36" icon="el-icon-user-solid")
@@ -35,8 +39,26 @@ import { mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'AppSidebar',
+  data() {
+    return {
+      favorites: []
+    };
+  },
   computed: {
-    ...mapGetters({ me: 'auth/me' })
+    ...mapGetters({
+      me: 'auth/me',
+      projects: 'projects/getProjects'
+    })
+  },
+  async mounted() {
+    await this.fetchProjects({
+      pageNumber: 0,
+      pageSize: 5
+    });
+    this.favorites = { ...this.projects };
+  },
+  methods: {
+    ...mapActions({ fetchProjects: 'projects/fetchProjects' })
   }
 };
 </script>
@@ -83,12 +105,13 @@ export default {
 .el-menu-item i {
   color: var(--sidebar-text);
   transition: color 0.25s;
+  margin-bottom: 1px;
 }
 .el-menu--collapse {
   width: var(--header-height);
 }
 .divider {
-  height: 18px;
+  height: 15px;
 }
 .profile {
   cursor: pointer;

@@ -1,5 +1,5 @@
 <template lang="pug">
-  base-dialog(v-if="visible" @close="$emit('close')")
+  base-dialog(v-if="visible" @close="exit")
     div(slot="title") Пользователь
     div(slot="body")
       el-form(:model="form" :rules="rules" ref="form" v-loading="loading")
@@ -46,7 +46,7 @@
               el-select(v-model="form.positionId" size="medium" placeholder="Должность")
                 el-option(v-for="item in positions" :key="item.value" :label="item.label" :value="item.value")
     div(slot="footer")
-      el-button(size="medium" type="primary" @click="submit") Создать
+      el-button(size="medium" type="primary" @click="submit") {{ isEdit ? 'Сохранить' : 'Создать' }}
 
 </template>
 

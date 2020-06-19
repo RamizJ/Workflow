@@ -82,6 +82,7 @@ export default {
       });
     },
     submit() {
+      this.form.ownerId = this.form.ownerId || this.me.id;
       const payload = { ...this.form };
       const form = this.$refs.form;
       form.validate(async valid => {
@@ -91,6 +92,7 @@ export default {
             else await this.createItem(payload);
             form.resetFields();
             this.$emit('submit');
+            this.exit();
           } catch (e) {
             this.$message.error('Ошибка отправки запроса');
           }
@@ -98,6 +100,11 @@ export default {
           this.$message.error('Укажите корректные данные');
         }
       });
+    },
+    exit() {
+      this.$refs.form.resetFields();
+      this.visible = false;
+      this.$emit('close');
     }
   }
 };
