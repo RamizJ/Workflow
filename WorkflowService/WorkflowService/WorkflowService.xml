@@ -167,18 +167,25 @@
             <param name="ids">Идентификаторы проектов</param>
             <returns>Коллекция проектов</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.ProjectsController.Create(Workflow.VM.ViewModels.VmProject)">
+        <member name="M:WorkflowService.Controllers.ProjectsController.Create(Workflow.VM.ViewModels.VmProjectForm)">
             <summary>
             Создание проекта
             </summary>
-            <param name="project">Проект</param>
+            <param name="projectForm">Форма создаваемого проекта</param>
             <returns>Результат выполнения операции</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.ProjectsController.Update(Workflow.VM.ViewModels.VmProject)">
+        <member name="M:WorkflowService.Controllers.ProjectsController.Update(Workflow.VM.ViewModels.VmProjectForm)">
+            <summary>
+            Обновление проекта
+            </summary>
+            <param name="projectForm">Обновляемый проект</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.UpdateRange(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmProjectForm})">
             <summary>
             Обновление проектов
             </summary>
-            <param name="project">Обновляемый проект</param>
+            <param name="projectForms">Обновляемый проект</param>
             <returns></returns>
         </member>
         <member name="M:WorkflowService.Controllers.ProjectsController.Delete(System.Int32)">
@@ -187,6 +194,27 @@
             </summary>
             <param name="id">Идентификатор проекта</param>
             <returns>Результат выполнения операции</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.DeleteRange(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Удаление проектов
+            </summary>
+            <param name="ids">Идентификаторы проектов</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.Restore(System.Int32)">
+            <summary>
+            Восстановление проекта
+            </summary>
+            <param name="id">Идентификатор проекта</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.RestoreRange(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Восстановление проектов
+            </summary>
+            <param name="ids">Идентификаторы проектов</param>
+            <returns></returns>
         </member>
         <member name="M:WorkflowService.Controllers.ProjectsController.AddTeam(System.Int32,System.Int32)">
             <summary>

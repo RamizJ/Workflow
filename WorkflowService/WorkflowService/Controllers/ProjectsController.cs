@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Workflow.DAL.Models;
@@ -13,7 +12,7 @@ namespace WorkflowService.Controllers
     /// <summary>
     /// API-методы работы с проектами
     /// </summary>
-    [Authorize]
+    //[Authorize]
     [ApiController, Route("api/[controller]/[action]")]
     public class ProjectsController : ControllerBase
     {
@@ -103,26 +102,39 @@ namespace WorkflowService.Controllers
         /// <summary>
         /// Создание проекта
         /// </summary>
-        /// <param name="project">Проект</param>
+        /// <param name="projectForm">Форма создаваемого проекта</param>
         /// <returns>Результат выполнения операции</returns>
         [HttpPost]
-        public async Task<ActionResult<VmProject>> Create([FromBody] VmProject project)
+        public async Task<ActionResult<VmProject>> Create([FromBody] VmProjectForm projectForm)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var result = await _projectsService.Create(currentUser, project);
+            var result = await _projectsService.Create(currentUser, projectForm);
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Обновление проекта
+        /// </summary>
+        /// <param name="projectForm">Обновляемый проект</param>
+        /// <returns></returns>
+        [HttpPut]
+        public async Task<IActionResult> Update([FromBody]VmProjectForm projectForm)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            await _projectsService.Update(currentUser, projectForm);
+            return NoContent();
         }
 
         /// <summary>
         /// Обновление проектов
         /// </summary>
-        /// <param name="project">Обновляемый проект</param>
+        /// <param name="projectForms">Обновляемый проект</param>
         /// <returns></returns>
-        [HttpPost]
-        public async Task<IActionResult> Update([FromBody]VmProject project)
+        [HttpPut]
+        public async Task<IActionResult> UpdateRange([FromBody] IEnumerable<VmProjectForm> projectForms)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            await _projectsService.Update(currentUser, project);
+            await _projectsService.UpdateRange(currentUser, projectForms);
             return NoContent();
         }
 
@@ -138,6 +150,47 @@ namespace WorkflowService.Controllers
             var result = await _projectsService.Delete(currentUser, id);
             return Ok(result);
         }
+
+        /// <summary>
+        /// Удаление проектов
+        /// </summary>
+        /// <param name="ids">Идентификаторы проектов</param>
+        /// <returns></returns>
+        [HttpPatch]
+        public async Task<IActionResult> DeleteRange([FromBody]IEnumerable<int> ids)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            await _projectsService.DeleteRange(currentUser, ids);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Восстановление проекта
+        /// </summary>
+        /// <param name="id">Идентификатор проекта</param>
+        /// <returns></returns>
+        [HttpPatch("{id}")]
+        public async Task<ActionResult<VmProject>> Restore(int id)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var result = await _projectsService.Restore(currentUser, id);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Восстановление проектов
+        /// </summary>
+        /// <param name="ids">Идентификаторы проектов</param>
+        /// <returns></returns>
+        [HttpPatch]
+        public async Task<IActionResult> RestoreRange([FromBody] IEnumerable<int> ids)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            await _projectsService.RestoreRange(currentUser, ids);
+            return NoContent();
+        }
+
+
 
         /// <summary>
         /// Добавление команды в список команд проекта

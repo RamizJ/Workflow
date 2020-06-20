@@ -21,16 +21,16 @@ namespace Workflow.Services.Abstract
 
 
         /// <summary>
-        /// 
+        /// Постраничная загрузка задач с фильтрацией и сортировкой
         /// </summary>
-        /// <param name="currentUser"></param>
-        /// <param name="projectId"></param>
-        /// <param name="pageNumber"></param>
-        /// <param name="pageSize"></param>
-        /// <param name="filter"></param>
-        /// <param name="filterFields"></param>
-        /// <param name="sortFields"></param>
-        /// <param name="withRemoved"></param>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="pageNumber">Номер страницы</param>
+        /// <param name="pageSize">Размер страницы</param>
+        /// <param name="filter">Фильтр по всем полям</param>
+        /// <param name="filterFields">Фильтры по конкретному полю</param>
+        /// <param name="sortFields">Поля сортировки</param>
+        /// <param name="withRemoved">Загрузить также удаленные задачи</param>
         /// <returns></returns>
         Task<IEnumerable<VmGoal>> GetPage(ApplicationUser currentUser, int? projectId,
             int pageNumber, int pageSize, string filter, FieldFilter[] filterFields, 

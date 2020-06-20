@@ -48,7 +48,7 @@ namespace Workflow.Services.Abstract
         /// <param name="user"></param>
         /// <param name="project"></param>
         /// <returns></returns>
-        Task<VmProject> Create(ApplicationUser user, VmProject project);
+        Task<VmProject> Create(ApplicationUser user, VmProjectForm project);
 
         /// <summary>
         /// 
@@ -56,7 +56,16 @@ namespace Workflow.Services.Abstract
         /// <param name="user"></param>
         /// <param name="project"></param>
         /// <returns></returns>
-        Task Update(ApplicationUser user, VmProject project);
+        Task Update(ApplicationUser user, VmProjectForm project);
+
+        /// <summary>
+        /// Обновление проектов
+        /// </summary>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="projectForms">Формы проектов</param>
+        /// <returns></returns>
+        Task UpdateRange(ApplicationUser currentUser, IEnumerable<VmProjectForm> projectForms);
+
 
         /// <summary>
         /// 
@@ -66,6 +75,13 @@ namespace Workflow.Services.Abstract
         /// <returns></returns>
         Task<VmProject> Delete(ApplicationUser user, int projectId);
 
+        /// <summary>
+        /// Удаление проектов
+        /// </summary>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="ids">Идентификаторы проектов</param>
+        /// <returns></returns>
+        Task DeleteRange(ApplicationUser currentUser, IEnumerable<int> ids);
 
         /// <summary>
         /// Восстановление ранее удаленного проекта
@@ -74,6 +90,13 @@ namespace Workflow.Services.Abstract
         /// <param name="projectId">Идентификатор проекта</param>
         /// <returns></returns>
         Task<VmProject> Restore(ApplicationUser currentUser, int projectId);
-
+        
+        /// <summary>
+        /// Восстановление проектов
+        /// </summary>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="ids">Идентификаторы проектов</param>
+        /// <returns></returns>
+        Task RestoreRange(ApplicationUser currentUser, IEnumerable<int> ids);
     }
 }

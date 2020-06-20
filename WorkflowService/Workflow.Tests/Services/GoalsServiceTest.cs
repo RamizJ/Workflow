@@ -200,7 +200,7 @@ namespace Workflow.Tests.Services
         public void CreateInvalidTitleTest(string title)
         {
             //Arrange
-            var vmTeam = new VmGoal
+            var vmGoal = new VmGoal
             {
                 Id = 0,
                 Title = title,
@@ -209,8 +209,9 @@ namespace Workflow.Tests.Services
             };
 
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Create(_currentUser, vmTeam));
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Create(_currentUser, vmGoal));
         }
+
 
         [TestCase(null)]
         [TestCase("")]
@@ -219,7 +220,7 @@ namespace Workflow.Tests.Services
         {
             //Arrange
             int goalId = 1;
-            var vmTeam = new VmGoal
+            var vmGoal = new VmGoal
             {
                 Id = goalId,
                 Title = title,
@@ -228,7 +229,7 @@ namespace Workflow.Tests.Services
             };
 
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Update(_currentUser, vmTeam));
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Update(_currentUser, vmGoal));
         }
 
         [TestCase("goal123", "d1", 10, 1, GoalState.Perform, GoalPriority.Low)]
