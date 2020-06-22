@@ -44,6 +44,11 @@ export default {
         console.log(e);
       }
     },
+    dateFormatter(row, column, cellValue, index) {
+      const dateRaw = new Date(cellValue);
+      const dateRu = dateRaw.toLocaleString();
+      return dateRu;
+    },
     onItemRightClick(row, column, event) {
       this.$refs.table.setCurrentRow(row);
       this.$refs.contextMenu.open(event, { row, column });

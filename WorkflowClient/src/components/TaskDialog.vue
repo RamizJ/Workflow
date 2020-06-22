@@ -65,7 +65,7 @@ import dialogMixin from '~/mixins/dialog.mixin';
 export default {
   components: { BaseDialog },
   props: {
-    id: String
+    id: Number
   },
   mixins: [dialogMixin],
   data() {
@@ -109,6 +109,10 @@ export default {
       item: 'tasks/getTask',
       me: 'auth/me'
     })
+  },
+  async mounted() {
+    await this.searchUsers();
+    await this.searchProjects();
   },
   methods: {
     ...mapActions({

@@ -17,7 +17,7 @@
             el-dropdown-item(command="complete") Завершить проект
             el-dropdown-item(command="delete") Удалить проект
       template(slot="subtitle")
-        div.tags(v-if="projectItem.tags")
+        div.tags(v-if="projectItem.tags && projectItem.tags.length")
           el-tag.tag(
             :key="tag"
             v-for="tag in projectItem.tags"
@@ -47,9 +47,9 @@
         @row-dblclick="onItemDoubleClick"
         highlight-current-row)
         el-table-column(type="selection" width="55")
-        el-table-column(prop="title" label="Название")
+        el-table-column(prop="title" label="Задача")
         el-table-column(prop="description" label="Заметки")
-        el-table-column(prop="creationDate" label="Добавлено")
+        el-table-column(prop="creationDate" label="Добавлено" :formatter="dateFormatter")
         infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
           div(slot="no-more")
           div(slot="no-results")
@@ -120,6 +120,7 @@ export default {
     quickAction(command) {
       switch (command) {
         case 'addTask':
+          this.selectedItemId = null;
           this.dialogOpened = true;
           break;
         default:
