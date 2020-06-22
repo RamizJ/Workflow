@@ -155,6 +155,7 @@ a {
 }
 .el-table .cell {
   white-space: nowrap;
+  user-select: none;
 }
 .el-table td, .el-table th {
   padding: 5px 0;

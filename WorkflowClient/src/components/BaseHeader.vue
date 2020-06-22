@@ -23,9 +23,11 @@ export default {
 input {
   border: none;
   padding: 0;
+  color: var(--text);
+  background-color: var(--background);
   &.title {
     font-size: 28px;
-    font-weight: 600;
+    font-weight: 800;
   }
   &.subtitle {
     font-size: 14px;
@@ -37,7 +39,7 @@ input {
   display: flex;
   align-items: baseline;
   font-size: 26px;
-  font-weight: 600;
+  font-weight: 800;
   .action {
     margin-left: 12px;
     font-size: 13px;

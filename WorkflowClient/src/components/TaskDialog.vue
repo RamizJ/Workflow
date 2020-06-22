@@ -12,7 +12,7 @@
             el-form-item(prop="description")
               el-input(v-model="form.description" size="medium" type="textarea" placeholder="Заметки")
         el-row(:gutter="20")
-          el-col(:span="16")
+          el-col(:span="$route.params.projectId ? 24 : 16")
             el-form-item(prop="tags")
               el-select(
                 v-model="form.tags"
@@ -26,7 +26,6 @@
                 size="medium"
                 placeholder="Приоритет")
                 el-option(v-for="item in priorities" :key="item.value" :label="item.label" :value="item.value")
-        el-row(:gutter="20")
           el-col(:span="8")
             el-form-item(prop="performerId")
               el-select(
@@ -36,7 +35,7 @@
                 :remote-method="searchUsers"
                 filterable remote clearable default-first-option)
                 el-option(v-for="item in userList" :key="item.id" :label="item.value" :value="item.id")
-          el-col(:span="8")
+          el-col(v-if="!$route.params.projectId" :span="8")
             el-form-item(prop="projectId")
               el-select(
                 v-model="form.projectId"
@@ -78,7 +77,9 @@ export default {
         priority: null,
         ownerId: null,
         performerId: null,
-        projectId: null,
+        projectId: this.$route.params.projectId
+          ? parseInt(this.$route.params.projectId)
+          : null,
         creationDate: new Date(),
         dateEnd: null
       },

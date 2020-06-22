@@ -22,7 +22,7 @@ export const routes = [
     meta: { layout: LayoutDefault }
   },
   {
-    path: '/projects/:id',
+    path: '/projects/:projectId',
     name: 'Project',
     component: () => import('~/pages/Project.vue'),
     meta: { layout: LayoutDefault }

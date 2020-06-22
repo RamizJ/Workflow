@@ -78,7 +78,7 @@ export default {
   data() {
     return {
       query: {
-        projectId: this.$route.params.id
+        projectId: this.$route.params.projectId
       },
       projectItem: {
         name: '',
@@ -104,7 +104,7 @@ export default {
     })
   },
   async mounted() {
-    await this.fetchProject(this.$route.params.id);
+    await this.fetchProject(this.$route.params.projectId);
     this.projectItem = { ...this.project };
   },
   methods: {
