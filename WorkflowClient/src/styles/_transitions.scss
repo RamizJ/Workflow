@@ -29,3 +29,29 @@
 .fade-enter, .fade-leave-to {
   opacity: 0;
 }
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: .3s;
+}
+.fade-enter {
+  opacity: 0;
+  transform: scale(1) translateY(-3px);
+}
+.fade-leave-to {
+  opacity: 0;
+  transform: scale(0.98) translateY(3px);
+}
+
+.el-zoom-in-top-enter-active,
+.el-zoom-in-top-leave-active {
+  transition: .3s;
+}
+.el-zoom-in-top-enter {
+  opacity: 0;
+  transform: scale(0.95) translateY(-8px);
+}
+.el-zoom-in-top-leave-to {
+  opacity: 0;
+  transform: scale(0.95) translateY(8px);
+}

@@ -13,29 +13,32 @@
               el-input(v-model="form.description" size="medium" type="textarea" placeholder="Заметки")
 
         el-row(:gutter="20")
-          el-col(v-if="tagsVisible || (item.tags && item.tags.length)" :span="$route.params.projectId ? 24 : 16")
-            el-form-item(prop="tags")
-              el-select(
-                v-model="form.tags"
-                size="medium"
-                placeholder="Теги"
-                multiple filterable allow-create default-first-option)
-          el-col(v-if="priorityVisible || item.priority" :span="8")
-            el-form-item(prop="priority")
-              el-select(
-                v-model="form.priority"
-                size="medium"
-                placeholder="Приоритет")
-                el-option(v-for="item in priorities" :key="item.value" :label="item.label" :value="item.value")
-          el-col(v-if="performerVisible || item.performerId" :span="8")
-            el-form-item(prop="performerId")
-              el-select(
-                v-model="form.performerId"
-                size="medium"
-                placeholder="Ответственный"
-                :remote-method="searchUsers"
-                filterable remote clearable default-first-option)
-                el-option(v-for="item in userList" :key="item.id" :label="item.value" :value="item.id")
+          transition(name="fade")
+            el-col(v-if="tagsVisible || (item.tags && item.tags.length)" :span="$route.params.projectId ? 24 : 16")
+              el-form-item(prop="tags")
+                el-select(
+                  v-model="form.tags"
+                  size="medium"
+                  placeholder="Теги"
+                  multiple filterable allow-create default-first-option)
+          transition(name="fade")
+            el-col(v-if="priorityVisible || item.priority" :span="8")
+              el-form-item(prop="priority")
+                el-select(
+                  v-model="form.priority"
+                  size="medium"
+                  placeholder="Приоритет")
+                  el-option(v-for="item in priorities" :key="item.value" :label="item.label" :value="item.value")
+          transition(name="fade")
+            el-col(v-if="performerVisible || item.performerId" :span="8")
+              el-form-item(prop="performerId")
+                el-select(
+                  v-model="form.performerId"
+                  size="medium"
+                  placeholder="Ответственный"
+                  :remote-method="searchUsers"
+                  filterable remote clearable default-first-option)
+                  el-option(v-for="item in userList" :key="item.id" :label="item.value" :value="item.id")
           el-col(v-if="!$route.params.projectId" :span="8")
             el-form-item(prop="projectId")
               el-select(
@@ -45,26 +48,28 @@
                 :remote-method="searchProjects"
                 filterable remote clearable default-first-option)
                 el-option(v-for="item in projectList" :key="item.id" :label="item.value" :value="item.id")
-          el-col(v-if="dateEndVisible || item.dateEnd" :span="8")
-            el-form-item(prop="dateEnd")
-              el-date-picker(
-                v-model="form.dateEnd"
-                size="medium"
-                prefix-icon="el-icon-arrow-down"
-                suffix-icon="el-icon-arrow-down"
-                placeholder="Крайний срок")
-          el-col(v-if="attachmentsVisible || attachmentList.length" :span="24")
-            el-form-item
-              el-upload(
-                action="https://demo.girngm.ru/workflow_dev/api/Goals/AddAttachments/"
-                :http-request="uploadAttachment"
-                :on-remove="removeAttachment"
-                :file-list="attachmentList"
-                drag multiple)
-                i.el-icon-upload
-                div.el-upload__text
-                  em Выберите файл
-                  span  или перетащите его сюда
+          transition(name="fade")
+            el-col(v-if="dateEndVisible || item.dateEnd" :span="8")
+              el-form-item(prop="dateEnd")
+                el-date-picker(
+                  v-model="form.dateEnd"
+                  size="medium"
+                  prefix-icon="el-icon-arrow-down"
+                  suffix-icon="el-icon-arrow-down"
+                  placeholder="Крайний срок")
+          transition(name="fade")
+            el-col(v-if="attachmentsVisible || attachmentList.length" :span="24")
+              el-form-item
+                el-upload(
+                  action="https://demo.girngm.ru/workflow_dev/api/Goals/AddAttachments/"
+                  :http-request="uploadAttachment"
+                  :on-remove="removeAttachment"
+                  :file-list="attachmentList"
+                  drag multiple)
+                  i.el-icon-upload
+                  div.el-upload__text
+                    em Выберите файл
+                    span  или перетащите его сюда
           el-col(:span="24")
             div.extra
               el-button(v-if="!(form.tags && form.tags.length)" type="text" title="Теги" @click="tagsVisible = !tagsVisible" circle)
