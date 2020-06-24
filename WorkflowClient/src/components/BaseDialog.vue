@@ -12,16 +12,13 @@
 <script>
 export default {
   name: 'BaseDialog',
-  props: {
-    visible: {
-      type: Boolean,
-      default: true
-    }
-  },
   data() {
     return {
-      showDialog: this.visible
+      showDialog: false
     };
+  },
+  mounted() {
+    this.showDialog = true;
   }
 };
 </script>
@@ -51,7 +48,7 @@ export default {
 
 <style lang="scss">
 .base-dialog {
-  border-radius: 6px !important;
+  border-radius: 10px !important;
   border-width: var(--border-width);
   border-color: var(--card-border);
   background-color: var(--card-background);

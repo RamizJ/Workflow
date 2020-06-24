@@ -31,11 +31,12 @@ a {
 }
 
 .el-popover, .el-popper {
-  border-width: 1px;
-  border-radius: var(--border-radius);
+  border-width: 0px;
+  border-radius: 8px;
   border-color: var(--popover-border);
-  box-shadow: var(--popover-shadow);
+  box-shadow: var(--popover-shadow), var(--popover-shadow);
   background-color: var(--popover-background);
+  backdrop-filter: blur(10px);
   .title {
     display: flex;
     align-items: center;
@@ -47,10 +48,10 @@ a {
 }
 
 .el-popper[x-placement^=bottom] .popper__arrow {
-  border-bottom-color: var(--popover-border);
+  border-bottom-color: transparent;
 }
 .el-popper[x-placement^=bottom] .popper__arrow::after {
-  border-bottom-color: var(--popover-background);
+  border-bottom-color: transparent;
 }
 .el-popper[x-placement^=top] .popper__arrow {
   border-top-color: var(--popover-border);
@@ -61,6 +62,7 @@ a {
 .el-select-dropdown__list,
 .el-dropdown-menu {
   padding: 4px 0;
+  border-radius: 8px;
 }
 .el-select-dropdown__item,
 .el-dropdown-menu__item {
@@ -68,10 +70,9 @@ a {
   line-height: 32px;
   font-size: 13px;
   padding: 0 15px;
-  margin: 2px 6px;
+  margin: 0 4px;
   color: var(--text);
-  border-radius: var(--border-radius);
-  transition: background-color .1s;
+  border-radius: 6px;
 }
 .el-dropdown-menu__item:focus,
 .el-dropdown-menu__item:not(.is-disabled):hover,
@@ -79,8 +80,8 @@ a {
 .el-dropdown-menu__item:hover,
 .el-select-dropdown__item.hover,
 .el-select-dropdown__item:hover {
-  color: var(--text);
-  background-color: var(--popover-hover);
+  background-color: var(--color-primary);
+  color: white;
 }
 .el-select-dropdown.is-multiple .el-select-dropdown__item.selected {
   background-color: var(--tag-border);
@@ -114,13 +115,13 @@ a {
 .el-input__inner::placeholder {
   color: var(--text-placeholder);
 }
-.el-button {
+.el-button--default {
   color: var(--text);
   background: var(--button-background);
   border-color: var(--button-border);
   transition: .27s;
 }
-.el-button:focus, .el-button:hover {
+.el-button--default:focus, .el-button--default:hover {
   color: var(--button-hover-color);
   border-color: var(--button-hover-border);
   background-color: var(--button-hover-background);
@@ -212,4 +213,20 @@ a {
 }
 .el-divider--horizontal {
   margin: 10px 0;
+}
+
+.el-collapse {
+  border-top: none;
+  border-bottom: none;
+}
+.el-collapse-item__header {
+  color: var(--text);
+}
+.el-collapse-item__header,
+.el-collapse-item__wrap {
+  background-color: transparent;
+  border-bottom: none;
+}
+.el-upload-list__item:hover {
+  background-color: var(--popover-hover);
 }

@@ -7,7 +7,7 @@
           v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
           @change="update")
       template(slot="action")
-        el-dropdown(placement="bottom" :show-timeout="0" @command="quickAction")
+        el-dropdown(v-if="projectItem.id" placement="bottom" :show-timeout="0" @command="quickAction")
           el-button.actions(type="text" icon="el-icon-more" circle)
           el-dropdown-menu(slot="dropdown")
             el-dropdown-item(command="addTask") Добавить задачу

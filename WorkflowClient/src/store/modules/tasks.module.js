@@ -4,7 +4,8 @@ export default {
   namespaced: true,
   state: () => ({
     tasks: [],
-    task: {}
+    task: {},
+    taskAttachments: []
   }),
   mutations: {
     setTasks(state, tasks) {
@@ -12,6 +13,9 @@ export default {
     },
     setTask(state, task) {
       state.task = task;
+    },
+    setTaskAttachments(state, attachments) {
+      state.taskAttachments = attachments;
     }
   },
   actions: {
@@ -35,8 +39,19 @@ export default {
     },
     async deleteTask({ commit }, id) {
       const response = await tasksAPI.delete(id);
-      const project = response.data;
-      if (!project) throw Error;
+      const task = response.data;
+      if (!task) throw Error;
+    },
+    async fetchAttachments({ commit }, taskId) {
+      const response = await tasksAPI.getAttachments(taskId);
+      const attachments = response.data;
+      commit('setTaskAttachments', attachments);
+    },
+    async addAttachments({ commit }, { taskId, files }) {
+      const response = await tasksAPI.addAttachments(taskId, files);
+    },
+    async removeAttachments({ commit }, attachmentIds) {
+      const response = await tasksAPI.removeAttachments(attachmentIds);
     }
   },
   getters: {
@@ -45,6 +60,9 @@ export default {
     },
     getTask(state) {
       return state.task;
+    },
+    getTaskAttachments(state) {
+      return state.taskAttachments;
     }
   }
 };

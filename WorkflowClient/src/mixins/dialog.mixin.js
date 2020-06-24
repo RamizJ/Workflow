@@ -4,18 +4,16 @@ export default {
   data() {
     return {
       visible: false,
-      loading: false,
+      loading: true,
       isEdit: !!this.id
     };
   },
-  async mounted() {
+  async created() {
+    this.visible = true;
     if (this.isEdit) {
-      this.loading = true;
       await this.fetchItem(this.id);
       this.form = this.item;
-      this.loading = false;
     }
-    this.visible = true;
   },
   computed: {
     ...mapGetters({
