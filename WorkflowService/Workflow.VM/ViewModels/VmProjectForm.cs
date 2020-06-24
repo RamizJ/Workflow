@@ -4,7 +4,7 @@ using Workflow.DAL.Models;
 namespace Workflow.VM.ViewModels
 {
     /// <summary>
-    /// Модель создания / обновления проекта
+    /// Форма создания / обновления проекта
     /// </summary>
     public class VmProjectForm
     {
