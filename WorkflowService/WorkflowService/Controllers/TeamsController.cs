@@ -128,14 +128,26 @@ namespace WorkflowService.Controllers
         /// <summary>
         /// Создать команду
         /// </summary>
-        /// <param name="projectId">Идентификатор проекта</param>
         /// <param name="team">Новая команда</param>
         /// <returns>Команда</returns>
         [HttpPost("{projectId}")]
-        public async Task<ActionResult<VmTeam>> Create(int projectId, [FromBody]VmTeam team)
+        public async Task<ActionResult<VmTeam>> Create([FromBody]VmTeam team)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var result = await _teamsService.Create(currentUser, projectId, team);
+            var result = await _teamsService.Create(currentUser, team);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Создать команду по форме
+        /// </summary>
+        /// <param name="teamForm">Форма команды</param>
+        /// <returns>Команда</returns>
+        [HttpPost("{projectId}")]
+        public async Task<ActionResult<VmTeam>> CreateByForm([FromBody] VmTeamForm teamForm)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var result = await _teamsService.CreateByForm(currentUser, teamForm);
             return Ok(result);
         }
 
@@ -151,6 +163,46 @@ namespace WorkflowService.Controllers
             await _teamsService.Update(currentUser, team);
             return NoContent();
         }
+
+        /// <summary>
+        /// Обновление команды по форме
+        /// </summary>
+        /// <param name="teamForm">Форма команды</param>
+        /// <returns>Результат выполнения операции</returns>
+        [HttpPut]
+        public async Task<IActionResult> UpdateByForm([FromBody] VmTeamForm teamForm)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            await _teamsService.UpdateByForm(currentUser, teamForm);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Обновление команд
+        /// </summary>
+        /// <param name="teams">Обновляемые команды</param>
+        /// <returns></returns>
+        [HttpPut]
+        public async Task<IActionResult> UpdateRange([FromBody] IEnumerable<VmTeam> teams)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            await _teamsService.UpdateRange(currentUser, teams);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Обновление команд по формам
+        /// </summary>
+        /// <param name="teamForms">Формы команд</param>
+        /// <returns></returns>
+        [HttpPut]
+        public async Task<IActionResult> UpdateByFormRange([FromBody] IEnumerable<VmTeamForm> teamForms)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            await _teamsService.UpdateByFormRange(currentUser, teamForms);
+            return NoContent();
+        }
+
 
         /// <summary>
         /// Удаление команды
