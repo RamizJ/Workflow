@@ -186,6 +186,7 @@ namespace Workflow.Services
             var query = _dataContext.Teams
                 .Include(t => t.Group)
                 .Include(t => t.TeamUsers)
+                .Include(t => t.TeamProjects)
                 .Where(t => t.Creator.Id == currentUser.Id
                             || t.TeamUsers.Any(tu => tu.UserId == currentUser.Id))
                 .AsQueryable();
@@ -371,6 +372,9 @@ namespace Workflow.Services
 
             foreach (var model in models)
             {
+                if (string.IsNullOrWhiteSpace(model.Name))
+                    throw new InvalidOperationException("Cannot update team. The name cannot be empty");
+
                 var team = teams.First(t => t.Id == model.Id);
                 model.Name = team.Name;
                 model.Description = team.Description;

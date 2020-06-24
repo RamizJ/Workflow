@@ -101,20 +101,18 @@ namespace Workflow.Services
         /// <inheritdoc />
         public async Task Update(ApplicationUser user, VmProject project)
         {
-            var model = await UpdateProject(user, project);
-            _dataContext.Entry(model).State = EntityState.Modified;
-            await _dataContext.SaveChangesAsync();
+            await UpdateProjects(user, new[] { project });
         }
 
         /// <inheritdoc />
         public async Task UpdateByForm(ApplicationUser user, VmProjectForm projectForm)
         {
-            var model = await UpdateProject(user, projectForm?.Project);
-            model.ProjectTeams = projectForm?.TeamIds?
-                .Select(tId => new ProjectTeam(model.Id, tId))
-                .ToList();
-            _dataContext.Entry(model).State = EntityState.Modified;
-            await _dataContext.SaveChangesAsync();
+            await UpdateProjects(user, new[] {projectForm?.Project}, project =>
+            {
+                project.ProjectTeams = projectForm?.TeamIds?
+                    .Select(tId => new ProjectTeam(project.Id, tId))
+                    .ToList();
+            });
         }
 
         /// <inheritdoc />
@@ -136,14 +134,13 @@ namespace Workflow.Services
                 .Where(p => p != null)
                 .ToArray();
 
-            await UpdateProjects(currentUser, projects,
-                (project, vmProject) =>
-                {
-                    var form = forms.First(pf => pf.Project.Id == project.Id);
-                    project.ProjectTeams = form?.TeamIds?
-                        .Select(tId => new ProjectTeam(project.Id, tId))
-                        .ToList();
-                });
+            await UpdateProjects(currentUser, projects, project =>
+            {
+                var form = forms.First(pf => pf.Project.Id == project.Id);
+                project.ProjectTeams = form?.TeamIds?
+                    .Select(tId => new ProjectTeam(project.Id, tId))
+                    .ToList();
+            });
         }
 
         /// <inheritdoc />
@@ -405,27 +402,8 @@ namespace Workflow.Services
             return model;
         }
 
-        private async Task<Project> UpdateProject(ApplicationUser user, VmProject project)
-        {
-            if (project == null)
-                throw new ArgumentNullException(nameof(project));
-
-            if (string.IsNullOrWhiteSpace(project.Name))
-                throw new InvalidOperationException("Cannot create project. The name cannot be empty");
-
-            var query = await GetQuery(user, true);
-            var model = await query.FirstOrDefaultAsync(p => p.Id == project.Id);
-            if (model == null)
-                throw new InvalidOperationException("Cannot update project. Project not found");
-
-            model.Name = project.Name;
-            model.Description = project.Description;
-            return model;
-        }
-
-        private async Task UpdateProjects(
-            ApplicationUser currentUser, ICollection<VmProject> projects,
-            Action<Project, VmProject> updateAction = null)
+        private async Task UpdateProjects(ApplicationUser currentUser, 
+            ICollection<VmProject> projects, Action<Project> updateAction = null)
         {
             var projectIds = projects
                 .Where(p => p != null)
@@ -440,13 +418,18 @@ namespace Workflow.Services
             foreach (var model in models)
             {
                 var project = projects.First(p => p.Id == model.Id);
+                if (string.IsNullOrWhiteSpace(project.Name))
+                    throw new InvalidOperationException("Cannot update project. The name cannot be empty");
+
                 model.Name = project.Name;
                 model.Description = project.Description;
 
-                updateAction?.Invoke(model, project);
+                updateAction?.Invoke(model);
 
                 _dataContext.Entry(model).State = EntityState.Modified;
             }
+
+            await _dataContext.SaveChangesAsync();
         }
 
 
