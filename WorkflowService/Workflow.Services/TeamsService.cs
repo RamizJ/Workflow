@@ -85,14 +85,14 @@ namespace Workflow.Services
         /// <inheritdoc />
         public async Task<VmTeam> Create(ApplicationUser currentUser, VmTeam team)
         {
-            var model = await CreateProject(currentUser, team);
+            var model = await CreateTeam(currentUser, team);
             return _vmConverter.ToViewModel(model);
         }
 
         /// <inheritdoc />
         public async Task<VmTeamForm> CreateByForm(ApplicationUser currentUser, VmTeamForm teamForm)
         {
-            var model = await CreateProject(currentUser, teamForm?.Team, team =>
+            var model = await CreateTeam(currentUser, teamForm?.Team, team =>
             {
                 team.TeamProjects = teamForm?.ProjectIds?
                     .Select(pId => new ProjectTeam(pId, team.Id))
@@ -157,28 +157,43 @@ namespace Workflow.Services
         /// <inheritdoc />
         public async Task<VmTeam> Delete(ApplicationUser currentUser, int teamId)
         {
-            return await ChangeRemoveState(teamId, true);
+            var teams = await RemoveRestore(currentUser, new[] { teamId }, true);
+            return teams.FirstOrDefault();
+        }
+
+        public async Task<IEnumerable<VmTeam>> DeleteRange(ApplicationUser currentUser, IEnumerable<int> ids)
+        {
+            return await RemoveRestore(currentUser, ids, true);
         }
 
         /// <inheritdoc />
         public async Task<VmTeam> Restore(ApplicationUser currentUser, int teamId)
         {
-            return await ChangeRemoveState(teamId, false);
+            var teams = await RemoveRestore(currentUser, new[] {teamId}, false);
+            return teams.FirstOrDefault();
         }
 
-        private async Task<VmTeam> ChangeRemoveState(int teamId, bool isRemoved)
+        public async Task<IEnumerable<VmTeam>> RestoreRange(ApplicationUser currentUser, IEnumerable<int> ids)
         {
-            var model = await _dataContext.Teams.FindAsync(teamId);
-            if (model == null)
-                throw new InvalidOperationException(isRemoved 
-                    ? "Cannot delete the team. The team not found"
-                    : "Cannot restore the team. The team not found");
+            return await RemoveRestore(currentUser, ids, false);
+        }
 
-            model.IsRemoved = isRemoved;
-            _dataContext.Entry(model).State = EntityState.Modified;
+        private async Task<IEnumerable<VmTeam>> RemoveRestore(ApplicationUser currentUser, 
+            IEnumerable<int> teamIds, bool isRemoved)
+        {
+            var query = GetQuery(currentUser, !isRemoved);
+            var models = await query
+                .Where(t => teamIds.Any(tId => t.Id == tId))
+                .ToArrayAsync();
+
+            foreach (var model in models)
+            {
+                model.IsRemoved = isRemoved;
+                _dataContext.Entry(model).State = EntityState.Modified;
+            }
 
             await _dataContext.SaveChangesAsync();
-            return _vmConverter.ToViewModel(model);
+            return models.Select(m => _vmConverter.ToViewModel(m));
         }
 
         private IQueryable<Team> GetQuery(ApplicationUser currentUser, bool withRemoved)
@@ -336,7 +351,8 @@ namespace Workflow.Services
             return orderedQuery ?? query;
         }
 
-        private async Task<Team> CreateProject(ApplicationUser currentUser, VmTeam team, Action<Team> createAction = null)
+        private async Task<Team> CreateTeam(ApplicationUser currentUser, VmTeam team, 
+            Action<Team> createAction = null)
         {
             if (team == null)
                 throw new ArgumentNullException(nameof(team));

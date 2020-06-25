@@ -130,7 +130,7 @@ namespace WorkflowService.Controllers
         /// </summary>
         /// <param name="team">Новая команда</param>
         /// <returns>Команда</returns>
-        [HttpPost("{projectId}")]
+        [HttpPost]
         public async Task<ActionResult<VmTeam>> Create([FromBody]VmTeam team)
         {
             var currentUser = await _userManager.GetUserAsync(User);
@@ -143,7 +143,7 @@ namespace WorkflowService.Controllers
         /// </summary>
         /// <param name="teamForm">Форма команды</param>
         /// <returns>Команда</returns>
-        [HttpPost("{projectId}")]
+        [HttpPost]
         public async Task<ActionResult<VmTeam>> CreateByForm([FromBody] VmTeamForm teamForm)
         {
             var currentUser = await _userManager.GetUserAsync(User);
@@ -215,6 +215,45 @@ namespace WorkflowService.Controllers
             var currentUser = await _userManager.GetUserAsync(User);
             var result = await _teamsService.Delete(currentUser, id);
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Восстановление команды
+        /// </summary>
+        /// <param name="id">Идентификатор команды</param>
+        /// <returns>Результат выполнения операции</returns>
+        [HttpPatch("{id}")]
+        public async Task<ActionResult<VmTeam>> Restore(int id)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var result = await _teamsService.Restore(currentUser, id);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Удаление команд
+        /// </summary>
+        /// <param name="ids">Идентификаторы команд</param>
+        /// <returns></returns>
+        [HttpPatch]
+        public async Task<IActionResult> DeleteRange([FromBody] IEnumerable<int> ids)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var teams = await _teamsService.DeleteRange(currentUser, ids);
+            return Ok(teams);
+        }
+
+        /// <summary>
+        /// Восстановление команд
+        /// </summary>
+        /// <param name="ids">Идентификаторы команд</param>
+        /// <returns></returns>
+        [HttpPatch]
+        public async Task<IActionResult> RestoreRange([FromBody] IEnumerable<int> ids)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var teams = await _teamsService.RestoreRange(currentUser, ids);
+            return Ok(teams);
         }
 
 

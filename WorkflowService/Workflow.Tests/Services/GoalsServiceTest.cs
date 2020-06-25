@@ -3,12 +3,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
 using Workflow.Services.Common;
+using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 
 namespace Workflow.Tests.Services
@@ -33,6 +35,7 @@ namespace Workflow.Tests.Services
             _userManager = _serviceProvider.GetService<UserManager<ApplicationUser>>();
             _service = new GoalsService(_dataContext, _userManager);
             _currentUser = _testData.Users.First();
+            _vmConverter = new VmGoalConverter();
         }
 
         [TearDown]
@@ -216,7 +219,7 @@ namespace Workflow.Tests.Services
         [TestCase(null)]
         [TestCase("")]
         [TestCase("  ")]
-        public void UpdateInvalidTitleTest(string title)
+        public async Task UpdateInvalidTitleTest(string title)
         {
             //Arrange
             int goalId = 1;
@@ -228,8 +231,11 @@ namespace Workflow.Tests.Services
                 IsRemoved = false
             };
 
+            //Act
+            await _service.Update(_currentUser, vmGoal);
+
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Update(_currentUser, vmGoal));
+            Assert.Pass();
         }
 
         [TestCase("goal123", "d1", 10, 1, GoalState.Perform, GoalPriority.Low)]
@@ -265,6 +271,86 @@ namespace Workflow.Tests.Services
             Assert.IsFalse(goal.IsRemoved);
         }
 
+        [Test]
+        public async Task UpdateRangeTest()
+        {
+            //Arrange
+            string updatedName = "UpdatedName";
+            string updatedDescription = "UpdatedDescription";
+            var vmGoals = _testData.Goals.Take(1).Select(t =>
+            {
+                t.Title = updatedName;
+                t.Description = updatedDescription;
+                return _vmConverter.ToViewModel(t);
+            }).ToArray();
+            var observerIds = _testData.Users.Skip(4).Take(6).Select(u => u.Id).ToList();
+            var childGoalIds = _testData.Goals.Skip(6).Take(4).Select(g => g.Id).ToList();
+
+            var vmGoalForms = vmGoals
+                .Select(vm => new VmGoalForm(vm, observerIds, childGoalIds));
+
+            //Act
+            await _service.UpdateByFormRange(_currentUser, vmGoalForms);
+            var goals = await _dataContext.Goals
+                .Include(g => g.ChildGoals)
+                .Include(g => g.Observers)
+                .Where(g => vmGoals.Select(vm => vm.Id).Any(vmId => vmId == g.Id))
+                .ToArrayAsync();
+
+            //Assert
+            foreach (var goal in goals)
+            {
+                Assert.AreEqual(updatedName, goal.Title);
+                Assert.AreEqual(updatedDescription, goal.Description);
+                Assert.AreEqual(observerIds.Count, goal.Observers.Count);
+                Assert.AreEqual(childGoalIds.Count, goal.ChildGoals.Count);
+            }
+        }
+
+        [Test]
+        public async Task DeleteTest()
+        {
+            //Arrange
+            var id = _testData.Goals.First().Id;
+
+            //Act
+            var goal = await _service.Delete(_currentUser, id);
+
+            //Assert
+            Assert.IsNotNull(goal);
+            Assert.AreEqual(1, goal.Id);
+            Assert.IsTrue(goal.IsRemoved);
+        }
+
+        [Test]
+        public async Task DeleteRangeTest()
+        {
+            //Arrange
+            var ids = new[] { 0, 1, 2 };
+
+            //Act
+            var goals = (await _service.DeleteRange(_currentUser, ids)).ToArray();
+
+            //Assert
+            Assert.IsNotNull(goals);
+            Assert.AreEqual(2, goals.Length);
+            Assert.AreEqual(1, goals[0].Id);
+            Assert.AreEqual(2, goals[1].Id);
+            Assert.IsTrue(goals[0].IsRemoved);
+            Assert.IsTrue(goals[1].IsRemoved);
+        }
+
+        [TestCase(0)]
+        [TestCase(-1)]
+        public async Task DeleteNotExistedTest(int id)
+        {
+            //Act
+            var goal = await _service.Delete(_currentUser, id);
+
+            //Assert
+            Assert.IsNull(goal);
+        }
+
         [TestCase(1)]
         [TestCase(10)]
         public async Task RestoreGoalTest(int goalId)
@@ -278,9 +364,31 @@ namespace Workflow.Tests.Services
 
         [TestCase(-1)]
         [TestCase(0)]
-        public void RestoreNotExistedGoalTest(int goalId)
+        public async Task RestoreNotExistedGoalTest(int goalId)
         {
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Restore(_currentUser, goalId));
+            //Arrange
+
+            //Act
+            var result = await _service.Restore(_currentUser, goalId);
+
+            //Assert
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public async Task RestoreRangeTest()
+        {
+            //Arrange
+            var ids = _testData.Goals.TakeLast(1).Select(g => g.Id).ToArray();
+
+            //Act
+            var goals = (await _service.RestoreRange(_currentUser, ids)).ToArray();
+
+            //Assert
+            Assert.IsNotNull(goals);
+            Assert.AreEqual(1, goals.Length);
+            Assert.AreEqual(ids[0], goals[0].Id);
+            Assert.IsFalse(goals[0].IsRemoved);
         }
 
 
@@ -291,5 +399,6 @@ namespace Workflow.Tests.Services
         private GoalsService _service;
         private ApplicationUser _currentUser;
         private UserManager<ApplicationUser> _userManager;
+        private VmGoalConverter _vmConverter;
     }
 }

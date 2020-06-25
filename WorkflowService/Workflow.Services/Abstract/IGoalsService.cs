@@ -55,10 +55,51 @@ namespace Workflow.Services.Abstract
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="currentUser"></param>
+        /// <param name="goalForm"></param>
+        /// <returns></returns>
+        Task<VmGoal> CreateByForm(ApplicationUser currentUser, VmGoalForm goalForm);
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="user"></param>
         /// <param name="goal"></param>
         /// <returns></returns>
         Task Update(ApplicationUser user, VmGoal goal);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="currentUser"></param>
+        /// <param name="goalForm"></param>
+        /// <returns></returns>
+        Task UpdateByForm(ApplicationUser currentUser, VmGoalForm goalForm);
+
+
+        /// <summary>
+        /// Восстановление ранее удаленной задачи
+        /// </summary>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="goalId">Идентификатор задачи</param>
+        /// <returns></returns>
+        Task<VmGoal> Restore(ApplicationUser currentUser, int goalId);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="currentUser"></param>
+        /// <param name="goals"></param>
+        /// <returns></returns>
+        Task UpdateRange(ApplicationUser currentUser, IEnumerable<VmGoal> goals);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="currentUser"></param>
+        /// <param name="goalForms"></param>
+        /// <returns></returns>
+        Task UpdateByFormRange(ApplicationUser currentUser, IEnumerable<VmGoalForm> goalForms);
 
         /// <summary>
         /// 
@@ -69,11 +110,19 @@ namespace Workflow.Services.Abstract
         Task<VmGoal> Delete(ApplicationUser currentUser, int goalId);
 
         /// <summary>
-        /// Восстановление ранее удаленной задачи
+        /// 
         /// </summary>
-        /// <param name="currentUser">Текущий пользователь</param>
-        /// <param name="goalId">Идентификатор задачи</param>
+        /// <param name="currentUser"></param>
+        /// <param name="ids"></param>
         /// <returns></returns>
-        Task<VmGoal> Restore(ApplicationUser currentUser, int goalId);
+        Task<IEnumerable<VmGoal>> DeleteRange(ApplicationUser currentUser, IEnumerable<int> ids);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="currentUser"></param>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        Task<IEnumerable<VmGoal>> RestoreRange(ApplicationUser currentUser, IEnumerable<int> ids);
     }
 }

@@ -72,6 +72,13 @@
             <param name="goal">Создаваемая задача</param>
             <returns>Созданная задача</returns>
         </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.CreateByForm(Workflow.VM.ViewModels.VmGoalForm)">
+            <summary>
+            Создание задачи по форме
+            </summary>
+            <param name="goalForm">Форма создаваемой задачи</param>
+            <returns>Созданная задача</returns>
+        </member>
         <member name="M:WorkflowService.Controllers.GoalsController.Update(Workflow.VM.ViewModels.VmGoal)">
             <summary>
             Обновление задачи
@@ -79,11 +86,60 @@
             <param name="goal">Обновляемая задача</param>
             <returns></returns>
         </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.UpdateRange(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmGoal})">
+            <summary>
+            Обновление задач
+            </summary>
+            <param name="goals">Обновляемые задачи</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.UpdateByForm(Workflow.VM.ViewModels.VmGoalForm)">
+            <summary>
+            Обновление задачи по форме
+            </summary>
+            <param name="goalForm">Форма обновляемой задачи</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.UpdateByFormRange(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmGoalForm})">
+            <summary>
+            Обновление задач по формам
+            </summary>
+            <param name="goalForms">Формы обновляемых задач</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.UpdateByFormRange(Workflow.VM.ViewModels.VmGoalForm)">
+            <summary>
+            Обновление задач по формам
+            </summary>
+            <param name="goalForm">Форма обновляемой задачи</param>
+            <returns></returns>
+        </member>
         <member name="M:WorkflowService.Controllers.GoalsController.Delete(System.Int32)">
             <summary>
             Удаление задачи
             </summary>
             <param name="id">Идентификатор удаляемой задачи</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.DeleteRange(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Удаление задач
+            </summary>
+            <param name="ids">Идентификаторы задач</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.Restore(System.Int32)">
+            <summary>
+            Восстановление задачи
+            </summary>
+            <param name="id">Идентификатор восстанавливаемой задачи</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.RestoreRange(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Восстановление задач
+            </summary>
+            <param name="ids">Идентификаторы задач</param>
             <returns></returns>
         </member>
         <member name="M:WorkflowService.Controllers.GoalsController.GetAttachments(System.Int32)">
@@ -367,6 +423,27 @@
             </summary>
             <param name="id">Идентификатор команды</param>
             <returns>Результат выполнения операции</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.Restore(System.Int32)">
+            <summary>
+            Восстановление команды
+            </summary>
+            <param name="id">Идентификатор команды</param>
+            <returns>Результат выполнения операции</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.DeleteRange(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Удаление команд
+            </summary>
+            <param name="ids">Идентификаторы команд</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.RestoreRange(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Восстановление команд
+            </summary>
+            <param name="ids">Идентификаторы команд</param>
+            <returns></returns>
         </member>
         <member name="M:WorkflowService.Controllers.TeamsController.AddUser(System.Int32,System.String)">
             <summary>

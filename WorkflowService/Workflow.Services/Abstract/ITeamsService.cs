@@ -107,11 +107,27 @@ namespace Workflow.Services.Abstract
         Task<VmTeam> Delete(ApplicationUser currentUser, int teamId);
 
         /// <summary>
+        /// Удаление команд
+        /// </summary>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="ids">Идентификаторы команд</param>
+        /// <returns></returns>
+        Task<IEnumerable<VmTeam>> DeleteRange(ApplicationUser currentUser, IEnumerable<int> ids);
+
+        /// <summary>
         /// Восстановление ранее удаленной команды
         /// </summary>
         /// <param name="currentUser">Текущий пользователь</param>
         /// <param name="teamId">Идентификатор команды</param>
         /// <returns></returns>
         Task<VmTeam> Restore(ApplicationUser currentUser, int teamId);
+
+        /// <summary>
+        /// Восстановление ранее удаленных команд
+        /// </summary>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="ids">Идентификаторы команд</param>
+        /// <returns></returns>
+        Task<IEnumerable<VmTeam>> RestoreRange(ApplicationUser currentUser, IEnumerable<int> ids);
     }
 }

@@ -405,17 +405,39 @@ namespace Workflow.Tests.Services
             Assert.AreEqual(teamId, result.Id);
         }
 
+        [Test]
+        public async Task DeleteRangeTest()
+        {
+            //Arrange
+            var teamIds = new[] {0, 1, 2};
+
+            //Act
+            var teams = (await _service.DeleteRange(_currentUser, teamIds)).ToArray();
+
+            //Assert
+            Assert.IsNotNull(teams);
+            Assert.AreEqual(2, teams.Length);
+            Assert.AreEqual(1, teams[0].Id);
+            Assert.AreEqual(2, teams[1].Id);
+            Assert.IsTrue(teams[0].IsRemoved);
+            Assert.IsTrue(teams[1].IsRemoved);
+        }
+
         [TestCase(0)]
         [TestCase(-1)]
-        public void DeleteNotExistedTest(int teamId)
+        public async Task DeleteNotExistedTest(int teamId)
         {
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Delete(_currentUser, teamId));
+            //Act
+            var team = await _service.Delete(_currentUser, teamId);
+
+            //Assert
+            Assert.IsNull(team);
         }
 
 
         [TestCase(1)]
         [TestCase(10)]
-        public async Task RestoreGoalTest(int teamId)
+        public async Task RestoreTest(int teamId)
         {
             //Act
             var result = await _service.Restore(_currentUser, teamId);
@@ -426,9 +448,13 @@ namespace Workflow.Tests.Services
 
         [TestCase(-1)]
         [TestCase(0)]
-        public void RestoreNotExistedGoalTest(int teamId)
+        public async Task RestoreNotExistedTest(int teamId)
         {
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Restore(_currentUser, teamId));
+            //Act
+            var result = await _service.Restore(_currentUser, teamId);
+
+            //Assert
+            Assert.IsNull(result);
         }
     }
 }

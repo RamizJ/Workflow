@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -94,6 +93,18 @@ namespace WorkflowService.Controllers
         }
 
         /// <summary>
+        /// Создание задачи по форме
+        /// </summary>
+        /// <param name="goalForm">Форма создаваемой задачи</param>
+        /// <returns>Созданная задача</returns>
+        [HttpPost]
+        public async Task<ActionResult<VmGoal>> CreateByForm([FromBody] VmGoalForm goalForm)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            return await _service.CreateByForm(currentUser, goalForm);
+        }
+
+        /// <summary>
         /// Обновление задачи
         /// </summary>
         /// <param name="goal">Обновляемая задача</param>
@@ -107,6 +118,58 @@ namespace WorkflowService.Controllers
         }
 
         /// <summary>
+        /// Обновление задач
+        /// </summary>
+        /// <param name="goals">Обновляемые задачи</param>
+        /// <returns></returns>
+        [HttpPut]
+        public async Task<IActionResult> UpdateRange([FromBody] IEnumerable<VmGoal> goals)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            await _service.UpdateRange(currentUser, goals);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Обновление задачи по форме
+        /// </summary>
+        /// <param name="goalForm">Форма обновляемой задачи</param>
+        /// <returns></returns>
+        [HttpPut]
+        public async Task<IActionResult> UpdateByForm([FromBody] VmGoalForm goalForm)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            await _service.UpdateByForm(currentUser, goalForm);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Обновление задач по формам
+        /// </summary>
+        /// <param name="goalForms">Формы обновляемых задач</param>
+        /// <returns></returns>
+        [HttpPut]
+        public async Task<IActionResult> UpdateByFormRange([FromBody] IEnumerable<VmGoalForm> goalForms)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            await _service.UpdateByFormRange(currentUser, goalForms);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Обновление задач по формам
+        /// </summary>
+        /// <param name="goalForm">Форма обновляемой задачи</param>
+        /// <returns></returns>
+        [HttpPut]
+        public async Task<IActionResult> UpdateByFormRange([FromBody] VmGoalForm goalForm)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            await _service.UpdateByForm(currentUser, goalForm);
+            return NoContent();
+        }
+
+        /// <summary>
         /// Удаление задачи
         /// </summary>
         /// <param name="id">Идентификатор удаляемой задачи</param>
@@ -115,11 +178,59 @@ namespace WorkflowService.Controllers
         public async Task<ActionResult<VmGoal>> Delete(int id)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var deletedScope = await _service.Delete(currentUser, id);
-            if (deletedScope == null)
+            var deletedGoal = await _service.Delete(currentUser, id);
+            if (deletedGoal == null)
                 return NotFound();
 
-            return Ok(deletedScope);
+            return Ok(deletedGoal);
+        }
+
+        /// <summary>
+        /// Удаление задач
+        /// </summary>
+        /// <param name="ids">Идентификаторы задач</param>
+        /// <returns></returns>
+        [HttpPatch]
+        public async Task<ActionResult<VmGoal>> DeleteRange([FromBody]IEnumerable<int> ids)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var deletedGoal = await _service.DeleteRange(currentUser, ids);
+            if (deletedGoal == null)
+                return NotFound();
+
+            return Ok(deletedGoal);
+        }
+
+        /// <summary>
+        /// Восстановление задачи
+        /// </summary>
+        /// <param name="id">Идентификатор восстанавливаемой задачи</param>
+        /// <returns></returns>
+        [HttpPatch("{id}")]
+        public async Task<ActionResult<VmGoal>> Restore(int id)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var deletedGoal = await _service.Restore(currentUser, id);
+            if (deletedGoal == null)
+                return NotFound();
+
+            return Ok(deletedGoal);
+        }
+
+        /// <summary>
+        /// Восстановление задач
+        /// </summary>
+        /// <param name="ids">Идентификаторы задач</param>
+        /// <returns></returns>
+        [HttpPatch]
+        public async Task<ActionResult<VmGoal>> RestoreRange([FromBody]IEnumerable<int> ids)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var deletedGoal = await _service.RestoreRange(currentUser, ids);
+            if (deletedGoal == null)
+                return NotFound();
+
+            return Ok(deletedGoal);
         }
 
 

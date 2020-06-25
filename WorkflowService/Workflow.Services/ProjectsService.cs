@@ -146,44 +146,31 @@ namespace Workflow.Services
         /// <inheritdoc />
         public async Task<VmProject> Delete(ApplicationUser user, int projectId)
         {
-            return await RemoveRestore(user, projectId, true);
+            var removedProjects = await RemoveRestore(user, new[] {projectId}, true);
+            return removedProjects.FirstOrDefault();
         }
 
         /// <inheritdoc />
-        public async Task DeleteRange(ApplicationUser currentUser, IEnumerable<int> ids)
+        public async Task<IEnumerable<VmProject>> DeleteRange(ApplicationUser currentUser, IEnumerable<int> ids)
         {
-            await RemoveRestore(currentUser, ids, true);
+            return await RemoveRestore(currentUser, ids, true);
         }
 
         /// <inheritdoc />
         public async Task<VmProject> Restore(ApplicationUser currentUser, int projectId)
         {
-            return await RemoveRestore(currentUser, projectId, false);
+            var projects = await RemoveRestore(currentUser, new[] { projectId }, false);
+            return projects.FirstOrDefault();
         }
 
         /// <inheritdoc />
-        public async Task RestoreRange(ApplicationUser currentUser, IEnumerable<int> ids)
+        public async Task<IEnumerable<VmProject>> RestoreRange(ApplicationUser currentUser, IEnumerable<int> ids)
         {
-            await RemoveRestore(currentUser, ids, false);
+            return await RemoveRestore(currentUser, ids, false);
         }
 
-        private async Task<VmProject> RemoveRestore(ApplicationUser user, int projectId, 
-            bool isRemoved)
-        {
-            var query = await GetQuery(user, true);
-            var model = await query.FirstOrDefaultAsync(s => s.Id == projectId);
-            if (model == null)
-                throw new InvalidOperationException($"Project with id='{projectId}' not found for current user");
-
-            model.IsRemoved = isRemoved;
-            _dataContext.Entry(model).State = EntityState.Modified;
-
-            await _dataContext.SaveChangesAsync();
-
-            return _vmConverter.ToViewModel(model);
-        }
-
-        private async Task RemoveRestore(ApplicationUser user, IEnumerable<int> projectIds, bool isRemoved)
+        private async Task<IEnumerable<VmProject>> RemoveRestore(ApplicationUser user, 
+            IEnumerable<int> projectIds, bool isRemoved)
         {
             var query = await GetQuery(user, !isRemoved);
             var models = await query
@@ -197,6 +184,7 @@ namespace Workflow.Services
             }
 
             await _dataContext.SaveChangesAsync();
+            return models.Select(m => _vmConverter.ToViewModel(m));
         }
 
         private async Task<IQueryable<Project>> GetQuery(ApplicationUser currentUser, bool withRemoved)

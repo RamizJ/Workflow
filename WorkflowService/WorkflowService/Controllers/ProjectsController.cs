@@ -199,8 +199,8 @@ namespace WorkflowService.Controllers
         public async Task<IActionResult> DeleteRange([FromBody]IEnumerable<int> ids)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            await _projectsService.DeleteRange(currentUser, ids);
-            return NoContent();
+            var projects = await _projectsService.DeleteRange(currentUser, ids);
+            return Ok(projects);
         }
 
         /// <summary>
@@ -225,8 +225,8 @@ namespace WorkflowService.Controllers
         public async Task<IActionResult> RestoreRange([FromBody] IEnumerable<int> ids)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            await _projectsService.RestoreRange(currentUser, ids);
-            return NoContent();
+            var projects = await _projectsService.RestoreRange(currentUser, ids);
+            return Ok(projects);
         }
 
 

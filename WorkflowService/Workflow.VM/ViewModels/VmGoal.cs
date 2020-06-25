@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Workflow.DAL.Models;
-using Workflow.VM.Common;
 
 namespace Workflow.VM.ViewModels
 {
@@ -17,11 +16,11 @@ namespace Workflow.VM.ViewModels
         public string ProjectName { get; set; }
 
         public int? ParentGoalId { get; set; }
-        public List<int> ChildGoals { get; set; }
+        //public List<int> ChildGoals { get; set; }
 
         public DateTime CreationDate { get; set; }
-        private DateTime ExpectedCompletedDate { get; set; }
-        private TimeSpan EstimatedPerformingTime { get; set; }
+        public DateTime ExpectedCompletedDate { get; set; }
+        public TimeSpan EstimatedPerformingTime { get; set; }
 
         public GoalState State { get; set; }
         public GoalPriority Priority { get; set; }
@@ -30,12 +29,24 @@ namespace Workflow.VM.ViewModels
         public string OwnerFio { get; set; }
         public string PerformerId { get; set; }
         public string PerformerFio { get; set; }
-        public List<string> Observers { get; set; }
 
-        public int? AttachmentId { get; set; }
         public bool IsRemoved { get; set; }
     }
 
-    public class VmGoalResult : OperationResult<VmGoal>
-    { }
+    public class VmGoalForm
+    {
+        public VmGoal Goal { get; set; }
+        public List<string> ObserverIds { get; set; }
+        public List<int> ChildGoalIds { get; set; }
+
+        public VmGoalForm()
+        { }
+
+        public VmGoalForm(VmGoal goal, List<string> observerIds, List<int> childGoalIds)
+        {
+            Goal = goal;
+            ObserverIds = observerIds;
+            ChildGoalIds = childGoalIds;
+        }
+    }
 }
