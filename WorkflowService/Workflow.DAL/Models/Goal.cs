@@ -19,8 +19,8 @@ namespace Workflow.DAL.Models
         public List<Goal> ChildGoals { get; set; } = new List<Goal>();
 
         public DateTime CreationDate { get; set; }
-        private DateTime ExpectedCompletedDate { get; set; }
-        private TimeSpan EstimatedPerformingTime { get; set; }
+        public DateTime ExpectedCompletedDate { get; set; }
+        public TimeSpan EstimatedPerformingTime { get; set; }
 
         public GoalState State { get; set; }
         public GoalPriority Priority { get; set; }

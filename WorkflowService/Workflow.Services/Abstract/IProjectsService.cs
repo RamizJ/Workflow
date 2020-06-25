@@ -104,7 +104,7 @@ namespace Workflow.Services.Abstract
         /// <param name="currentUser">Текущий пользователь</param>
         /// <param name="ids">Идентификаторы проектов</param>
         /// <returns></returns>
-        Task DeleteRange(ApplicationUser currentUser, IEnumerable<int> ids);
+        Task<IEnumerable<VmProject>> DeleteRange(ApplicationUser currentUser, IEnumerable<int> ids);
 
         /// <summary>
         /// Восстановление ранее удаленного проекта
@@ -113,13 +113,13 @@ namespace Workflow.Services.Abstract
         /// <param name="projectId">Идентификатор проекта</param>
         /// <returns></returns>
         Task<VmProject> Restore(ApplicationUser currentUser, int projectId);
-        
+
         /// <summary>
         /// Восстановление проектов
         /// </summary>
         /// <param name="currentUser">Текущий пользователь</param>
         /// <param name="ids">Идентификаторы проектов</param>
         /// <returns></returns>
-        Task RestoreRange(ApplicationUser currentUser, IEnumerable<int> ids);
+        Task<IEnumerable<VmProject>> RestoreRange(ApplicationUser currentUser, IEnumerable<int> ids);
     }
 }
