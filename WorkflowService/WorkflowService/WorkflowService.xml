@@ -167,25 +167,46 @@
             <param name="ids">Идентификаторы проектов</param>
             <returns>Коллекция проектов</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.ProjectsController.Create(Workflow.VM.ViewModels.VmProjectForm)">
+        <member name="M:WorkflowService.Controllers.ProjectsController.Create(Workflow.VM.ViewModels.VmProject)">
             <summary>
             Создание проекта
+            </summary>
+            <param name="project">Проект</param>
+            <returns>Результат выполнения операции</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.CreateByForm(Workflow.VM.ViewModels.VmProjectForm)">
+            <summary>
+            Создание проекта по форме
             </summary>
             <param name="projectForm">Форма создаваемого проекта</param>
             <returns>Результат выполнения операции</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.ProjectsController.Update(Workflow.VM.ViewModels.VmProjectForm)">
+        <member name="M:WorkflowService.Controllers.ProjectsController.Update(Workflow.VM.ViewModels.VmProject)">
             <summary>
             Обновление проекта
             </summary>
-            <param name="projectForm">Обновляемый проект</param>
+            <param name="project">Обновляемый проект</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.UpdateByForm(Workflow.VM.ViewModels.VmProjectForm)">
+            <summary>
+            Обновление проекта по форме
+            </summary>
+            <param name="projectForm">Форма обновляемого проекта</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.UpdateRange(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmProject})">
+            <summary>
+            Обновление проектов
+            </summary>
+            <param name="projects">Обновляемый проект</param>
             <returns></returns>
         </member>
         <member name="M:WorkflowService.Controllers.ProjectsController.UpdateRange(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmProjectForm})">
             <summary>
-            Обновление проектов
+            Обновление проектов по формам
             </summary>
-            <param name="projectForms">Обновляемый проект</param>
+            <param name="projectForms">Формы обновляемых проектов</param>
             <returns></returns>
         </member>
         <member name="M:WorkflowService.Controllers.ProjectsController.Delete(System.Int32)">
@@ -298,12 +319,18 @@
             <param name="ids">Идентификаторы команд</param>
             <returns>Коллецция команд</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.Create(System.Int32,Workflow.VM.ViewModels.VmTeam)">
+        <member name="M:WorkflowService.Controllers.TeamsController.Create(Workflow.VM.ViewModels.VmTeam)">
             <summary>
             Создать команду
             </summary>
-            <param name="projectId">Идентификатор проекта</param>
             <param name="team">Новая команда</param>
+            <returns>Команда</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.CreateByForm(Workflow.VM.ViewModels.VmTeamForm)">
+            <summary>
+            Создать команду по форме
+            </summary>
+            <param name="teamForm">Форма команды</param>
             <returns>Команда</returns>
         </member>
         <member name="M:WorkflowService.Controllers.TeamsController.Update(Workflow.VM.ViewModels.VmTeam)">
@@ -312,6 +339,27 @@
             </summary>
             <param name="team">Команда</param>
             <returns>Результат выполнения операции</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.UpdateByForm(Workflow.VM.ViewModels.VmTeamForm)">
+            <summary>
+            Обновление команды по форме
+            </summary>
+            <param name="teamForm">Форма команды</param>
+            <returns>Результат выполнения операции</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.UpdateRange(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmTeam})">
+            <summary>
+            Обновление команд
+            </summary>
+            <param name="teams">Обновляемые команды</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.UpdateByFormRange(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmTeamForm})">
+            <summary>
+            Обновление команд по формам
+            </summary>
+            <param name="teamForms">Формы команд</param>
+            <returns></returns>
         </member>
         <member name="M:WorkflowService.Controllers.TeamsController.Delete(System.Int32)">
             <summary>

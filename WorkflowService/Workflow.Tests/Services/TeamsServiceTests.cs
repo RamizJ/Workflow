@@ -5,6 +5,7 @@ using NUnit.Framework;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
@@ -164,7 +165,14 @@ namespace Workflow.Tests.Services
         public void CreateForNullInputTest()
         {
             Assert.ThrowsAsync<ArgumentNullException>(async () => 
-                await _service.Create(_currentUser, 1, null));
+                await _service.Create(_currentUser, null));
+        }
+
+        [Test]
+        public void CreateByFormForNullInputTest()
+        {
+            Assert.ThrowsAsync<ArgumentNullException>(async () =>
+                await _service.CreateByForm(_currentUser, null));
         }
 
         [TestCase(null)]
@@ -185,7 +193,31 @@ namespace Workflow.Tests.Services
 
             //Assert
             Assert.ThrowsAsync<InvalidOperationException>(async () => 
-                await _service.Create(_currentUser, 1, vmTeam));
+                await _service.Create(_currentUser, vmTeam));
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase("  ")]
+        public void CreateByFormForNullInvalidNameTest(string name)
+        {
+            //Arrange
+            var vmTeam = new VmTeam
+            {
+                Id = 0,
+                Name = name,
+                GroupId = null,
+                IsRemoved = false
+            };
+
+            //Act
+
+            //Assert
+            Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await _service.CreateByForm(_currentUser, new VmTeamForm
+                {
+                    Team = vmTeam
+                }));
         }
 
         [TestCase(0)]
@@ -203,7 +235,7 @@ namespace Workflow.Tests.Services
             };
 
             //Act
-            var result = await _service.Create(_currentUser, 1, vmTeam);
+            var result = await _service.Create(_currentUser, vmTeam);
 
             //Assert
             Assert.IsNotNull(result);
@@ -211,32 +243,99 @@ namespace Workflow.Tests.Services
             Assert.AreEqual(vmTeam.Name, result.Name);
         }
 
+        [TestCase(0)]
+        [TestCase(1)]
+        [TestCase(-1)]
+        public async Task CreateByFormTest(int id)
+        {
+            //Arrange
+            var vmTeam = new VmTeam
+            {
+                Id = id,
+                Name = "Team",
+                GroupId = null,
+                IsRemoved = false
+            };
+            var userIds = _testData.Users.Take(2).Select(u => u.Id).ToList();
+            var projectIds = _testData.Projects.Take(3).Select(p => p.Id).ToList();
+
+            //Act
+            var vmForm = new VmTeamForm(vmTeam, userIds, projectIds);
+            var resultForm = await _service.CreateByForm(_currentUser, vmForm);
+
+
+            //Assert
+            Assert.IsNotNull(resultForm);
+            Assert.Greater(resultForm.Team.Id, 0);
+            Assert.AreEqual(vmTeam.Name, resultForm.Team.Name);
+            Assert.AreEqual(userIds.Count, resultForm.UserIds.Count);
+            Assert.AreEqual(projectIds.Count, resultForm.ProjectIds.Count);
+        }
+
         [TestCase(null)]
         [TestCase("")]
         [TestCase("  ")]
-        public void UpdateForNullInvalidNameTest(string name)
+        public async Task UpdateForNullInvalidNameTest(string name)
         {
             //Arrange
             var team = _testData.Teams.First();
             team.Name = name;
             var vmTeam = _vmConverter.ToViewModel(team);
 
-            Assert.ThrowsAsync<InvalidOperationException>(async () =>
-                await _service.Create(_currentUser, 1, vmTeam));
+            //Act
+            await _service.Update(_currentUser, vmTeam);
+
+            Assert.Pass();
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase("  ")]
+        public async Task UpdateByFormForNullInvalidNameTest(string name)
+        {
+            //Arrange
+            var team = _testData.Teams.First();
+            team.Name = name;
+            var vmTeam = _vmConverter.ToViewModel(team);
+
+            //Act
+            await _service.UpdateByForm(_currentUser, new VmTeamForm(vmTeam));
+
+            Assert.Pass();
         }
 
         [TestCase(-1)]
         [TestCase(0)]
         [TestCase(int.MaxValue)]
-        public void UpdateForNotExistedTest(int id)
+        public async Task UpdateForNotExistedTest(int id)
         {
             //Arrange
             var team = _testData.Teams.First();
             team.Id = id;
             var vmTeam = _vmConverter.ToViewModel(team);
 
+            //Act
+            await _service.Update(_currentUser, vmTeam);
+
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Update(_testData.Users.First(), vmTeam));
+            Assert.Pass();
+        }
+
+        [TestCase(-1)]
+        [TestCase(0)]
+        [TestCase(int.MaxValue)]
+        public async Task UpdateByFormForNotExistedTest(int id)
+        {
+            //Arrange
+            var team = _testData.Teams.First();
+            team.Id = id;
+            var vmTeam = _vmConverter.ToViewModel(team);
+
+            //Act
+            await _service.UpdateByForm(_testData.Users.First(), new VmTeamForm(vmTeam));
+
+            //Assert
+            Assert.Pass();
         }
 
         [TestCase("TeamNew1", "DescriptionNew1")]
@@ -257,6 +356,40 @@ namespace Workflow.Tests.Services
             Assert.AreEqual(description, expectedTeam.Description);
         }
 
+        [Test]
+        public async Task UpdateRangeTest()
+        {
+            //Arrange
+            string updatedName = "UpdatedName";
+            string updatedDescription = "UpdatedDescription";
+            var vmTeams = _testData.Teams.Select(t =>
+            {
+                t.Name = updatedName;
+                t.Description = updatedDescription;
+                return _vmConverter.ToViewModel(t);
+            }).ToArray();
+            var userIds = _testData.Users.Skip(4).Take(6).Select(u => u.Id).ToList();
+            var projectIds = _testData.Projects.Skip(6).Take(4).Select(p => p.Id).ToList();
+
+            var vmTeamForms = vmTeams
+                .Select(vm => new VmTeamForm(vm, userIds, projectIds));
+
+            //Act
+            await _service.UpdateByFormRange(_currentUser, vmTeamForms);
+            var teams = await _dataContext.Teams
+                .Include(t => t.TeamUsers)
+                .Include(t => t.TeamProjects)
+                .ToArrayAsync();
+
+            //Assert
+            foreach (var team in teams)
+            {
+                Assert.AreEqual(updatedName, team.Name);
+                Assert.AreEqual(updatedDescription, team.Description);
+                Assert.AreEqual(userIds.Count, team.TeamUsers.Count);
+                Assert.AreEqual(projectIds.Count, team.TeamProjects.Count);
+            }
+        }
 
         [TestCase(1)]
         [TestCase(2)]

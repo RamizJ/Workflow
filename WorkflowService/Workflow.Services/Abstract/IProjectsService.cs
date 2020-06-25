@@ -12,66 +12,89 @@ namespace Workflow.Services.Abstract
     public interface IProjectsService
     {
         /// <summary>
-        /// 
+        /// Получение проекта по идентификатору
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="id"></param>
+        /// <param name="user">Текущий пользователь</param>
+        /// <param name="id">Идентификатор проекта</param>
         /// <returns></returns>
         Task<VmProject> Get(ApplicationUser user, int id);
 
 
         /// <summary>
-        /// 
+        /// Постраничная загрузка проектов с фильтрацией и сортировкой
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="pageNumber"></param>
-        /// <param name="pageSize"></param>
-        /// <param name="filter"></param>
-        /// <param name="filterFields"></param>
-        /// <param name="sortFields"></param>
-        /// <param name="withRemoved"></param>
+        /// <param name="user">Текущий пользователь</param>
+        /// <param name="pageNumber">Номер страницы</param>
+        /// <param name="pageSize">Размер страницы</param>
+        /// <param name="filter">Фильтрация по всем полям</param>
+        /// <param name="filterFields">Фильтрация по указанным полям</param>
+        /// <param name="sortFields">Сортировка по указанным полям</param>
+        /// <param name="withRemoved">Загрузить вместе с удаленными записями</param>
         /// <returns></returns>
         Task<IEnumerable<VmProject>> GetPage(ApplicationUser user, int pageNumber, int pageSize,
             string filter, FieldFilter[] filterFields, FieldSort[] sortFields, bool withRemoved = false);
 
         /// <summary>
-        /// 
+        /// Загрузка проектов по идентфикаторам
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="ids"></param>
+        /// <param name="user">Текущий пользователь</param>
+        /// <param name="ids">Идентификаторы проектов</param>
         /// <returns></returns>
         Task<IEnumerable<VmProject>> GetRange(ApplicationUser user, int[] ids);
 
         /// <summary>
-        /// 
+        /// Создание проекта
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="project"></param>
+        /// <param name="user">Текущий пользователь</param>
+        /// <param name="project">Проект</param>
         /// <returns></returns>
-        Task<VmProject> Create(ApplicationUser user, VmProjectForm project);
+        Task<VmProject> Create(ApplicationUser user, VmProject project);
 
         /// <summary>
-        /// 
+        /// Создание проекта по форме
+        /// </summary>
+        /// <param name="user">Текущий пользователь</param>
+        /// <param name="project">Форма проекта</param>
+        /// <returns></returns>
+        Task<VmProject> CreateByForm(ApplicationUser user, VmProjectForm project);
+
+        /// <summary>
+        /// Обновление проекта
         /// </summary>
         /// <param name="user"></param>
         /// <param name="project"></param>
         /// <returns></returns>
-        Task Update(ApplicationUser user, VmProjectForm project);
+        Task Update(ApplicationUser user, VmProject project);
+
+        /// <summary>
+        /// Обновление проекта по форме
+        /// </summary>
+        /// <param name="user">Текущий пользователь</param>
+        /// <param name="projectForm">Форма проекта</param>
+        /// <returns></returns>
+        Task UpdateByForm(ApplicationUser user, VmProjectForm projectForm);
 
         /// <summary>
         /// Обновление проектов
         /// </summary>
         /// <param name="currentUser">Текущий пользователь</param>
-        /// <param name="projectForms">Формы проектов</param>
+        /// <param name="projects">Формы проектов</param>
         /// <returns></returns>
-        Task UpdateRange(ApplicationUser currentUser, IEnumerable<VmProjectForm> projectForms);
-
+        Task UpdateRange(ApplicationUser currentUser, IEnumerable<VmProject> projects);
 
         /// <summary>
-        /// 
+        /// Обновление проектов по формам
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="projectId"></param>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="projectForms">Формы проектов</param>
+        /// <returns></returns>
+        Task UpdateByFormRange(ApplicationUser currentUser, IEnumerable<VmProjectForm> projectForms);
+
+        /// <summary>
+        /// Удаление проектов
+        /// </summary>
+        /// <param name="user">Текущий пользователь</param>
+        /// <param name="projectId">Идентификатор проекта</param>
         /// <returns></returns>
         Task<VmProject> Delete(ApplicationUser user, int projectId);
 

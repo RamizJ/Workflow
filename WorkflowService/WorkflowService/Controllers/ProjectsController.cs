@@ -102,39 +102,78 @@ namespace WorkflowService.Controllers
         /// <summary>
         /// Создание проекта
         /// </summary>
+        /// <param name="project">Проект</param>
+        /// <returns>Результат выполнения операции</returns>
+        [HttpPost]
+        public async Task<ActionResult<VmProject>> Create([FromBody] VmProject project)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var result = await _projectsService.Create(currentUser, project);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Создание проекта по форме
+        /// </summary>
         /// <param name="projectForm">Форма создаваемого проекта</param>
         /// <returns>Результат выполнения операции</returns>
         [HttpPost]
-        public async Task<ActionResult<VmProject>> Create([FromBody] VmProjectForm projectForm)
+        public async Task<ActionResult<VmProject>> CreateByForm([FromBody] VmProjectForm projectForm)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var result = await _projectsService.Create(currentUser, projectForm);
+            var result = await _projectsService.CreateByForm(currentUser, projectForm);
             return Ok(result);
         }
 
         /// <summary>
         /// Обновление проекта
         /// </summary>
-        /// <param name="projectForm">Обновляемый проект</param>
+        /// <param name="project">Обновляемый проект</param>
         /// <returns></returns>
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody]VmProjectForm projectForm)
+        public async Task<IActionResult> Update([FromBody]VmProject project)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            await _projectsService.Update(currentUser, projectForm);
+            await _projectsService.Update(currentUser, project);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Обновление проекта по форме
+        /// </summary>
+        /// <param name="projectForm">Форма обновляемого проекта</param>
+        /// <returns></returns>
+        [HttpPut]
+        public async Task<IActionResult> UpdateByForm([FromBody] VmProjectForm projectForm)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            await _projectsService.UpdateByForm(currentUser, projectForm);
             return NoContent();
         }
 
         /// <summary>
         /// Обновление проектов
         /// </summary>
-        /// <param name="projectForms">Обновляемый проект</param>
+        /// <param name="projects">Обновляемый проект</param>
+        /// <returns></returns>
+        [HttpPut]
+        public async Task<IActionResult> UpdateRange([FromBody] IEnumerable<VmProject> projects)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            await _projectsService.UpdateRange(currentUser, projects);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Обновление проектов по формам
+        /// </summary>
+        /// <param name="projectForms">Формы обновляемых проектов</param>
         /// <returns></returns>
         [HttpPut]
         public async Task<IActionResult> UpdateRange([FromBody] IEnumerable<VmProjectForm> projectForms)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            await _projectsService.UpdateRange(currentUser, projectForms);
+            await _projectsService.UpdateByFormRange(currentUser, projectForms);
             return NoContent();
         }
 
