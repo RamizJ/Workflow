@@ -38,7 +38,7 @@ input {
   cursor: default;
   display: flex;
   align-items: baseline;
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 800;
   .action {
     margin-left: 12px;
@@ -66,14 +66,16 @@ input {
 </style>
 
 <style lang="scss">
-.base-header .el-button.actions {
+.base-header .actions {
   background-color: transparent;
-  font-size: 24px;
-  padding: 0 !important;
-  color: gray;
+  height: 21px;
+  vertical-align: bottom;
+  cursor: pointer;
+  color: var(--text);
+  opacity: 0.7;
+  transition: opacity 0.25s;
   &:hover {
-    color: gray;
-    background-color: transparent;
+    opacity: 1;
   }
 }
 </style>

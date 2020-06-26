@@ -1,4 +1,4 @@
-import projectsAPI from '~/api/projects';
+import projectsAPI from '~/api/projects.api';
 
 export default {
   namespaced: true,

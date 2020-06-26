@@ -7,7 +7,7 @@
 }
 
 [theme="light"] {
-  --color-primary: #0088cc;
+  --color-primary: #1da1f1;
   --color-primary-dark: #006caa;
 
   --background-1: #f9f9f9;
@@ -51,12 +51,12 @@
   --button-border: transparent;
   --button-hover-border: transparent;
   --button-hover-color: #ffffff;
-  --button-hover-background: rgba(0, 156, 238, 0.85);
+  --button-hover-background: var(--color-primary);
 
   --card-background: var(--background);
   --card-border: var(--background-4);
 
-  --popover-background: var(--background-3);
+  --popover-background: rgba(255, 255, 255, 0.65);
   --popover-border: #f1f1f1;
   --popover-hover: #f1f1f1;
   --popover-shadow: 0 0 20px rgba(0,0,0,.05);
@@ -114,7 +114,7 @@
   --button-border: transparent;
   --button-hover-border: transparent;
   --button-hover-color: var(--text);
-  --button-hover-background: rgba(0, 156, 238, 0.7);
+  --button-hover-background: var(--color-primary);
 
   --input-border-hover: var(--background-3);
   --input-border-focus: var(--background-5);
@@ -129,7 +129,7 @@
   --card-background: var(--background-1);
   --card-border: var(--background-3);
 
-  --popover-background: var(--background-3);
+  --popover-background: rgba(48, 48, 48, 0.65);
   --popover-border: var(--background-3);
   --popover-hover: var(--background-5);
   --popover-shadow: 0 0 20px rgba(0,0,0,.05);

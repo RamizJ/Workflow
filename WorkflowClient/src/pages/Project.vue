@@ -3,12 +3,13 @@
     base-header
       template(slot="title")
         input.title(
+          placeholder="Заголовок"
           v-model="projectItem.name"
           v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
           @change="update")
       template(slot="action")
-        el-dropdown(placement="bottom" :show-timeout="0" @command="quickAction")
-          el-button.actions(type="text" icon="el-icon-more" circle)
+        el-dropdown(v-if="projectItem.id" placement="bottom" :show-timeout="0" @command="quickAction")
+          feather.actions(type="chevron-down")
           el-dropdown-menu(slot="dropdown")
             el-dropdown-item(command="addTask") Добавить задачу
             el-dropdown-item(command="addTeam") Добавить команду
@@ -33,6 +34,7 @@
             @blur="handleInputConfirm")
           el-button.tag-add(v-else size="small" @click="showInput") Добавить тег
         input.subtitle(
+          placeholder="Заметки"
           v-model="projectItem.description"
           v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
           @change="update")
@@ -57,10 +59,13 @@
       vue-context(ref="contextMenu")
         template(slot-scope="child")
           li(@click.prevent="onItemEdit($event, child.data.row)") Редактировать
-          li Завершить
-          li(@click.prevent="onItemDelete($event, child.data.row)") Удалить
+          li(v-if="!isMultipleSelected" @click.prevent="onItemComplete($event, child.data.row)") Завершить
+          li(v-if="!isMultipleSelected" @click.prevent="onItemDelete($event, child.data.row)") Удалить
+          li(v-if="isMultipleSelected" @click.prevent="onItemMultipleComplete($event, child.data.row)") Завершить выделенное
+          li(v-if="isMultipleSelected" @click.prevent="onItemMultipleDelete($event, child.data.row)") Удалить выделенное
 
     task-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false" @submit="refresh")
+    team-dialog(v-if="teamDialogOpened" @close="teamDialogOpened = false" @submit="refresh")
 
 </template>
 
@@ -69,11 +74,12 @@ import { mapActions, mapGetters } from 'vuex';
 import BaseHeader from '~/components/BaseHeader';
 import BaseList from '~/components/BaseList';
 import TaskDialog from '~/components/TaskDialog';
+import TeamDialog from '~/components/TeamDialog';
 import tableMixin from '~/mixins/table.mixin';
 
 export default {
   name: 'Project',
-  components: { BaseHeader, BaseList, TaskDialog },
+  components: { BaseHeader, BaseList, TaskDialog, TeamDialog },
   mixins: [tableMixin],
   data() {
     return {
@@ -92,9 +98,9 @@ export default {
         groupName: null,
         creationDate: new Date()
       },
-      tags: ['Работа', 'Важное', 'Разработка'],
       inputVisible: false,
-      inputValue: ''
+      inputValue: '',
+      teamDialogOpened: false
     };
   },
   computed: {
@@ -112,7 +118,10 @@ export default {
       fetchProject: 'projects/fetchProject',
       updateProject: 'projects/updateProject',
       fetchItems: 'tasks/fetchTasks',
-      deleteItem: 'tasks/deleteTask'
+      deleteItem: 'tasks/deleteTask',
+      deleteItems: 'tasks/deleteTasks',
+      completeItem: 'tasks/completeTask',
+      completeItems: 'tasks/completeTasks'
     }),
     async update(e) {
       await this.updateProject(this.projectItem);
@@ -122,6 +131,9 @@ export default {
         case 'addTask':
           this.selectedItemId = null;
           this.dialogOpened = true;
+          break;
+        case 'addTeam':
+          this.teamDialogOpened = true;
           break;
         default:
           break;
