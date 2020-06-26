@@ -1,10 +1,12 @@
-import teamsAPI from '~/api/teams';
+import teamsAPI from '~/api/teams.api';
 
 export default {
   namespaced: true,
   state: () => ({
     teams: [],
-    team: {}
+    team: {},
+    teamUsers: [],
+    teamProjects: []
   }),
   mutations: {
     setTeams(state, teams) {
@@ -12,6 +14,12 @@ export default {
     },
     setTeam(state, team) {
       state.team = team;
+    },
+    setTeamUsers(state, teamUsers) {
+      state.teamUsers = teamUsers;
+    },
+    setTeamProjects(state, teamProjects) {
+      state.teamProjects = teamProjects;
     }
   },
   actions: {
@@ -24,6 +32,16 @@ export default {
       const response = await teamsAPI.get(id);
       const team = response.data;
       commit('setTeam', team);
+    },
+    async fetchTeamUsers({ commit }, params) {
+      const response = await teamsAPI.getUsersPage(params);
+      const teamUsers = response.data;
+      commit('setTeamUsers', teamUsers);
+    },
+    async fetchTeamProjects({ commit }, params) {
+      const response = await teamsAPI.getProjectsPage(params);
+      const teamProjects = response.data;
+      commit('setTeamProjects', teamProjects);
     },
     async createTeam({ commit }, payload) {
       const response = await teamsAPI.create(payload, payload.projectId);
@@ -43,6 +61,8 @@ export default {
   },
   getters: {
     getTeams: state => state.teams,
-    getTeam: state => state.team
+    getTeam: state => state.team,
+    getTeamUsers: state => state.teamUsers,
+    getTeamProjects: state => state.teamProjects
   }
 };

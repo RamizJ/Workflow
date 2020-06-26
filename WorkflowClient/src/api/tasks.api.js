@@ -13,7 +13,9 @@ export default {
     ),
   create: task => httpClient.post(`/api/Goals/Create`, task),
   update: task => httpClient.put(`/api/Goals/Update`, task),
+  updateRange: tasks => httpClient.put(`/api/Goals/UpdateRange`, tasks),
   delete: taskId => httpClient.delete(`/api/Goals/Delete/${taskId}`),
+  deleteRange: taskIds => httpClient.patch(`/api/Goals/DeleteRange`, taskIds),
   getAttachments: taskId =>
     httpClient.get(`/api/Goals/GetAttachments/${taskId}`),
   addAttachments: (taskId, files) =>

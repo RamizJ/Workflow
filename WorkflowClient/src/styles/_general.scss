@@ -7,7 +7,7 @@ input {
 body {
   color: var(--text);
   background-color: var(--background);
-  transition: background-color 0.25s, color 0.25s;
+  transition: background-color 0.5s, color 0.25s;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

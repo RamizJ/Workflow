@@ -51,7 +51,7 @@
   --button-border: transparent;
   --button-hover-border: transparent;
   --button-hover-color: #ffffff;
-  --button-hover-background: rgba(0, 156, 238, 0.85);
+  --button-hover-background: var(--color-primary);
 
   --card-background: var(--background);
   --card-border: var(--background-4);
@@ -114,7 +114,7 @@
   --button-border: transparent;
   --button-hover-border: transparent;
   --button-hover-color: var(--text);
-  --button-hover-background: rgba(0, 156, 238, 0.7);
+  --button-hover-background: var(--color-primary);
 
   --input-border-hover: var(--background-3);
   --input-border-focus: var(--background-5);

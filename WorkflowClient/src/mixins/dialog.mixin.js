@@ -4,15 +4,17 @@ export default {
   data() {
     return {
       visible: false,
-      loading: true,
+      loading: false,
       isEdit: !!this.id
     };
   },
   async created() {
     this.visible = true;
     if (this.isEdit) {
+      this.loading = true;
       await this.fetchItem(this.id);
       this.form = this.item;
+      this.loading = false;
     }
   },
   computed: {
@@ -79,8 +81,7 @@ export default {
         pageSize: 10
       });
     },
-    submit() {
-      this.form.ownerId = this.form.ownerId || this.me.id;
+    submit(event) {
       const payload = { ...this.form };
       const form = this.$refs.form;
       form.validate(async valid => {

@@ -3,9 +3,8 @@ import qs from 'qs';
 
 export default {
   get: id => httpClient.get(`/api/Teams/Get/${id}`),
-  create: (team, projectId) =>
-    httpClient.post(`/api/Teams/Create/${projectId}`, team),
-  update: team => httpClient.put(`/api/Teams/Update`, team),
+  create: team => httpClient.post(`/api/Teams/CreateByForm`, team),
+  update: team => httpClient.put(`/api/Teams/UpdateByForm`, team),
   delete: id => httpClient.delete(`/api/Teams/Delete/${id}`),
   addUser: teamId => httpClient.patch(`/api/Teams/AddUser/${teamId}`),
   removeUser: (teamId, userId) =>
@@ -19,11 +18,13 @@ export default {
     ),
   getUsersPage: query =>
     httpClient.get(
-      `/api/Teams/GetUsers${qs.stringify(query, { addQueryPrefix: true })}`
+      `/api/Teams/GetUsersPage${qs.stringify(query, { addQueryPrefix: true })}`
     ),
   getProjectsPage: query =>
     httpClient.get(
-      `/api/Teams/GetProjects${qs.stringify(query, { addQueryPrefix: true })}`
+      `/api/Teams/GetProjectsPage${qs.stringify(query, {
+        addQueryPrefix: true
+      })}`
     ),
   getRange: query =>
     httpClient.get(

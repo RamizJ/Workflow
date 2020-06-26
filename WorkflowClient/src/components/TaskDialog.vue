@@ -2,7 +2,7 @@
   base-dialog(v-if="visible" @close="exit")
     div(slot="title") Задача
     div(slot="body")
-      el-form(:model="form" :rules="rules" ref="form" v-loading="loading")
+      el-form(:model="form" :rules="rules" ref="form" v-loading="loading" @submit.native.prevent="submit")
         el-row(:gutter="20")
           el-col(:span="24")
             el-form-item(prop="title")
@@ -11,10 +11,9 @@
           el-col(:span="24")
             el-form-item(prop="description")
               el-input(v-model="form.description" size="medium" type="textarea" placeholder="Заметки")
-
         el-row(:gutter="20")
           transition(name="fade")
-            el-col(v-if="tagsVisible || (item.tags && item.tags.length)" :span="$route.params.projectId ? 24 : 16")
+            el-col(v-if="tagsVisible || (form.tags && form.tags.length)" :span="$route.params.projectId ? 24 : 16")
               el-form-item(prop="tags")
                 el-select(
                   v-model="form.tags"
@@ -22,7 +21,7 @@
                   placeholder="Теги"
                   multiple filterable allow-create default-first-option)
           transition(name="fade")
-            el-col(v-if="priorityVisible || item.priority" :span="8")
+            el-col(v-if="priorityVisible || form.priority" :span="8")
               el-form-item(prop="priority")
                 el-select(
                   v-model="form.priority"
@@ -30,7 +29,7 @@
                   placeholder="Приоритет")
                   el-option(v-for="item in priorities" :key="item.value" :label="item.label" :value="item.value")
           transition(name="fade")
-            el-col(v-if="performerVisible || item.performerId" :span="8")
+            el-col(v-if="performerVisible || form.performerId" :span="8")
               el-form-item(prop="performerId")
                 el-select(
                   v-model="form.performerId"
@@ -49,10 +48,10 @@
                 filterable remote clearable default-first-option)
                 el-option(v-for="item in projectList" :key="item.id" :label="item.value" :value="item.id")
           transition(name="fade")
-            el-col(v-if="dateEndVisible || item.dateEnd" :span="8")
-              el-form-item(prop="dateEnd")
+            el-col(v-if="expectedCompletedDateVisible || form.expectedCompletedDate" :span="8")
+              el-form-item(prop="expectedCompletedDate")
                 el-date-picker(
-                  v-model="form.dateEnd"
+                  v-model="form.expectedCompletedDate"
                   size="medium"
                   prefix-icon="el-icon-arrow-down"
                   suffix-icon="el-icon-arrow-down"
@@ -72,20 +71,24 @@
                     span  или перетащите его сюда
           el-col(:span="24")
             div.extra
-              el-button(v-if="!(form.tags && form.tags.length)" type="text" title="Теги" @click="tagsVisible = !tagsVisible" circle)
-                i.el-icon-collection-tag
-              el-button(v-if="!form.priority" type="text" title="Приоритет" @click="priorityVisible = !priorityVisible" circle)
-                i.el-icon-finished
-              el-button(v-if="!form.performerId" type="text" title="Ответственный" @click="performerVisible = !performerVisible" circle)
-                i.el-icon-user
-              el-button(v-if="!form.dateEnd" type="text" title="Крайний срок" @click="dateEndVisible = !dateEndVisible" circle)
-                i.el-icon-date
-              el-button(v-if="!attachmentList.length" type="text" title="Добавить вложение" @click="attachmentsVisible = !attachmentsVisible" circle)
-                i.el-icon-paperclip
-
+              el-tooltip(content="Теги" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
+                el-button(v-if="!(form.tags && form.tags.length)" type="text" title="Теги" @click="tagsVisible = !tagsVisible" circle)
+                  feather(type="tag")
+              el-tooltip(content="Приоритет" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
+                el-button(v-if="!form.priority" type="text" @click="priorityVisible = !priorityVisible" circle)
+                  feather(type="zap")
+              el-tooltip(content="Ответственный" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
+                el-button(v-if="!form.performerId" type="text" @click="performerVisible = !performerVisible" circle)
+                  feather(type="user")
+              el-tooltip(content="Крайний срок" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
+                el-button(v-if="!form.expectedCompletedDate" type="text" @click="expectedCompletedDateVisible = !expectedCompletedDateVisible" circle)
+                  feather(type="calendar")
+              el-tooltip(content="Вложения" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
+                el-button(v-if="!attachmentList.length" type="text" @click="attachmentsVisible = !attachmentsVisible" circle)
+                  feather(type="paperclip")
 
     div(slot="footer")
-      el-button(size="medium" type="primary" @click="submit") {{ isEdit ? 'Сохранить' : 'Создать' }}
+      el-button(size="medium" type="default" @click="submit") {{ isEdit ? 'Сохранить' : 'Создать' }}
 </template>
 
 <script>
@@ -104,16 +107,21 @@ export default {
       form: {
         title: '',
         description: '',
-        tags: [],
-        observers: [],
-        priority: null,
-        ownerId: null,
-        performerId: null,
         projectId: this.$route.params.projectId
           ? parseInt(this.$route.params.projectId)
           : null,
+        projectName: null,
         creationDate: new Date(),
-        dateEnd: null
+        expectedCompletedDate: null,
+        state: 'New',
+        priority: null,
+        ownerId: null,
+        ownerFio: null,
+        performerId: null,
+        performerFio: null,
+        observerIds: [],
+        childGoalIds: [],
+        tags: []
       },
       rules: {
         title: [
@@ -139,7 +147,7 @@ export default {
       tagsVisible: null,
       priorityVisible: null,
       performerVisible: null,
-      dateEndVisible: null,
+      expectedCompletedDateVisible: null,
       attachmentsVisible: null
     };
   },
@@ -149,18 +157,9 @@ export default {
       me: 'auth/me',
       attachments: 'tasks/getTaskAttachments'
     })
-    // attachmentList() {
-    //   return this.attachments.map(attachment => {
-    //     return {
-    //       name: attachment.fileName,
-    //       id: attachment.id
-    //     };
-    //   });
-    // }
   },
   async mounted() {
     this.loading = true;
-
     if (this.isEdit) {
       await this.fetchAttachments(this.id);
       this.attachmentList = this.attachments.map(attachment => {
@@ -173,11 +172,9 @@ export default {
       this.attachmentList = [];
     }
     this.loading = false;
-
     await this.searchUsers();
     await this.searchProjects();
   },
-  beforeUpdate() {},
   methods: {
     ...mapActions({
       fetchItem: 'tasks/fetchTask',
@@ -207,6 +204,9 @@ export default {
 .extra {
   display: flex;
   justify-content: flex-end;
+  i {
+    height: 18px;
+  }
 }
 .el-upload-dragger {
   border-color: var(--popover-border);

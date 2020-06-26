@@ -2,8 +2,9 @@
   section
     app-sidebar
     main
-      keep-alive
-        router-view(:key="$route.path")
+      transition(name="page-fade" mode="out-in")
+        keep-alive
+          router-view(:key="$route.path")
 </template>
 
 <script>

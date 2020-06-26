@@ -14,10 +14,19 @@ export default {
     };
   },
   computed: {
-    ...mapGetters({ items: '' })
+    ...mapGetters({ items: '' }),
+    isMultipleSelected() {
+      return this.$refs.table.selection.length > 1;
+    }
   },
   methods: {
-    ...mapActions({ fetchItems: '', deleteItem: '' }),
+    ...mapActions({
+      fetchItems: '',
+      deleteItem: '',
+      deleteItems: '',
+      completeItem: '',
+      completeItems: ''
+    }),
     async refresh() {
       this.tableData = [];
       this.query.pageNumber = 0;
@@ -61,25 +70,21 @@ export default {
       this.selectedItemId = row.id;
       this.dialogOpened = true;
     },
-    onItemDelete(event, row) {
-      this.selectedItemId = row.id;
-      this.$confirm(
-        'Вы действительно хотите удалить элемент?',
-        'Предупреждение',
-        {
-          confirmButtonText: 'Да',
-          cancelButtonText: 'Закрыть',
-          type: 'warning'
-        }
-      ).then(async () => {
-        try {
-          await this.deleteItem(this.selectedItemId);
-          await this.refresh();
-        } catch (e) {
-          this.$message.error('Не удалось удалить элемент');
-          console.error(e);
-        }
-      });
+    async onItemDelete(event, row) {
+      await this.deleteItem(row.id);
+      await this.refresh();
+    },
+    async onItemMultipleDelete(event, row) {
+      await this.deleteItems(this.$refs.table.selection.map(item => item.id));
+      await this.refresh();
+    },
+    async onItemComplete(event, row) {
+      await this.completeItem(row);
+      await this.refresh();
+    },
+    async onItemMultipleComplete(event, row) {
+      await this.completeItems(this.$refs.table.selection);
+      await this.refresh();
     }
   }
 };

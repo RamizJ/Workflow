@@ -1,4 +1,4 @@
-import tasksAPI from '~/api/tasks';
+import tasksAPI from '~/api/tasks.api';
 
 export default {
   namespaced: true,
@@ -37,8 +37,26 @@ export default {
       const response = await tasksAPI.update(task);
       commit('setTask', response.data);
     },
+    async completeTask({ commit }, task) {
+      let completedTask = task;
+      completedTask.state = 'Succeed';
+      const response = await tasksAPI.update(completedTask);
+      commit('setTask', response.data);
+    },
+    async completeTasks({ commit }, tasks) {
+      let completedTasks = tasks.map(task => {
+        task.state = 'Succeed';
+        return task;
+      });
+      const response = await tasksAPI.updateRange(completedTasks);
+    },
     async deleteTask({ commit }, id) {
       const response = await tasksAPI.delete(id);
+      const task = response.data;
+      if (!task) throw Error;
+    },
+    async deleteTasks({ commit }, ids) {
+      const response = await tasksAPI.deleteRange(ids);
       const task = response.data;
       if (!task) throw Error;
     },
