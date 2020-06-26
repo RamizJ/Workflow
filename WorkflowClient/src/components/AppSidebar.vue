@@ -117,7 +117,7 @@ export default {
     margin-left: 8px;
   }
   &:focus {
-    animation: push 0.5s;
+    animation: push 0.6s;
   }
 }
 .el-menu-item.is-active {
@@ -185,7 +185,7 @@ export default {
 }
 
 @keyframes push {
-  30% {
+  15% {
     transform: scale(0.97);
     opacity: 0.85;
   }

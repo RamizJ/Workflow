@@ -12,7 +12,7 @@ export default {
     this.visible = true;
     if (this.isEdit) {
       this.loading = true;
-      await this.fetchItem(this.id);
+      if (this.id !== this.item.id) await this.fetchItem(this.id);
       this.form = this.item;
       this.loading = false;
     }

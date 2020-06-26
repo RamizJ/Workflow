@@ -49,9 +49,9 @@
         @row-dblclick="onItemDoubleClick"
         highlight-current-row)
         el-table-column(type="selection" width="55")
-        el-table-column(prop="title" label="Задача")
+        el-table-column(prop="title" label="Задача" width="450")
         el-table-column(prop="description" label="Заметки")
-        el-table-column(prop="creationDate" label="Добавлено" :formatter="dateFormatter")
+        el-table-column(prop="creationDate" label="Добавлено" :formatter="dateFormatter" width="165")
         infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
           div(slot="no-more")
           div(slot="no-results")

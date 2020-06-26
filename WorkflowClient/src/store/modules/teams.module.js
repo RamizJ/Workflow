@@ -43,15 +43,20 @@ export default {
       const teamProjects = response.data;
       commit('setTeamProjects', teamProjects);
     },
-    async createTeam({ commit }, payload) {
-      const response = await teamsAPI.create(payload, payload.projectId);
-      const team = response.data;
-      commit('setTeam', team);
+    async createTeam({ commit }, team) {
+      let newTeam = {
+        team: team,
+        userIds: team.userIds,
+        projectIds: team.projectIds
+      };
+      const response = await teamsAPI.create(newTeam);
+      const createdTeam = response.data;
+      commit('setTeam', createdTeam);
     },
-    async updateTeam({ commit }, payload) {
-      const response = await teamsAPI.update(payload);
-      const team = response.data;
-      commit('setTeam', team);
+    async updateTeam({ commit }, team) {
+      const response = await teamsAPI.update(team);
+      const updatedTeam = response.data;
+      commit('setTeam', updatedTeam);
     },
     async deleteTeam({ commit }, id) {
       const response = await teamsAPI.delete(id);

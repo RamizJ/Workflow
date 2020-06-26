@@ -50,10 +50,8 @@ export default {
   data() {
     return {
       form: {
-        team: {
-          name: '',
-          description: ''
-        },
+        name: '',
+        description: '',
         userIds: [],
         projectIds: []
       },
