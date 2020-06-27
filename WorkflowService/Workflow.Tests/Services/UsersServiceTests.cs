@@ -353,10 +353,13 @@ namespace Workflow.Tests.Services
         [TestCase("")]
         [TestCase(" ")]
         [TestCase("123")]
-        public void DeleteNotExisted(string userId)
+        public async Task DeleteNotExisted(string userId)
         {
+            //Act
+            var user = await _service.Delete(_currentUser, userId);
+
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Delete(userId));
+            Assert.IsNull(user);
         }
 
         [Test]
@@ -365,7 +368,7 @@ namespace Workflow.Tests.Services
             //Arrange
             var userId = _testData.Users[3].Id;
             //Act
-            var result = await _service.Delete(userId);
+            var result = await _service.Delete(_currentUser, userId);
 
             //Assert
             Assert.IsNotNull(result);
