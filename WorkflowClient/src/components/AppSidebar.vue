@@ -123,6 +123,9 @@ export default {
 .el-menu-item.is-active {
   background-color: var(--color-primary);
   color: white;
+  i {
+    color: white;
+  }
 }
 .el-menu-item:hover:not(.is-active) {
   transition: background-color 0.05s;
