@@ -13,10 +13,10 @@
           el-dropdown-menu(slot="dropdown")
             el-dropdown-item(command="addTask") Добавить задачу
             el-dropdown-item(command="addTeam") Добавить команду
-            el-dropdown-item(command="addTags") Добавить теги
-            el-dropdown-item(command="addEndDate") Добавить крайний срок
-            el-dropdown-item(command="complete") Завершить проект
-            el-dropdown-item(command="delete") Удалить проект
+            //el-dropdown-item(command="addTags") Добавить теги
+            //el-dropdown-item(command="addEndDate") Добавить крайний срок
+            //el-dropdown-item(command="completeProject") Завершить проект
+            el-dropdown-item(command="deleteProject") Удалить проект
       template(slot="subtitle")
         div.tags(v-if="projectItem.tags && projectItem.tags.length")
           el-tag.tag(
@@ -117,6 +117,7 @@ export default {
     ...mapActions({
       fetchProject: 'projects/fetchProject',
       updateProject: 'projects/updateProject',
+      deleteProject: 'projects/deleteProject',
       fetchItems: 'tasks/fetchTasks',
       deleteItem: 'tasks/deleteTask',
       deleteItems: 'tasks/deleteTasks',
@@ -126,7 +127,7 @@ export default {
     async update(e) {
       await this.updateProject(this.projectItem);
     },
-    quickAction(command) {
+    async quickAction(command) {
       switch (command) {
         case 'addTask':
           this.selectedItemId = null;
@@ -134,6 +135,9 @@ export default {
           break;
         case 'addTeam':
           this.teamDialogOpened = true;
+          break;
+        case 'deleteProject':
+          await this.deleteProject(this.projectItem.id);
           break;
         default:
           break;

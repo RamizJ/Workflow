@@ -2,10 +2,12 @@ import httpClient from './httpClient';
 import qs from 'qs';
 
 export default {
-  get: id => httpClient.get(`/api/Projects/Get/${id}`),
+  get: projectId => httpClient.get(`/api/Projects/Get/${projectId}`),
   create: project => httpClient.post(`/api/Projects/CreateByForm`, project),
   update: project => httpClient.post(`/api/Projects/UpdateByForm`, project),
-  delete: id => httpClient.delete(`/api/Projects/Delete/${id}`),
+  delete: projectId => httpClient.delete(`/api/Projects/Delete/${projectId}`),
+  deleteRange: projectIds =>
+    httpClient.patch(`/api/Projects/DeleteRange`, projectIds),
   addTeam: (teamId, projectId) =>
     httpClient.patch(`/api/Projects/AddTeam/${teamId}?projectId=${projectId}`),
   removeTeam: (teamId, projectId) =>

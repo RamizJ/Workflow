@@ -38,9 +38,12 @@
 
       el-collapse(v-model="collapseState")
         el-collapse-item(title="Проекты" name="projects")
-          el-menu-item(v-for="item in favorites" :index="`/projects/${item.id}`")
+          el-menu-item(v-for="item in projectList" :index="`/projects/${item.id}`")
             feather(type="box")
             span {{ item.name }}
+          infinite-loading(@infinite="loadProjects" spinner="waveDots")
+            div(slot="no-more")
+            div(slot="no-results")
 
     div.profile(v-if="!!me" @click="$router.push({ name: 'Profile' })")
       el-avatar(:size="36" icon="el-icon-user-solid")
@@ -56,7 +59,11 @@ export default {
   name: 'AppSidebar',
   data() {
     return {
-      favorites: [],
+      projectList: [],
+      projectQuery: {
+        pageNumber: 0,
+        pageSize: 10
+      },
       collapseState: ['projects']
     };
   },
@@ -66,15 +73,17 @@ export default {
       projects: 'projects/getProjects'
     })
   },
-  async mounted() {
-    await this.fetchProjects({
-      pageNumber: 0,
-      pageSize: 5
-    });
-    this.favorites = { ...this.projects };
-  },
   methods: {
-    ...mapActions({ fetchProjects: 'projects/fetchProjects' })
+    ...mapActions({ fetchProjects: 'projects/fetchProjects' }),
+    async loadProjects($state) {
+      await this.fetchProjects(this.projectQuery);
+      if (this.projects.length) {
+        if (!this.projectList.length) this.projectList = this.projects;
+        else this.projectList = [...this.projectList, ...this.projects];
+        this.projectQuery.pageNumber += 1;
+        $state.loaded();
+      } else $state.complete();
+    }
   }
 };
 </script>
@@ -82,9 +91,9 @@ export default {
 <style lang="scss" scoped>
 .sidebar {
   height: 100%;
-  border-right: 1px solid var(--sidebar-item-hover-background);
+  border-right: 1px solid var(--sidebar-border);
   background-color: var(--sidebar-background);
-  transition: background-color 0.5s, border-color 0.3s;
+  transition: background-color 0.25s, border-color 0.25s;
 }
 .el-menu {
   overflow: auto;
@@ -154,7 +163,7 @@ export default {
   text-align: left;
   padding: 20px 25px;
   z-index: 2;
-  transition: background 0.5s;
+  transition: background 0.25s;
   .el-avatar {
     margin-right: 12px;
   }

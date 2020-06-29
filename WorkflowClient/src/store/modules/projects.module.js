@@ -63,6 +63,11 @@ export default {
       const response = await projectsAPI.delete(id);
       const project = response.data;
       if (!project) throw Error;
+    },
+    async deleteProjects({ commit }, ids) {
+      const response = await projectsAPI.deleteRange(ids);
+      const projects = response.data;
+      if (!projects) throw Error;
     }
   },
   getters: {

@@ -55,15 +55,18 @@
                   size="medium"
                   prefix-icon="el-icon-arrow-down"
                   suffix-icon="el-icon-arrow-down"
+                  format="dd.MM.yyyy"
                   placeholder="Крайний срок")
           transition(name="fade")
             el-col(v-if="attachmentsVisible || attachmentList.length" :span="24")
               el-form-item
                 el-upload(
                   action="https://demo.girngm.ru/workflow_dev/api/Goals/AddAttachments/"
+                  ref="upload"
                   :http-request="uploadAttachment"
                   :on-remove="removeAttachment"
                   :file-list="attachmentList"
+                  :auto-upload="false"
                   drag multiple)
                   i.el-icon-upload
                   div.el-upload__text
@@ -139,9 +142,9 @@ export default {
         ]
       },
       priorities: [
-        { value: 'High', label: 'Высокий' },
-        { value: 'Normal', label: 'Обычный' },
-        { value: 'Low', label: 'Низкий' }
+        { value: 'High', label: 'Высокий приоритет' },
+        { value: 'Normal', label: 'Обычный приоритет' },
+        { value: 'Low', label: 'Низкий приоритет' }
       ],
       attachmentList: [],
       tagsVisible: null,
@@ -184,13 +187,21 @@ export default {
       addAttachments: 'tasks/addAttachments',
       removeAttachments: 'tasks/removeAttachments'
     }),
+    async submit() {
+      await this.sendForm();
+      this.$refs.upload?.submit();
+      this.$emit('submit');
+      this.exit();
+    },
     async uploadAttachment(request) {
+      this.loading = true;
       let files = new FormData();
       files.append('files', request.file);
       await this.addAttachments({
-        taskId: this.id,
+        taskId: this.id || this.item.id,
         files
       });
+      this.loading = false;
     },
     async removeAttachment(file) {
       await this.removeAttachments([file.id]);

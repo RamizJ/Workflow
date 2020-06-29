@@ -22,7 +22,7 @@ export default {
   data() {
     return {
       search: '',
-      appearance: localStorage.getItem('theme')
+      appearance: localStorage.getItem('theme') || 'light'
     };
   },
   methods: {

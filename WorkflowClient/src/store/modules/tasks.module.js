@@ -57,8 +57,8 @@ export default {
     },
     async deleteTasks({ commit }, ids) {
       const response = await tasksAPI.deleteRange(ids);
-      const task = response.data;
-      if (!task) throw Error;
+      const tasks = response.data;
+      if (!tasks) throw Error;
     },
     async fetchAttachments({ commit }, taskId) {
       const response = await tasksAPI.getAttachments(taskId);
