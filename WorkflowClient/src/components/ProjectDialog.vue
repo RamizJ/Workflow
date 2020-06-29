@@ -6,7 +6,7 @@
         el-row(:gutter="20")
           el-col(:span="24")
             el-form-item(prop="name")
-              el-input(v-model="form.name" size="medium" placeholder="Новый проект")
+              el-input(ref="title" v-model="form.name" size="medium" placeholder="Новый проект")
         el-row(:gutter="20")
           el-col(:span="24")
             el-form-item(prop="description")
@@ -77,8 +77,6 @@ export default {
     })
   },
   async mounted() {
-    await this.searchTeams();
-
     if (this.isEdit) {
       this.loading = true;
       await this.fetchProjectTeams({
@@ -90,6 +88,8 @@ export default {
       this.$forceUpdate();
       this.loading = false;
     }
+    await this.searchTeams();
+    this.$refs.title.focus();
   },
   methods: {
     ...mapActions({

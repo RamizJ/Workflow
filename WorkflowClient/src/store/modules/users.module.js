@@ -1,4 +1,5 @@
 import usersAPI from '~/api/users.api';
+import { Message } from 'element-ui';
 
 export default {
   namespaced: true,
@@ -39,6 +40,29 @@ export default {
       const response = await usersAPI.delete(id);
       const user = response.data;
       if (!user) throw Error;
+    },
+    async deleteUsers({ commit }, ids) {
+      const response = await usersAPI.deleteRange(ids);
+      const users = response.data;
+      if (!users) throw Error;
+    },
+    async isLoginExist({ commit }, login) {
+      try {
+        const response = await usersAPI.isUserNameExist(login);
+        return response.data;
+      } catch (error) {
+        Message.warning('Не удалось проверить уникальность логина');
+        return false;
+      }
+    },
+    async isEmailExist({ commit }, email) {
+      try {
+        const response = await usersAPI.isEmailExist(email);
+        return response.data;
+      } catch (error) {
+        Message.warning('Не удалось проверить уникальность почтового ящика');
+        return false;
+      }
     }
   },
   getters: {

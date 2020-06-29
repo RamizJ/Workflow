@@ -5,7 +5,8 @@ export default {
   get: id => httpClient.get(`/api/Teams/Get/${id}`),
   create: team => httpClient.post(`/api/Teams/CreateByForm`, team),
   update: team => httpClient.put(`/api/Teams/UpdateByForm`, team),
-  delete: id => httpClient.delete(`/api/Teams/Delete/${id}`),
+  delete: teamId => httpClient.delete(`/api/Teams/Delete/${teamId}`),
+  deleteRange: teamIds => httpClient.patch(`/api/Teams/DeleteRange`, teamIds),
   addUser: teamId => httpClient.patch(`/api/Teams/AddUser/${teamId}`),
   removeUser: (teamId, userId) =>
     httpClient.patch(`/api/Teams/RemoveUser/${teamId}/${userId}`),

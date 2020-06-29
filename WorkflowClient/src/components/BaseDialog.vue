@@ -93,5 +93,25 @@ export default {
   .el-dialog__body {
     padding: 15px 20px !important;
   }
+  .el-upload-dragger {
+    border-color: var(--popover-border);
+    background-color: var(--card-background);
+  }
+  .el-upload,
+  .el-upload-dragger {
+    width: 100%;
+    height: 120px;
+  }
+  .el-upload-dragger .el-icon-upload {
+    font-size: 50px;
+    margin: 10px 0 10px;
+  }
+  .extra {
+    display: flex;
+    justify-content: flex-end;
+    i {
+      height: 18px;
+    }
+  }
 }
 </style>

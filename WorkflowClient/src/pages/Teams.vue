@@ -41,9 +41,10 @@
 
       vue-context(ref="contextMenu")
         template(slot-scope="child")
+          li Добавить участника
           li(@click.prevent="onItemEdit($event, child.data.row)") Редактировать
-          //li Добавить участника
-          li(@click.prevent="onItemDelete($event, child.data.row)") Удалить
+          li(v-if="!isMultipleSelected" @click.prevent="onItemDelete($event, child.data.row)") Удалить
+          li(v-if="isMultipleSelected" @click.prevent="onItemMultipleDelete($event, child.data.row)") Удалить выделенное
 
     team-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false" @submit="refresh")
 
@@ -126,7 +127,8 @@ export default {
   methods: {
     ...mapActions({
       fetchItems: 'teams/fetchTeams',
-      deleteItem: 'teams/deleteTeam'
+      deleteItem: 'teams/deleteTeam',
+      deleteItems: 'teams/deleteTeams'
     }),
     async applyFilters() {}
   }

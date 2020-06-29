@@ -17,7 +17,7 @@
             div.item__title Пароль
             div.item__content
               el-form-item(prop="password")
-                el-input(v-model="form.password" @change="updateProfile" type="password" placeholder="**********")
+                el-input(v-model="form.password" @change="updateProfile" type="password" placeholder="**********" readonly onfocus="this.removeAttribute('readonly')")
           div.item
             div.item__title Почта
             div.item__content

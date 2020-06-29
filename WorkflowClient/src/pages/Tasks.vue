@@ -83,8 +83,10 @@
       vue-context(ref="contextMenu")
         template(slot-scope="child")
           li(@click.prevent="onItemEdit($event, child.data.row)") Редактировать
-          li Завершить
-          li(@click.prevent="onItemDelete($event, child.data.row)") Удалить
+          li(v-if="!isMultipleSelected" @click.prevent="onItemComplete($event, child.data.row)") Завершить
+          li(v-if="!isMultipleSelected" @click.prevent="onItemDelete($event, child.data.row)") Удалить
+          li(v-if="isMultipleSelected" @click.prevent="onItemMultipleComplete($event, child.data.row)") Завершить выделенное
+          li(v-if="isMultipleSelected" @click.prevent="onItemMultipleDelete($event, child.data.row)") Удалить выделенное
 
     task-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false" @submit="refresh")
 

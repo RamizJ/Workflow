@@ -1,6 +1,6 @@
 <template lang="pug">
   el-card(shadow="never" v-loading="loading")
-    el-form(:model="form" :rules="rules" ref="form")
+    el-form(:model="form" :rules="rules" ref="form" @keyup.enter.native="submit")
       h1.title Вход
       el-form-item(prop="login")
         el-input(v-model="form.login" placeholder="Логин" autofocus)
@@ -22,28 +22,28 @@ export default {
       form: {
         login: '',
         password: '',
-        rememberMe: false,
+        rememberMe: false
       },
       rules: {
         login: [
           {
             required: true,
             message: 'Пожалуйста, введите логин',
-            trigger: 'blur',
-          },
+            trigger: 'blur'
+          }
         ],
         password: [
           {
             required: true,
             message: 'Пожалуйста, введите пароль',
-            trigger: 'blur',
-          },
-        ],
-      },
+            trigger: 'blur'
+          }
+        ]
+      }
     };
   },
   computed: {
-    ...mapGetters({ loggedIn: 'auth/loggedIn'})
+    ...mapGetters({ loggedIn: 'auth/loggedIn' })
   },
   methods: {
     ...mapActions({ login: 'auth/login' }),
@@ -51,7 +51,7 @@ export default {
       this.loading = true;
       const credentials = { ...this.form };
       const form = this.$refs.form;
-      form.validate(async (valid) => {
+      form.validate(async valid => {
         if (valid) {
           try {
             await this.login(credentials);
@@ -74,7 +74,7 @@ export default {
       // }
       this.loading = false;
     }
-  },
+  }
 };
 </script>
 

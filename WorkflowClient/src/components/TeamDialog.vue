@@ -6,7 +6,7 @@
         el-row(:gutter="20")
           el-col(:span="24")
             el-form-item(prop="name")
-              el-input(v-model="form.name" size="medium" placeholder="Новая команда")
+              el-input(ref="title" v-model="form.name" size="medium" placeholder="Новая команда")
         el-row(:gutter="20")
           el-col(:span="24")
             el-form-item(prop="description")
@@ -96,6 +96,7 @@ export default {
       this.form.projectIds = this.teamProjects.map(project => project.id);
       this.loading = false;
     }
+    this.$refs.title.focus();
   },
   methods: {
     ...mapActions({

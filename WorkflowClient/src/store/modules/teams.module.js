@@ -62,6 +62,11 @@ export default {
       const response = await teamsAPI.delete(id);
       const team = response.data;
       if (!team) throw Error;
+    },
+    async deleteTeams({ commit }, ids) {
+      const response = await teamsAPI.deleteRange(ids);
+      const team = response.data;
+      if (!team) throw Error;
     }
   },
   getters: {

@@ -93,25 +93,25 @@ export default {
       });
     },
     async sendForm() {
-      if (this.isFormValid) {
-        const payload = { ...this.form };
-        this.loading = true;
-        try {
-          if (this.isEdit) await this.updateItem(payload);
-          else await this.createItem(payload);
-        } catch (error) {
-          this.$message.error(`Ошибка отправки запроса`);
-        }
-        this.loading = false;
+      const payload = { ...this.form };
+      this.loading = true;
+      try {
+        if (this.isEdit) await this.updateItem(payload);
+        else await this.createItem(payload);
+      } catch (error) {
+        this.$message.error(`Ошибка отправки запроса`);
       }
+      this.loading = false;
     },
     async submit(event) {
-      await this.sendForm();
-      this.$emit('submit');
-      this.exit();
+      if (this.isFormValid) {
+        await this.sendForm();
+        this.$emit('submit');
+        this.exit();
+      }
     },
     exit() {
-      this.$refs.form.resetFields();
+      this.$refs.form?.resetFields();
       this.visible = false;
       this.$emit('close');
     }
