@@ -12,24 +12,32 @@
             el-form-item(prop="description")
               el-input(v-model="form.description" size="medium" type="textarea" placeholder="Заметки")
         el-row(:gutter="20")
+          transition(name="fade")
+            el-col(v-if="tagsVisible || (form.tags && form.tags.length)" :span="24")
+              el-form-item(prop="tags")
+                el-select(
+                  v-model="form.tags"
+                  size="medium"
+                  placeholder="Теги"
+                  multiple filterable allow-create default-first-option)
+          transition(name="fade")
+            el-col(v-if="teamsVisible || (form.teamIds && form.teamIds.length)" :span="24")
+              el-form-item(prop="teamIds")
+                el-select(
+                  v-model="form.teamIds"
+                  size="medium"
+                  placeholder="Команды"
+                  :remote-method="searchTeams"
+                  multiple filterable remote clearable default-first-option)
+                  el-option(v-for="item in teamList" :key="item.id" :label="item.value" :value="item.id")
           el-col(:span="24")
-            el-form-item(prop="tags")
-              el-select(
-                v-model="form.tags"
-                size="medium"
-                placeholder="Теги"
-                multiple filterable allow-create default-first-option)
-        el-row(:gutter="20")
-          el-col(:span="24")
-            el-form-item(prop="teamIds")
-              el-select(
-                v-model="form.teamIds"
-                size="medium"
-                placeholder="Команды"
-                :remote-method="searchTeams"
-                multiple filterable remote clearable default-first-option)
-                el-option(v-for="item in teamList" :key="item.id" :label="item.value" :value="item.id")
-
+            div.extra
+              el-tooltip(content="Теги" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
+                el-button(v-if="!(form.tags && form.tags.length)" type="text" title="Теги" @click="tagsVisible = !tagsVisible" circle)
+                  feather(type="tag")
+              el-tooltip(content="Команды" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
+                el-button(v-if="!(form.teamIds && form.teamIds.length)" type="text" title="Теги" @click="teamsVisible = !teamsVisible" circle)
+                  feather(type="users")
     div(slot="footer")
       el-button(size="medium" type="default" @click="submit") {{ isEdit ? 'Сохранить' : 'Создать' }}
 
@@ -67,7 +75,9 @@ export default {
             trigger: 'blur'
           }
         ]
-      }
+      },
+      tagsVisible: null,
+      teamsVisible: null
     };
   },
   computed: {

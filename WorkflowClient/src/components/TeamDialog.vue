@@ -12,25 +12,34 @@
             el-form-item(prop="description")
               el-input(v-model="form.description" size="medium" type="textarea" placeholder="Заметки")
         el-row(:gutter="20")
+          transition(name="fade")
+            el-col(v-if="teamMembersVisible || (form.userIds && form.userIds.length)" :span="24")
+              el-form-item
+                el-select(
+                  v-model="form.userIds"
+                  size="medium"
+                  placeholder="Участники"
+                  :remote-method="searchUsers"
+                  multiple filterable remote clearable default-first-option)
+                  el-option(v-for="item in userList" :key="item.id" :label="item.value" :value="item.id")
+          transition(name="fade")
+            el-col(v-if="!$route.params.projectId && (projectsVisible || (form.projectIds && form.projectIds.length))" :span="24")
+              el-form-item
+                el-select(
+                  v-model="form.projectIds"
+                  size="medium"
+                  placeholder="Проекты"
+                  :remote-method="searchProjects"
+                  multiple filterable remote clearable default-first-option)
+                  el-option(v-for="item in projectList" :key="item.id" :label="item.value" :value="item.id")
           el-col(:span="24")
-            el-form-item
-              el-select(
-                v-model="form.userIds"
-                size="medium"
-                placeholder="Участники"
-                :remote-method="searchUsers"
-                multiple filterable remote clearable default-first-option)
-                el-option(v-for="item in userList" :key="item.id" :label="item.value" :value="item.id")
-          el-col(v-if="!$route.params.projectId" :span="24")
-            el-form-item
-              el-select(
-                v-model="form.projectIds"
-                size="medium"
-                placeholder="Проекты"
-                :remote-method="searchProjects"
-                multiple filterable remote clearable default-first-option)
-                el-option(v-for="item in projectList" :key="item.id" :label="item.value" :value="item.id")
-
+            div.extra
+              el-tooltip(content="Участники" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
+                el-button(v-if="!(form.userIds && form.userIds.length)" type="text" title="Теги" @click="teamMembersVisible = !teamMembersVisible" circle)
+                  feather(type="users")
+              el-tooltip(content="Проекты" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
+                el-button(v-if="!(form.projectIds && form.projectIds.length)" type="text" title="Теги" @click="projectsVisible = !projectsVisible" circle)
+                  feather(type="layers")
     div(slot="footer")
       el-button(size="medium" type="default" @click="submit") {{ isEdit ? 'Сохранить' : 'Создать' }}
 
@@ -63,7 +72,9 @@ export default {
             trigger: 'blur'
           }
         ]
-      }
+      },
+      teamMembersVisible: null,
+      projectsVisible: null
     };
   },
   computed: {
