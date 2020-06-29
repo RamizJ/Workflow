@@ -1,8 +1,15 @@
 <template lang="pug">
-  el-dialog(:visible.sync="showDialog" custom-class="base-dialog" @closed="$emit('close')")
+  el-dialog(
+    :visible.sync="showDialog"
+    custom-class="base-dialog"
+    @closed="$emit('close')")
     div.header(slot="title")
       div.title
         slot(name="title")
+      div.submit
+        slot(name="submit")
+      div.close
+        slot(name="close")
     div.body
       slot(name="body")
       div.footer
@@ -26,18 +33,29 @@ export default {
 <style lang="scss" scoped>
 .header,
 .body {
-  padding: 14px 18px;
+  padding: 16px 18px 0;
 }
 .header {
   padding-bottom: 0;
-}
-.body {
-  padding-top: 0;
 }
 .title {
   font-size: 24px;
   font-weight: 800;
   cursor: default;
+}
+.submit,
+.close {
+  position: absolute;
+  top: 25px;
+}
+.submit {
+  right: 76px;
+}
+.close {
+  right: 28px;
+}
+.body {
+  padding-top: 0;
 }
 .footer {
   margin-top: 10px;
@@ -48,10 +66,13 @@ export default {
 
 <style lang="scss">
 .base-dialog {
-  border-radius: 10px !important;
+  border-radius: 12px !important;
   border-width: var(--border-width);
   border-color: var(--card-border);
   background-color: var(--card-background);
+  .el-dialog__headerbtn {
+    display: none;
+  }
   .el-select,
   .el-autocomplete {
     width: 100%;

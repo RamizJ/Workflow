@@ -1,48 +1,46 @@
 <template lang="pug">
-  base-dialog(v-if="visible" @close="exit")
-    div(slot="title") Команда
-    div(slot="body")
-      el-form(:model="form" :rules="rules" ref="form" v-loading="loading")
-        el-row(:gutter="20")
-          el-col(:span="24")
-            el-form-item(prop="name")
-              el-input(ref="title" v-model="form.name" size="medium" placeholder="Новая команда")
-        el-row(:gutter="20")
-          el-col(:span="24")
-            el-form-item(prop="description")
-              el-input(v-model="form.description" size="medium" type="textarea" placeholder="Заметки")
-        el-row(:gutter="20")
-          transition(name="fade")
-            el-col(v-if="teamMembersVisible || (form.userIds && form.userIds.length)" :span="24")
-              el-form-item
-                el-select(
-                  v-model="form.userIds"
-                  size="medium"
-                  placeholder="Участники"
-                  :remote-method="searchUsers"
-                  multiple filterable remote clearable default-first-option)
-                  el-option(v-for="item in userList" :key="item.id" :label="item.value" :value="item.id")
-          transition(name="fade")
-            el-col(v-if="!$route.params.projectId && (projectsVisible || (form.projectIds && form.projectIds.length))" :span="24")
-              el-form-item
-                el-select(
-                  v-model="form.projectIds"
-                  size="medium"
-                  placeholder="Проекты"
-                  :remote-method="searchProjects"
-                  multiple filterable remote clearable default-first-option)
-                  el-option(v-for="item in projectList" :key="item.id" :label="item.value" :value="item.id")
-          el-col(:span="24")
-            div.extra
-              el-tooltip(content="Участники" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
-                el-button(v-if="!(form.userIds && form.userIds.length)" type="text" title="Теги" @click="teamMembersVisible = !teamMembersVisible" circle)
-                  feather(type="users")
-              el-tooltip(content="Проекты" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
-                el-button(v-if="!(form.projectIds && form.projectIds.length)" type="text" title="Теги" @click="projectsVisible = !projectsVisible" circle)
-                  feather(type="layers")
-    div(slot="footer")
-      el-button(size="medium" type="default" @click="submit") {{ isEdit ? 'Сохранить' : 'Создать' }}
-
+  base-dialog(v-if="visible" @close="exit" ref="dialog")
+    h1(slot="title") Команда
+    el-button(slot="submit" type="text" @click="submit" circle)
+      feather(type="check" size="22")
+    el-button(slot="close" type="text" @click="$refs.dialog.showDialog = false" circle)
+      feather(type="x" size="22")
+    el-form(slot="body" :model="form" :rules="rules" ref="form" v-loading="loading" @submit.native.prevent="submit")
+      el-row(:gutter="20")
+        el-col(:span="24")
+          el-form-item(prop="name")
+            el-input(ref="title" v-model="form.name" placeholder="Новая команда")
+      el-row(:gutter="20")
+        el-col(:span="24")
+          el-form-item(prop="description")
+            el-input(v-model="form.description" type="textarea" placeholder="Заметки")
+      el-row(:gutter="20")
+        transition(name="fade")
+          el-col(v-if="teamMembersVisible || (form.userIds && form.userIds.length)" :span="24")
+            el-form-item
+              el-select(
+                v-model="form.userIds"
+                placeholder="Участники"
+                :remote-method="searchUsers"
+                multiple filterable remote clearable default-first-option)
+                el-option(v-for="item in userList" :key="item.id" :label="item.value" :value="item.id")
+        transition(name="fade")
+          el-col(v-if="!$route.params.projectId && (projectsVisible || (form.projectIds && form.projectIds.length))" :span="24")
+            el-form-item
+              el-select(
+                v-model="form.projectIds"
+                placeholder="Проекты"
+                :remote-method="searchProjects"
+                multiple filterable remote clearable default-first-option)
+                el-option(v-for="item in projectList" :key="item.id" :label="item.value" :value="item.id")
+        el-col(:span="24")
+          div.extra
+            el-tooltip(content="Участники" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+              el-button(size="small" v-if="!(form.userIds && form.userIds.length)" type="text" title="Теги" @click="teamMembersVisible = !teamMembersVisible" circle)
+                feather(type="users")
+            el-tooltip(content="Проекты" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+              el-button(size="small" v-if="!(form.projectIds && form.projectIds.length)" type="text" title="Теги" @click="projectsVisible = !projectsVisible" circle)
+                feather(type="layers")
 </template>
 
 <script>

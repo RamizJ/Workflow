@@ -1,76 +1,72 @@
 <template lang="pug">
   base-dialog(v-if="visible" @close="exit")
-    div(slot="title") Пользователь
-    div(slot="body")
-      el-form(:model="form" :rules="rules" ref="form" v-loading="loading")
-        el-row(:gutter="20")
-          el-col(:span="8")
-            el-form-item(prop="lastName")
-              el-input(ref="title" v-model="form.lastName" size="medium" placeholder="Фамилия")
-          el-col(:span="8")
-            el-form-item(prop="firstName")
-              el-input(v-model="form.firstName" size="medium" placeholder="Имя")
-          el-col(:span="8")
-            el-form-item(prop="middleName")
-              el-input(v-model="form.middleName" size="medium" placeholder="Отчество")
-        el-row(:gutter="20")
-          el-col(:span="8")
-            el-form-item(prop="userName")
-              el-input(v-model="form.userName" size="medium" placeholder="Логин")
-          el-col(:span="8")
-            el-form-item(prop="password")
-              el-input(v-model="form.password" type="password" size="medium" placeholder="Пароль" readonly onfocus="this.removeAttribute('readonly')")
-          el-col(:span="8")
-            el-form-item(prop="email")
-              el-input(v-model="form.email" size="medium" placeholder="Почта")
-        el-row(:gutter="20")
-          transition(name="fade")
-            el-col(v-if="phoneVisible || form.phone" :span="8")
-              el-form-item(prop="phone")
-                el-input(v-model="form.phone" size="medium" placeholder="Телефон")
-          transition(name="fade")
-            el-col(v-if="positionVisible || form.position" :span="8")
-              el-form-item(prop="positionId")
-                el-select(
-                  v-model="form.positionId"
-                  size="medium"
-                  placeholder="Должность"
-                  filterable default-first-option)
-                  el-option(v-for="item in positions" :key="item.value" :label="item.label" :value="item.value")
-          transition(name="fade")
-            el-col(v-if="teamsVisible || (form.teamIds && form.teamIds.length)" :span="24")
-              el-form-item(prop="teams")
-                el-select(
-                  v-model="form.teamIds"
-                  size="medium"
-                  placeholder="Команды"
-                  :remote-method="searchTeams"
-                  multiple filterable remote clearable default-first-option)
-                  el-option(v-for="item in teamList" :key="item.id" :label="item.value" :value="item.id")
-          transition(name="fade")
-            el-col(v-if="rolesVisible || (form.roles && form.roles.length)" :span="24")
-              el-form-item(prop="roles")
-                el-select(v-model="form.roles" size="medium" placeholder="Права" multiple)
-                  el-option(v-for="item in roles" :key="item.value" :label="item.label" :value="item.value")
-
-          el-col(:span="24")
-            div.extra
-              el-tooltip(content="Команды" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
-                el-button(v-if="!(form.teamIds && form.teamIds.length)" type="text" title="Теги" @click="teamsVisible = !teamsVisible" circle)
-                  feather(type="users")
-              el-tooltip(v-if="!(form.roles && form.roles.length)" content="Права" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
-                el-button(type="text" @click="rolesVisible = !rolesVisible" circle)
-                  feather(type="shield")
-              el-tooltip(v-if="!form.position" content="Должность" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
-                el-button(type="text" @click="positionVisible = !positionVisible" circle)
-                  feather(type="briefcase")
-              el-tooltip(v-if="!form.phone" content="Телефон" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
-                el-button(type="text" @click="phoneVisible = !phoneVisible" circle)
-                  feather(type="phone")
-
-    div(slot="footer")
-      el-button(size="medium" type="default" @click="submit") {{ isEdit ? 'Сохранить' : 'Создать' }}
-
+    h1(slot="title") Пользователь
+    el-button(slot="submit" type="text" @click="submit" circle)
+      feather(type="check" size="22")
+    el-button(slot="close" type="text" @click="$refs.dialog.showDialog = false" circle)
+      feather(type="x" size="22")
+    el-form(slot="body" :model="form" :rules="rules" ref="form" v-loading="loading" @submit.native.prevent="submit")
+      el-row(:gutter="20")
+        el-col(:span="8")
+          el-form-item(prop="lastName")
+            el-input(ref="title" v-model="form.lastName" placeholder="Фамилия")
+        el-col(:span="8")
+          el-form-item(prop="firstName")
+            el-input(v-model="form.firstName" placeholder="Имя")
+        el-col(:span="8")
+          el-form-item(prop="middleName")
+            el-input(v-model="form.middleName" placeholder="Отчество")
+      el-row(:gutter="20")
+        el-col(:span="8")
+          el-form-item(prop="userName")
+            el-input(v-model="form.userName" placeholder="Логин")
+        el-col(:span="8")
+          el-form-item(prop="password")
+            el-input(v-model="form.password" type="password" placeholder="Пароль" readonly onfocus="this.removeAttribute('readonly')")
+        el-col(:span="8")
+          el-form-item(prop="email")
+            el-input(v-model="form.email" placeholder="Почта")
+      el-row(:gutter="20")
+        transition(name="fade")
+          el-col(v-if="phoneVisible || form.phone" :span="8")
+            el-form-item(prop="phone")
+              el-input(v-model="form.phone" placeholder="Телефон")
+        transition(name="fade")
+          el-col(v-if="positionVisible || form.position" :span="8")
+            el-form-item(prop="positionId")
+              el-select(
+                v-model="form.positionId"
+                placeholder="Должность"
+                filterable default-first-option)
+                el-option(v-for="item in positions" :key="item.value" :label="item.label" :value="item.value")
+        transition(name="fade")
+          el-col(v-if="teamsVisible || (form.teamIds && form.teamIds.length)" :span="24")
+            el-form-item(prop="teams")
+              el-select(
+                v-model="form.teamIds"
+                placeholder="Команды"
+                :remote-method="searchTeams"
+                multiple filterable remote clearable default-first-option)
+                el-option(v-for="item in teamList" :key="item.id" :label="item.value" :value="item.id")
+        transition(name="fade")
+          el-col(v-if="rolesVisible || (form.roles && form.roles.length)" :span="24")
+            el-form-item(prop="roles")
+              el-select(v-model="form.roles" placeholder="Права" multiple)
+                el-option(v-for="item in roles" :key="item.value" :label="item.label" :value="item.value")
+        el-col(:span="24")
+          div.extra
+            el-tooltip(content="Команды" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+              el-button(v-if="!(form.teamIds && form.teamIds.length)" type="text" title="Теги" @click="teamsVisible = !teamsVisible" circle)
+                feather(type="users")
+            el-tooltip(v-if="!(form.roles && form.roles.length)" content="Права" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+              el-button(type="text" @click="rolesVisible = !rolesVisible" circle)
+                feather(type="shield")
+            el-tooltip(v-if="!form.position" content="Должность" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+              el-button(type="text" @click="positionVisible = !positionVisible" circle)
+                feather(type="briefcase")
+            el-tooltip(v-if="!form.phone" content="Телефон" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+              el-button(type="text" @click="phoneVisible = !phoneVisible" circle)
+                feather(type="phone")
 </template>
 
 <script>

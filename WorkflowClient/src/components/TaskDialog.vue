@@ -1,16 +1,19 @@
 <template lang="pug">
-  base-dialog(v-if="visible" @close="exit")
+  base-dialog(v-if="visible" @close="exit" ref="dialog")
     h1(slot="title") Задача
+    el-button(slot="submit" type="text" @click="submit" circle)
+      feather(type="check" size="22")
+    el-button(slot="close" type="text" @click="$refs.dialog.showDialog = false" circle)
+      feather(type="x" size="22")
     el-form(slot="body" :model="form" :rules="rules" ref="form" v-loading="loading" @submit.native.prevent="submit")
       el-row(:gutter="20")
         el-col(:span="!$route.params.projectId ? 16 : 24")
           el-form-item(prop="title")
-            el-input(ref="title" v-model="form.title" size="medium" placeholder="Новая задача")
+            el-input(ref="title" v-model="form.title" placeholder="Новая задача")
         el-col(v-if="!$route.params.projectId" :span="8")
           el-form-item(prop="projectId")
             el-select(
               v-model="form.projectId"
-              size="medium"
               placeholder="Проект"
               :remote-method="searchProjects"
               filterable remote clearable default-first-option)
@@ -19,13 +22,12 @@
         transition(name="fade")
           el-col(:span="24")
             el-form-item(prop="description")
-              el-input(v-model="form.description" size="medium" type="textarea" placeholder="Заметки")
+              el-input(v-model="form.description" type="textarea" placeholder="Заметки")
         transition(name="fade")
           el-col(v-if="tagsVisible || (form.tags && form.tags.length)" :span="24")
             el-form-item(prop="tags")
               el-select(
                 v-model="form.tags"
-                size="medium"
                 placeholder="Теги"
                 multiple filterable allow-create default-first-option)
         transition(name="fade")
@@ -33,7 +35,6 @@
             el-form-item(prop="priority")
               el-select(
                 v-model="form.priority"
-                size="medium"
                 placeholder="Приоритет")
                 el-option(v-for="item in priorities" :key="item.value" :label="item.label" :value="item.value")
         transition(name="fade")
@@ -41,18 +42,15 @@
             el-form-item(prop="performerId")
               el-select(
                 v-model="form.performerId"
-                size="medium"
                 placeholder="Ответственный"
                 :remote-method="searchUsers"
                 filterable remote clearable default-first-option)
                 el-option(v-for="item in userList" :key="item.id" :label="item.value" :value="item.id")
-
         transition(name="fade")
           el-col(v-if="expectedCompletedDateVisible || form.expectedCompletedDate" :span="8")
             el-form-item(prop="expectedCompletedDate")
               el-date-picker(
                 v-model="form.expectedCompletedDate"
-                size="medium"
                 prefix-icon="el-icon-arrow-down"
                 suffix-icon="el-icon-arrow-down"
                 format="dd.MM.yyyy"
@@ -74,22 +72,21 @@
                   span  или перетащите его сюда
         el-col(:span="24")
           div.extra
-            el-tooltip(content="Теги" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
+            el-tooltip(content="Теги" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
               el-button(v-if="!(form.tags && form.tags.length)" type="text" title="Теги" @click="tagsVisible = !tagsVisible" circle)
                 feather(type="tag")
-            el-tooltip(content="Приоритет" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
+            el-tooltip(content="Приоритет" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
               el-button(v-if="!form.priority" type="text" @click="priorityVisible = !priorityVisible" circle)
                 feather(type="zap")
-            el-tooltip(content="Ответственный" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
+            el-tooltip(content="Ответственный" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
               el-button(v-if="!form.performerId" type="text" @click="performerVisible = !performerVisible" circle)
                 feather(type="user")
-            el-tooltip(content="Крайний срок" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
+            el-tooltip(content="Крайний срок" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
               el-button(v-if="!form.expectedCompletedDate" type="text" @click="expectedCompletedDateVisible = !expectedCompletedDateVisible" circle)
                 feather(type="calendar")
-            el-tooltip(content="Вложения" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
+            el-tooltip(content="Вложения" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
               el-button(v-if="!attachmentList.length" type="text" @click="attachmentsVisible = !attachmentsVisible" circle)
                 feather(type="paperclip")
-    el-button(slot="footer" size="medium" type="default" @click="submit") {{ isEdit ? 'Сохранить' : 'Создать' }}
 </template>
 
 <script>
