@@ -22,7 +22,7 @@
         transition(name="fade")
           el-col(:span="24")
             el-form-item(prop="description")
-              el-input(v-model="form.description" type="textarea" placeholder="Заметки")
+              el-input(v-model="form.description" :autosize="{ minRows: 2 }" type="textarea" placeholder="Заметки" )
         transition(name="fade")
           el-col(v-if="tagsVisible || (form.tags && form.tags.length)" :span="24")
             el-form-item(prop="tags")

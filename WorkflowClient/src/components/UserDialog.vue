@@ -1,5 +1,5 @@
 <template lang="pug">
-  base-dialog(v-if="visible" @close="exit")
+  base-dialog(v-if="visible" @close="exit" ref="dialog")
     h1(slot="title") Пользователь
     el-button(slot="submit" type="text" @click="submit" circle)
       feather(type="check" size="22")

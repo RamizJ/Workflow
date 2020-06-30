@@ -6,9 +6,9 @@
     div.header(slot="title")
       div.title
         slot(name="title")
-      div.submit
+      el-tooltip.submit(content="Сохранить" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="800")
         slot(name="submit")
-      div.close
+      el-tooltip.close(content="Закрыть" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="800")
         slot(name="close")
     div.body
       slot(name="body")

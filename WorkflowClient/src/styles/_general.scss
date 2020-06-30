@@ -77,6 +77,9 @@ a {
   color: var(--text);
   border-radius: 6px;
 }
+.el-select-dropdown__item.selected {
+  color: var(--text);
+}
 .el-dropdown-menu__item:focus,
 .el-dropdown-menu__item:not(.is-disabled):hover,
 .el-dropdown-menu__item.hover,
@@ -86,6 +89,7 @@ a {
   background-color: var(--color-primary);
   color: white;
 }
+
 .el-select-dropdown.is-multiple .el-select-dropdown__item.selected {
   background-color: var(--tag-border);
 }
@@ -136,7 +140,7 @@ a {
   background-color: var(--input-background);
   border-color: var(--input-border);
   border-radius: 8px;
-  transition: .3s;
+  transition: background-color .25s, border-color .25s;
   &:hover:not(:focus) {
     background-color: var(--input-hover-background);
     border-color: var(--input-hover-border);

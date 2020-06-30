@@ -13,7 +13,7 @@
       el-row(:gutter="20")
         el-col(:span="24")
           el-form-item(prop="description")
-            el-input(v-model="form.description" type="textarea" placeholder="Заметки")
+            el-input(v-model="form.description" :autosize="{ minRows: 2 }" type="textarea" placeholder="Заметки")
       el-row(:gutter="20")
         transition(name="fade")
           el-col(v-if="teamMembersVisible || (form.userIds && form.userIds.length)" :span="24")
