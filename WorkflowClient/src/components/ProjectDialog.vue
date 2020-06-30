@@ -85,17 +85,6 @@ export default {
     })
   },
   async mounted() {
-    if (this.isEdit) {
-      this.loading = true;
-      await this.fetchProjectTeams({
-        projectId: this.id,
-        pageNumber: 0,
-        pageSize: 10
-      });
-      this.form.teamIds = this.projectTeams.map(team => parseInt(team.id));
-      this.$forceUpdate();
-      this.loading = false;
-    }
     await this.searchTeams();
     this.$refs.title.focus();
   },

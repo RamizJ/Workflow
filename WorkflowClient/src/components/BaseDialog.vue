@@ -49,10 +49,10 @@ export default {
   top: 25px;
 }
 .submit {
-  right: 76px;
+  right: 90px;
 }
 .close {
-  right: 28px;
+  right: 35px;
 }
 .body {
   padding-top: 0;
@@ -112,7 +112,7 @@ export default {
     right: 38px;
   }
   .el-dialog__body {
-    padding: 15px 20px !important;
+    padding: 15px 20px 5px !important;
   }
   .el-upload-dragger {
     border-color: var(--popover-border);

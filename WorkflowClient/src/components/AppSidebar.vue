@@ -27,10 +27,10 @@
       el-menu-item(index="/users")
         feather(type="users")
         span Пользователи
-      //el-menu-item(index="/journal" disabled)
+      el-menu-item(index="/journal")
         feather(type="check-circle")
         span Журнал
-      //el-menu-item(index="/trash" disabled)
+      el-menu-item(index="/trash")
         feather(type="trash")
         span Корзина
 
@@ -38,10 +38,10 @@
 
       el-collapse(v-model="collapseState")
         el-collapse-item(title="Проекты" name="projects")
-          el-menu-item(v-for="item in projectList" :index="`/projects/${item.id}`")
+          el-menu-item(v-for="item in projects" :key="item.id" :index="`/projects/${item.id}`")
             feather(type="box")
             span {{ item.name }}
-          infinite-loading(@infinite="loadProjects" spinner="waveDots")
+          infinite-loading(ref="loader" @infinite="load" spinner="waveDots")
             div(slot="no-more")
             div(slot="no-results")
 
@@ -50,6 +50,7 @@
       div
         div.profile__title {{ `${me.lastName} ${me.firstName}` }}
         div.profile__subtitle {{ me.position || 'Разработчик' }}
+
 </template>
 
 <script>
@@ -59,30 +60,21 @@ export default {
   name: 'AppSidebar',
   data() {
     return {
-      projectList: [],
-      projectQuery: {
-        pageNumber: 0,
-        pageSize: 10
-      },
       collapseState: ['projects']
     };
   },
   computed: {
     ...mapGetters({
       me: 'auth/me',
-      projects: 'projects/getProjects'
+      projects: 'projects/getSidebarProjects'
     })
   },
   methods: {
-    ...mapActions({ fetchProjects: 'projects/fetchProjects' }),
-    async loadProjects($state) {
-      await this.fetchProjects(this.projectQuery);
-      if (this.projects.length) {
-        if (!this.projectList.length) this.projectList = this.projects;
-        else this.projectList = [...this.projectList, ...this.projects];
-        this.projectQuery.pageNumber += 1;
-        $state.loaded();
-      } else $state.complete();
+    ...mapActions({ fetchSidebarProjects: 'projects/fetchSidebarProjects' }),
+    async load($state) {
+      const projects = await this.fetchSidebarProjects();
+      if (projects.length) $state.loaded();
+      else $state.complete();
     }
   }
 };
@@ -124,9 +116,16 @@ export default {
     height: 14px;
     margin-right: 12px;
     margin-left: 8px;
+    overflow: unset;
   }
   &:focus {
     animation: push 0.6s;
+  }
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: break-all;
   }
 }
 .el-menu-item.is-active {

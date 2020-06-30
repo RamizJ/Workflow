@@ -8,7 +8,7 @@
     base-toolbar
       template(slot="filters")
         base-toolbar-item
-          el-input(v-model="query.filter" size="small" placeholder="Поиск" @change="refresh")
+          el-input(v-model="filters.search" size="small" placeholder="Поиск" @change="refresh")
         base-toolbar-item
           el-select(
             v-model="filters.sort.value"
@@ -41,7 +41,7 @@
         el-table-column(type="selection" width="55")
         el-table-column(prop="name" label="Название")
         el-table-column(prop="ownerFio" label="Руководитель")
-        infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
+        infinite-loading(slot="append" ref="loader" spinner="waveDots" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
           div(slot="no-more")
           div(slot="no-results")
 
@@ -78,11 +78,11 @@ export default {
   data() {
     return {
       query: {
-        filter: '',
         pageNumber: 0,
-        pageSize: 30
+        pageSize: 20
       },
       filters: {
+        search: '',
         sort: {
           value: null,
           items: [
@@ -134,9 +134,17 @@ export default {
   methods: {
     ...mapActions({
       fetchItems: 'projects/fetchProjects',
+      fetchSidebarItems: 'projects/fetchSidebarProjects',
       deleteItem: 'projects/deleteProject',
       deleteItems: 'projects/deleteProjects'
     }),
+    async refresh() {
+      this.tableData = [];
+      this.query.pageNumber = 0;
+      this.$refs.loader.stateChanger.reset();
+      await this.fetchSidebarItems({ reload: true });
+      this.dialogOpened = false;
+    },
     async applyFilters() {}
   }
 };

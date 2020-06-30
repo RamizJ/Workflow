@@ -118,6 +118,7 @@ export default {
       fetchProject: 'projects/fetchProject',
       updateProject: 'projects/updateProject',
       deleteProject: 'projects/deleteProject',
+      fetchSidebarProjects: 'projects/fetchSidebarProjects',
       fetchItems: 'tasks/fetchTasks',
       deleteItem: 'tasks/deleteTask',
       deleteItems: 'tasks/deleteTasks',
@@ -138,6 +139,8 @@ export default {
           break;
         case 'deleteProject':
           await this.deleteProject(this.projectItem.id);
+          await this.fetchSidebarProjects({ reload: true });
+          await this.$router.push({ name: 'Projects' });
           break;
         default:
           break;
