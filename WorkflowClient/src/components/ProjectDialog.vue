@@ -66,13 +66,7 @@ export default {
         tags: []
       },
       rules: {
-        name: [
-          {
-            required: true,
-            message: 'Введите название проекта',
-            trigger: 'blur'
-          }
-        ]
+        name: [{ required: true, message: '!', trigger: 'blur' }]
       },
       tagsVisible: null,
       teamsVisible: null

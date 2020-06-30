@@ -122,24 +122,14 @@ export default {
         tags: []
       },
       rules: {
-        title: [
-          {
-            required: true,
-            message: 'Введите название задачи',
-            trigger: 'blur'
-          }
-        ],
-        performerId: [
-          { required: true, message: 'Укажите ответственного', trigger: 'blur' }
-        ],
-        projectId: [
-          { required: true, message: 'Укажите проект', trigger: 'blur' }
-        ]
+        title: [{ required: true, message: '!', trigger: 'blur' }],
+        performerId: [{ required: true, message: '!', trigger: 'blur' }],
+        projectId: [{ required: true, message: '!', trigger: 'blur' }]
       },
       priorities: [
-        { value: 'High', label: 'Высокий приоритет' },
-        { value: 'Normal', label: 'Обычный приоритет' },
-        { value: 'Low', label: 'Низкий приоритет' }
+        { value: 'High', label: 'Высокий' },
+        { value: 'Normal', label: 'Нормальный' },
+        { value: 'Low', label: 'Низкий' }
       ],
       attachmentList: [],
       tagsVisible: null,

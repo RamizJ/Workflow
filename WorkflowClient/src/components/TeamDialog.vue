@@ -63,13 +63,7 @@ export default {
         projectIds: []
       },
       rules: {
-        name: [
-          {
-            required: true,
-            message: 'Введите название команды',
-            trigger: 'blur'
-          }
-        ]
+        name: [{ required: true, message: '!', trigger: 'blur' }]
       },
       teamMembersVisible: null,
       projectsVisible: null

@@ -107,29 +107,19 @@ export default {
         { value: 3, label: 'Разработчик' }
       ],
       rules: {
-        lastName: [
-          { required: true, message: 'Введите фамилию', trigger: 'blur' }
-        ],
-        firstName: [
-          { required: true, message: 'Введите имя', trigger: 'blur' }
-        ],
+        lastName: [{ required: true, message: '!', trigger: 'blur' }],
+        firstName: [{ required: true, message: '!', trigger: 'blur' }],
         userName: [
-          { required: true, message: 'Введите логин', trigger: 'blur' },
+          { required: true, message: '!', trigger: 'blur' },
           { validator: this.validateLogin, trigger: 'blur' }
         ],
         password: [{ validator: this.validatePassword, trigger: 'blur' }],
         email: [
-          { required: true, message: 'Введите эл. почту', trigger: 'blur' },
-          {
-            type: 'email',
-            message: 'Некорректный адрес эл. почты',
-            trigger: 'blur'
-          },
+          { required: true, message: '!', trigger: 'blur' },
+          { type: 'email', message: 'не почта', trigger: 'blur' },
           { validator: this.validateEmail, trigger: 'blur' }
         ],
-        phone: [
-          { required: true, message: 'Введите номер телефона', trigger: 'blur' }
-        ]
+        phone: [{ required: true, message: '!', trigger: 'blur' }]
       },
       teamsVisible: null,
       rolesVisible: null,
@@ -154,22 +144,22 @@ export default {
     }),
     async validateLogin(rule, value, callback) {
       const loginAlreadyExist = await this.isLoginExist(value);
-      if (loginAlreadyExist) callback(new Error('Логин уже существует'));
+      if (loginAlreadyExist) callback(new Error('занято'));
       else callback();
     },
     async validateEmail(rule, value, callback) {
       const emailAlreadyExist = await this.isEmailExist(value);
-      if (emailAlreadyExist) callback(new Error('Почта уже существует'));
+      if (emailAlreadyExist) callback(new Error('занято'));
       else callback();
     },
     validatePassword(rule, value, callback) {
       const length = value?.trim().length;
       const symbolsLeft = 6 - length;
       if (!value && this.isEdit) callback();
-      if (!value) callback(new Error('Введите пароль'));
+      if (!value) callback(new Error('!'));
       else if (length < 6)
         callback(
-          new Error(`Введите ещё ${symbolsLeft}
+          new Error(`ещё ${symbolsLeft}
         ${
           symbolsLeft > 1
             ? symbolsLeft > 4
@@ -178,8 +168,7 @@ export default {
             : 'символ'
         }`)
         );
-      else if (!/[a-z]/.test(value))
-        callback(new Error('Введите хотя бы одну букву'));
+      else if (!/[a-z]/.test(value)) callback(new Error('нужна буква'));
       else callback();
     }
   }

@@ -80,19 +80,6 @@ export default {
   .el-form-item {
     margin-bottom: 16px;
   }
-  .el-form-item__error {
-    font-size: 10px;
-    padding-top: 0;
-  }
-  .el-form-item.is-error .el-input__inner,
-  .el-form-item.is-error .el-input__inner:focus,
-  .el-form-item.is-error .el-textarea__inner,
-  .el-form-item.is-error .el-textarea__inner:focus,
-  .el-message-box__input input.invalid,
-  .el-message-box__input input.invalid:focus {
-    background-color: #f56c6c26;
-    border-color: transparent;
-  }
   .el-range-editor.el-input__inner {
     width: 100%;
   }

@@ -8,7 +8,7 @@
         el-input(v-model="form.password" type="password" autocomplete="off" placeholder="Пароль")
       el-form-item
         el-button(type="primary" @click="submit") Войти
-      el-checkbox(v-model="form.rememberMe") Запомнить меня
+      //el-checkbox(v-model="form.rememberMe") Запомнить меня
 </template>
 
 <script>
@@ -25,20 +25,8 @@ export default {
         rememberMe: false
       },
       rules: {
-        login: [
-          {
-            required: true,
-            message: 'Пожалуйста, введите логин',
-            trigger: 'blur'
-          }
-        ],
-        password: [
-          {
-            required: true,
-            message: 'Пожалуйста, введите пароль',
-            trigger: 'blur'
-          }
-        ]
+        login: [{ required: true, message: '!', trigger: 'blur' }],
+        password: [{ required: true, message: '!', trigger: 'blur' }]
       }
     };
   },
@@ -59,19 +47,20 @@ export default {
             await this.$router.push('/tasks');
           } catch (error) {
             console.error(error);
-            this.$message.error('Неверный логин или пароль');
+            this.$message({
+              showClose: true,
+              message: 'Неверный логин или пароль',
+              type: 'error'
+            });
           }
         } else {
-          this.$message.error('Укажите корректные данные');
+          this.$message({
+            showClose: true,
+            message: 'Форма заполнена некорректно',
+            type: 'error'
+          });
         }
       });
-
-      // if (this.loggedIn) {
-      //   form.resetFields();
-      //   await this.$router.push('/tasks');
-      // } else {
-      //   this.$message.error('Неверный логин или пароль');
-      // }
       this.loading = false;
     }
   }

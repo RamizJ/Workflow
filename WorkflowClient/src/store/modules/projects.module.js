@@ -38,7 +38,6 @@ export default {
       const page = state.sidebarProjectsPage;
       if (page === 0) commit('setSidebarProjects', []);
       commit('setSidebarProjectsPage', page + 1);
-      console.log(state.sidebarProjectsPage);
       const response = await projectsAPI.getPage({
         pageNumber: page,
         pageSize: params?.pageSize || 10

@@ -31,7 +31,11 @@ export default {
         if (valid) formValid = true;
         else {
           formValid = false;
-          this.$message.error('Укажите корректные данные');
+          this.$message({
+            showClose: true,
+            message: 'Форма заполнена некорректно',
+            type: 'error'
+          });
         }
       });
       return formValid;

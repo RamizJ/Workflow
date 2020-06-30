@@ -15,10 +15,12 @@ a {
   color: var(--link);
   text-decoration: none;
   transition: color 0.25s;
+
   &:hover {
     color: var(--link-hover);
   }
 }
+
 .container {
   width: 100%;
   display: flex;
@@ -26,6 +28,7 @@ a {
 }
 
 .el-dialog {
+  width: 46%;
   border-color: var(--card-border);
   background-color: var(--card-background);
 }
@@ -236,4 +239,26 @@ a {
 }
 .el-upload-list__item:hover {
   background-color: var(--popover-hover);
+}
+.el-form-item__error {
+  font-size: 12px;
+  padding-top: 0;
+  top: 0;
+  line-height: 40px;
+  left: auto;
+  right: 15px;
+}
+.el-form-item.is-error .el-input__inner,
+.el-form-item.is-error .el-input__inner:focus,
+.el-form-item.is-error .el-textarea__inner,
+.el-form-item.is-error .el-textarea__inner:focus,
+.el-message-box__input input.invalid,
+.el-message-box__input input.invalid:focus {
+  background-color: #f56c6c26;
+  border-color: transparent;
+}
+.el-message {
+  border: none;
+  border-radius: 8px;
+  padding: 20px 20px 20px 25px;
 }
