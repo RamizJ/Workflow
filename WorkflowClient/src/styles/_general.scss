@@ -21,12 +21,6 @@ a {
   }
 }
 
-.container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
 .el-dialog {
   width: 46%;
   border-color: var(--card-border);
@@ -261,4 +255,25 @@ a {
   border: none;
   border-radius: 8px;
   padding: 20px 20px 20px 25px;
+}
+.el-collapse-item__header {
+  color: var(--text);
+  padding-left: 12px;
+  font-size: 15.5px;
+  font-weight: 600;
+  height: 35px;
+  line-height: 35px;
+}
+.el-tabs {
+  width: 100%;
+}
+.el-tabs__content,
+.el-tab-pane {
+  height: 100%;
+}
+.el-tabs__item:focus.is-active.is-focus:not(:active) {
+  box-shadow: none;
+}
+.el-tabs__nav-wrap::after {
+  background-color: transparent;
 }

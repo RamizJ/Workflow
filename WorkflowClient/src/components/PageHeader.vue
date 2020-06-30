@@ -1,24 +1,24 @@
 <template lang="pug">
-  div.base-header
-    div.base-header__title
+  div.page-header
+    div.page-header__title
       slot(name="title")
       div.action
         slot(name="action")
         i.el-icon-arrow-right
-    div.base-header__subtitle
+    div.page-header__subtitle
       slot(name="subtitle")
 
 </template>
 
 <script>
 export default {
-  name: 'BaseHeader'
+  name: 'PageHeader'
 };
 </script>
 
 <style lang="scss" scoped>
-.base-header {
-  padding: 32px 35px;
+.page-header {
+  padding: 32px 35px 25px;
 }
 input {
   border: none;
@@ -34,7 +34,7 @@ input {
     font-weight: 400;
   }
 }
-.base-header__title {
+.page-header__title {
   cursor: default;
   display: flex;
   align-items: baseline;
@@ -59,14 +59,14 @@ input {
     }
   }
 }
-.base-header__subtitle > * {
+.page-header__subtitle > * {
   margin-top: 25px;
   font-size: 14px;
 }
 </style>
 
 <style lang="scss">
-.base-header .actions {
+.page-header .actions {
   background-color: transparent;
   height: 21px;
   vertical-align: bottom;

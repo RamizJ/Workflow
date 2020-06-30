@@ -1,6 +1,6 @@
 <template lang="pug">
-  div.container
-    base-header
+  page
+    page-header
       template(slot="title") Проекты
       template(slot="action")
         a(href="#" @click="dialogOpened = true; selectedItemId = null") Создать
@@ -29,7 +29,7 @@
           el-select(v-model="filters.tag.value" size="small" placeholder="Тег")
             el-option(v-for="option in filters.tag.items" :key="option.value" :value="option.value", :label="option.label")
 
-    base-list
+    page-content
       el-table(
         :data="tableData"
         ref="table"
@@ -58,7 +58,9 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import BaseHeader from '~/components/BaseHeader';
+import Page from '~/components/Page';
+import PageHeader from '~/components/PageHeader';
+import PageContent from '~/components/PageContent';
 import BaseToolbar from '~/components/BaseToolbar';
 import BaseToolbarItem from '~/components/BaseToolbarItem';
 import BaseList from '~/components/BaseList';
@@ -68,7 +70,9 @@ import tableMixin from '~/mixins/table.mixin';
 export default {
   name: 'Projects',
   components: {
-    BaseHeader,
+    Page,
+    PageHeader,
+    PageContent,
     BaseToolbar,
     BaseToolbarItem,
     BaseList,
@@ -145,7 +149,12 @@ export default {
       await this.fetchSidebarItems({ reload: true });
       this.dialogOpened = false;
     },
-    async applyFilters() {}
+    async applyFilters() {},
+    onItemDoubleClick(row, column, event) {
+      console.log(row);
+      this.$router.push(`/projects/${row.id}`);
+      // this.onItemEdit(event, row);
+    }
   }
 };
 </script>

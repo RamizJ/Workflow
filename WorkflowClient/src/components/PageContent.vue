@@ -1,24 +1,21 @@
 <template lang="pug">
-  div.list
+  div.page-content
     slot
 </template>
 
 <script>
 export default {
-  name: 'BaseList'
+  name: 'PageContent'
 };
 </script>
 
 <style lang="scss" scoped>
-.list {
+.page-content {
   display: flex;
   position: relative;
   overflow: hidden;
   flex: 1;
   height: 100%;
-  .el-table {
-    overflow: auto;
-    position: unset !important;
-  }
+  padding: 0 35px;
 }
 </style>

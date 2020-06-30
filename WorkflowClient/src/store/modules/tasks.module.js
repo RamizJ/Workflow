@@ -24,6 +24,11 @@ export default {
       const tasks = response.data;
       commit('setTasks', tasks);
     },
+    async searchTasks({ commit }, params) {
+      const response = await tasksAPI.getPage(params);
+      const tasks = response.data;
+      return tasks;
+    },
     async fetchTask({ commit }, id) {
       const response = await tasksAPI.get(id);
       const task = response.data;

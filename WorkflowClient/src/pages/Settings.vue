@@ -1,6 +1,6 @@
 <template lang="pug">
-  div.container
-    base-header
+  page
+    page-header
       template(slot="title") Настройки
 
     div.settings
@@ -12,12 +12,14 @@
 </template>
 
 <script>
-import BaseHeader from '~/components/BaseHeader';
+import Page from '~/components/Page';
+import PageHeader from '~/components/PageHeader';
 
 export default {
   name: 'Settings',
   components: {
-    BaseHeader
+    Page,
+    PageHeader
   },
   data() {
     return {

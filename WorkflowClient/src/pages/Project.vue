@@ -1,6 +1,6 @@
 <template lang="pug">
-  div.container
-    base-header
+  page
+    page-header
       template(slot="title")
         input.title(
           placeholder="Заголовок"
@@ -39,30 +39,34 @@
           v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
           @change="update")
 
-    base-list
-      el-table(
-        :data="tableData"
-        ref="table"
-        height="100%"
-        v-loading="loading"
-        @row-contextmenu="onItemRightClick"
-        @row-dblclick="onItemDoubleClick"
-        highlight-current-row)
-        el-table-column(type="selection" width="55")
-        el-table-column(prop="title" label="Задача" width="450")
-        el-table-column(prop="description" label="Заметки")
-        el-table-column(prop="creationDate" label="Добавлено" :formatter="dateFormatter" width="165")
-        infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
-          div(slot="no-more")
-          div(slot="no-results")
+    page-content
+      el-tabs(ref="tabs" v-model="activeTab" @tab-click="onTabClick")
+        el-tab-pane(v-for="(tab, index) in tabs" :key="index" :label="tab.label" :name="tab.name")
+          base-list
+            el-table(
+              v-if="tab.name === activeTab"
+              :data="tableData"
+              ref="table"
+              height="100%"
+              v-loading="loading"
+              @row-contextmenu="onItemRightClick"
+              @row-dblclick="onItemDoubleClick"
+              highlight-current-row)
+              el-table-column(type="selection" width="55")
+              el-table-column(prop="title" label="Задача" width="450")
+              el-table-column(prop="description" label="Заметки")
+              el-table-column(prop="creationDate" label="Добавлено" :formatter="dateFormatter" width="165")
+              infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
+                div(slot="no-more")
+                div(slot="no-results")
 
-      vue-context(ref="contextMenu")
-        template(slot-scope="child")
-          li(@click.prevent="onItemEdit($event, child.data.row)") Редактировать
-          li(v-if="!isMultipleSelected" @click.prevent="onItemComplete($event, child.data.row)") Завершить
-          li(v-if="!isMultipleSelected" @click.prevent="onItemDelete($event, child.data.row)") Удалить
-          li(v-if="isMultipleSelected" @click.prevent="onItemMultipleComplete($event, child.data.row)") Завершить выделенное
-          li(v-if="isMultipleSelected" @click.prevent="onItemMultipleDelete($event, child.data.row)") Удалить выделенное
+    vue-context(ref="contextMenu")
+      template(slot-scope="child")
+        li(@click.prevent="onItemEdit($event, child.data.row)") Редактировать
+        li(v-if="!isMultipleSelected" @click.prevent="onItemComplete($event, child.data.row)") Завершить
+        li(v-if="!isMultipleSelected" @click.prevent="onItemDelete($event, child.data.row)") Удалить
+        li(v-if="isMultipleSelected" @click.prevent="onItemMultipleComplete($event, child.data.row)") Завершить выделенное
+        li(v-if="isMultipleSelected" @click.prevent="onItemMultipleDelete($event, child.data.row)") Удалить выделенное
 
     task-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false" @submit="refresh")
     team-dialog(v-if="teamDialogOpened" @close="teamDialogOpened = false" @submit="refresh")
@@ -71,7 +75,9 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import BaseHeader from '~/components/BaseHeader';
+import Page from '~/components/Page';
+import PageHeader from '~/components/PageHeader';
+import PageContent from '~/components/PageContent';
 import BaseList from '~/components/BaseList';
 import TaskDialog from '~/components/TaskDialog';
 import TeamDialog from '~/components/TeamDialog';
@@ -79,12 +85,27 @@ import tableMixin from '~/mixins/table.mixin';
 
 export default {
   name: 'Project',
-  components: { BaseHeader, BaseList, TaskDialog, TeamDialog },
+  components: {
+    Page,
+    PageHeader,
+    PageContent,
+    BaseList,
+    TaskDialog,
+    TeamDialog
+  },
   mixins: [tableMixin],
   data() {
     return {
       query: {
-        projectId: this.$route.params.projectId
+        projectId: this.$route.params.projectId,
+        pageNumber: 0,
+        pageSize: 20,
+        filterFields: [
+          {
+            fieldName: 'state',
+            values: ['New']
+          }
+        ]
       },
       projectItem: {
         name: '',
@@ -100,7 +121,16 @@ export default {
       },
       inputVisible: false,
       inputValue: '',
-      teamDialogOpened: false
+      teamDialogOpened: false,
+      tabs: [
+        { label: 'Новое', name: 'New' },
+        { label: 'В работе', name: 'Perform' },
+        { label: 'Отложенное', name: 'Delay' },
+        { label: 'Тестируется', name: 'Testing' },
+        { label: 'Выполненное', name: 'Succeed' },
+        { label: 'Отклонённое', name: 'Rejected' }
+      ],
+      activeTab: 'New'
     };
   },
   computed: {
@@ -120,11 +150,17 @@ export default {
       deleteProject: 'projects/deleteProject',
       fetchSidebarProjects: 'projects/fetchSidebarProjects',
       fetchItems: 'tasks/fetchTasks',
+      searchItems: 'tasks/searchTasks',
       deleteItem: 'tasks/deleteTask',
       deleteItems: 'tasks/deleteTasks',
       completeItem: 'tasks/completeTask',
       completeItems: 'tasks/completeTasks'
     }),
+    onTabClick(tab) {
+      console.log(tab.name);
+      this.query.filterFields[0].values[0] = tab.name;
+      this.refresh();
+    },
     async update(e) {
       await this.updateProject(this.projectItem);
     },

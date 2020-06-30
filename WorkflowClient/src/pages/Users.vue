@@ -1,6 +1,6 @@
 <template lang="pug">
-  div.container
-    base-header
+  page
+    page-header
       template(slot="title") Пользователи
       template(slot="action")
         a(href="#" @click="dialogOpened = true; selectedItemId = null") Создать
@@ -18,7 +18,7 @@
             multiple collapse-tags)
             el-option(v-for="option in filters.position.items" :key="option.value" :value="option.value", :label="option.label")
 
-    base-list
+    page-content
       el-table(
         :data="tableData"
         ref="table"
@@ -51,7 +51,9 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import BaseHeader from '~/components/BaseHeader';
+import Page from '~/components/Page';
+import PageHeader from '~/components/PageHeader';
+import PageContent from '~/components/PageContent';
 import BaseToolbar from '~/components/BaseToolbar';
 import BaseToolbarItem from '~/components/BaseToolbarItem';
 import BaseList from '~/components/BaseList';
@@ -61,7 +63,9 @@ import tableMixin from '~/mixins/table.mixin';
 export default {
   name: 'Users',
   components: {
-    BaseHeader,
+    Page,
+    PageHeader,
+    PageContent,
     BaseToolbar,
     BaseToolbarItem,
     BaseList,

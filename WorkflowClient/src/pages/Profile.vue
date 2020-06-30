@@ -1,6 +1,6 @@
 <template lang="pug">
-  div.container
-    base-header(v-if="!!me")
+  page
+    page-header(v-if="!!me")
       template(slot="title") {{ `${me.lastName} ${me.firstName}` }}
       template(slot="action")
         a(href="#" @click="exit") Выйти
@@ -53,11 +53,12 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import BaseHeader from '~/components/BaseHeader';
+import Page from '~/components/Page';
+import PageHeader from '~/components/PageHeader';
 
 export default {
   name: 'Profile',
-  components: { BaseHeader },
+  components: { Page, PageHeader },
   data() {
     return {
       emptyText: '-',

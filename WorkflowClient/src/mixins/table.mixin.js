@@ -16,7 +16,7 @@ export default {
   computed: {
     ...mapGetters({ items: '' }),
     isMultipleSelected() {
-      return this.$refs.table.selection.length > 1;
+      return this.$refs.table.selection?.length > 1;
     }
   },
   methods: {
@@ -27,10 +27,12 @@ export default {
       completeItem: '',
       completeItems: ''
     }),
-    async refresh() {
+    refresh() {
       this.tableData = [];
       this.query.pageNumber = 0;
-      this.$refs.loader.stateChanger.reset();
+      const loader =
+        this.$refs.loader.stateChanger || this.$refs.loader[0].stateChanger;
+      loader.reset();
       this.dialogOpened = false;
     },
     async load($state) {

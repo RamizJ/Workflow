@@ -1,6 +1,6 @@
 <template lang="pug">
-  div.container
-    base-header
+  page
+    page-header
       template(slot="title") Области
       template(slot="action")
         a(href="#" @click="dialogOpened = true; selectedItemId = null") Создать
@@ -47,7 +47,8 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import BaseHeader from '~/components/BaseHeader';
+import Page from '~/components/Page';
+import PageHeader from '~/components/PageHeader';
 import BaseToolbar from '~/components/BaseToolbar';
 import BaseToolbarItem from '~/components/BaseToolbarItem';
 import BaseList from '~/components/BaseList';
@@ -57,7 +58,8 @@ import tableMixin from '~/mixins/table.mixin';
 export default {
   name: 'Teams',
   components: {
-    BaseHeader,
+    Page,
+    PageHeader,
     BaseToolbar,
     BaseToolbarItem,
     BaseList,
