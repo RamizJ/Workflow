@@ -61,15 +61,15 @@ a {
 .el-select-dropdown__list,
 .el-dropdown-menu {
   padding: 8px 0;
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid var(--card-border);
 }
 .el-select-dropdown__item,
 .el-dropdown-menu__item {
   height: 36px;
   line-height: 36px;
-  font-size: 13px;
-  padding: 0 20px;
+  font-size: 14px;
+  padding: 0 18px;
   margin: 0 8px;
   color: var(--text);
   border-radius: 6px;
@@ -270,6 +270,9 @@ a {
 .el-tabs__content,
 .el-tab-pane {
   height: 100%;
+}
+.el-tabs__item {
+  color: var(--text);
 }
 .el-tabs__item:focus.is-active.is-focus:not(:active) {
   box-shadow: none;

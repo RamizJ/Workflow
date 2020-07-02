@@ -16,6 +16,6 @@ export default {
   overflow: hidden;
   flex: 1;
   height: 100%;
-  padding: 0 35px;
+  padding: 0 30px;
 }
 </style>

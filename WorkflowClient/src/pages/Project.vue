@@ -60,13 +60,13 @@
                 div(slot="no-more")
                 div(slot="no-results")
 
-    vue-context(ref="contextMenu")
-      template(slot-scope="child")
-        li(@click.prevent="onItemEdit($event, child.data.row)") Редактировать
-        li(v-if="!isMultipleSelected" @click.prevent="onItemComplete($event, child.data.row)") Завершить
-        li(v-if="!isMultipleSelected" @click.prevent="onItemDelete($event, child.data.row)") Удалить
-        li(v-if="isMultipleSelected" @click.prevent="onItemMultipleComplete($event, child.data.row)") Завершить выделенное
-        li(v-if="isMultipleSelected" @click.prevent="onItemMultipleDelete($event, child.data.row)") Удалить выделенное
+            vue-context(ref="contextMenu")
+              template(slot-scope="child")
+                li(@click.prevent="onItemEdit($event, child.data.row)") Редактировать
+                li(v-if="!isMultipleSelected" @click.prevent="onItemComplete($event, child.data.row)") Завершить
+                li(v-if="!isMultipleSelected" @click.prevent="onItemDelete($event, child.data.row)") Удалить
+                li(v-if="isMultipleSelected" @click.prevent="onItemMultipleComplete($event, child.data.row)") Завершить выделенное
+                li(v-if="isMultipleSelected" @click.prevent="onItemMultipleDelete($event, child.data.row)") Удалить выделенное
 
     task-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false" @submit="refresh")
     team-dialog(v-if="teamDialogOpened" @close="teamDialogOpened = false" @submit="refresh")

@@ -1,10 +1,6 @@
 <template lang="pug">
   base-dialog(v-if="visible" @close="exit" ref="dialog")
     h1(slot="title") Задача
-    el-button(slot="submit" type="text" @click="submit" circle)
-      feather(type="check" size="22")
-    el-button(slot="close" type="text" @click="$refs.dialog.showDialog = false" circle)
-      feather(type="x" size="22")
     el-form(slot="body" :model="form" :rules="rules" ref="form" v-loading="loading" @submit.native.prevent="submit")
       el-row(:gutter="20")
         el-col(:span="!$route.params.projectId ? 16 : 24")
@@ -20,7 +16,7 @@
               el-option(v-for="item in projectList" :key="item.id" :label="item.value" :value="item.id")
       el-row(:gutter="20")
         transition(name="fade")
-          el-col(:span="24")
+          el-col(v-if="descriptionVisible || form.description" :span="24")
             el-form-item(prop="description")
               el-input(v-model="form.description" :autosize="{ minRows: 2 }" type="textarea" placeholder="Заметки" )
         transition(name="fade")
@@ -70,23 +66,31 @@
                 div.el-upload__text
                   em Выберите файл
                   span  или перетащите его сюда
-        el-col(:span="24")
-          div.extra
-            el-tooltip(content="Теги" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-              el-button(v-if="!(form.tags && form.tags.length)" type="text" title="Теги" @click="tagsVisible = !tagsVisible" circle)
-                feather(type="tag")
-            el-tooltip(content="Приоритет" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-              el-button(v-if="!form.priority" type="text" @click="priorityVisible = !priorityVisible" circle)
-                feather(type="zap")
-            el-tooltip(content="Ответственный" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-              el-button(v-if="!form.performerId" type="text" @click="performerVisible = !performerVisible" circle)
-                feather(type="user")
-            el-tooltip(content="Крайний срок" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-              el-button(v-if="!form.expectedCompletedDate" type="text" @click="expectedCompletedDateVisible = !expectedCompletedDateVisible" circle)
-                feather(type="calendar")
-            el-tooltip(content="Вложения" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-              el-button(v-if="!attachmentList.length" type="text" @click="attachmentsVisible = !attachmentsVisible" circle)
-                feather(type="paperclip")
+
+    template(slot="footer")
+      div.extra
+        el-tooltip(content="Заметки" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(v-if="!form.description" type="text" title="Теги" @click="descriptionVisible = !descriptionVisible" circle)
+            feather(type="align-left")
+        el-tooltip(content="Теги" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(v-if="!(form.tags && form.tags.length)" type="text" title="Теги" @click="tagsVisible = !tagsVisible" circle)
+            feather(type="tag")
+        el-tooltip(content="Приоритет" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(v-if="!form.priority" type="text" @click="priorityVisible = !priorityVisible" circle)
+            feather(type="zap")
+        el-tooltip(content="Ответственный" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(v-if="!form.performerId" type="text" @click="performerVisible = !performerVisible" circle)
+            feather(type="user")
+        el-tooltip(content="Крайний срок" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(v-if="!form.expectedCompletedDate" type="text" @click="expectedCompletedDateVisible = !expectedCompletedDateVisible" circle)
+            feather(type="calendar")
+        el-tooltip(content="Вложения" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(v-if="!attachmentList.length" type="text" @click="attachmentsVisible = !attachmentsVisible" circle)
+            feather(type="paperclip")
+      div.send
+        el-tooltip(content="Сохранить" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(type="text" @click="submit" circle)
+            feather(type="arrow-right")
 </template>
 
 <script>
@@ -132,6 +136,7 @@ export default {
         { value: 'Low', label: 'Низкий' }
       ],
       attachmentList: [],
+      descriptionVisible: null,
       tagsVisible: null,
       priorityVisible: null,
       performerVisible: null,

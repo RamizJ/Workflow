@@ -18,7 +18,7 @@ export default {
 
 <style lang="scss" scoped>
 .page-header {
-  padding: 32px 35px 25px;
+  padding: 32px 30px 25px;
 }
 input {
   border: none;
@@ -28,6 +28,8 @@ input {
   &.title {
     font-size: 28px;
     font-weight: 800;
+    line-height: 28px;
+    height: 28px;
   }
   &.subtitle {
     font-size: 14px;

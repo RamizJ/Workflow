@@ -33,7 +33,7 @@ export default {
 <style lang="scss" scoped>
 .header,
 .body {
-  padding: 16px 18px 0;
+  padding: 14px 16px 0;
 }
 .header {
   padding-bottom: 0;
@@ -58,9 +58,11 @@ export default {
   padding-top: 0;
 }
 .footer {
-  margin-top: 10px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  margin-left: -12px;
+  margin-right: -12px;
 }
 </style>
 

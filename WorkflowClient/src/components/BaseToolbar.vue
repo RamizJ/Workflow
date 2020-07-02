@@ -12,7 +12,7 @@ export default {
 
 <style lang="scss" scoped>
 .toolbar {
-  padding: 0 35px 25px;
+  padding: 0 30px 25px;
 }
 .toolbar__filters {
   display: flex;

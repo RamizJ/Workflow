@@ -47,7 +47,7 @@
 
       vue-context(ref="contextMenu")
         template(slot-scope="child")
-          li Добавить задачу
+          //li Добавить задачу
           li(@click.prevent="onItemEdit($event, child.data.row)") Редактировать
           li(v-if="!isMultipleSelected" @click.prevent="onItemDelete($event, child.data.row)") Удалить
           li(v-if="isMultipleSelected" @click.prevent="onItemMultipleDelete($event, child.data.row)") Удалить выделенное

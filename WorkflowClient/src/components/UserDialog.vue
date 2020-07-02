@@ -1,10 +1,6 @@
 <template lang="pug">
   base-dialog(v-if="visible" @close="exit" ref="dialog")
     h1(slot="title") Пользователь
-    el-button(slot="submit" type="text" @click="submit" circle)
-      feather(type="check" size="22")
-    el-button(slot="close" type="text" @click="$refs.dialog.showDialog = false" circle)
-      feather(type="x" size="22")
     el-form(slot="body" :model="form" :rules="rules" ref="form" v-loading="loading" @submit.native.prevent="submit")
       el-row(:gutter="20")
         el-col(:span="8")
@@ -53,20 +49,24 @@
             el-form-item(prop="roles")
               el-select(v-model="form.roles" placeholder="Права" multiple)
                 el-option(v-for="item in roles" :key="item.value" :label="item.label" :value="item.value")
-        el-col(:span="24")
-          div.extra
-            el-tooltip(content="Команды" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-              el-button(v-if="!(form.teamIds && form.teamIds.length)" type="text" title="Теги" @click="teamsVisible = !teamsVisible" circle)
-                feather(type="users")
-            el-tooltip(v-if="!(form.roles && form.roles.length)" content="Права" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-              el-button(type="text" @click="rolesVisible = !rolesVisible" circle)
-                feather(type="shield")
-            el-tooltip(v-if="!form.position" content="Должность" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-              el-button(type="text" @click="positionVisible = !positionVisible" circle)
-                feather(type="briefcase")
-            el-tooltip(v-if="!form.phone" content="Телефон" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-              el-button(type="text" @click="phoneVisible = !phoneVisible" circle)
-                feather(type="phone")
+    template(slot="footer")
+      div.extra
+        el-tooltip(content="Команды" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(v-if="!(form.teamIds && form.teamIds.length)" type="text" title="Теги" @click="teamsVisible = !teamsVisible" circle)
+            feather(type="users")
+        el-tooltip(v-if="!(form.roles && form.roles.length)" content="Права" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(type="text" @click="rolesVisible = !rolesVisible" circle)
+            feather(type="shield")
+        el-tooltip(v-if="!form.position" content="Должность" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(type="text" @click="positionVisible = !positionVisible" circle)
+            feather(type="briefcase")
+        el-tooltip(v-if="!form.phone" content="Телефон" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(type="text" @click="phoneVisible = !phoneVisible" circle)
+            feather(type="phone")
+      div.send
+        el-tooltip(content="Сохранить" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(type="text" @click="submit" circle)
+            feather(type="arrow-right")
 </template>
 
 <script>

@@ -1,17 +1,13 @@
 <template lang="pug">
   base-dialog(v-if="visible" @close="exit" ref="dialog")
     h1(slot="title") Проект
-    el-button(slot="submit" type="text" @click="submit" circle)
-      feather(type="check" size="22")
-    el-button(slot="close" type="text" @click="$refs.dialog.showDialog = false" circle)
-      feather(type="x" size="22")
     el-form(slot="body" :model="form" :rules="rules" ref="form" v-loading="loading" @submit.native.prevent="submit")
       el-row(:gutter="20")
         el-col(:span="24")
           el-form-item(prop="name")
             el-input(ref="title" v-model="form.name" placeholder="Новый проект")
       el-row(:gutter="20")
-        el-col(:span="24")
+        el-col(v-if="descriptionVisible || form.description" :span="24")
           el-form-item(prop="description")
             el-input(v-model="form.description" :autosize="{ minRows: 2 }" type="textarea" placeholder="Заметки")
       el-row(:gutter="20")
@@ -31,14 +27,21 @@
                 :remote-method="searchTeams"
                 multiple filterable remote clearable default-first-option)
                 el-option(v-for="item in teamList" :key="item.id" :label="item.value" :value="item.id")
-        el-col(:span="24")
-          div.extra
-            el-tooltip(content="Теги" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-              el-button(v-if="!(form.tags && form.tags.length)" type="text" title="Теги" @click="tagsVisible = !tagsVisible" circle)
-                feather(type="tag")
-            el-tooltip(content="Команды" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-              el-button(v-if="!(form.teamIds && form.teamIds.length)" type="text" title="Теги" @click="teamsVisible = !teamsVisible" circle)
-                feather(type="users")
+    template(slot="footer")
+      div.extra
+        el-tooltip(content="Заметки" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(v-if="!form.description" type="text" title="Теги" @click="descriptionVisible = !descriptionVisible" circle)
+            feather(type="align-left")
+        el-tooltip(content="Теги" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(v-if="!(form.tags && form.tags.length)" type="text" title="Теги" @click="tagsVisible = !tagsVisible" circle)
+            feather(type="tag")
+        el-tooltip(content="Команды" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(v-if="!(form.teamIds && form.teamIds.length)" type="text" title="Теги" @click="teamsVisible = !teamsVisible" circle)
+            feather(type="users")
+      div.send
+        el-tooltip(content="Сохранить" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(type="text" @click="submit" circle)
+            feather(type="arrow-right")
 </template>
 
 <script>
@@ -68,6 +71,7 @@ export default {
       rules: {
         name: [{ required: true, message: '!', trigger: 'blur' }]
       },
+      descriptionVisible: null,
       tagsVisible: null,
       teamsVisible: null
     };

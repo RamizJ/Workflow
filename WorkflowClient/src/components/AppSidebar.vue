@@ -3,6 +3,31 @@
     el-menu(
       :router="true"
       :default-active="$route.path")
+
+      div.profile(v-if="me")
+        router-link(to="/profile")
+          div.avatar
+            el-avatar(:size="40" icon="el-icon-user-solid")
+            svg(viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="enable-background:new -580 439 577.9 194;" xml:space="preserve")
+              circle(cx="50" cy="50" r="40")
+          div
+            div.profile__title {{ me.firstName }}
+            div.profile__subtitle {{ me.email }}
+        div.actions
+          //el-button(type="text")
+            feather(type="rotate-cw")
+          //el-button(type="text")
+            feather(type="search")
+          //el-button(type="text")
+            feather(type="bell")
+          el-button(type="text")
+            router-link(to="/settings")
+              feather(type="settings")
+          el-button(type="text" @click="exit")
+            feather(type="log-out")
+
+      //el-menu-item(index="/profile")
+        span Профиль
       //el-menu-item(index="/" disabled)
         feather(type="activity")
         span Обзор
@@ -21,7 +46,7 @@
 
       div.divider
 
-      el-menu-item(index="/settings")
+      //el-menu-item(index="/settings")
         feather(type="settings")
         span Настройки
       el-menu-item(index="/users")
@@ -45,12 +70,6 @@
             div(slot="no-more")
             div(slot="no-results")
 
-    div.profile(v-if="!!me" @click="$router.push({ name: 'Profile' })")
-      el-avatar(:size="36" icon="el-icon-user-solid")
-      div
-        div.profile__title {{ `${me.lastName} ${me.firstName}` }}
-        div.profile__subtitle {{ me.position || 'Разработчик' }}
-
 </template>
 
 <script>
@@ -70,11 +89,22 @@ export default {
     })
   },
   methods: {
-    ...mapActions({ fetchSidebarProjects: 'projects/fetchSidebarProjects' }),
+    ...mapActions({
+      logout: 'auth/logout',
+      fetchSidebarProjects: 'projects/fetchSidebarProjects'
+    }),
     async load($state) {
       const projects = await this.fetchSidebarProjects();
       if (projects.length) $state.loaded();
       else $state.complete();
+    },
+    async exit() {
+      try {
+        await this.logout();
+        await this.$router.push({ name: 'Login' });
+      } catch (e) {
+        this.$message.error('Ошибка выхода из учётной записи');
+      }
     }
   }
 };
@@ -93,7 +123,7 @@ export default {
   height: 100%;
   position: relative;
   background-color: transparent;
-  padding: 24px 15px;
+  padding: 20px 10px;
 }
 .el-menu:not(.el-menu--collapse) {
   width: var(--sidebar-width);
@@ -154,31 +184,82 @@ export default {
 }
 
 .profile {
-  width: var(--sidebar-width);
-  cursor: pointer;
-  position: absolute;
   display: flex;
   align-items: center;
-  bottom: 0;
+  justify-content: space-between;
   color: var(--sidebar-text);
   background: var(--sidebar-background);
   text-align: left;
-  padding: 20px 25px;
+  padding: 0 5px 8px 0;
   z-index: 2;
   transition: background 0.25s;
-  .el-avatar {
-    margin-right: 12px;
+  a {
+    display: flex;
+    color: var(--text);
+    align-items: center;
+    &:focus {
+      animation: push 0.6s;
+    }
+    .avatar {
+      position: relative;
+      width: 56px;
+      height: 56px;
+      margin-right: 5px;
+      &:hover > svg {
+        //opacity: 1;
+      }
+      svg {
+        opacity: 0;
+        transition: opacity 0.6s;
+        fill: none;
+        stroke: var(--color-primary);
+        stroke-linecap: round;
+        stroke-width: 3;
+        stroke-dasharray: 1;
+        stroke-dashoffset: 0;
+        animation: stroke-draw 2s ease-out infinite alternate;
+      }
+      img,
+      .el-avatar {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 36px;
+        border-radius: 50%;
+      }
+    }
+    .profile__title {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .profile__subtitle {
+      font-size: 11px;
+      font-weight: 400;
+      opacity: 0.9;
+      width: fit-content;
+      color: var(--text-placeholder);
+    }
   }
-  .profile__title {
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 5px;
+  .actions {
+    opacity: 0;
+    transform: scale(0.95);
+    margin-right: 5px;
+    transition: 0.3s;
+    .el-button:not(:last-child) {
+      margin-right: 6px;
+    }
+    i {
+      height: 16px;
+      color: var(--text);
+      opacity: 0.7;
+    }
   }
-  .profile__subtitle {
-    font-size: 11px;
-    font-weight: 500;
-    opacity: 0.9;
-    width: fit-content;
+  &:hover .actions {
+    opacity: 1;
+    transform: scale(1);
+    margin-right: 0;
   }
 }
 </style>
@@ -203,6 +284,24 @@ export default {
   100% {
     transform: scale(1);
     opacity: 1;
+  }
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes stroke-draw {
+  from {
+    stroke: #8a3ab9;
+    stroke-dasharray: 1;
+  }
+  to {
+    stroke: #cd486b;
+    transform: rotate(180deg);
+    stroke-dasharray: 8;
   }
 }
 </style>
