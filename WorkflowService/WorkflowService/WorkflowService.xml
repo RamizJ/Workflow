@@ -556,6 +556,34 @@
             <param name="id">Идентификатор пользователя</param>
             <returns></returns>
         </member>
+        <member name="M:WorkflowService.Controllers.UsersController.DeleteRange(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Удаление пользователей
+            </summary>
+            <param name="ids">Идентификаторы пользователей</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.Restore(System.String)">
+            <summary>
+            Удаление пользователя
+            </summary>
+            <param name="id">Идентификатор пользователя</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.RestoreRange(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Восстановление пользователей
+            </summary>
+            <param name="ids">Идентификаторы пользователей</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.Restore(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Восстановление пользователей
+            </summary>
+            <param name="ids">Идентификаторы пользователей</param>
+            <returns></returns>
+        </member>
         <member name="M:WorkflowService.Controllers.UsersController.ChangePassword(System.String,System.String)">
             <summary>
             Изменение пароля пользователя. Доступно только текущему пользователю
