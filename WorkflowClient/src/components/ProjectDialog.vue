@@ -20,16 +20,7 @@
                 placeholder="Теги"
                 multiple filterable allow-create default-first-option)
         el-row(:gutter="20")
-          el-col(:span="12")
-            el-form-item(prop="ownerId")
-              el-select(
-                v-model="form.ownerId"
-                size="medium"
-                placeholder="Руководитель"
-                :remote-method="searchUsers"
-                filterable remote clearable default-first-option)
-                el-option(v-for="item in userList" :key="item.id" :label="item.value" :value="item.id")
-          el-col(:span="12")
+          el-col(:span="24")
             el-form-item(prop="teamIds")
               el-select(
                 v-model="form.teamIds"
@@ -38,8 +29,9 @@
                 :remote-method="searchTeams"
                 multiple filterable remote clearable default-first-option)
                 el-option(v-for="item in teamList" :key="item.id" :label="item.value" :value="item.id")
+
     div(slot="footer")
-      el-button(size="medium" type="primary" @click="submit") {{ isEdit ? 'Сохранить' : 'Создать' }}
+      el-button(size="medium" type="default" @click="submit") {{ isEdit ? 'Сохранить' : 'Создать' }}
 
 </template>
 
@@ -59,14 +51,13 @@ export default {
       form: {
         name: '',
         description: '',
-        tags: [],
         ownerId: null,
         ownerFio: null,
-        teamId: null,
-        teamName: null,
+        creationDate: new Date(),
         groupId: null,
         groupName: null,
-        creationDate: new Date()
+        teamIds: [],
+        tags: []
       },
       rules: {
         name: [
@@ -75,29 +66,37 @@ export default {
             message: 'Введите название проекта',
             trigger: 'blur'
           }
-        ],
-        ownerId: [
-          { required: true, message: 'Укажите руководителя', trigger: 'blur' }
         ]
       }
     };
   },
   computed: {
     ...mapGetters({
-      item: 'projects/getProject'
+      item: 'projects/getProject',
+      projectTeams: 'projects/getProjectTeams'
     })
   },
-  mounted() {
+  async mounted() {
+    await this.searchTeams();
+
     if (this.isEdit) {
-      this.searchUsers();
-      this.searchTeams();
+      this.loading = true;
+      await this.fetchProjectTeams({
+        projectId: this.id,
+        pageNumber: 0,
+        pageSize: 10
+      });
+      this.form.teamIds = this.projectTeams.map(team => parseInt(team.id));
+      this.$forceUpdate();
+      this.loading = false;
     }
   },
   methods: {
     ...mapActions({
       fetchItem: 'projects/fetchProject',
       createItem: 'projects/createProject',
-      updateItem: 'projects/updateProject'
+      updateItem: 'projects/updateProject',
+      fetchProjectTeams: 'projects/fetchProjectTeams'
     })
   }
 };

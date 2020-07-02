@@ -1,10 +1,12 @@
-import teamsAPI from '~/api/teams';
+import teamsAPI from '~/api/teams.api';
 
 export default {
   namespaced: true,
   state: () => ({
     teams: [],
-    team: {}
+    team: {},
+    teamUsers: [],
+    teamProjects: []
   }),
   mutations: {
     setTeams(state, teams) {
@@ -12,6 +14,12 @@ export default {
     },
     setTeam(state, team) {
       state.team = team;
+    },
+    setTeamUsers(state, teamUsers) {
+      state.teamUsers = teamUsers;
+    },
+    setTeamProjects(state, teamProjects) {
+      state.teamProjects = teamProjects;
     }
   },
   actions: {
@@ -25,15 +33,30 @@ export default {
       const team = response.data;
       commit('setTeam', team);
     },
-    async createTeam({ commit }, payload) {
-      const response = await teamsAPI.create(payload, payload.projectId);
-      const team = response.data;
-      commit('setTeam', team);
+    async fetchTeamUsers({ commit }, params) {
+      const response = await teamsAPI.getUsersPage(params);
+      const teamUsers = response.data;
+      commit('setTeamUsers', teamUsers);
     },
-    async updateTeam({ commit }, payload) {
-      const response = await teamsAPI.update(payload);
-      const team = response.data;
-      commit('setTeam', team);
+    async fetchTeamProjects({ commit }, params) {
+      const response = await teamsAPI.getProjectsPage(params);
+      const teamProjects = response.data;
+      commit('setTeamProjects', teamProjects);
+    },
+    async createTeam({ commit }, team) {
+      let newTeam = {
+        team: team,
+        userIds: team.userIds,
+        projectIds: team.projectIds
+      };
+      const response = await teamsAPI.create(newTeam);
+      const createdTeam = response.data;
+      commit('setTeam', createdTeam);
+    },
+    async updateTeam({ commit }, team) {
+      const response = await teamsAPI.update(team);
+      const updatedTeam = response.data;
+      commit('setTeam', updatedTeam);
     },
     async deleteTeam({ commit }, id) {
       const response = await teamsAPI.delete(id);
@@ -43,6 +66,8 @@ export default {
   },
   getters: {
     getTeams: state => state.teams,
-    getTeam: state => state.team
+    getTeam: state => state.team,
+    getTeamUsers: state => state.teamUsers,
+    getTeamProjects: state => state.teamProjects
   }
 };

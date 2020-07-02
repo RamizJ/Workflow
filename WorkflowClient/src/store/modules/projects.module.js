@@ -1,4 +1,4 @@
-import projectsAPI from '~/api/projects';
+import projectsAPI from '~/api/projects.api';
 
 export default {
   namespaced: true,
@@ -34,15 +34,23 @@ export default {
       const projectTeams = response.data;
       commit('setProjectTeams', projectTeams);
     },
-    async createProject({ commit }, payload) {
-      const response = await projectsAPI.create(payload);
-      const project = response.data;
-      commit('setProject', project);
+    async createProject({ commit }, project) {
+      let newProject = {
+        project: project,
+        teamIds: project.teamIds
+      };
+      const response = await projectsAPI.create(newProject);
+      const createdProject = response.data;
+      commit('setProject', createdProject);
     },
-    async updateProject({ commit }, payload) {
-      const response = await projectsAPI.update(payload);
-      const project = response.data;
-      commit('setProject', project);
+    async updateProject({ commit }, project) {
+      let newProject = {
+        project: project,
+        teamIds: project.teamIds
+      };
+      const response = await projectsAPI.update(newProject);
+      const updatedProject = response.data;
+      commit('setProject', updatedProject);
     },
     async updateProjectTeams({ commit }, { projectId, teamIds }) {
       for (let teamId in teamIds) {
@@ -59,6 +67,7 @@ export default {
   },
   getters: {
     getProjects: state => state.projects,
-    getProject: state => state.project
+    getProject: state => state.project,
+    getProjectTeams: state => state.projectTeams
   }
 };

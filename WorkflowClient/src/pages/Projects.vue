@@ -51,7 +51,7 @@
           li Добавить задачу
           li(@click.prevent="onItemDelete($event, child.data.row)") Удалить
 
-    project-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false")
+    project-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false" @submit="refresh")
 
 </template>
 

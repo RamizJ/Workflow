@@ -42,10 +42,10 @@
       vue-context(ref="contextMenu")
         template(slot-scope="child")
           li(@click.prevent="onItemEdit($event, child.data.row)") Редактировать
-          li Добавить участника
+          //li Добавить участника
           li(@click.prevent="onItemDelete($event, child.data.row)") Удалить
 
-    team-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false")
+    team-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false" @submit="refresh")
 
 </template>
 

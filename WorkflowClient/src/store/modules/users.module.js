@@ -1,4 +1,4 @@
-import usersAPI from '~/api/users';
+import usersAPI from '~/api/users.api';
 
 export default {
   namespaced: true,
