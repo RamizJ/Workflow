@@ -14,20 +14,9 @@
             div.profile__title {{ me.firstName }}
             div.profile__subtitle {{ me.email }}
         div.actions
-          //el-button(type="text")
-            feather(type="rotate-cw")
-          //el-button(type="text")
-            feather(type="search")
-          //el-button(type="text")
-            feather(type="bell")
-          el-button(type="text")
-            router-link(to="/settings")
-              feather(type="settings")
           el-button(type="text" @click="exit")
             feather(type="log-out")
 
-      //el-menu-item(index="/profile")
-        span Профиль
       //el-menu-item(index="/" disabled)
         feather(type="activity")
         span Обзор
@@ -43,21 +32,21 @@
       //el-menu-item(index="/scopes" disabled)
         feather(type="hexagon")
         span Области
-
-      div.divider
-
-      //el-menu-item(index="/settings")
-        feather(type="settings")
-        span Настройки
-      el-menu-item(index="/users")
-        feather(type="users")
-        span Пользователи
       el-menu-item(index="/journal")
         feather(type="check-circle")
         span Журнал
       el-menu-item(index="/trash")
         feather(type="trash")
         span Корзина
+
+      div.divider
+
+      el-menu-item(index="/settings")
+        feather(type="settings")
+        span Настройки
+      el-menu-item(index="/users")
+        feather(type="users")
+        span Пользователи
 
       div.divider
 
@@ -136,6 +125,7 @@ export default {
   line-height: 40px;
   font-size: 14px;
   font-weight: 400;
+  letter-spacing: 0.1px;
   padding: 0 8px !important;
   margin: 4px 0;
   border-radius: 10px;
@@ -230,14 +220,15 @@ export default {
       }
     }
     .profile__title {
+      letter-spacing: 0.2px;
       font-size: 14px;
       font-weight: 500;
       margin-bottom: 6px;
     }
     .profile__subtitle {
+      letter-spacing: 0.2px;
       font-size: 11px;
       font-weight: 400;
-      opacity: 0.9;
       width: fit-content;
       color: var(--text-placeholder);
     }
@@ -253,7 +244,7 @@ export default {
     i {
       height: 16px;
       color: var(--text);
-      opacity: 0.7;
+      opacity: 0.6;
     }
   }
   &:hover .actions {

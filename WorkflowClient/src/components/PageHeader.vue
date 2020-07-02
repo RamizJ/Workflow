@@ -1,12 +1,15 @@
 <template lang="pug">
   div.page-header
-    div.page-header__title
-      slot(name="title")
-      div.action
-        slot(name="action")
-        i.el-icon-arrow-right
-    div.page-header__subtitle
-      slot(name="subtitle")
+    div
+      div.page-header__title
+        slot(name="title")
+        div.page-header__action
+          slot(name="action")
+      div.page-header__subtitle
+        slot(name="subtitle")
+    div.page-header__search
+      slot(name="search")
+
 
 </template>
 
@@ -18,7 +21,10 @@ export default {
 
 <style lang="scss" scoped>
 .page-header {
-  padding: 32px 30px 25px;
+  padding: 30px 0 15px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
 }
 input {
   border: none;
@@ -40,34 +46,53 @@ input {
   cursor: default;
   display: flex;
   align-items: baseline;
+  //justify-content: space-between;
   font-size: 28px;
   font-weight: 800;
-  .action {
-    margin-left: 12px;
-    font-size: 13px;
-    font-weight: 500;
-    i.el-icon-arrow-right {
-      color: var(--link-hover);
-      margin-left: -10px;
-      font-size: 10px;
-      transform: scale(0.1);
-      transition: 0.3s;
-      opacity: 0;
-    }
-    a:hover ~ i.el-icon-arrow-right {
-      margin-left: 0;
-      transform: scale(1.3);
-      opacity: 0.95;
-    }
+  &:hover > .page-header__action {
+    opacity: 1;
+    margin-left: 10px;
   }
 }
 .page-header__subtitle > * {
-  margin-top: 25px;
+  margin-top: 10px;
+  margin-bottom: 8px;
   font-size: 14px;
 }
 </style>
 
 <style lang="scss">
+.page-header__search {
+  //margin-top: 12px;
+  width: 25%;
+  .el-button {
+    padding: 8px 6px;
+  }
+  .el-input__inner {
+    padding-left: 35px;
+  }
+  .el-button.active i {
+    color: var(--color-primary) !important;
+  }
+}
+.page-header__action {
+  transition: 0.3s;
+  opacity: 0;
+  //margin-left: 1px;
+  margin-left: 5px;
+  //font-size: 13px;
+  //font-weight: 500;
+  i,
+  button {
+    padding: 3px 10px;
+    border-radius: 6px;
+    //color: var(--text-muted);
+  }
+  //&:hover {
+  //  opacity: 1;
+  //  margin-left: 10px;
+  //}
+}
 .page-header .actions {
   background-color: transparent;
   height: 21px;

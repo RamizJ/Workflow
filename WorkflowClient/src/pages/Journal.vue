@@ -1,8 +1,8 @@
 <template lang="pug">
   page
-    page-header
-      template(slot="title") Журнал
     page-content
+      page-header
+        template(slot="title") Журнал
 </template>
 
 <script>

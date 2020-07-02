@@ -1,8 +1,8 @@
 <template lang="pug">
   page
-    page-header
-      template(slot="title") Корзина
     page-content
+      page-header
+        template(slot="title") Корзина
 </template>
 
 <script>

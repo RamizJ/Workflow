@@ -1,12 +1,10 @@
 <template lang="pug">
   page
-    page-header(v-if="!!me")
-      template(slot="title") {{ `${me.lastName} ${me.firstName}` }}
-      template(slot="action")
-        a(href="#" @click="exit") Выйти
+    page-content
+      page-header(v-if="!!me")
+        template(slot="title") {{ `${me.lastName} ${me.firstName}` }}
 
-    div.profile
-      el-form(:model="form" :rules="rules" ref="form")
+      el-form.profile-fields(:model="form" :rules="rules" ref="form")
         div.items
           div.item
             div.item__title Логин
@@ -55,10 +53,11 @@
 import { mapActions, mapGetters } from 'vuex';
 import Page from '~/components/Page';
 import PageHeader from '~/components/PageHeader';
+import PageContent from '~/components/PageContent';
 
 export default {
   name: 'Profile',
-  components: { Page, PageHeader },
+  components: { Page, PageHeader, PageContent },
   data() {
     return {
       emptyText: '-',
@@ -158,18 +157,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.profile {
-  padding: 0 35px;
-}
 .items {
+  margin-top: 15px;
   display: grid;
   grid-gap: 40px 20px;
   grid-template-columns: repeat(4, 200px);
 }
 .item__title {
   cursor: default;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 500;
   margin-bottom: 15px;
 }
 .item__content {
@@ -180,7 +177,7 @@ export default {
 </style>
 
 <style lang="scss">
-.profile {
+.profile-fields {
   .el-input__inner {
     cursor: pointer;
     height: auto;

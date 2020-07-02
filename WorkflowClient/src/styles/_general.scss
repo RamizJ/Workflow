@@ -109,6 +109,7 @@ a {
   border-color: var(--tag-border-hover);
 }
 
+
 .el-input__inner,
 .el-textarea__inner {
   font-family: var(--fonts);
@@ -118,6 +119,25 @@ a {
 .el-textarea__inner::placeholder,
 .el-input__inner::placeholder {
   color: var(--text-placeholder);
+}
+.el-input--prefix .el-input__inner {
+  padding-left: 35px;
+}
+.el-input {
+  i {
+    color: var(--text-placeholder);
+    transition: color 0.25s;
+  }
+  .el-button {
+    padding: 8px 6px;
+  }
+}
+.el-select .el-input .el-select__caret {
+  color: var(--text-placeholder);
+}
+
+.el-button {
+  border-radius: 7px;
 }
 .el-button--default {
   color: var(--text);

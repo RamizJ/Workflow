@@ -61,8 +61,14 @@ export default {
       return dateRu;
     },
     onItemRightClick(row, column, event) {
-      this.$refs.table.setCurrentRow(row);
-      this.$refs.contextMenu.open(event, { row, column });
+      if (Array.isArray(this.$refs.table))
+        this.$refs.table[0].setCurrentRow(row);
+      else this.$refs.table.setCurrentRow(row);
+
+      if (Array.isArray(this.$refs.contextMenu))
+        this.$refs.contextMenu[0].open(event, { row, column });
+      else this.$refs.contextMenu.open(event, { row, column });
+
       event.preventDefault();
     },
     onItemDoubleClick(row, column, event) {

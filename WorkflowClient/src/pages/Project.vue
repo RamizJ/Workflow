@@ -1,48 +1,119 @@
 <template lang="pug">
   page
-    page-header
-      template(slot="title")
-        input.title(
-          placeholder="Заголовок"
-          v-model="projectItem.name"
-          v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
-          @change="update")
-      template(slot="action")
-        el-dropdown(v-if="projectItem.id" placement="bottom" :show-timeout="0" @command="quickAction")
-          feather.actions(type="chevron-down")
-          el-dropdown-menu(slot="dropdown")
-            el-dropdown-item(command="addTask") Добавить задачу
-            el-dropdown-item(command="addTeam") Добавить команду
-            //el-dropdown-item(command="addTags") Добавить теги
-            //el-dropdown-item(command="addEndDate") Добавить крайний срок
-            //el-dropdown-item(command="completeProject") Завершить проект
-            el-dropdown-item(command="deleteProject") Удалить проект
-      template(slot="subtitle")
-        div.tags(v-if="projectItem.tags && projectItem.tags.length")
-          el-tag.tag(
-            :key="tag"
-            v-for="tag in projectItem.tags"
-            :disable-transitions="false"
-            @close="deleteTag(tag)"
-            closable) {{ tag }}
-          el-input.tag-input(
-            v-if="inputVisible"
-            v-model="inputValue"
-            ref="saveTagInput"
-            size="mini"
-            @keyup.enter.native="handleInputConfirm"
-            @blur="handleInputConfirm")
-          el-button.tag-add(v-else size="small" @click="showInput") Добавить тег
-        input.subtitle(
-          placeholder="Заметки"
-          v-model="projectItem.description"
-          v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
-          @change="update")
-
     page-content
+      page-header
+        template(slot="title")
+          input.title(
+            placeholder="Заголовок"
+            v-model="projectItem.name"
+            v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
+            @change="update")
+        template(slot="search")
+          el-input(
+            v-model="query.filter"
+            size="medium"
+            placeholder="Поиск"
+            @change="refresh")
+            el-button(slot="prefix" type="text" size="mini")
+              feather(type="search" size="16")
+            el-button(slot="suffix" type="text" size="mini" :class="filtersVisible ? 'active' : ''" @click="filtersVisible = !filtersVisible")
+              feather(type="sliders" size="16")
+        template(slot="action")
+          el-button(size="mini" @click="onDelete")
+            feather(type="trash-2" size="14")
+        template(slot="subtitle")
+          div.tags(v-if="projectItem.tags && projectItem.tags.length")
+            el-tag.tag(
+              :key="tag"
+              v-for="tag in projectItem.tags"
+              :disable-transitions="false"
+              @close="deleteTag(tag)"
+              closable) {{ tag }}
+            el-input.tag-input(
+              v-if="inputVisible"
+              v-model="inputValue"
+              ref="saveTagInput"
+              size="mini"
+              @keyup.enter.native="handleInputConfirm"
+              @blur="handleInputConfirm")
+            el-button.tag-add(v-else size="small" @click="showInput") Добавить тег
+          input.subtitle(
+            placeholder="Заметки"
+            v-model="projectItem.description"
+            v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
+            @change="update")
+
       el-tabs(ref="tabs" v-model="activeTab" @tab-click="onTabClick")
         el-tab-pane(v-for="(tab, index) in tabs" :key="index" :label="tab.label" :name="tab.name")
-          base-list
+          page-toolbar
+            template(v-if="filtersVisible" slot="filters")
+              el-row
+                el-select(
+                  v-model="filters.performer.value"
+                  size="small"
+                  placeholder="Ответственный"
+                  @change="refresh"
+                  multiple collapse-tags)
+                  el-option(v-for="option in filters.performer.items" :key="option.value" :value="option.value", :label="option.label")
+                el-select(
+                  v-model="filters.priority.value"
+                  size="small"
+                  placeholder="Приоритет"
+                  @change="refresh"
+                  multiple collapse-tags)
+                  el-option(v-for="option in filters.priority.items" :key="option.value" :value="option.value", :label="option.label")
+                el-select(
+                  v-model="filters.status.value"
+                  size="small"
+                  placeholder="Статус"
+                  @change="refresh"
+                  multiple collapse-tags)
+                  el-option(v-for="option in filters.status.items" :key="option.value" :value="option.value", :label="option.label")
+              el-row
+                el-select(
+                  v-model="filters.project.value"
+                  size="small"
+                  placeholder="Проект"
+                  @change="refresh"
+                  multiple collapse-tags)
+                  el-option(v-for="option in filters.project.items" :key="option.value" :value="option.value", :label="option.label")
+                el-select(
+                  v-model="filters.tags.value"
+                  size="small"
+                  placeholder="Тег"
+                  @change="refresh"
+                  multiple collapse-tags)
+                  el-option(v-for="option in filters.tags.items" :key="option.value" :value="option.value", :label="option.label")
+
+            template(slot="actions")
+              el-button(size="mini" @click="dialogOpened = true; selectedItemId = null")
+                feather(type="plus" size="16")
+              el-button(size="mini")
+                feather(type="edit-3" size="16")
+              el-button(size="mini")
+                feather(type="check" size="16")
+              el-button(size="mini")
+                feather(type="trash" size="16")
+
+            template(slot="view")
+              el-select(
+                v-model="filters.sort.value"
+                size="medium"
+                placeholder="По дате создания"
+                @change="refresh"
+                clearable)
+                el-button(slot="prefix" type="text" size="mini")
+                  feather(type="align-right" size="18")
+                el-option(v-for="option in filters.sort.items" :key="option.value" :value="option.value", :label="option.label")
+                el-divider
+                el-option(value="acs" label="Возрастанию")
+                el-option(value="desc" label="Убыванию")
+              el-button(type="text" size="mini")
+                feather(type="grid" size="20")
+              el-button.active(type="text" size="mini")
+                feather(type="list" size="20")
+
+          table-content
             el-table(
               v-if="tab.name === activeTab"
               :data="tableData"
@@ -77,8 +148,9 @@
 import { mapActions, mapGetters } from 'vuex';
 import Page from '~/components/Page';
 import PageHeader from '~/components/PageHeader';
+import PageToolbar from '~/components/PageToolbar';
 import PageContent from '~/components/PageContent';
-import BaseList from '~/components/BaseList';
+import TableContent from '~/components/TableContent';
 import TaskDialog from '~/components/TaskDialog';
 import TeamDialog from '~/components/TeamDialog';
 import tableMixin from '~/mixins/table.mixin';
@@ -88,8 +160,9 @@ export default {
   components: {
     Page,
     PageHeader,
+    PageToolbar,
     PageContent,
-    BaseList,
+    TableContent,
     TaskDialog,
     TeamDialog
   },
@@ -106,6 +179,50 @@ export default {
             values: ['New']
           }
         ]
+      },
+      filtersVisible: false,
+      filters: {
+        sort: {
+          value: null,
+          items: [
+            { value: 'title', label: 'Названию' },
+            { value: 'goalState', label: 'Статусу' },
+            { value: 'scopeId', label: 'Проекту' },
+            { value: 'creationDate', label: 'Дате создания' }
+          ]
+        },
+        status: {
+          fieldName: 'goalState',
+          value: null,
+          items: [
+            { value: 'New', label: 'Новое' },
+            { value: 'Completed', label: 'Завершённое' }
+          ]
+        },
+        performer: {
+          fieldName: 'performer',
+          value: null,
+          items: []
+        },
+        project: {
+          fieldName: 'projectId',
+          value: null,
+          items: []
+        },
+        priority: {
+          fieldName: 'priority',
+          value: null,
+          items: [
+            { value: 'Low', label: 'Низкий' },
+            { value: 'Normal', label: 'Обычный' },
+            { value: 'High', label: 'Высокий' }
+          ]
+        },
+        tags: {
+          fieldName: 'tag',
+          value: null,
+          items: []
+        }
       },
       projectItem: {
         name: '',
@@ -181,6 +298,11 @@ export default {
         default:
           break;
       }
+    },
+    async onDelete() {
+      await this.deleteProject(this.projectItem.id);
+      await this.fetchSidebarProjects({ reload: true });
+      await this.$router.push({ name: 'Projects' });
     },
     deleteTag(tag) {
       this.tags.splice(this.tags.indexOf(tag), 1);

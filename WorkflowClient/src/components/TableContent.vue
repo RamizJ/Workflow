@@ -1,16 +1,16 @@
 <template lang="pug">
-  div.list
+  div.table-content
     slot
 </template>
 
 <script>
 export default {
-  name: 'BaseList'
+  name: 'TableContent'
 };
 </script>
 
 <style lang="scss" scoped>
-.list {
+.table-content {
   display: flex;
   position: relative;
   overflow: hidden;
