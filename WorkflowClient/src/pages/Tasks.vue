@@ -1,90 +1,112 @@
 <template lang="pug">
-  div.container
-    base-header
-      template(slot="title") Задачи
-      template(slot="action")
-        a(href="#" @click="dialogOpened = true; selectedItemId = null") Создать
-
-    base-toolbar
-      template(slot="filters")
-        base-toolbar-item
+  page
+    page-content
+      page-header
+        template(slot="title") Задачи
+        template(slot="search")
           el-input(
             v-model="query.filter"
-            size="small"
+            size="medium"
             placeholder="Поиск"
-            @change="applyFilters")
-        base-toolbar-item
+            @change="refresh")
+            el-button(slot="prefix" type="text" size="mini")
+              feather(type="search" size="16")
+            el-button(slot="suffix" type="text" size="mini" :class="filtersVisible ? 'active' : ''" @click="filtersVisible = !filtersVisible")
+              feather(type="sliders" size="16")
+
+      page-toolbar
+        template(v-if="filtersVisible" slot="filters")
+          el-row
+            el-select(
+              v-model="filters.performer.value"
+              size="small"
+              placeholder="Ответственный"
+              @change="applyFilters"
+              multiple collapse-tags)
+              el-option(v-for="option in filters.performer.items" :key="option.value" :value="option.value", :label="option.label")
+            el-select(
+              v-model="filters.priority.value"
+              size="small"
+              placeholder="Приоритет"
+              @change="applyFilters"
+              multiple collapse-tags)
+              el-option(v-for="option in filters.priority.items" :key="option.value" :value="option.value", :label="option.label")
+            el-select(
+              v-model="filters.status.value"
+              size="small"
+              placeholder="Статус"
+              @change="applyFilters"
+              multiple collapse-tags)
+              el-option(v-for="option in filters.status.items" :key="option.value" :value="option.value", :label="option.label")
+          el-row
+            el-select(
+              v-model="filters.project.value"
+              size="small"
+              placeholder="Проект"
+              @change="applyFilters"
+              multiple collapse-tags)
+              el-option(v-for="option in filters.project.items" :key="option.value" :value="option.value", :label="option.label")
+            el-select(
+              v-model="filters.tags.value"
+              size="small"
+              placeholder="Тег"
+              @change="applyFilters"
+              multiple collapse-tags)
+              el-option(v-for="option in filters.tags.items" :key="option.value" :value="option.value", :label="option.label")
+
+        template(slot="actions")
+          el-button(size="mini" @click="dialogOpened = true; selectedItemId = null")
+            feather(type="plus" size="16")
+          el-button(size="mini")
+            feather(type="edit-3" size="16")
+          el-button(size="mini")
+            feather(type="check" size="16")
+          el-button(size="mini")
+            feather(type="trash" size="16")
+
+        template(slot="view")
           el-select(
             v-model="filters.sort.value"
-            size="small"
-            placeholder="Сортировать"
+            size="medium"
+            placeholder="По дате создания"
             @change="applyFilters"
             clearable)
+            el-button(slot="prefix" type="text" size="mini")
+              feather(type="align-right" size="18")
             el-option(v-for="option in filters.sort.items" :key="option.value" :value="option.value", :label="option.label")
-        base-toolbar-item
-          el-select(
-            v-model="filters.performer.value"
-            size="small"
-            placeholder="Ответственный"
-            @change="applyFilters"
-            multiple collapse-tags)
-            el-option(v-for="option in filters.performer.items" :key="option.value" :value="option.value", :label="option.label")
-        base-toolbar-item
-          el-select(
-            v-model="filters.priority.value"
-            size="small"
-            placeholder="Приоритет"
-            @change="applyFilters"
-            multiple collapse-tags)
-            el-option(v-for="option in filters.priority.items" :key="option.value" :value="option.value", :label="option.label")
-        base-toolbar-item
-          el-select(
-            v-model="filters.status.value"
-            size="small"
-            placeholder="Статус"
-            @change="applyFilters"
-            multiple collapse-tags)
-            el-option(v-for="option in filters.status.items" :key="option.value" :value="option.value", :label="option.label")
-        base-toolbar-item
-          el-select(
-            v-model="filters.project.value"
-            size="small"
-            placeholder="Проект"
-            @change="applyFilters"
-            multiple collapse-tags)
-            el-option(v-for="option in filters.project.items" :key="option.value" :value="option.value", :label="option.label")
-        base-toolbar-item
-          el-select(
-            v-model="filters.tags.value"
-            size="small"
-            placeholder="Тег"
-            @change="applyFilters"
-            multiple collapse-tags)
-            el-option(v-for="option in filters.tags.items" :key="option.value" :value="option.value", :label="option.label")
+            el-divider
+            el-option(value="acs" label="Возрастанию")
+            el-option(value="desc" label="Убыванию")
+          el-button(type="text" size="mini")
+            feather(type="grid" size="20")
+          el-button.active(type="text" size="mini")
+            feather(type="menu" size="20")
 
-    base-list
-      el-table(
-        :data="tableData"
-        ref="table"
-        height="100%"
-        v-loading="loading"
-        @row-contextmenu="onItemRightClick"
-        @row-dblclick="onItemDoubleClick"
-        highlight-current-row)
-        el-table-column(type="selection" width="55")
-        el-table-column(prop="title" label="Название")
-        el-table-column(prop="description" label="Заметки")
-        el-table-column(prop="projectName" label="Проект")
-        el-table-column(prop="creationDate" label="Добавлено" :formatter="dateFormatter")
-        infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
-          div(slot="no-more")
-          div(slot="no-results")
+      table-content
+        el-table(
+          :data="tableData"
+          ref="table"
+          height="100%"
+          v-loading="loading"
+          @row-contextmenu="onItemRightClick"
+          @row-dblclick="onItemDoubleClick"
+          highlight-current-row)
+          el-table-column(type="selection" width="55")
+          el-table-column(prop="title" label="Название")
+          el-table-column(prop="description" label="Заметки")
+          el-table-column(prop="projectName" label="Проект")
+          el-table-column(prop="creationDate" label="Добавлено" :formatter="dateFormatter")
+          infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
+            div(slot="no-more")
+            div(slot="no-results")
 
-      vue-context(ref="contextMenu")
-        template(slot-scope="child")
-          li(@click.prevent="onItemEdit($event, child.data.row)") Редактировать
-          li Завершить
-          li(@click.prevent="onItemDelete($event, child.data.row)") Удалить
+        vue-context(ref="contextMenu")
+          template(slot-scope="child")
+            li(@click.prevent="onItemEdit($event, child.data.row)") Редактировать
+            li(v-if="!isMultipleSelected" @click.prevent="onItemComplete($event, child.data.row)") Завершить
+            li(v-if="!isMultipleSelected" @click.prevent="onItemDelete($event, child.data.row)") Удалить
+            li(v-if="isMultipleSelected" @click.prevent="onItemMultipleComplete($event, child.data.row)") Завершить выделенное
+            li(v-if="isMultipleSelected" @click.prevent="onItemMultipleDelete($event, child.data.row)") Удалить выделенное
 
     task-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false" @submit="refresh")
 
@@ -92,19 +114,21 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import BaseHeader from '~/components/BaseHeader';
-import BaseToolbar from '~/components/BaseToolbar';
-import BaseToolbarItem from '~/components/BaseToolbarItem';
-import BaseList from '~/components/BaseList';
+import Page from '~/components/Page';
+import PageHeader from '~/components/PageHeader';
+import PageToolbar from '~/components/PageToolbar';
+import PageContent from '~/components/PageContent';
+import TableContent from '~/components/TableContent';
 import TaskDialog from '~/components/TaskDialog';
 import tableMixin from '~/mixins/table.mixin';
 
 export default {
   components: {
-    BaseHeader,
-    BaseToolbar,
-    BaseToolbarItem,
-    BaseList,
+    Page,
+    PageHeader,
+    PageToolbar,
+    PageContent,
+    TableContent,
     TaskDialog
   },
   mixins: [tableMixin],
@@ -115,14 +139,15 @@ export default {
         pageNumber: 0,
         pageSize: 30
       },
+      filtersVisible: false,
       filters: {
         sort: {
           value: null,
           items: [
-            { value: 'title', label: 'Название' },
-            { value: 'goalState', label: 'Статус' },
-            { value: 'scopeId', label: 'Проект' },
-            { value: 'creationDate', label: 'Дата создания' }
+            { value: 'title', label: 'Названию' },
+            { value: 'goalState', label: 'Статусу' },
+            { value: 'scopeId', label: 'Проекту' },
+            { value: 'creationDate', label: 'Дате создания' }
           ]
         },
         status: {

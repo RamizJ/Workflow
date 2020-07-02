@@ -14,14 +14,25 @@ export default {
     };
   },
   computed: {
-    ...mapGetters({ items: '' })
+    ...mapGetters({ items: '' }),
+    isMultipleSelected() {
+      return this.$refs.table.selection?.length > 1;
+    }
   },
   methods: {
-    ...mapActions({ fetchItems: '', deleteItem: '' }),
-    async refresh() {
+    ...mapActions({
+      fetchItems: '',
+      deleteItem: '',
+      deleteItems: '',
+      completeItem: '',
+      completeItems: ''
+    }),
+    refresh() {
       this.tableData = [];
       this.query.pageNumber = 0;
-      this.$refs.loader.stateChanger.reset();
+      const loader =
+        this.$refs.loader.stateChanger || this.$refs.loader[0].stateChanger;
+      loader.reset();
       this.dialogOpened = false;
     },
     async load($state) {
@@ -50,8 +61,14 @@ export default {
       return dateRu;
     },
     onItemRightClick(row, column, event) {
-      this.$refs.table.setCurrentRow(row);
-      this.$refs.contextMenu.open(event, { row, column });
+      if (Array.isArray(this.$refs.table))
+        this.$refs.table[0].setCurrentRow(row);
+      else this.$refs.table.setCurrentRow(row);
+
+      if (Array.isArray(this.$refs.contextMenu))
+        this.$refs.contextMenu[0].open(event, { row, column });
+      else this.$refs.contextMenu.open(event, { row, column });
+
       event.preventDefault();
     },
     onItemDoubleClick(row, column, event) {
@@ -61,25 +78,21 @@ export default {
       this.selectedItemId = row.id;
       this.dialogOpened = true;
     },
-    onItemDelete(event, row) {
-      this.selectedItemId = row.id;
-      this.$confirm(
-        'Вы действительно хотите удалить элемент?',
-        'Предупреждение',
-        {
-          confirmButtonText: 'Да',
-          cancelButtonText: 'Закрыть',
-          type: 'warning'
-        }
-      ).then(async () => {
-        try {
-          await this.deleteItem(this.selectedItemId);
-          await this.refresh();
-        } catch (e) {
-          this.$message.error('Не удалось удалить элемент');
-          console.error(e);
-        }
-      });
+    async onItemDelete(event, row) {
+      await this.deleteItem(row.id);
+      await this.refresh();
+    },
+    async onItemMultipleDelete(event, row) {
+      await this.deleteItems(this.$refs.table.selection.map(item => item.id));
+      await this.refresh();
+    },
+    async onItemComplete(event, row) {
+      await this.completeItem(row);
+      await this.refresh();
+    },
+    async onItemMultipleComplete(event, row) {
+      await this.completeItems(this.$refs.table.selection);
+      await this.refresh();
     }
   }
 };
