@@ -101,7 +101,6 @@ namespace WorkflowService
             });
             services.AddSwaggerGenNewtonsoftSupport();
             services.AddCors();
-
             services.AddSignalR(options =>
             {
                 options.EnableDetailedErrors = true;
@@ -138,7 +137,6 @@ namespace WorkflowService
                 options.SwaggerEndpoint("./v1/swagger.json", "Workflow API V1");
             });
 
-            app.UseRouting();
             SetupRewriter(app);
             var origins = Configuration.GetSection(OTHER_ORIGINS)
                 .AsEnumerable().Select(x => x.Value).Where(x => x != null)
@@ -153,6 +151,7 @@ namespace WorkflowService
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapRazorPages();
                 endpoints.MapControllers();
             });
         }

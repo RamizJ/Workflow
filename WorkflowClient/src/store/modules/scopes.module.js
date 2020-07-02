@@ -1,4 +1,4 @@
-import scopesAPI from '~/api/scopes';
+import scopesAPI from '~/api/scopes.api';
 
 export default {
   namespaced: true,

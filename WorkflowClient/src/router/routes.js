@@ -22,7 +22,7 @@ export const routes = [
     meta: { layout: LayoutDefault }
   },
   {
-    path: '/projects/:id',
+    path: '/projects/:projectId',
     name: 'Project',
     component: () => import('~/pages/Project.vue'),
     meta: { layout: LayoutDefault }
@@ -61,6 +61,18 @@ export const routes = [
     path: '/users',
     name: 'Users',
     component: () => import('~/pages/Users.vue'),
+    meta: { layout: LayoutDefault }
+  },
+  {
+    path: '/journal',
+    name: 'Journal',
+    component: () => import('~/pages/Journal.vue'),
+    meta: { layout: LayoutDefault }
+  },
+  {
+    path: '/trash',
+    name: 'Trash',
+    component: () => import('~/pages/Trash.vue'),
     meta: { layout: LayoutDefault }
   }
 ];

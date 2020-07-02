@@ -1,87 +1,114 @@
 <template lang="pug">
-  div.container
-    base-header
-      template(slot="title") Проекты
-      template(slot="action")
-        a(href="#" @click="dialogOpened = true; selectedItemId = null") Создать
+  page
+    page-content
+      page-header
+        template(slot="title") Проекты
+        template(slot="search")
+          el-input(
+            v-model="query.filter"
+            size="medium"
+            placeholder="Поиск"
+            @change="refresh")
+            el-button(slot="prefix" type="text" size="mini")
+              feather(type="search" size="16")
+            el-button(slot="suffix" type="text" size="mini" :class="filtersVisible ? 'active' : ''" @click="filtersVisible = !filtersVisible")
+              feather(type="sliders" size="16")
 
-    base-toolbar
-      template(slot="filters")
-        base-toolbar-item
-          el-input(v-model="query.filter" size="small" placeholder="Поиск" @change="refresh")
-        base-toolbar-item
+      page-toolbar
+        template(v-if="filtersVisible" slot="filters")
+          el-row
+            el-select(v-model="filters.status.value" size="small" placeholder="Команда")
+              el-option(v-for="option in filters.status.items" :key="option.value" :value="option.value", :label="option.label")
+            el-select(v-model="filters.status.value" size="small" placeholder="Область")
+              el-option(v-for="option in filters.status.items" :key="option.value" :value="option.value", :label="option.label")
+            el-select(v-model="filters.performer.value" size="small" placeholder="Руководитель")
+              el-option(v-for="option in filters.performer.items" :key="option.value" :value="option.value", :label="option.label")
+            el-select(v-model="filters.tag.value" size="small" placeholder="Тег")
+              el-option(v-for="option in filters.tag.items" :key="option.value" :value="option.value", :label="option.label")
+
+        template(slot="actions")
+          el-button(size="mini" @click="dialogOpened = true; selectedItemId = null")
+            feather(type="plus" size="16")
+          el-button(size="mini")
+            feather(type="edit-3" size="16")
+          el-button(size="mini")
+            feather(type="trash" size="16")
+
+        template(slot="view")
           el-select(
             v-model="filters.sort.value"
-            size="small"
-            placeholder="Сортировать"
-            @change="applyFilters" clearable)
+            size="medium"
+            placeholder="По дате создания"
+            @change="applyFilters"
+            clearable)
+            el-button(slot="prefix" type="text" size="mini")
+              feather(type="align-right" size="18")
             el-option(v-for="option in filters.sort.items" :key="option.value" :value="option.value", :label="option.label")
-        base-toolbar-item
-          el-select(v-model="filters.status.value" size="small" placeholder="Команда")
-            el-option(v-for="option in filters.status.items" :key="option.value" :value="option.value", :label="option.label")
-        base-toolbar-item
-          el-select(v-model="filters.status.value" size="small" placeholder="Область")
-            el-option(v-for="option in filters.status.items" :key="option.value" :value="option.value", :label="option.label")
-        base-toolbar-item
-          el-select(v-model="filters.performer.value" size="small" placeholder="Руководитель")
-            el-option(v-for="option in filters.performer.items" :key="option.value" :value="option.value", :label="option.label")
-        base-toolbar-item
-          el-select(v-model="filters.tag.value" size="small" placeholder="Тег")
-            el-option(v-for="option in filters.tag.items" :key="option.value" :value="option.value", :label="option.label")
+            el-divider
+            el-option(value="acs" label="Возрастанию")
+            el-option(value="desc" label="Убыванию")
+          el-button(type="text" size="mini")
+            feather(type="grid" size="20")
+          el-button.active(type="text" size="mini")
+            feather(type="list" size="20")
 
-    base-list
-      el-table(
-        :data="tableData"
-        ref="table"
-        height="auto"
-        v-loading="loading"
-        @row-contextmenu="onItemRightClick"
-        @row-dblclick="onItemDoubleClick"
-        highlight-current-row)
-        el-table-column(type="selection" width="55")
-        el-table-column(prop="name" label="Название")
-        el-table-column(prop="ownerFio" label="Руководитель")
-        infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
-          div(slot="no-more")
-          div(slot="no-results")
+      table-content
+        el-table(
+          :data="tableData"
+          ref="table"
+          height="auto"
+          v-loading="loading"
+          @row-contextmenu="onItemRightClick"
+          @row-dblclick="onItemDoubleClick"
+          highlight-current-row)
+          el-table-column(type="selection" width="55")
+          el-table-column(prop="name" label="Название")
+          el-table-column(prop="ownerFio" label="Руководитель")
+          infinite-loading(slot="append" ref="loader" spinner="waveDots" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
+            div(slot="no-more")
+            div(slot="no-results")
 
-      vue-context(ref="contextMenu")
-        template(slot-scope="child")
-          li(@click.prevent="onItemEdit($event, child.data.row)") Редактировать
-          li Добавить задачу
-          li(@click.prevent="onItemDelete($event, child.data.row)") Удалить
+        vue-context(ref="contextMenu")
+          template(slot-scope="child")
+            //li Добавить задачу
+            li(@click.prevent="onItemEdit($event, child.data.row)") Редактировать
+            li(v-if="!isMultipleSelected" @click.prevent="onItemDelete($event, child.data.row)") Удалить
+            li(v-if="isMultipleSelected" @click.prevent="onItemMultipleDelete($event, child.data.row)") Удалить выделенное
 
-    project-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false")
+    project-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false" @submit="refresh")
 
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import BaseHeader from '~/components/BaseHeader';
-import BaseToolbar from '~/components/BaseToolbar';
-import BaseToolbarItem from '~/components/BaseToolbarItem';
-import BaseList from '~/components/BaseList';
+import Page from '~/components/Page';
+import PageHeader from '~/components/PageHeader';
+import PageToolbar from '~/components/PageToolbar';
+import PageContent from '~/components/PageContent';
+import TableContent from '~/components/TableContent';
 import ProjectDialog from '~/components/ProjectDialog';
 import tableMixin from '~/mixins/table.mixin';
 
 export default {
   name: 'Projects',
   components: {
-    BaseHeader,
-    BaseToolbar,
-    BaseToolbarItem,
-    BaseList,
+    Page,
+    PageHeader,
+    PageToolbar,
+    PageContent,
+    TableContent,
     ProjectDialog
   },
   mixins: [tableMixin],
   data() {
     return {
       query: {
-        filter: '',
         pageNumber: 0,
-        pageSize: 30
+        pageSize: 20
       },
+      filtersVisible: false,
       filters: {
+        search: '',
         sort: {
           value: null,
           items: [
@@ -133,9 +160,23 @@ export default {
   methods: {
     ...mapActions({
       fetchItems: 'projects/fetchProjects',
-      deleteItem: 'projects/deleteProject'
+      fetchSidebarItems: 'projects/fetchSidebarProjects',
+      deleteItem: 'projects/deleteProject',
+      deleteItems: 'projects/deleteProjects'
     }),
-    async applyFilters() {}
+    async refresh() {
+      this.tableData = [];
+      this.query.pageNumber = 0;
+      this.$refs.loader.stateChanger.reset();
+      await this.fetchSidebarItems({ reload: true });
+      this.dialogOpened = false;
+    },
+    async applyFilters() {},
+    onItemDoubleClick(row, column, event) {
+      console.log(row);
+      this.$router.push(`/projects/${row.id}`);
+      // this.onItemEdit(event, row);
+    }
   }
 };
 </script>

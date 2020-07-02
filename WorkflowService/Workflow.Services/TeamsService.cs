@@ -30,7 +30,7 @@ namespace Workflow.Services
             if (currentUser == null)
                 throw new ArgumentNullException(nameof(currentUser));
 
-            var team = await GetQuery(true)
+            var team = await GetQuery(currentUser, true)
                 .FirstOrDefaultAsync(s => s.Id == id);
 
             return _vmConverter.ToViewModel(team);
@@ -42,7 +42,7 @@ namespace Workflow.Services
             if (currentUser == null)
                 throw new ArgumentNullException(nameof(currentUser));
 
-            var query = GetQuery(withRemoved);
+            var query = GetQuery(currentUser, withRemoved);
             var teams = await query
                 .Select(t => _vmConverter.ToViewModel(t))
                 .ToArrayAsync();
@@ -58,7 +58,7 @@ namespace Workflow.Services
             if (currentUser == null)
                 throw new ArgumentNullException(nameof(currentUser));
 
-            var query = GetQuery(withRemoved);
+            var query = GetQuery(currentUser, withRemoved);
             query = Filter(filter, query);
             query = FilterByFields(filterFields, query);
             query = SortByFields(sortFields, query);
@@ -76,86 +76,134 @@ namespace Workflow.Services
             if (ids == null || ids.Length == 0)
                 return null;
 
-            return await GetQuery(true)
+            return await GetQuery(currentUser, true)
                 .Where(s => ids.Any(id => s.Id == id))
                 .Select(s => _vmConverter.ToViewModel(s))
                 .ToArrayAsync();
         }
 
+        /// <inheritdoc />
+        public async Task<VmTeam> Create(ApplicationUser currentUser, VmTeam team)
+        {
+            var model = await CreateTeam(currentUser, team);
+            return _vmConverter.ToViewModel(model);
+        }
 
         /// <inheritdoc />
-        public async Task<VmTeam> Create(ApplicationUser currentUser, int projectId, VmTeam team)
+        public async Task<VmTeamForm> CreateByForm(ApplicationUser currentUser, VmTeamForm teamForm)
         {
-            if (team == null)
-                throw new ArgumentNullException(nameof(team));
+            var model = await CreateTeam(currentUser, teamForm?.Team, team =>
+            {
+                team.TeamProjects = teamForm?.ProjectIds?
+                    .Select(pId => new ProjectTeam(pId, team.Id))
+                    .ToList();
+                team.TeamUsers = teamForm?.UserIds?
+                    .Select(uId => new TeamUser(team.Id, uId))
+                    .ToList();
+            });
 
-            if (string.IsNullOrWhiteSpace(team.Name))
-                throw new InvalidOperationException("Team name cannot be empty");
-
-            var model = _vmConverter.ToModel(team);
-            model.Id = 0;
-            model.CreatorId = currentUser.Id;
-            model.TeamProjects.Add(new ProjectTeam(projectId, 0));
-
-            await _dataContext.Teams.AddAsync(model);
-            await _dataContext.SaveChangesAsync();
-
-            return _vmConverter.ToViewModel(model);
+            return new VmTeamForm
+            {
+                Team = _vmConverter.ToViewModel(model),
+                ProjectIds = teamForm?.ProjectIds,
+                UserIds = teamForm?.UserIds
+            };
         }
 
 
         /// <inheritdoc />
         public async Task Update(ApplicationUser currentUser, VmTeam team)
         {
-            if (team == null)
-                throw new ArgumentNullException(nameof(team));
+            await UpdateTeams(currentUser, new[] { team });
+        }
 
-            if (string.IsNullOrWhiteSpace(team.Name))
-                throw new InvalidOperationException("Team name cannot be empty");
+        /// <inheritdoc />
+        public async Task UpdateByForm(ApplicationUser currentUser, VmTeamForm teamForm)
+        {
+            await UpdateTeams(currentUser, new[] {teamForm?.Team}, team =>
+            {
+                team.TeamProjects = teamForm?.ProjectIds?
+                    .Select(pId => new ProjectTeam(pId, team.Id))
+                    .ToList();
+                team.TeamUsers = teamForm?.UserIds?
+                    .Select(uId => new TeamUser(team.Id, uId))
+                    .ToList();
+            });
+        }
 
-            var model = await _dataContext.Teams.FindAsync(team.Id);
-            if(model == null)
-                throw new InvalidOperationException("Cannot update team. Team not found");
+        /// <inheritdoc />
+        public async Task UpdateRange(ApplicationUser currentUser, IEnumerable<VmTeam> vmTeams)
+        {
+            await UpdateTeams(currentUser, vmTeams.ToArray());
+        }
 
-            model.Name = team.Name;
-            model.Description = team.Description;
-            model.GroupId = team.GroupId;
-
-            _dataContext.Entry(model).State = EntityState.Modified;
-            await _dataContext.SaveChangesAsync();
+        /// <inheritdoc />
+        public async Task UpdateByFormRange(ApplicationUser currentUser, IEnumerable<VmTeamForm> teamForms)
+        {
+            var forms = teamForms.ToArray();
+            var teams = forms.Select(f => f.Team).ToArray();
+            await UpdateTeams(currentUser, teams, team =>
+            {
+                var form = forms.First(f => f.Team.Id == team.Id);
+                team.TeamProjects = form?.ProjectIds?
+                    .Select(pId => new ProjectTeam(pId, team.Id))
+                    .ToList();
+                team.TeamUsers = form?.UserIds?
+                    .Select(uId => new TeamUser(team.Id, uId))
+                    .ToList();
+            });
         }
 
         /// <inheritdoc />
         public async Task<VmTeam> Delete(ApplicationUser currentUser, int teamId)
         {
-            return await ChangeRemoveState(teamId, true);
+            var teams = await RemoveRestore(currentUser, new[] { teamId }, true);
+            return teams.FirstOrDefault();
         }
 
+        public async Task<IEnumerable<VmTeam>> DeleteRange(ApplicationUser currentUser, IEnumerable<int> ids)
+        {
+            return await RemoveRestore(currentUser, ids, true);
+        }
+
+        /// <inheritdoc />
         public async Task<VmTeam> Restore(ApplicationUser currentUser, int teamId)
         {
-            return await ChangeRemoveState(teamId, false);
+            var teams = await RemoveRestore(currentUser, new[] {teamId}, false);
+            return teams.FirstOrDefault();
         }
 
-        private async Task<VmTeam> ChangeRemoveState(int teamId, bool isRemoved)
+        public async Task<IEnumerable<VmTeam>> RestoreRange(ApplicationUser currentUser, IEnumerable<int> ids)
         {
-            var model = await _dataContext.Teams.FindAsync(teamId);
-            if (model == null)
-                throw new InvalidOperationException(isRemoved 
-                    ? "Cannot delete the team. The team not found"
-                    : "Cannot restore the team. The team not found");
+            return await RemoveRestore(currentUser, ids, false);
+        }
 
-            model.IsRemoved = isRemoved;
-            _dataContext.Entry(model).State = EntityState.Modified;
+        private async Task<IEnumerable<VmTeam>> RemoveRestore(ApplicationUser currentUser, 
+            IEnumerable<int> teamIds, bool isRemoved)
+        {
+            var query = GetQuery(currentUser, !isRemoved);
+            var models = await query
+                .Where(t => teamIds.Any(tId => t.Id == tId))
+                .ToArrayAsync();
+
+            foreach (var model in models)
+            {
+                model.IsRemoved = isRemoved;
+                _dataContext.Entry(model).State = EntityState.Modified;
+            }
 
             await _dataContext.SaveChangesAsync();
-            return _vmConverter.ToViewModel(model);
+            return models.Select(m => _vmConverter.ToViewModel(m));
         }
 
-        private IQueryable<Team> GetQuery(bool withRemoved)
+        private IQueryable<Team> GetQuery(ApplicationUser currentUser, bool withRemoved)
         {
             var query = _dataContext.Teams
                 .Include(t => t.Group)
                 .Include(t => t.TeamUsers)
+                .Include(t => t.TeamProjects)
+                .Where(t => t.Creator.Id == currentUser.Id
+                            || t.TeamUsers.Any(tu => tu.UserId == currentUser.Id))
                 .AsQueryable();
 
             if (!withRemoved)
@@ -189,7 +237,9 @@ namespace Workflow.Services
 
             foreach (var field in filterFields.Where(ff => ff != null))
             {
-                var strValues = field.Values?.Select(v => v.ToString().ToLower()).ToList()
+                var strValues = field.Values?
+                                    
+                                    .Select(v => v.ToString()?.ToLower()).ToList()
                                 ?? new List<string>();
 
                 if (field.SameAs(nameof(VmTeam.Name)))
@@ -218,8 +268,8 @@ namespace Workflow.Services
                 }
                 else if (field.SameAs(nameof(VmTeam.IsRemoved)))
                 {
-                    var vals = field.Values.OfType<bool>().ToArray();
-                    query = query.Where(t => vals.Any(v => v == t.IsRemoved));
+                    var values = field.Values.OfType<bool>().ToArray();
+                    query = query.Where(t => values.Any(v => v == t.IsRemoved));
                 }
             }
 
@@ -299,6 +349,57 @@ namespace Workflow.Services
             }
 
             return orderedQuery ?? query;
+        }
+
+        private async Task<Team> CreateTeam(ApplicationUser currentUser, VmTeam team, 
+            Action<Team> createAction = null)
+        {
+            if (team == null)
+                throw new ArgumentNullException(nameof(team));
+
+            if (string.IsNullOrWhiteSpace(team.Name))
+                throw new InvalidOperationException("Team name cannot be empty");
+
+            var model = _vmConverter.ToModel(team);
+            model.Id = 0;
+            model.CreatorId = currentUser.Id;
+
+            createAction?.Invoke(model);
+
+            await _dataContext.Teams.AddAsync(model);
+            await _dataContext.SaveChangesAsync();
+            return model;
+        }
+
+        private async Task UpdateTeams(ApplicationUser currentUser, 
+            ICollection<VmTeam> teams, Action<Team> updateAction = null)
+        {
+            if (teams == null)
+                throw new ArgumentNullException(nameof(teams));
+
+            var teamIds = teams
+                .Where(t => !string.IsNullOrWhiteSpace(t.Name))
+                .Select(t => t.Id);
+
+            var query = GetQuery(currentUser, true);
+            var models = await query
+                .Where(t => teamIds.Any(tId => t.Id == tId))
+                .ToArrayAsync();
+
+            foreach (var model in models)
+            {
+                if (string.IsNullOrWhiteSpace(model.Name))
+                    throw new InvalidOperationException("Cannot update team. The name cannot be empty");
+
+                var team = teams.First(t => t.Id == model.Id);
+                model.Name = team.Name;
+                model.Description = team.Description;
+                model.GroupId = team.GroupId;
+                updateAction?.Invoke(model);
+                _dataContext.Entry(model).State = EntityState.Modified;
+            }
+
+            await _dataContext.SaveChangesAsync();
         }
 
 

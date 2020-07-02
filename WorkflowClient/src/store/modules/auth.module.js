@@ -1,4 +1,4 @@
-import authentication from '~/api/authentication';
+import authentication from '~/api/auth.api';
 
 export default {
   namespaced: true,
