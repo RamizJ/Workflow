@@ -263,9 +263,9 @@ namespace Workflow.Services
                             state = s;
 
                         return state;
-                    }).Where(s => s != null).Cast<GoalState>().ToArray();
+                    }).Where(s => s != null).Cast<int>().ToArray();
 
-                    query = query.Where(g => values.Any(v => v == g.State));
+                    query = query.Where(g => values.Any(v => v == (int) g.State));
                 }
                 else if (field.SameAs(nameof(VmGoal.Priority)))
                 {
@@ -275,9 +275,9 @@ namespace Workflow.Services
                         if (Enum.TryParse<GoalPriority>(v.ToString(), out var p))
                             priority = p;
                         return priority;
-                    }).Where(s => s != null).Cast<GoalPriority>().ToArray();
+                    }).Where(s => s != null).Cast<int>().ToArray();
 
-                    query = query.Where(g => values.Any(v => v == g.Priority));
+                    query = query.Where(g => values.Any(v => v == (int) g.Priority));
                 }
                 else if (field.SameAs(nameof(VmGoal.OwnerFio)))
                 {

@@ -62,5 +62,17 @@ export const routes = [
     name: 'Users',
     component: () => import('~/pages/Users.vue'),
     meta: { layout: LayoutDefault }
+  },
+  {
+    path: '/journal',
+    name: 'Journal',
+    component: () => import('~/pages/Journal.vue'),
+    meta: { layout: LayoutDefault }
+  },
+  {
+    path: '/trash',
+    name: 'Trash',
+    component: () => import('~/pages/Trash.vue'),
+    meta: { layout: LayoutDefault }
   }
 ];

@@ -5,8 +5,10 @@ export default {
   get: id => httpClient.get(`/api/Users/Get/${id}`),
   create: user => httpClient.post(`/api/Users/Create`, user),
   update: user => httpClient.put(`/api/Users/Update`, user),
-  delete: id => httpClient.delete(`/api/Users/Delete`, id),
-  resetPassword: id => httpClient.patch(`/api/Users/ResetPassword/${id}`),
+  delete: userId => httpClient.delete(`/api/Users/Delete?id=${userId}`),
+  deleteRange: userIds => httpClient.patch(`/api/Users/DeleteRange`, userIds),
+  resetPassword: userId =>
+    httpClient.patch(`/api/Users/ResetPassword/${userId}`),
   isEmailExist: email => httpClient.get(`/api/Users/IsEmailExist/${email}`),
   isUserNameExist: userName =>
     httpClient.get(`/api/Users/IsUserNameExist/${userName}`),

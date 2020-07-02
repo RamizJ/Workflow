@@ -1,23 +1,43 @@
 <template lang="pug">
-  div.container
-    base-header
+  page
+    page-header
       template(slot="title") Области
+      template(slot="search")
+        el-input(
+          v-model="query.filter"
+          size="medium"
+          placeholder="Поиск"
+          @change="applyFilters")
+          el-button(slot="prefix" type="text" size="mini")
+            feather(type="search" size="16")
+          el-button(slot="suffix" type="text" size="mini" @click="filtersVisible = !filtersVisible")
+            feather(type="sliders" size="16")
       template(slot="action")
-        a(href="#" @click="dialogOpened = true; selectedItemId = null") Создать
+        el-button(type="text" size="mini" @click="dialogOpened = true; selectedItemId = null")
+          feather(type="edit" size="18")
 
-    base-toolbar
-      template(slot="filters")
-        base-toolbar-item
-          el-input(v-model="query.filter" size="small" placeholder="Поиск" @change="refresh")
-        base-toolbar-item
-          el-select(
-            v-model="filters.sort.value"
-            size="small"
-            placeholder="Сортировать"
-            @change="applyFilters" clearable)
-            el-option(v-for="option in filters.sort.items" :key="option.value" :value="option.value", :label="option.label")
+    page-toolbar
+      template(v-if="filtersVisible" slot="filters")
 
-    base-list
+      template(slot="view")
+        el-select(
+          v-model="filters.sort.value"
+          size="medium"
+          placeholder="По дате создания"
+          @change="applyFilters"
+          clearable)
+          el-button(slot="prefix" type="text" size="mini")
+            feather(type="align-right" size="18")
+          el-option(v-for="option in filters.sort.items" :key="option.value" :value="option.value", :label="option.label")
+          el-divider
+          el-option(value="acs" label="Возрастанию")
+          el-option(value="desc" label="Убыванию")
+        el-button(type="text" size="mini")
+          feather(type="grid" size="20")
+        el-button.active(type="text" size="mini")
+          feather(type="list" size="20")
+
+    page-content
       el-table(
         :data="tableData"
         ref="table"
@@ -47,20 +67,20 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import BaseHeader from '~/components/BaseHeader';
-import BaseToolbar from '~/components/BaseToolbar';
-import BaseToolbarItem from '~/components/BaseToolbarItem';
-import BaseList from '~/components/BaseList';
+import Page from '~/components/Page';
+import PageHeader from '~/components/PageHeader';
+import PageToolbar from '~/components/PageToolbar';
+import PageContent from '~/components/PageContent';
 import ScopeDialog from '~/components/ScopeDialog';
 import tableMixin from '~/mixins/table.mixin';
 
 export default {
   name: 'Teams',
   components: {
-    BaseHeader,
-    BaseToolbar,
-    BaseToolbarItem,
-    BaseList,
+    Page,
+    PageHeader,
+    PageToolbar,
+    PageContent,
     ScopeDialog
   },
   mixins: [tableMixin],
@@ -71,6 +91,7 @@ export default {
         pageNumber: 1,
         pageSize: 30
       },
+      filtersVisible: false,
       filters: {
         sort: {
           value: null,

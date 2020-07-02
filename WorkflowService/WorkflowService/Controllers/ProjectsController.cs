@@ -178,7 +178,7 @@ namespace WorkflowService.Controllers
         }
 
         /// <summary>
-        /// Удаление проектов
+        /// Удаление проекта
         /// </summary>
         /// <param name="id">Идентификатор проекта</param>
         /// <returns>Результат выполнения операции</returns>
