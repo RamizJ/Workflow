@@ -118,6 +118,8 @@ namespace Workflow.Tests.Services
         [TestCase(0, 5, null, "Title", new object[] { "Goal1" }, false, 5)]
         [TestCase(0, 5, null, "Description", new object[] { "Description1" }, false, 1)]
         [TestCase(0, 5, null, "Title", new object[] { "Goal2" }, true, 4)]
+        [TestCase(0, 5, null, "State", new object[] { GoalState.Perform }, true, 4)]
+        [TestCase(0, 5, null, "Priority", new object[] { GoalPriority.High }, true, 4)]
         public async Task GetPageFilterFieldsTest(int pageNumber, int pageSize,
             string filter, string fieldName, object[] values, bool withRemoved, int expectedCount)
         {
