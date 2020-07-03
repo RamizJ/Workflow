@@ -42,7 +42,10 @@
               feather(type="trash" size="12")
               span {{ isMultipleSelected ? 'Удалить выделенное' : 'Удалить' }}
           transition(name="fade")
-            el-button(v-if="editButtonVisible && !isMultipleSelected" size="small")
+            el-button(
+              v-if="editButtonVisible && !isMultipleSelected"
+              size="small"
+              @click="onItemEdit(null, selectedRow)")
               feather(type="edit-3" size="12")
               span Редактировать
 
