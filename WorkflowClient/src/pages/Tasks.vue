@@ -61,7 +61,7 @@
               size="small"
               @click="dialogOpened = true; selectedItemId = null")
               feather(type="plus" size="12")
-              span Добавить
+              span Создать
           transition(name="fade")
             el-button(
               v-if="completeButtonVisible"

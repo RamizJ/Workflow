@@ -43,90 +43,96 @@
             v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
             @change="update")
 
+      page-toolbar
+        template(v-if="filtersVisible" slot="filters")
+          el-row
+            el-select(
+              v-model="filters.performer.value"
+              size="small"
+              placeholder="Ответственный"
+              @change="refresh"
+              multiple collapse-tags)
+              el-option(v-for="option in filters.performer.items" :key="option.value" :value="option.value", :label="option.label")
+            el-select(
+              v-model="filters.priority.value"
+              size="small"
+              placeholder="Приоритет"
+              @change="refresh"
+              multiple collapse-tags)
+              el-option(v-for="option in filters.priority.items" :key="option.value" :value="option.value", :label="option.label")
+            el-select(
+              v-model="filters.status.value"
+              size="small"
+              placeholder="Статус"
+              @change="refresh"
+              multiple collapse-tags)
+              el-option(v-for="option in filters.status.items" :key="option.value" :value="option.value", :label="option.label")
+          el-row
+            el-select(
+              v-model="filters.project.value"
+              size="small"
+              placeholder="Проект"
+              @change="refresh"
+              multiple collapse-tags)
+              el-option(v-for="option in filters.project.items" :key="option.value" :value="option.value", :label="option.label")
+            el-select(
+              v-model="filters.tags.value"
+              size="small"
+              placeholder="Тег"
+              @change="refresh"
+              multiple collapse-tags)
+              el-option(v-for="option in filters.tags.items" :key="option.value" :value="option.value", :label="option.label")
+
+        template(slot="actions")
+          transition(name="fade")
+            el-button(
+              v-if="addButtonVisible"
+              size="small"
+              @click="dialogOpened = true; selectedItemId = null")
+              feather(type="plus" size="12")
+              span Добавить задачу
+          transition(name="fade")
+            el-button(
+              size="small"
+              @click="teamDialogOpened = true")
+              feather(type="plus" size="12")
+              span Добавить команду
+          transition(name="fade")
+            el-button(
+              v-if="completeButtonVisible"
+              size="small"
+              @click="isMultipleSelected ? onItemMultipleComplete(null, selectedRow) : onItemComplete(null, selectedRow)")
+              feather(type="check" size="12")
+              span {{ isMultipleSelected ? 'Завершить выделенное' : 'Завершить' }}
+          transition(name="fade")
+            el-button(
+              v-if="deleteButtonVisible"
+              size="small"
+              @click="isMultipleSelected ? onItemMultipleDelete(null, selectedRow) : onItemDelete(null, selectedRow)")
+              feather(type="trash" size="12")
+              span {{ isMultipleSelected ? 'Удалить выделенное' : 'Удалить' }}
+          transition(name="fade")
+            el-button(v-if="editButtonVisible && !isMultipleSelected" size="small")
+              feather(type="edit-3" size="12")
+              span Редактировать
+
+        template(slot="view")
+          el-button(type="text" size="mini" @click="switchSortType")
+            feather(:type="sort.type === 'Ascending' ? 'align-left' : 'align-right'" size="20")
+          el-select(
+            v-model="sort.field"
+            size="medium"
+            placeholder="По дате создания"
+            @change="applySort"
+            clearable)
+            el-option(v-for="option in sort.fields" :key="option.value" :value="option.value", :label="option.label")
+          el-button(type="text" size="mini")
+            feather(type="grid" size="20")
+          el-button.active(type="text" size="mini")
+            feather(type="list" size="20")
+
       el-tabs(ref="tabs" v-model="activeTab" @tab-click="onTabClick")
         el-tab-pane(v-for="(tab, index) in tabs" :key="index" :label="tab.label" :name="tab.name")
-          page-toolbar
-            template(v-if="filtersVisible" slot="filters")
-              el-row
-                el-select(
-                  v-model="filters.performer.value"
-                  size="small"
-                  placeholder="Ответственный"
-                  @change="refresh"
-                  multiple collapse-tags)
-                  el-option(v-for="option in filters.performer.items" :key="option.value" :value="option.value", :label="option.label")
-                el-select(
-                  v-model="filters.priority.value"
-                  size="small"
-                  placeholder="Приоритет"
-                  @change="refresh"
-                  multiple collapse-tags)
-                  el-option(v-for="option in filters.priority.items" :key="option.value" :value="option.value", :label="option.label")
-                el-select(
-                  v-model="filters.status.value"
-                  size="small"
-                  placeholder="Статус"
-                  @change="refresh"
-                  multiple collapse-tags)
-                  el-option(v-for="option in filters.status.items" :key="option.value" :value="option.value", :label="option.label")
-              el-row
-                el-select(
-                  v-model="filters.project.value"
-                  size="small"
-                  placeholder="Проект"
-                  @change="refresh"
-                  multiple collapse-tags)
-                  el-option(v-for="option in filters.project.items" :key="option.value" :value="option.value", :label="option.label")
-                el-select(
-                  v-model="filters.tags.value"
-                  size="small"
-                  placeholder="Тег"
-                  @change="refresh"
-                  multiple collapse-tags)
-                  el-option(v-for="option in filters.tags.items" :key="option.value" :value="option.value", :label="option.label")
-
-            template(slot="actions")
-              transition(name="fade")
-                el-button(
-                  v-if="addButtonVisible"
-                  size="small"
-                  @click="dialogOpened = true; selectedItemId = null")
-                  feather(type="plus" size="12")
-                  span Добавить
-              transition(name="fade")
-                el-button(
-                  v-if="completeButtonVisible"
-                  size="small"
-                  @click="isMultipleSelected ? onItemMultipleComplete(null, selectedRow) : onItemComplete(null, selectedRow)")
-                  feather(type="check" size="12")
-                  span {{ isMultipleSelected ? 'Завершить выделенное' : 'Завершить' }}
-              transition(name="fade")
-                el-button(
-                  v-if="deleteButtonVisible"
-                  size="small"
-                  @click="isMultipleSelected ? onItemMultipleDelete(null, selectedRow) : onItemDelete(null, selectedRow)")
-                  feather(type="trash" size="12")
-                  span {{ isMultipleSelected ? 'Удалить выделенное' : 'Удалить' }}
-              transition(name="fade")
-                el-button(v-if="editButtonVisible && !isMultipleSelected" size="small")
-                  feather(type="edit-3" size="12")
-                  span Редактировать
-
-            template(slot="view")
-              el-button(type="text" size="mini" @click="switchSortType")
-                feather(:type="sort.type === 'Ascending' ? 'align-left' : 'align-right'" size="20")
-              el-select(
-                v-model="sort.field"
-                size="medium"
-                placeholder="По дате создания"
-                @change="applySort"
-                clearable)
-                el-option(v-for="option in sort.fields" :key="option.value" :value="option.value", :label="option.label")
-              el-button(type="text" size="mini")
-                feather(type="grid" size="20")
-              el-button.active(type="text" size="mini")
-                feather(type="list" size="20")
-
           table-content
             el-table(
               v-if="tab.name === activeTab"
