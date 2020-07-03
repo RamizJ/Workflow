@@ -144,7 +144,8 @@ export default {
     }),
     async validateLogin(rule, value, callback) {
       const loginAlreadyExist = await this.isLoginExist(value);
-      if (loginAlreadyExist) callback(new Error('занято'));
+      if (loginAlreadyExist && this.item.userName !== value)
+        callback(new Error('занято'));
       else callback();
     },
     async validateEmail(rule, value, callback) {

@@ -34,8 +34,7 @@ input {
   &.title {
     font-size: 28px;
     font-weight: 800;
-    line-height: 28px;
-    height: 28px;
+    height: auto;
   }
   &.subtitle {
     font-size: 14px;
@@ -46,8 +45,8 @@ input {
   cursor: default;
   display: flex;
   align-items: baseline;
-  //justify-content: space-between;
   font-size: 28px;
+  line-height: 34px;
   font-weight: 800;
   &:hover > .page-header__action {
     opacity: 1;
@@ -63,7 +62,6 @@ input {
 
 <style lang="scss">
 .page-header__search {
-  //margin-top: 12px;
   width: 25%;
   .el-button {
     padding: 8px 6px;
@@ -78,20 +76,12 @@ input {
 .page-header__action {
   transition: 0.3s;
   opacity: 0;
-  //margin-left: 1px;
   margin-left: 5px;
-  //font-size: 13px;
-  //font-weight: 500;
   i,
   button {
     padding: 3px 10px;
     border-radius: 6px;
-    //color: var(--text-muted);
   }
-  //&:hover {
-  //  opacity: 1;
-  //  margin-left: 10px;
-  //}
 }
 .page-header .actions {
   background-color: transparent;

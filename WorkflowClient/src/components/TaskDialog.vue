@@ -18,7 +18,7 @@
         transition(name="fade")
           el-col(v-if="descriptionVisible || form.description" :span="24")
             el-form-item(prop="description")
-              el-input(v-model="form.description" :autosize="{ minRows: 2 }" type="textarea" placeholder="Заметки" )
+              el-input(v-model="form.description" :autosize="{ minRows: 2 }" type="textarea" placeholder="Описание" )
         transition(name="fade")
           el-col(v-if="tagsVisible || (form.tags && form.tags.length)" :span="24")
             el-form-item(prop="tags")
@@ -69,7 +69,7 @@
 
     template(slot="footer")
       div.extra
-        el-tooltip(content="Заметки" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+        el-tooltip(content="Описание" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
           el-button(v-if="!form.description" type="text" title="Теги" @click="descriptionVisible = !descriptionVisible" circle)
             feather(type="align-left")
         el-tooltip(content="Теги" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
@@ -132,7 +132,7 @@ export default {
       },
       priorities: [
         { value: 'High', label: 'Высокий' },
-        { value: 'Normal', label: 'Нормальный' },
+        { value: 'Normal', label: 'Обычный' },
         { value: 'Low', label: 'Низкий' }
       ],
       attachmentList: [],

@@ -1,5 +1,5 @@
 <template lang="pug">
-  section
+  div.layout-container
     app-sidebar
     main
       transition(name="page-fade" mode="out-in")
@@ -19,7 +19,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-section {
+.layout-container {
   width: 100vw;
   height: 100vh;
   display: flex;

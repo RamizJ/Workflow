@@ -144,6 +144,9 @@ a {
   background: var(--button-background);
   border-color: var(--button-border);
   transition: .27s;
+  &.is-disabled {
+    color: var(--text-muted);
+  }
 }
 .el-button--default:focus, .el-button--default:hover {
   color: var(--button-hover-color);
@@ -183,6 +186,9 @@ a {
   white-space: nowrap;
   user-select: none;
 }
+.el-table td .cell {
+  cursor: default;
+}
 .el-table td, .el-table th {
   padding: 5px 0;
 }
@@ -192,7 +198,6 @@ a {
 .el-loading-mask,
 .el-table__empty-block,
 .el-table th, .el-table tr {
-  cursor: default;
   background-color: var(--table-background);
 }
 .el-table--striped .el-table__body tr.el-table__row--striped td {
@@ -220,6 +225,13 @@ a {
 .el-table--enable-row-hover .el-table__body tr.current-row:hover>td {
   background-color: var(--table-selected);
 }
+.el-table--border, .el-table--group,
+.el-table--border td, .el-table--border th,
+.el-table__body-wrapper .el-table--border.is-scrolling-left~.el-table__fixed,
+.el-table--border td, .el-table--border th, .el-table__body-wrapper .el-table--border.is-scrolling-left~.el-table__fixed {
+  border: none;
+}
+
 .infinite-loading-container[data-v-644ea9c9] {
   background-color: transparent;
 }
@@ -286,6 +298,9 @@ a {
 }
 .el-tabs {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 .el-tabs__content,
 .el-tab-pane {

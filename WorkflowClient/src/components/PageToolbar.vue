@@ -40,15 +40,16 @@ export default {
 .page-toolbar__actions {
   width: 100%;
   .el-button {
-    //color: var(--text-muted);
-    padding: 8px 25px;
-    //padding: 10px 35px;
-    //margin-right: 10px;
-  }
-  .el-button--default {
-    color: var(--text-placeholder);
-    &:hover {
-      color: white;
+    &.is-circle {
+      height: 35px;
+      width: 35px;
+    }
+    span {
+      display: flex;
+      align-items: center;
+    }
+    i {
+      margin-right: 8px;
     }
   }
 }

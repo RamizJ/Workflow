@@ -5,7 +5,9 @@ export default {
   get: id => httpClient.get(`/api/Goals/Get/${id}`),
   getPage: query =>
     httpClient.get(
-      `/api/Goals/GetPage${qs.stringify(query, { addQueryPrefix: true })}`
+      `/api/Goals/GetPage${qs.stringify(query, {
+        addQueryPrefix: true
+      })}`
     ),
   getRange: query =>
     httpClient.get(

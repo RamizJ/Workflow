@@ -26,12 +26,24 @@
               el-option(v-for="option in filters.position.items" :key="option.value" :value="option.value", :label="option.label")
 
         template(slot="actions")
-          el-button(size="mini" @click="dialogOpened = true; selectedItemId = null")
-            feather(type="plus" size="16")
-          el-button(size="mini")
-            feather(type="edit-3" size="16")
-          el-button(size="mini")
-            feather(type="trash" size="16")
+          transition(name="fade")
+            el-button(
+              v-if="addButtonVisible"
+              size="small"
+              @click="dialogOpened = true; selectedItemId = null")
+              feather(type="plus" size="12")
+              span Добавить
+          transition(name="fade")
+            el-button(
+              v-if="deleteButtonVisible"
+              size="small"
+              @click="isMultipleSelected ? onItemMultipleDelete(null, selectedRow) : onItemDelete(null, selectedRow)")
+              feather(type="trash" size="12")
+              span {{ isMultipleSelected ? 'Удалить выделенное' : 'Удалить' }}
+          transition(name="fade")
+            el-button(v-if="editButtonVisible && !isMultipleSelected" size="small")
+              feather(type="edit-3" size="12")
+              span Редактировать
 
         template(slot="view")
           el-select(
@@ -57,16 +69,19 @@
           ref="table"
           height="auto"
           v-loading="loading"
+          @select="onItemSelect"
+          @row-click="onItemSingleClick"
           @row-contextmenu="onItemRightClick"
           @row-dblclick="onItemDoubleClick"
-          highlight-current-row)
-          el-table-column(type="selection" width="55")
-          el-table-column(prop="lastName" label="Фамилия")
-          el-table-column(prop="firstName" label="Имя")
-          el-table-column(prop="middleName" label="Отчество")
-          el-table-column(prop="userName" label="Логин")
+          highlight-current-row border)
+          el-table-column(type="selection" width="38")
+          el-table-column(prop="lastName" label="Фамилия" width="150")
+          el-table-column(prop="firstName" label="Имя" width="150")
+          el-table-column(prop="middleName" label="Отчество" width="150")
+          el-table-column(prop="userName" label="Логин" width="150")
           el-table-column(prop="email" label="Почта")
-          el-table-column(prop="phone" label="Телефон")
+          el-table-column(prop="phone" label="Телефон" width="120")
+          el-table-column(prop="position" label="Должность" width="180")
           infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="400" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
             div(slot="no-more")
             div(slot="no-results")

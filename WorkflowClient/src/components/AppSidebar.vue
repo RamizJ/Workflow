@@ -102,17 +102,17 @@ export default {
 <style lang="scss" scoped>
 .sidebar {
   height: 100%;
-  border-right: 1px solid var(--sidebar-border);
   background-color: var(--sidebar-background);
-  transition: background-color 0.25s, border-color 0.25s;
+  transition: background-color 0.25s;
 }
 .el-menu {
   overflow: auto;
-  border-right: none;
+  border-right: 1px solid var(--sidebar-border);
   height: 100%;
   position: relative;
   background-color: transparent;
   padding: 20px 10px;
+  transition: border-color 0.25s;
 }
 .el-menu:not(.el-menu--collapse) {
   width: var(--sidebar-width);

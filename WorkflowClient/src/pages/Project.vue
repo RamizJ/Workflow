@@ -38,7 +38,7 @@
               @blur="handleInputConfirm")
             el-button.tag-add(v-else size="small" @click="showInput") Добавить тег
           input.subtitle(
-            placeholder="Заметки"
+            placeholder="Описание"
             v-model="projectItem.description"
             v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
             @change="update")
@@ -86,14 +86,31 @@
                   el-option(v-for="option in filters.tags.items" :key="option.value" :value="option.value", :label="option.label")
 
             template(slot="actions")
-              el-button(size="mini" @click="dialogOpened = true; selectedItemId = null")
-                feather(type="plus" size="16")
-              el-button(size="mini")
-                feather(type="edit-3" size="16")
-              el-button(size="mini")
-                feather(type="check" size="16")
-              el-button(size="mini")
-                feather(type="trash" size="16")
+              transition(name="fade")
+                el-button(
+                  v-if="addButtonVisible"
+                  size="small"
+                  @click="dialogOpened = true; selectedItemId = null")
+                  feather(type="plus" size="12")
+                  span Добавить
+              transition(name="fade")
+                el-button(
+                  v-if="completeButtonVisible"
+                  size="small"
+                  @click="isMultipleSelected ? onItemMultipleComplete(null, selectedRow) : onItemComplete(null, selectedRow)")
+                  feather(type="check" size="12")
+                  span {{ isMultipleSelected ? 'Завершить выделенное' : 'Завершить' }}
+              transition(name="fade")
+                el-button(
+                  v-if="deleteButtonVisible"
+                  size="small"
+                  @click="isMultipleSelected ? onItemMultipleDelete(null, selectedRow) : onItemDelete(null, selectedRow)")
+                  feather(type="trash" size="12")
+                  span {{ isMultipleSelected ? 'Удалить выделенное' : 'Удалить' }}
+              transition(name="fade")
+                el-button(v-if="editButtonVisible && !isMultipleSelected" size="small")
+                  feather(type="edit-3" size="12")
+                  span Редактировать
 
             template(slot="view")
               el-select(
@@ -120,13 +137,17 @@
               ref="table"
               height="100%"
               v-loading="loading"
+              @select="onItemSelect"
+              @row-click="onItemSingleClick"
               @row-contextmenu="onItemRightClick"
               @row-dblclick="onItemDoubleClick"
-              highlight-current-row)
-              el-table-column(type="selection" width="55")
-              el-table-column(prop="title" label="Задача" width="450")
-              el-table-column(prop="description" label="Заметки")
-              el-table-column(prop="creationDate" label="Добавлено" :formatter="dateFormatter" width="165")
+              highlight-current-row border)
+              el-table-column(type="selection" width="38")
+              el-table-column(prop="title" label="Задача" width="500")
+              el-table-column(prop="projectName" label="Проект")
+              el-table-column(prop="state" label="Статус" width="120" :formatter="stateFormatter")
+              el-table-column(prop="priority" label="Приоритет" width="120" :formatter="priorityFormatter")
+              el-table-column(prop="creationDate" label="Добавлено" width="170" :formatter="dateFormatter")
               infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
                 div(slot="no-more")
                 div(slot="no-results")
@@ -274,7 +295,6 @@ export default {
       completeItems: 'tasks/completeTasks'
     }),
     onTabClick(tab) {
-      console.log(tab.name);
       this.query.filterFields[0].values[0] = tab.name;
       this.refresh();
     },

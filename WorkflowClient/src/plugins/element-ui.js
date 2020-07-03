@@ -1,6 +1,58 @@
 import Vue from 'vue';
-import ElementUI from 'element-ui';
-import locale from 'element-ui/lib/locale/lang/ru-RU';
+import {
+  Button,
+  Input,
+  Select,
+  Option,
+  DatePicker,
+  Upload,
+  Tooltip,
+  Table,
+  TableColumn,
+  Menu,
+  MenuItem,
+  Tabs,
+  TabPane,
+  Collapse,
+  CollapseItem,
+  Card,
+  Avatar,
+  Dialog,
+  Form,
+  FormItem,
+  Row,
+  Col,
+  Divider,
+  Loading
+} from 'element-ui';
+import language from 'element-ui/lib/locale/lang/ru-RU';
+import locale from 'element-ui/lib/locale';
 import 'element-ui/lib/theme-chalk/index.css';
 
-Vue.use(ElementUI, { locale });
+locale.use(language);
+
+console.log(Button.name);
+Vue.component(Button.name, Button);
+Vue.component(Input.name, Input);
+Vue.component(Select.name, Select);
+Vue.component(Option.name, Option);
+Vue.component(DatePicker.name, DatePicker);
+Vue.component(Upload.name, Upload);
+Vue.component(Tooltip.name, Tooltip);
+Vue.component(Table.name, Table);
+Vue.component(TableColumn.name, TableColumn);
+Vue.component(Menu.name, Menu);
+Vue.component(MenuItem.name, MenuItem);
+Vue.component(Tabs.name, Tabs);
+Vue.component(TabPane.name, TabPane);
+Vue.component(Collapse.name, Collapse);
+Vue.component(CollapseItem.name, CollapseItem);
+Vue.component(Card.name, Card);
+Vue.component(Avatar.name, Avatar);
+Vue.component(Dialog.name, Dialog);
+Vue.component(Form.name, Form);
+Vue.component(FormItem.name, FormItem);
+Vue.component(Row.name, Row);
+Vue.component(Col.name, Col);
+Vue.component(Divider.name, Divider);
+Loading.install(Vue);
