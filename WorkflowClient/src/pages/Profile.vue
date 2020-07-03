@@ -1,12 +1,10 @@
 <template lang="pug">
-  div.container
-    base-header(v-if="!!me")
-      template(slot="title") {{ `${me.lastName} ${me.firstName}` }}
-      template(slot="action")
-        a(href="#" @click="exit") Выйти
+  page
+    page-content
+      page-header(v-if="!!me")
+        template(slot="title") {{ `${me.lastName} ${me.firstName}` }}
 
-    div.profile
-      el-form(:model="form" :rules="rules" ref="form")
+      el-form.profile-fields(:model="form" :rules="rules" ref="form")
         div.items
           div.item
             div.item__title Логин
@@ -17,7 +15,7 @@
             div.item__title Пароль
             div.item__content
               el-form-item(prop="password")
-                el-input(v-model="form.password" @change="updateProfile" type="password" placeholder="**********")
+                el-input(v-model="form.password" @change="updateProfile" type="password" placeholder="**********" readonly onfocus="this.removeAttribute('readonly')")
           div.item
             div.item__title Почта
             div.item__content
@@ -53,11 +51,13 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import BaseHeader from '~/components/BaseHeader';
+import Page from '~/components/Page';
+import PageHeader from '~/components/PageHeader';
+import PageContent from '~/components/PageContent';
 
 export default {
   name: 'Profile',
-  components: { BaseHeader },
+  components: { Page, PageHeader, PageContent },
   data() {
     return {
       emptyText: '-',
@@ -157,18 +157,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.profile {
-  padding: 0 35px;
-}
 .items {
+  margin-top: 15px;
   display: grid;
   grid-gap: 40px 20px;
   grid-template-columns: repeat(4, 200px);
 }
 .item__title {
   cursor: default;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 500;
   margin-bottom: 15px;
 }
 .item__content {
@@ -179,7 +177,7 @@ export default {
 </style>
 
 <style lang="scss">
-.profile {
+.profile-fields {
   .el-input__inner {
     cursor: pointer;
     height: auto;

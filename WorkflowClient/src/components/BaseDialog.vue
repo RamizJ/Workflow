@@ -1,8 +1,15 @@
 <template lang="pug">
-  el-dialog(:visible.sync="showDialog" custom-class="base-dialog" @closed="$emit('close')")
+  el-dialog(
+    :visible.sync="showDialog"
+    custom-class="base-dialog"
+    @closed="$emit('close')")
     div.header(slot="title")
       div.title
         slot(name="title")
+      el-tooltip.submit(content="Сохранить" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="800")
+        slot(name="submit")
+      el-tooltip.close(content="Закрыть" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="800")
+        slot(name="close")
     div.body
       slot(name="body")
       div.footer
@@ -26,51 +33,54 @@ export default {
 <style lang="scss" scoped>
 .header,
 .body {
-  padding: 14px 18px;
+  padding: 14px 16px 0;
 }
 .header {
   padding-bottom: 0;
-}
-.body {
-  padding-top: 0;
 }
 .title {
   font-size: 24px;
   font-weight: 800;
   cursor: default;
 }
+.submit,
+.close {
+  position: absolute;
+  top: 25px;
+}
+.submit {
+  right: 90px;
+}
+.close {
+  right: 35px;
+}
+.body {
+  padding-top: 0;
+}
 .footer {
-  margin-top: 10px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  margin-left: -12px;
+  margin-right: -12px;
 }
 </style>
 
 <style lang="scss">
 .base-dialog {
-  border-radius: 10px !important;
+  border-radius: 12px !important;
   border-width: var(--border-width);
   border-color: var(--card-border);
   background-color: var(--card-background);
+  .el-dialog__headerbtn {
+    display: none;
+  }
   .el-select,
   .el-autocomplete {
     width: 100%;
   }
   .el-form-item {
     margin-bottom: 16px;
-  }
-  .el-form-item__error {
-    font-size: 10px;
-    padding-top: 0;
-  }
-  .el-form-item.is-error .el-input__inner,
-  .el-form-item.is-error .el-input__inner:focus,
-  .el-form-item.is-error .el-textarea__inner,
-  .el-form-item.is-error .el-textarea__inner:focus,
-  .el-message-box__input input.invalid,
-  .el-message-box__input input.invalid:focus {
-    background-color: #f56c6c26;
-    border-color: transparent;
   }
   .el-range-editor.el-input__inner {
     width: 100%;
@@ -91,7 +101,27 @@ export default {
     right: 38px;
   }
   .el-dialog__body {
-    padding: 15px 20px !important;
+    padding: 15px 20px 5px !important;
+  }
+  .el-upload-dragger {
+    border-color: var(--popover-border);
+    background-color: var(--card-background);
+  }
+  .el-upload,
+  .el-upload-dragger {
+    width: 100%;
+    height: 120px;
+  }
+  .el-upload-dragger .el-icon-upload {
+    font-size: 50px;
+    margin: 10px 0 10px;
+  }
+  .extra {
+    display: flex;
+    justify-content: flex-end;
+    i {
+      height: 18px;
+    }
   }
 }
 </style>

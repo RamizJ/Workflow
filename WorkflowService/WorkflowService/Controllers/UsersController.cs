@@ -145,10 +145,62 @@ namespace WorkflowService.Controllers
         [HttpDelete]
         public async Task<ActionResult<VmUser>> Delete(string id)
         {
-            var result = await _service.Delete(id);
+            var currentUser = await _userManager.GetUserAsync(User);
+            var result = await _service.Delete(currentUser, id);
             return Ok(result);
         }
 
+        /// <summary>
+        /// Удаление пользователей
+        /// </summary>
+        /// <param name="ids">Идентификаторы пользователей</param>
+        /// <returns></returns>
+        [HttpPatch]
+        public async Task<ActionResult<VmUser>> DeleteRange([FromBody] IEnumerable<string> ids)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var users = await _service.DeleteRange(currentUser, ids);
+            return Ok(users);
+        }
+
+        /// <summary>
+        /// Удаление пользователя
+        /// </summary>
+        /// <param name="id">Идентификатор пользователя</param>
+        /// <returns></returns>
+        [HttpPatch("{id}")]
+        public async Task<ActionResult<VmUser>> Restore(string id)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var user = await _service.Restore(currentUser, id);
+            return Ok(user);
+        }
+
+        /// <summary>
+        /// Восстановление пользователей
+        /// </summary>
+        /// <param name="ids">Идентификаторы пользователей</param>
+        /// <returns></returns>
+        [HttpPatch]
+        public async Task<ActionResult<VmUser>> RestoreRange([FromBody] IEnumerable<string> ids)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var users = await _service.RestoreRange(currentUser, ids);
+            return Ok(users);
+        }
+
+        /// <summary>
+        /// Восстановление пользователей
+        /// </summary>
+        /// <param name="ids">Идентификаторы пользователей</param>
+        /// <returns></returns>
+        [HttpPatch]
+        public async Task<ActionResult<VmUser>> Restore(IEnumerable<string> ids)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var user = await _service.RestoreRange(currentUser, ids);
+            return Ok(user);
+        }
 
         /// <summary>
         /// Изменение пароля пользователя. Доступно только текущему пользователю

@@ -1,53 +1,72 @@
 <template lang="pug">
-  base-dialog(v-if="visible" @close="exit")
-    div(slot="title") Пользователь
-    div(slot="body")
-      el-form(:model="form" :rules="rules" ref="form" v-loading="loading")
-        el-row(:gutter="20")
-          el-col(:span="8")
-            el-form-item(prop="lastName")
-              el-input(v-model="form.lastName" size="medium" placeholder="Фамилия")
-          el-col(:span="8")
-            el-form-item(prop="firstName")
-              el-input(v-model="form.firstName" size="medium" placeholder="Имя")
-          el-col(:span="8")
-            el-form-item(prop="middleName")
-              el-input(v-model="form.middleName" size="medium" placeholder="Отчество")
-        el-row(:gutter="20")
-          el-col(:span="8")
-            el-form-item(prop="userName")
-              el-input(v-model="form.userName" size="medium" placeholder="Логин")
-          el-col(:span="8")
-            el-form-item(prop="password")
-              el-input(v-model="form.password" type="password" size="medium" placeholder="Пароль")
-          el-col(:span="8")
-            el-form-item(prop="email")
-              el-input(v-model="form.email" size="medium" placeholder="Почта")
-        el-row(:gutter="20")
-          el-col(:span="16")
+  base-dialog(v-if="visible" @close="exit" ref="dialog")
+    h1(slot="title") Пользователь
+    el-form(slot="body" :model="form" :rules="rules" ref="form" v-loading="loading" @submit.native.prevent="submit")
+      el-row(:gutter="20")
+        el-col(:span="8")
+          el-form-item(prop="lastName")
+            el-input(ref="title" v-model="form.lastName" placeholder="Фамилия")
+        el-col(:span="8")
+          el-form-item(prop="firstName")
+            el-input(v-model="form.firstName" placeholder="Имя")
+        el-col(:span="8")
+          el-form-item(prop="middleName")
+            el-input(v-model="form.middleName" placeholder="Отчество")
+      el-row(:gutter="20")
+        el-col(:span="8")
+          el-form-item(prop="userName")
+            el-input(v-model="form.userName" placeholder="Логин")
+        el-col(:span="8")
+          el-form-item(prop="password")
+            el-input(v-model="form.password" type="password" placeholder="Пароль" readonly onfocus="this.removeAttribute('readonly')")
+        el-col(:span="8")
+          el-form-item(prop="email")
+            el-input(v-model="form.email" placeholder="Почта")
+      el-row(:gutter="20")
+        transition(name="fade")
+          el-col(v-if="phoneVisible || form.phone" :span="8")
+            el-form-item(prop="phone")
+              el-input(v-model="form.phone" placeholder="Телефон")
+        transition(name="fade")
+          el-col(v-if="positionVisible || form.position" :span="8")
+            el-form-item(prop="positionId")
+              el-select(
+                v-model="form.positionId"
+                placeholder="Должность"
+                filterable default-first-option)
+                el-option(v-for="item in positions" :key="item.value" :label="item.label" :value="item.value")
+        transition(name="fade")
+          el-col(v-if="teamsVisible || (form.teamIds && form.teamIds.length)" :span="24")
             el-form-item(prop="teams")
               el-select(
                 v-model="form.teamIds"
-                size="medium"
                 placeholder="Команды"
                 :remote-method="searchTeams"
                 multiple filterable remote clearable default-first-option)
                 el-option(v-for="item in teamList" :key="item.id" :label="item.value" :value="item.id")
-          el-col(:span="8")
-            el-form-item(prop="phone")
-              el-input(v-model="form.phone" size="medium" placeholder="Телефон")
-        el-row(:gutter="20")
-          el-col(:span="16")
+        transition(name="fade")
+          el-col(v-if="rolesVisible || (form.roles && form.roles.length)" :span="24")
             el-form-item(prop="roles")
-              el-select(v-model="form.roles" size="medium" placeholder="Права" multiple)
+              el-select(v-model="form.roles" placeholder="Права" multiple)
                 el-option(v-for="item in roles" :key="item.value" :label="item.label" :value="item.value")
-          el-col(:span="8")
-            el-form-item(prop="positionId")
-              el-select(v-model="form.positionId" size="medium" placeholder="Должность")
-                el-option(v-for="item in positions" :key="item.value" :label="item.label" :value="item.value")
-    div(slot="footer")
-      el-button(size="medium" type="primary" @click="submit") {{ isEdit ? 'Сохранить' : 'Создать' }}
-
+    template(slot="footer")
+      div.extra
+        el-tooltip(content="Команды" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(v-if="!(form.teamIds && form.teamIds.length)" type="text" title="Теги" @click="teamsVisible = !teamsVisible" circle)
+            feather(type="users")
+        el-tooltip(v-if="!(form.roles && form.roles.length)" content="Права" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(type="text" @click="rolesVisible = !rolesVisible" circle)
+            feather(type="shield")
+        el-tooltip(v-if="!form.position" content="Должность" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(type="text" @click="positionVisible = !positionVisible" circle)
+            feather(type="briefcase")
+        el-tooltip(v-if="!form.phone" content="Телефон" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(type="text" @click="phoneVisible = !phoneVisible" circle)
+            feather(type="phone")
+      div.send
+        el-tooltip(content="Сохранить" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(type="text" @click="submit" circle)
+            feather(type="arrow-right")
 </template>
 
 <script>
@@ -57,9 +76,6 @@ import dialogMixin from '~/mixins/dialog.mixin';
 
 export default {
   components: { BaseDialog },
-  props: {
-    id: String
-  },
   mixins: [dialogMixin],
   data() {
     return {
@@ -84,50 +100,61 @@ export default {
       positions: [
         { value: 0, label: 'Начальник' },
         { value: 1, label: 'Уборщик' },
-        { value: 2, label: 'Оператор' }
+        { value: 2, label: 'Оператор' },
+        { value: 3, label: 'Разработчик' }
       ],
       rules: {
-        lastName: [
-          { required: true, message: 'Введите фамилию', trigger: 'blur' }
-        ],
-        firstName: [
-          { required: true, message: 'Введите имя', trigger: 'blur' }
-        ],
+        lastName: [{ required: true, message: '!', trigger: 'blur' }],
+        firstName: [{ required: true, message: '!', trigger: 'blur' }],
         userName: [
-          { required: true, message: 'Введите логин', trigger: 'blur' }
+          { required: true, message: '!', trigger: 'blur' },
+          { validator: this.validateLogin, trigger: 'blur' }
         ],
         password: [{ validator: this.validatePassword, trigger: 'blur' }],
         email: [
-          { required: true, message: 'Введите эл. почту', trigger: 'blur' },
-          {
-            type: 'email',
-            message: 'Некорректный адрес эл. почты',
-            trigger: 'blur'
-          }
+          { required: true, message: '!', trigger: 'blur' },
+          { type: 'email', message: 'не почта', trigger: 'blur' },
+          { validator: this.validateEmail, trigger: 'blur' }
         ],
-        phone: [
-          { required: true, message: 'Введите номер телефона', trigger: 'blur' }
-        ]
-      }
+        phone: [{ required: true, message: '!', trigger: 'blur' }]
+      },
+      teamsVisible: null,
+      rolesVisible: null,
+      positionVisible: null,
+      phoneVisible: null
     };
   },
-  computed: {
-    ...mapGetters({ item: 'users/getUser' })
+  async mounted() {
+    await this.searchTeams();
+    this.$refs.title.focus();
   },
   methods: {
     ...mapActions({
       fetchItem: 'users/fetchUser',
       createItem: 'users/createUser',
-      updateItem: 'users/updateUser'
+      updateItem: 'users/updateUser',
+      isLoginExist: 'users/isLoginExist',
+      isEmailExist: 'users/isEmailExist'
     }),
+    async validateLogin(rule, value, callback) {
+      const loginAlreadyExist = await this.isLoginExist(value);
+      if (loginAlreadyExist && this.item.userName !== value)
+        callback(new Error('занято'));
+      else callback();
+    },
+    async validateEmail(rule, value, callback) {
+      const emailAlreadyExist = await this.isEmailExist(value);
+      if (emailAlreadyExist) callback(new Error('занято'));
+      else callback();
+    },
     validatePassword(rule, value, callback) {
       const length = value?.trim().length;
       const symbolsLeft = 6 - length;
       if (!value && this.isEdit) callback();
-      if (!value) callback(new Error('Введите пароль'));
+      if (!value) callback(new Error('!'));
       else if (length < 6)
         callback(
-          new Error(`Введите ещё ${symbolsLeft}
+          new Error(`ещё ${symbolsLeft}
         ${
           symbolsLeft > 1
             ? symbolsLeft > 4
@@ -136,8 +163,7 @@ export default {
             : 'символ'
         }`)
         );
-      else if (!/[a-z]/.test(value))
-        callback(new Error('Введите хотя бы одну букву'));
+      else if (!/[a-z]/.test(value)) callback(new Error('нужна буква'));
       else callback();
     }
   }

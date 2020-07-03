@@ -1,30 +1,42 @@
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
+  props: {
+    data: Object
+  },
   data() {
     return {
       visible: false,
       loading: false,
-      isEdit: !!this.id
+      isEdit: !!this.data
     };
   },
   async created() {
     this.visible = true;
-    if (this.isEdit) {
-      this.loading = true;
-      if (this.id !== this.item.id) await this.fetchItem(this.id);
-      this.form = this.item;
-      this.loading = false;
-    }
+    if (this.isEdit) this.form = { ...this.data };
   },
   computed: {
     ...mapGetters({
-      item: '',
       projects: 'projects/getProjects',
       teams: 'teams/getTeams',
       users: 'users/getUsers',
       me: 'auth/me'
     }),
+    isFormValid() {
+      let formValid = false;
+      this.$refs.form.validate(valid => {
+        if (valid) formValid = true;
+        else {
+          formValid = false;
+          this.$message({
+            showClose: true,
+            message: 'Форма заполнена некорректно',
+            type: 'error'
+          });
+        }
+      });
+      return formValid;
+    },
     projectList() {
       return this.projects.map(project => {
         return {
@@ -81,27 +93,26 @@ export default {
         pageSize: 10
       });
     },
-    submit(event) {
+    async sendForm() {
       const payload = { ...this.form };
-      const form = this.$refs.form;
-      form.validate(async valid => {
-        if (valid) {
-          try {
-            if (this.isEdit) await this.updateItem(payload);
-            else await this.createItem(payload);
-            form.resetFields();
-            this.$emit('submit');
-            this.exit();
-          } catch (e) {
-            this.$message.error('Ошибка отправки запроса');
-          }
-        } else {
-          this.$message.error('Укажите корректные данные');
-        }
-      });
+      this.loading = true;
+      try {
+        if (this.isEdit) await this.updateItem(payload);
+        else await this.createItem(payload);
+      } catch (error) {
+        this.$message.error(`Ошибка отправки запроса`);
+      }
+      this.loading = false;
+    },
+    async submit(event) {
+      if (this.isFormValid) {
+        await this.sendForm();
+        this.$emit('submit');
+        this.exit();
+      }
     },
     exit() {
-      this.$refs.form.resetFields();
+      this.$refs.form?.resetFields();
       this.visible = false;
       this.$emit('close');
     }

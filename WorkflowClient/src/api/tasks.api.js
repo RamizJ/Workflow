@@ -5,7 +5,9 @@ export default {
   get: id => httpClient.get(`/api/Goals/Get/${id}`),
   getPage: query =>
     httpClient.get(
-      `/api/Goals/GetPage${qs.stringify(query, { addQueryPrefix: true })}`
+      `/api/Goals/GetPage${qs.stringify(query, {
+        addQueryPrefix: true
+      })}`
     ),
   getRange: query =>
     httpClient.get(
@@ -25,5 +27,9 @@ export default {
       }
     }),
   removeAttachments: attachmentIds =>
-    httpClient.patch(`/api/Goals/RemoveAttachments`, attachmentIds)
+    httpClient.patch(`/api/Goals/RemoveAttachments`, attachmentIds),
+  downloadAttachmentFile: attachmentId =>
+    httpClient.get(`/api/Goals/DownloadAttachmentFile/${attachmentId}`, {
+      responseType: 'blob'
+    })
 };

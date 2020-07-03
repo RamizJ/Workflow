@@ -24,6 +24,11 @@ export default {
       const tasks = response.data;
       commit('setTasks', tasks);
     },
+    async searchTasks({ commit }, params) {
+      const response = await tasksAPI.getPage(params);
+      const tasks = response.data;
+      return tasks;
+    },
     async fetchTask({ commit }, id) {
       const response = await tasksAPI.get(id);
       const task = response.data;
@@ -57,8 +62,8 @@ export default {
     },
     async deleteTasks({ commit }, ids) {
       const response = await tasksAPI.deleteRange(ids);
-      const task = response.data;
-      if (!task) throw Error;
+      const tasks = response.data;
+      if (!tasks) throw Error;
     },
     async fetchAttachments({ commit }, taskId) {
       const response = await tasksAPI.getAttachments(taskId);
@@ -70,6 +75,15 @@ export default {
     },
     async removeAttachments({ commit }, attachmentIds) {
       const response = await tasksAPI.removeAttachments(attachmentIds);
+    },
+    async downloadAttachment({ commit }, file) {
+      const response = await tasksAPI.downloadAttachmentFile(file.id);
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', file.name);
+      document.body.appendChild(link);
+      link.click();
     }
   },
   getters: {

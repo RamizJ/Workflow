@@ -1,9 +1,9 @@
 <template lang="pug">
-  div.container
-    base-header
-      template(slot="title") Настройки
+  page
+    page-content
+      page-header
+        template(slot="title") Настройки
 
-    div.settings
       div.item
         div.item__title Оформление
         div.item__content
@@ -12,17 +12,21 @@
 </template>
 
 <script>
-import BaseHeader from '~/components/BaseHeader';
+import Page from '~/components/Page';
+import PageHeader from '~/components/PageHeader';
+import PageContent from '~/components/PageContent';
 
 export default {
   name: 'Settings',
   components: {
-    BaseHeader
+    Page,
+    PageHeader,
+    PageContent
   },
   data() {
     return {
       search: '',
-      appearance: localStorage.getItem('theme')
+      appearance: localStorage.getItem('theme') || 'light'
     };
   },
   methods: {
@@ -36,11 +40,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.settings {
-  padding: 0 35px;
-}
 .item__title {
-  font-size: 15px;
+  margin-top: 15px;
+  font-size: 14px;
   font-weight: 500;
   margin-bottom: 15px;
 }

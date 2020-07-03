@@ -6,17 +6,43 @@ export default {
       loading: true,
       tableData: [],
       query: {
+        filter: '',
         pageNumber: 0,
-        pageSize: 30
+        pageSize: 20,
+        sortFields: [{ fieldName: 'creationDate', sortType: 'Ascending' }]
       },
-      dialogOpened: false,
-      selectedItemId: null
+      sort: {
+        field: 'creationDate',
+        type: 'Ascending',
+        fields: []
+      },
+      dialogVisible: false,
+      dialogData: null,
+      selectedRow: null,
+      addButtonVisible: true,
+      editButtonVisible: false,
+      completeButtonVisible: false,
+      deleteButtonVisible: false,
+      filtersVisible: false
     };
   },
   computed: {
     ...mapGetters({ items: '' }),
+    table() {
+      if (Array.isArray(this.$refs.table)) return this.$refs.table[0];
+      else return this.$refs.table;
+    },
+    loader() {
+      if (Array.isArray(this.$refs.loader)) return this.$refs.loader[0];
+      else return this.$refs.loader;
+    },
+    contextMenu() {
+      if (Array.isArray(this.$refs.contextMenu))
+        return this.$refs.contextMenu[0];
+      else return this.$refs.contextMenu;
+    },
     isMultipleSelected() {
-      return this.$refs.table.selection.length > 1;
+      return this.table.selection?.length > 1;
     }
   },
   methods: {
@@ -27,11 +53,14 @@ export default {
       completeItem: '',
       completeItems: ''
     }),
-    async refresh() {
+    refresh() {
       this.tableData = [];
       this.query.pageNumber = 0;
-      this.$refs.loader.stateChanger.reset();
-      this.dialogOpened = false;
+      this.loader.stateChanger.reset();
+      this.dialogVisible = false;
+      this.editButtonVisible = false;
+      this.completeButtonVisible = false;
+      this.deleteButtonVisible = false;
     },
     async load($state) {
       const firstLoad = !this.tableData.length;
@@ -53,29 +82,56 @@ export default {
         console.log(e);
       }
     },
-    dateFormatter(row, column, cellValue, index) {
-      const dateRaw = new Date(cellValue);
-      const dateRu = dateRaw.toLocaleString();
-      return dateRu;
+    applySort() {
+      this.query.sortFields[0] = {
+        fieldName: this.sort.field,
+        sortType: this.sort.type
+      };
+      this.refresh();
     },
-    onItemRightClick(row, column, event) {
-      this.$refs.table.setCurrentRow(row);
-      this.$refs.contextMenu.open(event, { row, column });
-      event.preventDefault();
+    switchSortType() {
+      this.sort.type =
+        this.sort.type === 'Ascending' ? 'Descending' : 'Ascending';
+      this.query.sortFields[0].sortType = this.sort.type;
+      this.refresh();
+    },
+    onItemSelect(selection, row) {
+      this.selectedRow = row;
+      this.editButtonVisible = true;
+      this.completeButtonVisible = true;
+      this.deleteButtonVisible = true;
+      if (!selection.length) {
+        this.editButtonVisible = false;
+        this.completeButtonVisible = false;
+        this.deleteButtonVisible = false;
+      }
+    },
+    onItemSingleClick(row, column, event) {
+      this.table.clearSelection();
+      this.table.toggleRowSelection(row);
+      this.selectedRow = row;
+      this.editButtonVisible = true;
+      this.completeButtonVisible = true;
+      this.deleteButtonVisible = true;
     },
     onItemDoubleClick(row, column, event) {
       this.onItemEdit(event, row);
     },
+    onItemRightClick(row, column, event) {
+      this.table.setCurrentRow(row);
+      this.contextMenu.open(event, { row, column });
+      event.preventDefault();
+    },
     onItemEdit(event, row) {
-      this.selectedItemId = row.id;
-      this.dialogOpened = true;
+      this.dialogData = row;
+      this.dialogVisible = true;
     },
     async onItemDelete(event, row) {
       await this.deleteItem(row.id);
       await this.refresh();
     },
     async onItemMultipleDelete(event, row) {
-      await this.deleteItems(this.$refs.table.selection.map(item => item.id));
+      await this.deleteItems(this.table.selection.map(item => item.id));
       await this.refresh();
     },
     async onItemComplete(event, row) {
@@ -83,8 +139,43 @@ export default {
       await this.refresh();
     },
     async onItemMultipleComplete(event, row) {
-      await this.completeItems(this.$refs.table.selection);
+      await this.completeItems(this.table.selection);
       await this.refresh();
+    },
+    dateFormatter(row, column, cellValue, index) {
+      const dateRaw = new Date(cellValue);
+      const dateRu = dateRaw.toLocaleString();
+      return dateRu;
+    },
+    priorityFormatter(row, column, cellValue, index) {
+      switch (cellValue) {
+        case 'Low':
+          return 'Низкий';
+        case 'Normal':
+          return 'Обычный';
+        case 'High':
+          return 'Высокий';
+        default:
+          return 'Отсутствует';
+      }
+    },
+    stateFormatter(row, column, cellValue, index) {
+      switch (cellValue) {
+        case 'New':
+          return 'Новое';
+        case 'Perform':
+          return 'В работе';
+        case 'Delay':
+          return 'Отложено';
+        case 'Testing':
+          return 'Тестируется';
+        case 'Succeed':
+          return 'Выполнено';
+        case 'Rejected':
+          return 'Отклонено';
+        default:
+          return 'Отсутствует';
+      }
     }
   }
 };

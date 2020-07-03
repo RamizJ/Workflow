@@ -1,94 +1,97 @@
 <template lang="pug">
-  base-dialog(v-if="visible" @close="exit")
-    div(slot="title") Задача
-    div(slot="body")
-      el-form(:model="form" :rules="rules" ref="form" v-loading="loading" @submit.native.prevent="submit")
-        el-row(:gutter="20")
-          el-col(:span="24")
-            el-form-item(prop="title")
-              el-input(v-model="form.title" size="medium" placeholder="Новая задача")
-        el-row(:gutter="20")
-          el-col(:span="24")
+  base-dialog(v-if="visible" @close="exit" ref="dialog")
+    h1(slot="title") Задача
+    el-form(slot="body" :model="form" :rules="rules" ref="form" v-loading="loading" @submit.native.prevent="submit")
+      el-row(:gutter="20")
+        el-col(:span="!$route.params.projectId ? 16 : 24")
+          el-form-item(prop="title")
+            el-input(ref="title" v-model="form.title" placeholder="Новая задача")
+        el-col(v-if="!$route.params.projectId" :span="8")
+          el-form-item(prop="projectId")
+            el-select(
+              v-model="form.projectId"
+              placeholder="Проект"
+              :remote-method="searchProjects"
+              filterable remote clearable default-first-option)
+              el-option(v-for="item in projectList" :key="item.id" :label="item.value" :value="item.id")
+      el-row(:gutter="20")
+        transition(name="fade")
+          el-col(v-if="descriptionVisible || form.description" :span="24")
             el-form-item(prop="description")
-              el-input(v-model="form.description" size="medium" type="textarea" placeholder="Заметки")
-        el-row(:gutter="20")
-          transition(name="fade")
-            el-col(v-if="tagsVisible || (form.tags && form.tags.length)" :span="$route.params.projectId ? 24 : 16")
-              el-form-item(prop="tags")
-                el-select(
-                  v-model="form.tags"
-                  size="medium"
-                  placeholder="Теги"
-                  multiple filterable allow-create default-first-option)
-          transition(name="fade")
-            el-col(v-if="priorityVisible || form.priority" :span="8")
-              el-form-item(prop="priority")
-                el-select(
-                  v-model="form.priority"
-                  size="medium"
-                  placeholder="Приоритет")
-                  el-option(v-for="item in priorities" :key="item.value" :label="item.label" :value="item.value")
-          transition(name="fade")
-            el-col(v-if="performerVisible || form.performerId" :span="8")
-              el-form-item(prop="performerId")
-                el-select(
-                  v-model="form.performerId"
-                  size="medium"
-                  placeholder="Ответственный"
-                  :remote-method="searchUsers"
-                  filterable remote clearable default-first-option)
-                  el-option(v-for="item in userList" :key="item.id" :label="item.value" :value="item.id")
-          el-col(v-if="!$route.params.projectId" :span="8")
-            el-form-item(prop="projectId")
+              el-input(v-model="form.description" :autosize="{ minRows: 2 }" type="textarea" placeholder="Описание" )
+        transition(name="fade")
+          el-col(v-if="tagsVisible || (form.tags && form.tags.length)" :span="24")
+            el-form-item(prop="tags")
               el-select(
-                v-model="form.projectId"
-                size="medium"
-                placeholder="Проект"
-                :remote-method="searchProjects"
+                v-model="form.tags"
+                placeholder="Теги"
+                multiple filterable allow-create default-first-option)
+        transition(name="fade")
+          el-col(v-if="priorityVisible || form.priority" :span="8")
+            el-form-item(prop="priority")
+              el-select(
+                v-model="form.priority"
+                placeholder="Приоритет")
+                el-option(v-for="item in priorities" :key="item.value" :label="item.label" :value="item.value")
+        transition(name="fade")
+          el-col(v-if="performerVisible || form.performerId" :span="8")
+            el-form-item(prop="performerId")
+              el-select(
+                v-model="form.performerId"
+                placeholder="Ответственный"
+                :remote-method="searchUsers"
                 filterable remote clearable default-first-option)
-                el-option(v-for="item in projectList" :key="item.id" :label="item.value" :value="item.id")
-          transition(name="fade")
-            el-col(v-if="expectedCompletedDateVisible || form.expectedCompletedDate" :span="8")
-              el-form-item(prop="expectedCompletedDate")
-                el-date-picker(
-                  v-model="form.expectedCompletedDate"
-                  size="medium"
-                  prefix-icon="el-icon-arrow-down"
-                  suffix-icon="el-icon-arrow-down"
-                  placeholder="Крайний срок")
-          transition(name="fade")
-            el-col(v-if="attachmentsVisible || attachmentList.length" :span="24")
-              el-form-item
-                el-upload(
-                  action="https://demo.girngm.ru/workflow_dev/api/Goals/AddAttachments/"
-                  :http-request="uploadAttachment"
-                  :on-remove="removeAttachment"
-                  :file-list="attachmentList"
-                  drag multiple)
-                  i.el-icon-upload
-                  div.el-upload__text
-                    em Выберите файл
-                    span  или перетащите его сюда
-          el-col(:span="24")
-            div.extra
-              el-tooltip(content="Теги" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
-                el-button(v-if="!(form.tags && form.tags.length)" type="text" title="Теги" @click="tagsVisible = !tagsVisible" circle)
-                  feather(type="tag")
-              el-tooltip(content="Приоритет" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
-                el-button(v-if="!form.priority" type="text" @click="priorityVisible = !priorityVisible" circle)
-                  feather(type="zap")
-              el-tooltip(content="Ответственный" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
-                el-button(v-if="!form.performerId" type="text" @click="performerVisible = !performerVisible" circle)
-                  feather(type="user")
-              el-tooltip(content="Крайний срок" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
-                el-button(v-if="!form.expectedCompletedDate" type="text" @click="expectedCompletedDateVisible = !expectedCompletedDateVisible" circle)
-                  feather(type="calendar")
-              el-tooltip(content="Вложения" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="400")
-                el-button(v-if="!attachmentList.length" type="text" @click="attachmentsVisible = !attachmentsVisible" circle)
-                  feather(type="paperclip")
+                el-option(v-for="item in userList" :key="item.id" :label="item.value" :value="item.id")
+        transition(name="fade")
+          el-col(v-if="expectedCompletedDateVisible || form.expectedCompletedDate" :span="8")
+            el-form-item(prop="expectedCompletedDate")
+              el-date-picker(
+                v-model="form.expectedCompletedDate"
+                prefix-icon="el-icon-arrow-down"
+                suffix-icon="el-icon-arrow-down"
+                format="dd.MM.yyyy"
+                placeholder="Крайний срок")
+        transition(name="fade")
+          el-col(v-if="attachmentsVisible || attachmentList.length" :span="24")
+            el-form-item
+              el-upload(
+                action="https://demo.girngm.ru/workflow_dev/api/Goals/AddAttachments/"
+                ref="upload"
+                :http-request="uploadAttachment"
+                :on-preview="onAttachmentClick"
+                :on-remove="removeAttachment"
+                :file-list="attachmentList"
+                :auto-upload="false"
+                drag multiple)
+                i.el-icon-upload
+                div.el-upload__text
+                  em Выберите файл
+                  span  или перетащите его сюда
 
-    div(slot="footer")
-      el-button(size="medium" type="default" @click="submit") {{ isEdit ? 'Сохранить' : 'Создать' }}
+    template(slot="footer")
+      div.extra
+        el-tooltip(content="Описание" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(v-if="!form.description" type="text" title="Теги" @click="descriptionVisible = !descriptionVisible" circle)
+            feather(type="align-left")
+        el-tooltip(content="Теги" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(v-if="!(form.tags && form.tags.length)" type="text" title="Теги" @click="tagsVisible = !tagsVisible" circle)
+            feather(type="tag")
+        el-tooltip(content="Приоритет" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(v-if="!form.priority" type="text" @click="priorityVisible = !priorityVisible" circle)
+            feather(type="zap")
+        el-tooltip(content="Ответственный" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(v-if="!form.performerId" type="text" @click="performerVisible = !performerVisible" circle)
+            feather(type="user")
+        el-tooltip(content="Крайний срок" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(v-if="!form.expectedCompletedDate" type="text" @click="expectedCompletedDateVisible = !expectedCompletedDateVisible" circle)
+            feather(type="calendar")
+        el-tooltip(content="Вложения" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(v-if="!attachmentList.length" type="text" @click="attachmentsVisible = !attachmentsVisible" circle)
+            feather(type="paperclip")
+      div.send
+        el-tooltip(content="Сохранить" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(type="text" @click="submit" circle)
+            feather(type="arrow-right")
 </template>
 
 <script>
@@ -98,9 +101,6 @@ import dialogMixin from '~/mixins/dialog.mixin';
 
 export default {
   components: { BaseDialog },
-  props: {
-    id: Number
-  },
   mixins: [dialogMixin],
   data() {
     return {
@@ -124,19 +124,9 @@ export default {
         tags: []
       },
       rules: {
-        title: [
-          {
-            required: true,
-            message: 'Введите название задачи',
-            trigger: 'blur'
-          }
-        ],
-        performerId: [
-          { required: true, message: 'Укажите ответственного', trigger: 'blur' }
-        ],
-        projectId: [
-          { required: true, message: 'Укажите проект', trigger: 'blur' }
-        ]
+        title: [{ required: true, message: '!', trigger: 'blur' }],
+        performerId: [{ required: true, message: '!', trigger: 'blur' }],
+        projectId: [{ required: true, message: '!', trigger: 'blur' }]
       },
       priorities: [
         { value: 'High', label: 'Высокий' },
@@ -144,6 +134,7 @@ export default {
         { value: 'Low', label: 'Низкий' }
       ],
       attachmentList: [],
+      descriptionVisible: null,
       tagsVisible: null,
       priorityVisible: null,
       performerVisible: null,
@@ -153,7 +144,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      item: 'tasks/getTask',
+      task: 'tasks/getTask',
       me: 'auth/me',
       attachments: 'tasks/getTaskAttachments'
     })
@@ -161,7 +152,7 @@ export default {
   async mounted() {
     this.loading = true;
     if (this.isEdit) {
-      await this.fetchAttachments(this.id);
+      await this.fetchAttachments(this.form.id);
       this.attachmentList = this.attachments.map(attachment => {
         return {
           name: attachment.fileName,
@@ -171,9 +162,10 @@ export default {
     } else {
       this.attachmentList = [];
     }
-    this.loading = false;
     await this.searchUsers();
     await this.searchProjects();
+    this.loading = false;
+    this.$refs.title?.focus();
   },
   methods: {
     ...mapActions({
@@ -182,43 +174,33 @@ export default {
       updateItem: 'tasks/updateTask',
       fetchAttachments: 'tasks/fetchAttachments',
       addAttachments: 'tasks/addAttachments',
-      removeAttachments: 'tasks/removeAttachments'
+      removeAttachments: 'tasks/removeAttachments',
+      downloadAttachment: 'tasks/downloadAttachment'
     }),
+    async submit() {
+      if (this.isFormValid) {
+        await this.sendForm();
+        this.$refs.upload?.submit();
+        this.$emit('submit');
+        this.exit();
+      }
+    },
     async uploadAttachment(request) {
+      this.loading = true;
       let files = new FormData();
       files.append('files', request.file);
       await this.addAttachments({
-        taskId: this.id,
+        taskId: this.form.id || this.task.id,
         files
       });
+      this.loading = false;
+    },
+    async onAttachmentClick(file) {
+      await this.downloadAttachment(file);
     },
     async removeAttachment(file) {
       await this.removeAttachments([file.id]);
-      console.log(file);
     }
   }
 };
 </script>
-
-<style lang="scss">
-.extra {
-  display: flex;
-  justify-content: flex-end;
-  i {
-    height: 18px;
-  }
-}
-.el-upload-dragger {
-  border-color: var(--popover-border);
-  background-color: var(--card-background);
-}
-.el-upload,
-.el-upload-dragger {
-  width: 100%;
-  height: 120px;
-}
-.el-upload-dragger .el-icon-upload {
-  font-size: 50px;
-  margin: 10px 0 10px;
-}
-</style>

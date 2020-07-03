@@ -1,39 +1,49 @@
 <template lang="pug">
-  base-dialog(v-if="visible" @close="exit")
-    div(slot="title") Команда
-    div(slot="body")
-      el-form(:model="form" :rules="rules" ref="form" v-loading="loading")
-        el-row(:gutter="20")
-          el-col(:span="24")
-            el-form-item(prop="name")
-              el-input(v-model="form.name" size="medium" placeholder="Новая команда")
-        el-row(:gutter="20")
-          el-col(:span="24")
-            el-form-item(prop="description")
-              el-input(v-model="form.description" size="medium" type="textarea" placeholder="Заметки")
-        el-row(:gutter="20")
-          el-col(:span="24")
+  base-dialog(v-if="visible" @close="exit" ref="dialog")
+    h1(slot="title") Команда
+    el-form(slot="body" :model="form" :rules="rules" ref="form" v-loading="loading" @submit.native.prevent="submit")
+      el-row(:gutter="20")
+        el-col(:span="24")
+          el-form-item(prop="name")
+            el-input(ref="title" v-model="form.name" placeholder="Новая команда")
+      el-row(:gutter="20")
+        el-col(v-if="descriptionVisible || form.description" :span="24")
+          el-form-item(prop="description")
+            el-input(v-model="form.description" :autosize="{ minRows: 2 }" type="textarea" placeholder="Описание")
+      el-row(:gutter="20")
+        transition(name="fade")
+          el-col(v-if="teamMembersVisible || (form.userIds && form.userIds.length)" :span="24")
             el-form-item
               el-select(
                 v-model="form.userIds"
-                size="medium"
                 placeholder="Участники"
                 :remote-method="searchUsers"
                 multiple filterable remote clearable default-first-option)
                 el-option(v-for="item in userList" :key="item.id" :label="item.value" :value="item.id")
-          el-col(v-if="!$route.params.projectId" :span="24")
+        transition(name="fade")
+          el-col(v-if="!$route.params.projectId && (projectsVisible || (form.projectIds && form.projectIds.length))" :span="24")
             el-form-item
               el-select(
                 v-model="form.projectIds"
-                size="medium"
                 placeholder="Проекты"
                 :remote-method="searchProjects"
                 multiple filterable remote clearable default-first-option)
                 el-option(v-for="item in projectList" :key="item.id" :label="item.value" :value="item.id")
-
-    div(slot="footer")
-      el-button(size="medium" type="default" @click="submit") {{ isEdit ? 'Сохранить' : 'Создать' }}
-
+    template(slot="footer")
+      div.extra
+        el-tooltip(content="Описание" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(v-if="!form.description" type="text" title="Теги" @click="descriptionVisible = !descriptionVisible" circle)
+            feather(type="align-left")
+        el-tooltip(content="Участники" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(size="small" v-if="!(form.userIds && form.userIds.length)" type="text" title="Теги" @click="teamMembersVisible = !teamMembersVisible" circle)
+            feather(type="users")
+        el-tooltip(content="Проекты" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(size="small" v-if="!(form.projectIds && form.projectIds.length)" type="text" title="Теги" @click="projectsVisible = !projectsVisible" circle)
+            feather(type="layers")
+      div.send
+        el-tooltip(content="Сохранить" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(type="text" @click="submit" circle)
+            feather(type="arrow-right")
 </template>
 
 <script>
@@ -43,9 +53,6 @@ import dialogMixin from '~/mixins/dialog.mixin';
 
 export default {
   components: { BaseDialog },
-  props: {
-    id: Number
-  },
   mixins: [dialogMixin],
   data() {
     return {
@@ -56,19 +63,15 @@ export default {
         projectIds: []
       },
       rules: {
-        name: [
-          {
-            required: true,
-            message: 'Введите название команды',
-            trigger: 'blur'
-          }
-        ]
-      }
+        name: [{ required: true, message: '!', trigger: 'blur' }]
+      },
+      descriptionVisible: null,
+      teamMembersVisible: null,
+      projectsVisible: null
     };
   },
   computed: {
     ...mapGetters({
-      item: 'teams/getTeam',
       teamUsers: 'teams/getTeamUsers',
       teamProjects: 'teams/getTeamProjects'
     })
@@ -83,12 +86,12 @@ export default {
     if (this.isEdit) {
       this.loading = true;
       await this.fetchTeamUsers({
-        teamId: this.id,
+        teamId: this.form.id,
         pageNumber: 0,
         pageSize: 10
       });
       await this.fetchTeamProjects({
-        teamId: this.id,
+        teamId: this.form.id,
         pageNumber: 0,
         pageSize: 10
       });
@@ -96,6 +99,7 @@ export default {
       this.form.projectIds = this.teamProjects.map(project => project.id);
       this.loading = false;
     }
+    this.$refs.title.focus();
   },
   methods: {
     ...mapActions({

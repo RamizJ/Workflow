@@ -1,6 +1,6 @@
 :root {
   --header-height: 90px;
-  --sidebar-width: 240px;
+  --sidebar-width: 245px;
   --border-radius: 5px;
   --border-width: 2px;
   --fonts: Inter, 'Segoe UI', SegoeUI, Helvetica, Arial, sans-serif;
@@ -19,11 +19,12 @@
 
   --background: #ffffff;
   --text: #303030;
+  --text-muted: #a5a7ac;
   --text-placeholder: #505050;
   --link: var(--color-primary);
   --link-hover: #005180;
 
-  --divider: var(--link-hover);
+  --divider: #e9e9e9;
 
   --header-background: transparent;
   --header-text: #a5a7ac;
@@ -34,13 +35,14 @@
   --search-active: rgba(255, 255, 255, 0.9);
 
   --sidebar-background: #f5f6f7;
+  --sidebar-border: rgb(230, 235, 240);
   --sidebar-text: #383a3e;
   --sidebar-text-hover: #f6f6f6;
-  --sidebar-item-hover-background: #e6ebf0;
+  --sidebar-item-hover-background: #e1e6eb;
   --sidebar-item-active-text: #31353a;
   --sidebar-item-active-background: #dce1e6;
 
-  --input-background: #f5f6f7;
+  --input-background: #f0f1f2;
   --input-border: transparent;
   --input-hover-background: #f0f1f2;
   --input-hover-border: transparent;
@@ -56,7 +58,7 @@
   --card-background: var(--background);
   --card-border: var(--background-4);
 
-  --popover-background: rgba(255, 255, 255, 0.65);
+  --popover-background: rgba(255, 255, 255);
   --popover-border: #f1f1f1;
   --popover-hover: #f1f1f1;
   --popover-shadow: 0 0 20px rgba(0,0,0,.05);
@@ -89,11 +91,12 @@
 
   --background: var(--background-1);
   --text: #eeeeee;
+  --text-muted: #8c8c8c;
   --text-placeholder: #cdcdcd;
   --link: var(--color-primary);
   --link-hover: #009cee;
 
-  --divider: #505050;
+  --divider: #464646;
 
   --header-background: transparent;
   --header-text: #f6f6f6;
@@ -104,9 +107,10 @@
   --search-active: rgba(255, 255, 255, 0.9);
 
   --sidebar-background: #222222;
+  --sidebar-border: rgb(43, 43, 43);
   --sidebar-text: #f6f6f6;
   --sidebar-text-hover: var(--text);
-  --sidebar-item-hover-background: rgba(220, 225, 230, 0.05);
+  --sidebar-item-hover-background: rgba(220, 225, 230, 0.07);
   --sidebar-item-active-text: #f6f6f6;
   --sidebar-item-active-background: rgba(220, 225, 230, 0.1);
 
@@ -119,7 +123,7 @@
   --input-border-hover: var(--background-3);
   --input-border-focus: var(--background-5);
 
-  --input-background: #222222;
+  --input-background: #242424;
   --input-border: transparent;
   --input-hover-background: #262626;
   --input-hover-border: transparent;
@@ -129,7 +133,7 @@
   --card-background: var(--background-1);
   --card-border: var(--background-3);
 
-  --popover-background: rgba(48, 48, 48, 0.65);
+  --popover-background: rgba(48, 48, 48);
   --popover-border: var(--background-3);
   --popover-hover: var(--background-5);
   --popover-shadow: 0 0 20px rgba(0,0,0,.05);

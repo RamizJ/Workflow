@@ -67,9 +67,19 @@ namespace Workflow.Services.Abstract
         /// <summary>
         /// Удаление пользователя
         /// </summary>
+        /// <param name="currentUser">Текущий пользователь</param>
         /// <param name="userId">Идентификатор пользователя</param>
         /// <returns></returns>
-        Task<VmUser> Delete(string userId);
+        Task<VmUser> Delete(ApplicationUser currentUser, string userId);
+
+        /// <summary>
+        /// Удаление пользователей
+        /// </summary>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="ids">Идентификаторы пользователей</param>
+        /// <returns></returns>
+        Task<IEnumerable<VmUser>> DeleteRange(ApplicationUser currentUser, IEnumerable<string> ids);
+
 
         /// <summary>
         /// Восстановление ранее удаленного пользователя
@@ -78,6 +88,14 @@ namespace Workflow.Services.Abstract
         /// <param name="userId">Идентификатор пользователя</param>
         /// <returns></returns>
         Task<VmUser> Restore(ApplicationUser currentUser, string userId);
+
+        /// <summary>
+        /// Восстановление пользователей
+        /// </summary>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="ids">Идентификаторы пользователей</param>
+        /// <returns></returns>
+        Task<IEnumerable<VmUser>> RestoreRange(ApplicationUser currentUser, IEnumerable<string> ids);
 
         /// <summary>
         /// Изменение пароля пользователя

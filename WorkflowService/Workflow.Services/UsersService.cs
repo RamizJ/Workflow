@@ -130,14 +130,28 @@ namespace Workflow.Services
         }
 
         /// <inheritdoc />
-        public async Task<VmUser> Delete(string userId)
+        public async Task<VmUser> Delete(ApplicationUser currentUser, string userId)
         {
-            return await RemoveRestore(userId, true);
+            var users = await RemoveRestore(new[] { userId }, true);
+            return users.FirstOrDefault();
         }
 
+        /// <inheritdoc />
+        public async Task<IEnumerable<VmUser>> DeleteRange(ApplicationUser currentUser, IEnumerable<string> ids)
+        {
+            return await RemoveRestore(ids, true);
+        }
+
+        /// <inheritdoc />
         public async Task<VmUser> Restore(ApplicationUser currentUser, string userId)
         {
-            return await RemoveRestore(userId, false);
+            var users = await RemoveRestore(new[] { userId }, false);
+            return users.FirstOrDefault();
+        }
+
+        public async Task<IEnumerable<VmUser>> RestoreRange(ApplicationUser currentUser, IEnumerable<string> ids)
+        {
+            return await RemoveRestore(ids, false);
         }
 
         /// <inheritdoc />
@@ -214,7 +228,7 @@ namespace Workflow.Services
 
             foreach (var field in filterFields.Where(ff => ff != null))
             {
-                var strValues = field.Values?.Select(v => v.ToString().ToLower()).ToList()
+                var strValues = field.Values?.Select(v => v.ToString()?.ToLower()).ToList()
                                 ?? new List<string>();
 
                 if (field.SameAs(nameof(VmUser.Email)))
@@ -269,8 +283,8 @@ namespace Workflow.Services
                 }
                 else if (field.SameAs(nameof(VmUser.IsRemoved)))
                 {
-                    var vals = field.Values.OfType<bool>().ToArray();
-                    query = query.Where(u => vals.Any(v => v == u.IsRemoved));
+                    var values = field.Values.OfType<bool>().ToArray();
+                    query = query.Where(u => values.Any(v => v == u.IsRemoved));
                 }
             }
 
@@ -382,19 +396,21 @@ namespace Workflow.Services
             return orderedQuery ?? query;
         }
 
-        private async Task<VmUser> RemoveRestore(string userId, bool isRemoved)
+        private async Task<IEnumerable<VmUser>> RemoveRestore(IEnumerable<string> userIds, bool isRemoved)
         {
-            var model = await _userManager.FindByIdAsync(userId);
-            if (model == null)
-                throw new InvalidOperationException($"User with id='{userId}' not found");
+            var query = GetQuery(!isRemoved);
+            var models = await query
+                .Where(u => userIds.Any(uId => u.Id == uId))
+                .ToArrayAsync();
 
-            model.IsRemoved = isRemoved;
-            var result = await _userManager.UpdateAsync(model);
+            foreach (var model in models)
+            {
+                model.IsRemoved = isRemoved;
+                _dataContext.Entry(model).State = EntityState.Modified;
+            }
 
-            if (!result.Succeeded)
-                throw new InvalidOperationException(result.ToString());
-
-            return _vmConverter.ToViewModel(model);
+            await _dataContext.SaveChangesAsync();
+            return models.Select(m => _vmConverter.ToViewModel(m));
         }
 
 
