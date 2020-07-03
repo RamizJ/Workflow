@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,7 +20,7 @@ using Workflow.DAL.Models;
 using Workflow.Services;
 using Workflow.Services.Abstract;
 using WorkflowService.Services;
-using static WorkflowService.ConfigKeys;
+using static Workflow.Services.ConfigKeys;
 
 #pragma warning disable 1591    //Disable xml documentation for this file
 
@@ -96,6 +97,15 @@ namespace WorkflowService
                 setup.SwaggerDoc("v1", new OpenApiInfo {Title = "Workflow API", Version = "v1"});
                 setup.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
 
+                setup.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
+                });
+                setup.AddSecurityRequirement(new OpenApiSecurityRequirement());
+
                 var filePath = Path.Combine(System.AppContext.BaseDirectory, "WorkflowService.xml");
                 setup.IncludeXmlComments(filePath);
             });
@@ -107,6 +117,8 @@ namespace WorkflowService
             });
 
             //Services
+
+            services.AddTransient<ICurrentUserService, CurrentUserService>();
             services.AddTransient<IDefaultDataInitializationService, DefaultDataInitializationService>();
             services.AddTransient<IAuthenticationService, AuthenticationService>();
             services.AddTransient<IProjectsService, ProjectsService>();
@@ -151,7 +163,6 @@ namespace WorkflowService
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapRazorPages();
                 endpoints.MapControllers();
             });
         }
