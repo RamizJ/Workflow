@@ -58,7 +58,10 @@ export default {
   justify-content: flex-end;
   align-items: flex-start;
   .el-select {
-    width: 200px;
+    width: 155px;
+    .el-input__inner {
+      padding: 0 8px;
+    }
     .el-input__suffix {
       display: none;
     }

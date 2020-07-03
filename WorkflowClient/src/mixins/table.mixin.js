@@ -8,7 +8,13 @@ export default {
       query: {
         filter: '',
         pageNumber: 0,
-        pageSize: 20
+        pageSize: 20,
+        sortFields: [{ fieldName: 'creationDate', sortType: 'Ascending' }]
+      },
+      sort: {
+        field: 'creationDate',
+        type: 'Ascending',
+        fields: []
       },
       dialogOpened: false,
       selectedItemId: null,
@@ -76,40 +82,18 @@ export default {
         console.log(e);
       }
     },
-    dateFormatter(row, column, cellValue, index) {
-      const dateRaw = new Date(cellValue);
-      const dateRu = dateRaw.toLocaleString();
-      return dateRu;
+    applySort() {
+      this.query.sortFields[0] = {
+        fieldName: this.sort.field,
+        sortType: this.sort.type
+      };
+      this.refresh();
     },
-    priorityFormatter(row, column, cellValue, index) {
-      switch (cellValue) {
-        case 'Low':
-          return 'Низкий';
-        case 'Normal':
-          return 'Обычный';
-        case 'High':
-          return 'Высокий';
-        default:
-          return 'Отсутствует';
-      }
-    },
-    stateFormatter(row, column, cellValue, index) {
-      switch (cellValue) {
-        case 'New':
-          return 'Новое';
-        case 'Perform':
-          return 'В работе';
-        case 'Delay':
-          return 'Отложено';
-        case 'Testing':
-          return 'Тестируется';
-        case 'Succeed':
-          return 'Выполнено';
-        case 'Rejected':
-          return 'Отклонено';
-        default:
-          return 'Отсутствует';
-      }
+    switchSortType() {
+      this.sort.type =
+        this.sort.type === 'Ascending' ? 'Descending' : 'Ascending';
+      this.query.sortFields[0].sortType = this.sort.type;
+      this.refresh();
     },
     onItemSelect(selection, row) {
       this.selectedRow = row;
@@ -157,6 +141,41 @@ export default {
     async onItemMultipleComplete(event, row) {
       await this.completeItems(this.table.selection);
       await this.refresh();
+    },
+    dateFormatter(row, column, cellValue, index) {
+      const dateRaw = new Date(cellValue);
+      const dateRu = dateRaw.toLocaleString();
+      return dateRu;
+    },
+    priorityFormatter(row, column, cellValue, index) {
+      switch (cellValue) {
+        case 'Low':
+          return 'Низкий';
+        case 'Normal':
+          return 'Обычный';
+        case 'High':
+          return 'Высокий';
+        default:
+          return 'Отсутствует';
+      }
+    },
+    stateFormatter(row, column, cellValue, index) {
+      switch (cellValue) {
+        case 'New':
+          return 'Новое';
+        case 'Perform':
+          return 'В работе';
+        case 'Delay':
+          return 'Отложено';
+        case 'Testing':
+          return 'Тестируется';
+        case 'Succeed':
+          return 'Выполнено';
+        case 'Rejected':
+          return 'Отклонено';
+        default:
+          return 'Отсутствует';
+      }
     }
   }
 };
