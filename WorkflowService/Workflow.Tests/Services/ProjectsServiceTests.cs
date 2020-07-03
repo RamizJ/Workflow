@@ -10,7 +10,7 @@ using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
 using Workflow.Services.Abstract;
-using Workflow.Services.Common;
+using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 
@@ -71,11 +71,14 @@ namespace Workflow.Tests.Services
         public async Task GetPageTest(int pageNumber, int pageSize, int expectedCount)
         {
             //Arrange
+            var pageOptions = new PageOptions
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+            };
 
             //Act
-            var resultScopes = (await _service.GetPage(_testData.Users.First(), 
-                pageNumber, pageSize, 
-                "", null, null)).ToArray();
+            var resultScopes = (await _service.GetPage(_currentUser, pageOptions)).ToArray();
 
             //Assert
             Assert.AreEqual(expectedCount, resultScopes.Length);
@@ -91,10 +94,15 @@ namespace Workflow.Tests.Services
             string filter, int expectedCount)
         {
             //Arrange
+            var pageOptions = new PageOptions
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Filter = filter,
+            };
 
             //Act
-            var resultScopes = (await _service.GetPage(_testData.Users.First(), pageNumber, pageSize,
-                filter, null, null)).ToArray(); 
+            var resultScopes = (await _service.GetPage(_currentUser, pageOptions)).ToArray(); 
 
             //Assert
             Assert.AreEqual(expectedCount, resultScopes.Length);
@@ -111,11 +119,17 @@ namespace Workflow.Tests.Services
             string filter, string fieldName, object[] values, int expectedCount)
         {
             //Arrange
+            var filterField = new FieldFilter(fieldName, values);
+            var pageOptions = new PageOptions
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Filter = filter,
+                FilterFields = new[] { filterField }
+            };
 
             //Act
-            var filterField = new FieldFilter(fieldName, values);
-            var projects = (await _service.GetPage(_testData.Users.First(), pageNumber, pageSize,
-                filter, new []{ filterField }, null)).ToArray();
+            var projects = (await _service.GetPage(_currentUser, pageOptions)).ToArray();
 
             //Assert
             Assert.AreEqual(expectedCount, projects.Length);
@@ -126,11 +140,17 @@ namespace Workflow.Tests.Services
             string filter, string fieldName, SortType sortType, int[] expectedIds)
         {
             //Arrange
+            var sortField = new FieldSort(fieldName, sortType);
+            var pageOptions = new PageOptions
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Filter = filter,
+                SortFields = new[] { sortField }
+            };
 
             //Act
-            var sortField = new FieldSort(fieldName, sortType);
-            var resultScopes = (await _service.GetPage(_testData.Users.First(), pageNumber, pageSize,
-                filter, null, new[] { sortField })).ToArray() ;
+            var resultScopes = (await _service.GetPage(_currentUser, pageOptions)).ToArray() ;
 
             //Assert
             Assert.LessOrEqual(expectedIds.Length, resultScopes.Length);

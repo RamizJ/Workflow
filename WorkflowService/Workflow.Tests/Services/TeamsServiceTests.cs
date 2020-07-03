@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
-using Workflow.Services.Common;
+using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 
@@ -91,11 +91,14 @@ namespace Workflow.Tests.Services
         public async Task GetPageTest(int pageNumber, int pageSize, int expectedCount)
         {
             //Arrange
+            var pageOptions = new PageOptions
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+            };
 
             //Act
-            var teams = (await _service.GetPage(_testData.Users.First(),
-                pageNumber, pageSize,
-                "", null, null)).ToArray();
+            var teams = (await _service.GetPage(_testData.Users.First(), pageOptions)).ToArray();
 
             //Assert
             Assert.AreEqual(expectedCount, teams.Length);
@@ -113,10 +116,15 @@ namespace Workflow.Tests.Services
             string filter, int expectedCount)
         {
             //Arrange
+            var pageOptions = new PageOptions
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Filter = filter
+            };
 
             //Act
-            var resultScopes = (await _service.GetPage(_testData.Users.First(), pageNumber, pageSize,
-                filter, null, null)).ToArray();
+            var resultScopes = (await _service.GetPage(_testData.Users.First(), pageOptions)).ToArray();
 
             //Assert
             Assert.AreEqual(expectedCount, resultScopes.Length);
@@ -131,12 +139,18 @@ namespace Workflow.Tests.Services
             string filter, string fieldName, object[] values, bool withRemoved, int expectedCount)
         {
             //Arrange
+            var filterField = new FieldFilter(fieldName, values);
+            var pageOptions = new PageOptions
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Filter = filter,
+                FilterFields = new []{filterField},
+                WithRemoved = withRemoved
+            };
 
             //Act
-            var filterField = new FieldFilter(fieldName, values);
-            var resultScopes = (await _service.GetPage(_testData.Users.First(),
-                pageNumber, pageSize,
-                filter, new[] { filterField }, null, withRemoved)).ToArray();
+            var resultScopes = (await _service.GetPage(_currentUser, pageOptions)).ToArray();
 
             //Assert
             Assert.AreEqual(expectedCount, resultScopes.Length);

@@ -45,17 +45,10 @@
             <param name="id">Идентификатор задачи</param>
             <returns>Задача</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.GoalsController.GetPage(System.Nullable{System.Int32},System.Int32,System.Int32,System.String,Workflow.Services.Common.FieldFilter[],Workflow.Services.Common.FieldSort[],System.Boolean)">
+        <member name="M:WorkflowService.Controllers.GoalsController.GetPage(System.Nullable{System.Int32},Workflow.VM.ViewModels.PageOptions)">
             <summary>
             Постраничная загрузка задач с фильтрацией и сортировкой
             </summary>
-            <param name="projectId">Идентификатор проекта. Если не указан, то загружаются задачи по всем проектам</param>
-            <param name="pageNumber">Номер страницы</param>
-            <param name="pageSize">Размер страницы</param>
-            <param name="filter">Фильтр по всем полям</param>
-            <param name="filterFields">Конкретные поля фильтрации</param>
-            <param name="sortFields">Поля сортировки</param>
-            <param name="withRemoved">Вместе с удаленными</param>
             <returns>Коллеция задач</returns>
         </member>
         <member name="M:WorkflowService.Controllers.GoalsController.GetRange(System.Int32[])">
@@ -191,29 +184,19 @@
             <param name="id">Идентификатор проекта</param>
             <returns>Проект. Только если доступен пользователю</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.ProjectsController.GetPage(System.Int32,System.Int32,System.String,Workflow.Services.Common.FieldFilter[],Workflow.Services.Common.FieldSort[],System.Boolean)">
+        <member name="M:WorkflowService.Controllers.ProjectsController.GetPage(Workflow.VM.ViewModels.PageOptions)">
             <summary>
             Постраничная загрузка проектов с фильтрацией и сортировкой
             </summary>
-            <param name="pageNumber">Номер страницы</param>
-            <param name="pageSize">Размер страницы</param>
-            <param name="filter">Фильтр по всем полям</param>
-            <param name="filterFields">Конкретные поля фильтрации</param>
-            <param name="sortFields">Поля сортировки</param>
-            <param name="withRemoved">Вместе с удаленными</param>
+            <param name="pageOptions">Параметры страницы</param>
             <returns>Коллекция проектов</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.ProjectsController.GetTeamsPage(System.Int32,System.Int32,System.Int32,System.String,Workflow.Services.Common.FieldFilter[],Workflow.Services.Common.FieldSort[],System.Boolean)">
+        <member name="M:WorkflowService.Controllers.ProjectsController.GetTeamsPage(System.Int32,Workflow.VM.ViewModels.PageOptions)">
             <summary>
             Постраничная загрузка списка команд проекта с фильтрацией и сортировкой
             </summary>
             <param name="projectId">Идентификатор проекта</param>
-            <param name="pageNumber">Номер страницы</param>
-            <param name="pageSize">Размер страницы</param>
-            <param name="filter">Фильтр по всем полям</param>
-            <param name="filterFields">Конкретные поля фильтрации</param>
-            <param name="sortFields">Поля сортировки</param>
-            <param name="withRemoved">Вместе с удаленными</param>
+            <param name="pageOptions">Параметры страницы</param>
             <returns>Коллекция команд</returns>
         </member>
         <member name="M:WorkflowService.Controllers.ProjectsController.GetRange(System.Int32[])">
@@ -330,42 +313,27 @@
             <param name="id">Идентификатор команды</param>
             <returns>Команда</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.GetPage(System.Int32,System.Int32,System.String,Workflow.Services.Common.FieldFilter[],Workflow.Services.Common.FieldSort[],System.Boolean)">
+        <member name="M:WorkflowService.Controllers.TeamsController.GetPage(Workflow.VM.ViewModels.PageOptions)">
             <summary>
             Постраничная загрузка команд с фильтрацией и сортировкой
             </summary>
-            <param name="pageNumber">Номер страницы</param>
-            <param name="pageSize">Размер страницы</param>
-            <param name="filter">Фильтр по всем полям</param>
-            <param name="filterFields">Поля для фильтрации</param>
-            <param name="sortFields">Поля для сортировки</param>
-            <param name="withRemoved">Вместе с удаленными командами</param>
+            <param name="pageOptions">Параметры страницы</param>
             <returns>Коллекция команд</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.GetUsersPage(System.Int32,System.Int32,System.Int32,System.String,Workflow.Services.Common.FieldFilter[],Workflow.Services.Common.FieldSort[],System.Boolean)">
+        <member name="M:WorkflowService.Controllers.TeamsController.GetUsersPage(System.Int32,Workflow.VM.ViewModels.PageOptions)">
             <summary>
             Постраничная загрузка пользователей команды с фильтрацией и сортировкой
             </summary>
             <param name="teamId">Идентификатор команды</param>
-            <param name="pageNumber">Номер страницы</param>
-            <param name="pageSize">Размер страницы</param>
-            <param name="filter">Фильтр по всем полям</param>
-            <param name="filterFields">Конкретные поля фильтрации</param>
-            <param name="sortFields">Поля сортировки</param>
-            <param name="withRemoved">Вместе с удаленными</param>
+            <param name="pageOptions">Параметры страницы</param>
             <returns>Коллекция пользователей команды</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.GetProjectsPage(System.Int32,System.Int32,System.Int32,System.String,Workflow.Services.Common.FieldFilter[],Workflow.Services.Common.FieldSort[],System.Boolean)">
+        <member name="M:WorkflowService.Controllers.TeamsController.GetProjectsPage(System.Int32,Workflow.VM.ViewModels.PageOptions)">
             <summary>
             Постраничная загрузка проектов команды с фильтрацией и сортировкой
             </summary>
             <param name="teamId">Идентификатор команды</param>
-            <param name="pageNumber">Номер страницы</param>
-            <param name="pageSize">Размер страницы</param>
-            <param name="filter">Фильтр по всем полям</param>
-            <param name="filterFields">Конкретные поля фильтрации</param>
-            <param name="sortFields">Поля сортировки</param>
-            <param name="withRemoved">Вместе с удаленными</param>
+            <param name="pageOptions"></param>
             <returns>Коллекция пользователей команды</returns>
         </member>
         <member name="M:WorkflowService.Controllers.TeamsController.GetRange(System.Int32[])">
@@ -502,16 +470,11 @@
             </summary>
             <returns>Параметры текущего пользователя</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.UsersController.GetPage(System.Int32,System.Int32,System.String,Workflow.Services.Common.FieldFilter[],Workflow.Services.Common.FieldSort[],System.Boolean)">
+        <member name="M:WorkflowService.Controllers.UsersController.GetPage(Workflow.VM.ViewModels.PageOptions)">
             <summary>
             Постраничная загрузка пользователей с фильтрацией и сортировкой
             </summary>
-            <param name="pageNumber">Номер страницы</param>
-            <param name="pageSize">Размер страницы</param>
-            <param name="filter">Фильтрация по всем полям если не указаны конкретные поля для фильтрации</param>
-            <param name="filterFields">Поля фильтрации</param>
-            <param name="sortFields">Поля сортировки. Сортировка производится по порядку указанных полей</param>
-            <param name="withRemoved">Вместе с удаленными</param>
+            <param name="pageOptions">Параметры страницы</param>
             <returns>Коллекция пользователей</returns>
         </member>
         <member name="M:WorkflowService.Controllers.UsersController.GetRange(System.String[])">

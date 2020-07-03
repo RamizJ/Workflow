@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
-using Workflow.Services.Common;
+using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 
@@ -41,24 +41,23 @@ namespace Workflow.Services
             return _vmConverter.ToViewModel(project);
         }
 
-        
         /// <inheritdoc />
-        public async Task<IEnumerable<VmProject>> GetPage(ApplicationUser user, 
-            int pageNumber, int pageSize, 
-            string filter, FieldFilter[] filterFields, FieldSort[] sortFields,
-            bool withRemoved = false)
+        public async Task<IEnumerable<VmProject>> GetPage(ApplicationUser currentUser, PageOptions pageOptions)
         {
-            if (user == null)
-                throw new ArgumentNullException(nameof(user));
+            if (currentUser == null)
+                throw new ArgumentNullException(nameof(currentUser));
 
-            var query = await GetQuery(user, withRemoved);
-            query = Filter(filter, query);
-            query = FilterByFields(filterFields, query);
-            query = SortByFields(sortFields, query);
+            if(pageOptions == null)
+                throw new ArgumentNullException(nameof(PageOptions));
+
+            var query = await GetQuery(currentUser, pageOptions.WithRemoved);
+            query = Filter(pageOptions.Filter, query);
+            query = FilterByFields(pageOptions.FilterFields, query);
+            query = SortByFields(pageOptions.SortFields, query);
 
             return await query
-                .Skip(pageNumber * pageSize)
-                .Take(pageSize)
+                .Skip(pageOptions.PageNumber * pageOptions.PageSize)
+                .Take(pageOptions.PageSize)
                 .Select(s => _vmConverter.ToViewModel(s))
                 .ToArrayAsync();
         }

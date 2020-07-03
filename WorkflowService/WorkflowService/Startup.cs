@@ -99,12 +99,24 @@ namespace WorkflowService
 
                 setup.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description = "JWT Authorization header \"Authorization: Bearer {token}\"",
+                    Description = "Please insert JWT with Bearer into field",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey
                 });
-                setup.AddSecurityRequirement(new OpenApiSecurityRequirement());
+                setup.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] { }
+                    }
+                });
 
                 var filePath = Path.Combine(System.AppContext.BaseDirectory, "WorkflowService.xml");
                 setup.IncludeXmlComments(filePath);

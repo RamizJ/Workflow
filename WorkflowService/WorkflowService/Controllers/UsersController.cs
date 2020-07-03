@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
-using Workflow.Services.Common;
+using Workflow.VM.Common;
 using Workflow.VM.ViewModels;
 
 namespace WorkflowService.Controllers
@@ -59,21 +59,13 @@ namespace WorkflowService.Controllers
         /// <summary>
         /// Постраничная загрузка пользователей с фильтрацией и сортировкой
         /// </summary>
-        /// <param name="pageNumber">Номер страницы</param>
-        /// <param name="pageSize">Размер страницы</param>
-        /// <param name="filter">Фильтрация по всем полям если не указаны конкретные поля для фильтрации</param>
-        /// <param name="filterFields">Поля фильтрации</param>
-        /// <param name="sortFields">Поля сортировки. Сортировка производится по порядку указанных полей</param>
-        /// <param name="withRemoved">Вместе с удаленными</param>
+        /// <param name="pageOptions">Параметры страницы</param>
         /// <returns>Коллекция пользователей</returns>
-        [HttpGet]
-        public async Task<IEnumerable<VmUser>> GetPage([FromQuery]int pageNumber, [FromQuery]int pageSize,
-            [FromQuery]string filter, [FromQuery]FieldFilter[] filterFields, [FromQuery]FieldSort[] sortFields,
-            bool withRemoved = false)
+        [HttpPost]
+        public async Task<IEnumerable<VmUser>> GetPage([FromBody]PageOptions pageOptions)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var users = await _service.GetPage(currentUser, pageNumber, pageSize, 
-                filter, filterFields, sortFields, withRemoved);
+            var users = await _service.GetPage(currentUser, pageOptions);
             return users;
         }
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Workflow.DAL.Models;
-using Workflow.Services.Common;
+using Workflow.VM.Common;
 using Workflow.VM.ViewModels;
 
 namespace Workflow.Services.Abstract
@@ -19,20 +19,13 @@ namespace Workflow.Services.Abstract
         /// <returns></returns>
         Task<VmProject> Get(ApplicationUser user, int id);
 
-
         /// <summary>
         /// Постраничная загрузка проектов с фильтрацией и сортировкой
         /// </summary>
-        /// <param name="user">Текущий пользователь</param>
-        /// <param name="pageNumber">Номер страницы</param>
-        /// <param name="pageSize">Размер страницы</param>
-        /// <param name="filter">Фильтрация по всем полям</param>
-        /// <param name="filterFields">Фильтрация по указанным полям</param>
-        /// <param name="sortFields">Сортировка по указанным полям</param>
-        /// <param name="withRemoved">Загрузить вместе с удаленными записями</param>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="pageOptions">Параметры страницы</param>
         /// <returns></returns>
-        Task<IEnumerable<VmProject>> GetPage(ApplicationUser user, int pageNumber, int pageSize,
-            string filter, FieldFilter[] filterFields, FieldSort[] sortFields, bool withRemoved = false);
+        Task<IEnumerable<VmProject>> GetPage(ApplicationUser currentUser, PageOptions pageOptions);
 
         /// <summary>
         /// Загрузка проектов по идентфикаторам

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
-using Workflow.Services.Common;
 using Workflow.VM.ViewModels;
 
 namespace WorkflowService.Controllers
@@ -12,7 +12,7 @@ namespace WorkflowService.Controllers
     /// <summary>
     /// API-методы работы с проектами
     /// </summary>
-    //[Authorize]
+    [Authorize]
     [ApiController, Route("api/[controller]/[action]")]
     public class ProjectsController : ControllerBase
     {
@@ -47,43 +47,27 @@ namespace WorkflowService.Controllers
         /// <summary>
         /// Постраничная загрузка проектов с фильтрацией и сортировкой
         /// </summary>
-        /// <param name="pageNumber">Номер страницы</param>
-        /// <param name="pageSize">Размер страницы</param>
-        /// <param name="filter">Фильтр по всем полям</param>
-        /// <param name="filterFields">Конкретные поля фильтрации</param>
-        /// <param name="sortFields">Поля сортировки</param>
-        /// <param name="withRemoved">Вместе с удаленными</param>
+        /// <param name="pageOptions">Параметры страницы</param>
         /// <returns>Коллекция проектов</returns>
-        [HttpGet]
-        public async Task<IEnumerable<VmProject>> GetPage([FromQuery] int pageNumber, [FromQuery] int pageSize,
-            [FromQuery] string filter = null, [FromQuery] FieldFilter[] filterFields = null, 
-            [FromQuery] FieldSort[] sortFields = null, [FromQuery]bool withRemoved = false)
+        [HttpPost]
+        public async Task<IEnumerable<VmProject>> GetPage([FromBody] PageOptions pageOptions)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            return await _projectsService.GetPage(currentUser, pageNumber, pageSize,
-                filter, filterFields, sortFields, withRemoved);
+            return await _projectsService.GetPage(currentUser, pageOptions);
         }
 
         /// <summary>
         /// Постраничная загрузка списка команд проекта с фильтрацией и сортировкой
         /// </summary>
         /// <param name="projectId">Идентификатор проекта</param>
-        /// <param name="pageNumber">Номер страницы</param>
-        /// <param name="pageSize">Размер страницы</param>
-        /// <param name="filter">Фильтр по всем полям</param>
-        /// <param name="filterFields">Конкретные поля фильтрации</param>
-        /// <param name="sortFields">Поля сортировки</param>
-        /// <param name="withRemoved">Вместе с удаленными</param>
+        /// <param name="pageOptions">Параметры страницы</param>
         /// <returns>Коллекция команд</returns>
-        [HttpGet]
-        public async Task<IEnumerable<VmTeam>> GetTeamsPage([FromQuery] int projectId,
-            [FromQuery] int pageNumber, [FromQuery] int pageSize,
-            [FromQuery] string filter = null, [FromQuery] FieldFilter[] filterFields = null,
-            [FromQuery] FieldSort[] sortFields = null, [FromQuery]bool withRemoved = false)
+        [HttpPost]
+        public async Task<IEnumerable<VmTeam>> GetTeamsPage([FromQuery]int projectId, 
+            [FromBody]PageOptions pageOptions)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            return await _projectTeamsService.GetPage(currentUser, projectId, 
-                pageNumber, pageSize, filter, filterFields, sortFields, withRemoved);
+            return await _projectTeamsService.GetPage(currentUser, projectId, pageOptions);
         }
 
 

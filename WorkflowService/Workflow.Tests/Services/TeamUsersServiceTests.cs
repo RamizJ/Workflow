@@ -8,6 +8,7 @@ using NUnit.Framework;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
+using Workflow.VM.ViewModels;
 
 namespace Workflow.Tests.Services
 {
@@ -55,11 +56,14 @@ namespace Workflow.Tests.Services
         public async Task GetPageTest(int pageNumber, int pageSize, int teamId, int expectedCount)
         {
             //Arrange
+            var pageOptions = new PageOptions
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
 
             //Act
-            var users = (await _service.GetPage(_currentUser, teamId,
-                pageNumber, pageSize,
-                "", null, null)).ToArray();
+            var users = (await _service.GetPage(_currentUser, teamId, pageOptions)).ToArray();
 
             //Assert
             Assert.AreEqual(expectedCount, users.Length);
@@ -74,11 +78,15 @@ namespace Workflow.Tests.Services
             int teamId, string filter, int expectedCount)
         {
             //Arrange
+            var pageOptions = new PageOptions
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Filter = filter
+            };
 
             //Act
-            var users = (await _service.GetPage(_currentUser, teamId, 
-                pageNumber, pageSize,
-                filter, null, null)).ToArray();
+            var users = (await _service.GetPage(_currentUser, teamId, pageOptions)).ToArray();
 
             //Assert
             Assert.AreEqual(expectedCount, users.Length);

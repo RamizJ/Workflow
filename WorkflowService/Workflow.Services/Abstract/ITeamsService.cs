@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Workflow.DAL.Models;
-using Workflow.Services.Common;
+using Workflow.VM.Common;
 using Workflow.VM.ViewModels;
 
 namespace Workflow.Services.Abstract
@@ -28,18 +28,12 @@ namespace Workflow.Services.Abstract
         Task<IEnumerable<VmTeam>> GetAll(ApplicationUser currentUser, bool withRemoved = false);
 
         /// <summary>
-        /// Получение страницы команд
+        /// Постраничная загрузка записей с фильтрацией и сортировкой
         /// </summary>
         /// <param name="currentUser">Текущий пользователь</param>
-        /// <param name="pageNumber">Номер страницы</param>
-        /// <param name="pageSize">Размер страницы</param>
-        /// <param name="filter">Фильтр по всем поляи</param>
-        /// <param name="filterFields">Поля фильтрации</param>
-        /// <param name="sortFields">Поля сортировки</param>
-        /// <param name="withRemoved">Получить вместе с удаленными</param>
+        /// <param name="pageOptions">Параметры страницы</param>
         /// <returns></returns>
-        Task<IEnumerable<VmTeam>> GetPage(ApplicationUser currentUser, int pageNumber, int pageSize,
-            string filter, FieldFilter[] filterFields, FieldSort[] sortFields, bool withRemoved = false);
+        Task<IEnumerable<VmTeam>> GetPage(ApplicationUser currentUser, PageOptions pageOptions);
 
         /// <summary>
         /// Получение команд по идентификаторам

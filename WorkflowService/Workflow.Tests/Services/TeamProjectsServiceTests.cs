@@ -9,7 +9,8 @@ using NUnit.Framework;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
-using Workflow.Services.Common;
+using Workflow.VM.Common;
+using Workflow.VM.ViewModels;
 
 namespace Workflow.Tests.Services
 {
@@ -63,13 +64,16 @@ namespace Workflow.Tests.Services
                 .Build();
             var context = ContextHelper.CreateContext(_dbConnection, false);
             context.RemoveRange(_testData.ProjectTeams);
-            context.AddRange(teamProjects);
-            context.SaveChanges();
+            await context.AddRangeAsync(teamProjects);
+            await context.SaveChangesAsync();
+            var pageOptions = new PageOptions
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
 
             //Act
-            var projects = (await _service.GetPage(_currentUser, teamId,
-                pageNumber, pageSize,
-                "", null, null)).ToArray();
+            var projects = (await _service.GetPage(_currentUser, teamId, pageOptions)).ToArray();
 
             //Assert
             Assert.AreEqual(expectedCount, projects.Length);
@@ -85,12 +89,17 @@ namespace Workflow.Tests.Services
                 .Build();
             var context = ContextHelper.CreateContext(_dbConnection, false);
             context.RemoveRange(_testData.ProjectTeams);
-            context.AddRange(teamProjects);
-            context.SaveChanges();
+            await context.AddRangeAsync(teamProjects);
+            await context.SaveChangesAsync();
+            var pageOptions = new PageOptions
+            {
+                PageNumber = 0,
+                PageSize = 10,
+                Filter = filter,
+            };
 
             //Act
-            var projects = (await _service.GetPage(_currentUser, teamId,
-                0, 10,  filter, null, null)).ToArray();
+            var projects = (await _service.GetPage(_currentUser, teamId, pageOptions)).ToArray();
 
             //Assert
             Assert.AreEqual(expectedCount, projects.Length);
@@ -107,13 +116,19 @@ namespace Workflow.Tests.Services
                 .Build();
             var context = ContextHelper.CreateContext(_dbConnection, false);
             context.RemoveRange(_testData.ProjectTeams);
-            context.AddRange(teamProjects);
-            context.SaveChanges();
+            await context.AddRangeAsync(teamProjects);
+            await context.SaveChangesAsync();
             var filterField = new FieldFilter(fieldName, values);
+            var pageOptions = new PageOptions
+            {
+                PageNumber = 0,
+                PageSize = 10,
+                FilterFields = new[] { filterField }
+            };
+
 
             //Act
-            var projects = (await _service.GetPage(_currentUser, 1,
-                0, 10, null, new[] {filterField}, null)).ToArray();
+            var projects = (await _service.GetPage(_currentUser, 1, pageOptions)).ToArray();
 
             //Assert
             Assert.AreEqual(expectedCount, projects.Length);
@@ -128,13 +143,19 @@ namespace Workflow.Tests.Services
                 .Build();
             var context = ContextHelper.CreateContext(_dbConnection, false);
             context.RemoveRange(_testData.ProjectTeams);
-            context.AddRange(teamProjects);
-            context.SaveChanges();
+            await context.AddRangeAsync(teamProjects);
+            await context.SaveChangesAsync();
             var field = new FieldSort(fieldName, sortType);
+            var pageOptions = new PageOptions
+            {
+                PageNumber = 0,
+                PageSize = 10,
+                SortFields = new[] { field }
+            };
+
 
             //Act
-            var projects = (await _service.GetPage(_currentUser, 1,
-                0, 10, null, null, new[] { field })).ToArray();
+            var projects = (await _service.GetPage(_currentUser, 1, pageOptions)).ToArray();
 
             //Assert
             for (int i = 0; i < ids.Length; i++) 
@@ -170,7 +191,7 @@ namespace Workflow.Tests.Services
             //Arrange
             var context = ContextHelper.CreateContext(_dbConnection, false);
             context.RemoveRange(_testData.ProjectTeams);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             //Act
             await _service.Add(1, 1);
@@ -201,7 +222,7 @@ namespace Workflow.Tests.Services
             var context = ContextHelper.CreateContext(_dbConnection, false);
             context.RemoveRange(_testData.ProjectTeams);
             context.Add(new ProjectTeam(1,1));
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             //Act
             await _service.Remove(1, 1);

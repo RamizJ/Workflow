@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
-using Workflow.Services.Common;
+using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 
@@ -29,37 +29,43 @@ namespace Workflow.Services
             _vmConverter = new VmTeamConverter();
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<VmTeam>> GetPage(ApplicationUser currentUser, 
-            int projectId, int pageNumber, int pageSize, string filter,
-            FieldFilter[] filterFields, FieldSort[] sortFields, bool withRemoved = false)
+            int projectId, PageOptions pageOptions)
         {
             if (currentUser == null)
                 throw new ArgumentNullException(nameof(currentUser));
 
-            var query = GetQuery(projectId, withRemoved);
-            query = Filter(filter, query);
-            query = FilterByFields(filterFields, query);
-            query = SortByFields(sortFields, query);
+            if (pageOptions == null)
+                throw new ArgumentNullException(nameof(pageOptions));
+
+            var query = GetQuery(projectId, pageOptions.WithRemoved);
+            query = Filter(pageOptions.Filter, query);
+            query = FilterByFields(pageOptions.FilterFields, query);
+            query = SortByFields(pageOptions.SortFields, query);
 
             return await query
-                .Skip(pageNumber * pageSize)
-                .Take(pageSize)
+                .Skip(pageOptions.PageNumber * pageOptions.PageSize)
+                .Take(pageOptions.PageSize)
                 .Select(pt => _vmConverter.ToViewModel(pt.Team))
                 .ToArrayAsync();
         }
 
+        /// <inheritdoc />
         public async Task Add(int projectId, int teamId)
         {
             await _dataContext.ProjectTeams.AddAsync(new ProjectTeam(projectId, teamId));
             await _dataContext.SaveChangesAsync();
         }
 
+        /// <inheritdoc />
         public async Task Remove(int projectId, int teamId)
         {
             _dataContext.ProjectTeams.Remove(new ProjectTeam(projectId, teamId));
             await _dataContext.SaveChangesAsync();
         }
 
+        
         private IQueryable<ProjectTeam> GetQuery(int projectId, in bool withRemoved)
         {
             var query = _dataContext.ProjectTeams.AsNoTracking()
@@ -98,7 +104,7 @@ namespace Workflow.Services
 
             foreach (var field in filterFields.Where(ff => ff != null))
             {
-                var strValues = field.Values?.Select(v => v.ToString().ToLower()).ToList()
+                var strValues = field.Values?.Select(v => v.ToString()?.ToLower()).ToList()
                                 ?? new List<string>();
 
                 if (field.SameAs(nameof(VmTeam.Name)))

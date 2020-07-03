@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
-using Workflow.Services.Common;
+using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 
@@ -25,20 +25,22 @@ namespace Workflow.Services
 
         /// <inheritdoc />
         public async Task<IEnumerable<VmUser>> GetPage(ApplicationUser currentUser, 
-            int teamId, int pageNumber, int pageSize, string filter,
-            FieldFilter[] filterFields, FieldSort[] sortFields, bool withRemoved = false)
+            int teamId, PageOptions pageOptions)
         {
             if (currentUser == null)
                 throw new ArgumentNullException(nameof(currentUser));
 
-            var query = GetQuery(teamId, withRemoved);
-            query = Filter(filter, query);
-            query = FilterByFields(filterFields, query);
-            query = SortByFields(sortFields, query);
+            if (pageOptions == null)
+                throw new ArgumentNullException(nameof(pageOptions));
+
+            var query = GetQuery(teamId, pageOptions.WithRemoved);
+            query = Filter(pageOptions.Filter, query);
+            query = FilterByFields(pageOptions.FilterFields, query);
+            query = SortByFields(pageOptions.SortFields, query);
 
             return await query
-                .Skip(pageNumber * pageSize)
-                .Take(pageSize)
+                .Skip(pageOptions.PageNumber * pageOptions.PageSize)
+                .Take(pageOptions.PageSize)
                 .Select(tu => _vmConverter.ToViewModel(tu.User))
                 .ToArrayAsync();
         }

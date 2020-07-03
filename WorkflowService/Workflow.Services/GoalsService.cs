@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
-using Workflow.Services.Common;
+using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 
@@ -41,23 +41,23 @@ namespace Workflow.Services
             return _vmConverter.ToViewModel(goal);
         }
 
-        /// <inheritdoc />
-        public async Task<IEnumerable<VmGoal>> GetPage(ApplicationUser currentUser, 
-            int? projectId, int pageNumber, int pageSize, string filter, 
-            FieldFilter[] filterFields, FieldSort[] sortFields, bool withRemoved = false)
+        public async Task<IEnumerable<VmGoal>> GetPage(ApplicationUser currentUser, int? projectId, PageOptions pageOptions)
         {
             if (currentUser == null)
                 throw new ArgumentNullException(nameof(currentUser));
 
-            var query = await GetQuery(currentUser, withRemoved);
+            if (pageOptions == null)
+                throw new ArgumentNullException(nameof(currentUser));
+
+            var query = await GetQuery(currentUser, pageOptions.WithRemoved);
             query = query.Where(x => projectId == null || x.ProjectId == projectId);
-            query = Filter(filter, query);
-            query = FilterByFields(filterFields, query);
-            query = SortByFields(sortFields, query);
+            query = Filter(pageOptions.Filter, query);
+            query = FilterByFields(pageOptions.FilterFields, query);
+            query = SortByFields(pageOptions.SortFields, query);
 
             return await query
-                .Skip(pageNumber * pageSize)
-                .Take(pageSize)
+                .Skip(pageOptions.PageNumber * pageOptions.PageSize)
+                .Take(pageOptions.PageSize)
                 .Select(g => _vmConverter.ToViewModel(g))
                 .ToArrayAsync();
         }
@@ -166,7 +166,7 @@ namespace Workflow.Services
             return goals.FirstOrDefault();
         }
 
-        private async Task<IQueryable<Goal>> GetQuery(ApplicationUser currentUser, bool withRemoved, bool withChilds = false)
+        private async Task<IQueryable<Goal>> GetQuery(ApplicationUser currentUser, bool withRemoved, bool withChildren = false)
         {
             bool isAdmin = await _userManager.IsInRoleAsync(currentUser, RoleNames.ADMINISTRATOR_ROLE);
             var query = _dataContext.Goals.AsNoTracking()
@@ -183,7 +183,7 @@ namespace Workflow.Services
             if (!withRemoved)
                 query = query.Where(x => x.IsRemoved == false);
 
-            if (withChilds)
+            if (withChildren)
                 query = query.Include(g => g.ChildGoals);
 
             return query;

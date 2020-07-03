@@ -1,4 +1,4 @@
-﻿namespace Workflow.Services.Common
+﻿namespace Workflow.VM.Common
 {
     /// <summary>
     /// Тип сортировки

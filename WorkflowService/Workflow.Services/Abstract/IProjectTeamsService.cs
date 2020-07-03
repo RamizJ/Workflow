@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Workflow.DAL.Models;
-using Workflow.Services.Common;
+using Workflow.VM.Common;
 using Workflow.VM.ViewModels;
 
 namespace Workflow.Services.Abstract
@@ -12,21 +12,13 @@ namespace Workflow.Services.Abstract
     public interface IProjectTeamsService
     {
         /// <summary>
-        /// Получение команд проекта
+        /// Постраничная загрузка команд проекта
         /// </summary>
         /// <param name="currentUser">Текущий пользователь</param>
         /// <param name="projectId">Идентификатор проекта</param>
-        /// <param name="pageNumber">Номер страницы</param>
-        /// <param name="pageSize">Размер страницы</param>
-        /// <param name="filter">Фильтр по всем полям</param>
-        /// <param name="filterFields">Фильтр по конкретным полям</param>
-        /// <param name="sortFields">Сортировка по полям</param>
-        /// <param name="withRemoved">Вместе с удаленными</param>
-        /// <returns>Коллеция пользователей команды</returns>
-        Task<IEnumerable<VmTeam>> GetPage(ApplicationUser currentUser,
-            int projectId, int pageNumber, int pageSize,
-            string filter, FieldFilter[] filterFields,
-            FieldSort[] sortFields, bool withRemoved = false);
+        /// <param name="pageOptions">Параметры страницы</param>
+        /// <returns></returns>
+        Task<IEnumerable<VmTeam>> GetPage(ApplicationUser currentUser, int projectId, PageOptions pageOptions);
 
         /// <summary>
         /// Добавление команды в список команд проект

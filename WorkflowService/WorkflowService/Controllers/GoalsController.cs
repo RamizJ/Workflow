@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
-using Workflow.Services.Common;
+using Workflow.VM.Common;
 using Workflow.VM.ViewModels;
 using WorkflowService.Services;
 
@@ -51,23 +51,13 @@ namespace WorkflowService.Controllers
         /// <summary>
         /// Постраничная загрузка задач с фильтрацией и сортировкой
         /// </summary>
-        /// <param name="projectId">Идентификатор проекта. Если не указан, то загружаются задачи по всем проектам</param>
-        /// <param name="pageNumber">Номер страницы</param>
-        /// <param name="pageSize">Размер страницы</param>
-        /// <param name="filter">Фильтр по всем полям</param>
-        /// <param name="filterFields">Конкретные поля фильтрации</param>
-        /// <param name="sortFields">Поля сортировки</param>
-        /// <param name="withRemoved">Вместе с удаленными</param>
         /// <returns>Коллеция задач</returns>
-        [HttpGet]
+        [HttpPost]
         public async Task<IEnumerable<VmGoal>> GetPage([FromQuery]int? projectId, 
-            [FromQuery]int pageNumber, [FromQuery]int pageSize, 
-            [FromQuery]string filter = null, [FromQuery]FieldFilter[] filterFields = null, 
-            [FromQuery]FieldSort[] sortFields = null, [FromQuery] bool withRemoved = false)
+            [FromBody] PageOptions pageOptions)
         {
             var currentUser = await _currentUserService.Get(User);
-            return await _service.GetPage(currentUser, projectId, 
-                pageNumber, pageSize, filter, filterFields, sortFields, withRemoved);
+            return await _service.GetPage(currentUser, projectId, pageOptions);
         }
 
         /// <summary>

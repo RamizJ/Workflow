@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Workflow.DAL.Models;
-using Workflow.Services.Common;
+using Workflow.VM.Common;
 using Workflow.VM.ViewModels;
 
 namespace Workflow.Services.Abstract
@@ -27,19 +27,12 @@ namespace Workflow.Services.Abstract
         Task<VmUser> GetCurrent(ApplicationUser currentUser);
 
         /// <summary>
-        /// 
+        /// Постраничная загрузка записей с фильтрацией и сортировкой
         /// </summary>
-        /// <param name="currentUser"></param>
-        /// <param name="pageNumber"></param>
-        /// <param name="pageSize"></param>
-        /// <param name="filter"></param>
-        /// <param name="filterFields"></param>
-        /// <param name="sortFields"></param>
-        /// <param name="withRemoved"></param>
-        /// <returns></returns>
-        Task<IEnumerable<VmUser>> GetPage(ApplicationUser currentUser, int pageNumber, int pageSize,
-            string filter, FieldFilter[] filterFields, FieldSort[] sortFields, bool withRemoved = false);
-
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="pageOptions">Параметры страницы</param>
+        /// <returns>Коллекция пользователей</returns>
+        Task<IEnumerable<VmUser>> GetPage(ApplicationUser currentUser, PageOptions pageOptions);
 
         /// <summary>
         /// Получение пользователей по идентификаторам

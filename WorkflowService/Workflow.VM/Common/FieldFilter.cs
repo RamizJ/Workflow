@@ -1,7 +1,6 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore.Internal;
 
-namespace Workflow.Services.Common
+namespace Workflow.VM.Common
 {
     /// <summary>
     /// Фильтр по полю
