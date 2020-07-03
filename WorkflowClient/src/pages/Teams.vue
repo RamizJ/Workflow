@@ -27,7 +27,7 @@
             el-button(
               v-if="addButtonVisible"
               size="small"
-              @click="dialogOpened = true; selectedItemId = null")
+              @click="dialogVisible = true; dialogData = null")
               feather(type="plus" size="12")
               span Создать
           transition(name="fade")
@@ -81,7 +81,7 @@
             li(v-if="!isMultipleSelected" @click.prevent="onItemDelete($event, child.data.row)") Удалить
             li(v-if="isMultipleSelected" @click.prevent="onItemMultipleDelete($event, child.data.row)") Удалить выделенное
 
-    team-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false" @submit="refresh")
+    team-dialog(v-if="dialogVisible" :data="dialogData" @close="dialogVisible = false" @submit="refresh")
 
 </template>
 

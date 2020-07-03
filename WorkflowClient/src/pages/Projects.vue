@@ -31,7 +31,7 @@
             el-button(
               v-if="addButtonVisible"
               size="small"
-              @click="dialogOpened = true; selectedItemId = null")
+              @click="dialogVisible = true; dialogData = null")
               feather(type="plus" size="12")
               span Создать
           transition(name="fade")
@@ -87,7 +87,7 @@
             li(v-if="!isMultipleSelected" @click.prevent="onItemDelete($event, child.data.row)") Удалить
             li(v-if="isMultipleSelected" @click.prevent="onItemMultipleDelete($event, child.data.row)") Удалить выделенное
 
-    project-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false" @submit="refresh")
+    project-dialog(v-if="dialogVisible" :data="dialogData" @close="dialogVisible = false" @submit="refresh")
 
 </template>
 
@@ -177,13 +177,11 @@ export default {
       this.query.pageNumber = 0;
       this.$refs.loader.stateChanger.reset();
       await this.fetchSidebarItems({ reload: true });
-      this.dialogOpened = false;
+      this.dialogVisible = false;
     },
     async applyFilters() {},
     onItemDoubleClick(row, column, event) {
-      console.log(row);
       this.$router.push(`/projects/${row.id}`);
-      // this.onItemEdit(event, row);
     }
   }
 };

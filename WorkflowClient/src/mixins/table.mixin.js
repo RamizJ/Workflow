@@ -16,8 +16,8 @@ export default {
         type: 'Ascending',
         fields: []
       },
-      dialogOpened: false,
-      selectedItemId: null,
+      dialogVisible: false,
+      dialogData: null,
       selectedRow: null,
       addButtonVisible: true,
       editButtonVisible: false,
@@ -57,7 +57,7 @@ export default {
       this.tableData = [];
       this.query.pageNumber = 0;
       this.loader.stateChanger.reset();
-      this.dialogOpened = false;
+      this.dialogVisible = false;
       this.editButtonVisible = false;
       this.completeButtonVisible = false;
       this.deleteButtonVisible = false;
@@ -123,8 +123,8 @@ export default {
       event.preventDefault();
     },
     onItemEdit(event, row) {
-      this.selectedItemId = row.id;
-      this.dialogOpened = true;
+      this.dialogData = row;
+      this.dialogVisible = true;
     },
     async onItemDelete(event, row) {
       await this.deleteItem(row.id);

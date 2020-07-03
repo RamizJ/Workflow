@@ -51,9 +51,6 @@ import dialogMixin from '~/mixins/dialog.mixin';
 
 export default {
   components: { BaseDialog },
-  props: {
-    id: Number
-  },
   mixins: [dialogMixin],
   data() {
     return {
@@ -78,7 +75,6 @@ export default {
   },
   computed: {
     ...mapGetters({
-      item: 'projects/getProject',
       projectTeams: 'projects/getProjectTeams'
     })
   },

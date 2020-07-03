@@ -88,13 +88,13 @@
             el-button(
               v-if="addButtonVisible"
               size="small"
-              @click="dialogOpened = true; selectedItemId = null")
+              @click="dialogVisible = true; dialogData = null")
               feather(type="plus" size="12")
               span Добавить задачу
           transition(name="fade")
             el-button(
               size="small"
-              @click="teamDialogOpened = true")
+              @click="teamDialogVisible = true")
               feather(type="plus" size="12")
               span Добавить команду
           transition(name="fade")
@@ -163,8 +163,8 @@
                 li(v-if="isMultipleSelected" @click.prevent="onItemMultipleComplete($event, child.data.row)") Завершить выделенное
                 li(v-if="isMultipleSelected" @click.prevent="onItemMultipleDelete($event, child.data.row)") Удалить выделенное
 
-    task-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false" @submit="refresh")
-    team-dialog(v-if="teamDialogOpened" @close="teamDialogOpened = false" @submit="refresh")
+    task-dialog(v-if="dialogVisible" :data="dialogData" @close="dialogVisible = false" @submit="refresh")
+    team-dialog(v-if="teamDialogVisible" @close="teamDialogVisible = false" @submit="refresh")
 
 </template>
 
@@ -263,7 +263,7 @@ export default {
       },
       inputVisible: false,
       inputValue: '',
-      teamDialogOpened: false,
+      teamDialogVisible: false,
       tabs: [
         { label: 'Новое', name: 'New' },
         { label: 'В работе', name: 'Perform' },
@@ -308,11 +308,11 @@ export default {
     async quickAction(command) {
       switch (command) {
         case 'addTask':
-          this.selectedItemId = null;
-          this.dialogOpened = true;
+          this.dialogData = null;
+          this.dialogVisible = true;
           break;
         case 'addTeam':
-          this.teamDialogOpened = true;
+          this.teamDialogVisible = true;
           break;
         case 'deleteProject':
           await this.deleteProject(this.projectItem.id);

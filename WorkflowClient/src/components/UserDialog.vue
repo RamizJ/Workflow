@@ -76,9 +76,6 @@ import dialogMixin from '~/mixins/dialog.mixin';
 
 export default {
   components: { BaseDialog },
-  props: {
-    id: String
-  },
   mixins: [dialogMixin],
   data() {
     return {
@@ -126,9 +123,6 @@ export default {
       positionVisible: null,
       phoneVisible: null
     };
-  },
-  computed: {
-    ...mapGetters({ item: 'users/getUser' })
   },
   async mounted() {
     await this.searchTeams();

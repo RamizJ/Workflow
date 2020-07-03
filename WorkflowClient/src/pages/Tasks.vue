@@ -59,7 +59,7 @@
             el-button(
               v-if="addButtonVisible"
               size="small"
-              @click="dialogOpened = true; selectedItemId = null")
+              @click="dialogVisible = true; dialogData = null")
               feather(type="plus" size="12")
               span Создать
           transition(name="fade")
@@ -125,7 +125,7 @@
             li(v-if="isMultipleSelected" @click.prevent="onItemMultipleComplete($event, child.data.row)") Завершить выделенное
             li(v-if="isMultipleSelected" @click.prevent="onItemMultipleDelete($event, child.data.row)") Удалить выделенное
 
-    task-dialog(v-if="dialogOpened" :id="selectedItemId" @close="dialogOpened = false" @submit="refresh")
+    task-dialog(v-if="dialogVisible" :data="dialogData" @close="dialogVisible = false" @submit="refresh")
 
 </template>
 

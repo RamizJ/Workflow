@@ -1,25 +1,22 @@
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
+  props: {
+    data: Object
+  },
   data() {
     return {
       visible: false,
       loading: false,
-      isEdit: !!this.id
+      isEdit: !!this.data
     };
   },
   async created() {
     this.visible = true;
-    if (this.isEdit) {
-      this.loading = true;
-      if (this.id !== this.item.id) await this.fetchItem(this.id);
-      this.form = this.item;
-      this.loading = false;
-    }
+    if (this.isEdit) this.form = { ...this.data };
   },
   computed: {
     ...mapGetters({
-      item: '',
       projects: 'projects/getProjects',
       teams: 'teams/getTeams',
       users: 'users/getUsers',

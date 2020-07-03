@@ -101,9 +101,6 @@ import dialogMixin from '~/mixins/dialog.mixin';
 
 export default {
   components: { BaseDialog },
-  props: {
-    id: Number
-  },
   mixins: [dialogMixin],
   data() {
     return {
@@ -147,7 +144,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      item: 'tasks/getTask',
+      task: 'tasks/getTask',
       me: 'auth/me',
       attachments: 'tasks/getTaskAttachments'
     })
@@ -155,7 +152,7 @@ export default {
   async mounted() {
     this.loading = true;
     if (this.isEdit) {
-      await this.fetchAttachments(this.id);
+      await this.fetchAttachments(this.form.id);
       this.attachmentList = this.attachments.map(attachment => {
         return {
           name: attachment.fileName,
@@ -165,10 +162,10 @@ export default {
     } else {
       this.attachmentList = [];
     }
-    this.loading = false;
     await this.searchUsers();
     await this.searchProjects();
-    this.$refs.title.focus();
+    this.loading = false;
+    this.$refs.title?.focus();
   },
   methods: {
     ...mapActions({
@@ -193,7 +190,7 @@ export default {
       let files = new FormData();
       files.append('files', request.file);
       await this.addAttachments({
-        taskId: this.id || this.item.id,
+        taskId: this.form.id || this.task.id,
         files
       });
       this.loading = false;

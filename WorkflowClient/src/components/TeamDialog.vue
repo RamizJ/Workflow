@@ -53,9 +53,6 @@ import dialogMixin from '~/mixins/dialog.mixin';
 
 export default {
   components: { BaseDialog },
-  props: {
-    id: Number
-  },
   mixins: [dialogMixin],
   data() {
     return {
@@ -75,7 +72,6 @@ export default {
   },
   computed: {
     ...mapGetters({
-      item: 'teams/getTeam',
       teamUsers: 'teams/getTeamUsers',
       teamProjects: 'teams/getTeamProjects'
     })
@@ -90,12 +86,12 @@ export default {
     if (this.isEdit) {
       this.loading = true;
       await this.fetchTeamUsers({
-        teamId: this.id,
+        teamId: this.form.id,
         pageNumber: 0,
         pageSize: 10
       });
       await this.fetchTeamProjects({
-        teamId: this.id,
+        teamId: this.form.id,
         pageNumber: 0,
         pageSize: 10
       });
