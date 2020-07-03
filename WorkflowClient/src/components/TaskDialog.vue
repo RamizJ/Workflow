@@ -58,6 +58,7 @@
                 action="https://demo.girngm.ru/workflow_dev/api/Goals/AddAttachments/"
                 ref="upload"
                 :http-request="uploadAttachment"
+                :on-preview="onAttachmentClick"
                 :on-remove="removeAttachment"
                 :file-list="attachmentList"
                 :auto-upload="false"
@@ -176,7 +177,8 @@ export default {
       updateItem: 'tasks/updateTask',
       fetchAttachments: 'tasks/fetchAttachments',
       addAttachments: 'tasks/addAttachments',
-      removeAttachments: 'tasks/removeAttachments'
+      removeAttachments: 'tasks/removeAttachments',
+      downloadAttachment: 'tasks/downloadAttachment'
     }),
     async submit() {
       if (this.isFormValid) {
@@ -196,9 +198,11 @@ export default {
       });
       this.loading = false;
     },
+    async onAttachmentClick(file) {
+      await this.downloadAttachment(file);
+    },
     async removeAttachment(file) {
       await this.removeAttachments([file.id]);
-      console.log(file);
     }
   }
 };

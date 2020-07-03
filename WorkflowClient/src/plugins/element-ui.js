@@ -31,7 +31,6 @@ import 'element-ui/lib/theme-chalk/index.css';
 
 locale.use(language);
 
-console.log(Button.name);
 Vue.component(Button.name, Button);
 Vue.component(Input.name, Input);
 Vue.component(Select.name, Select);

@@ -263,6 +263,9 @@ a {
   background-color: transparent;
   border-bottom: none;
 }
+.el-upload-list {
+  outline: none;
+}
 .el-upload-list__item:hover {
   background-color: var(--popover-hover);
 }

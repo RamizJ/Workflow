@@ -50,7 +50,7 @@ export default {
     refresh() {
       this.tableData = [];
       this.query.pageNumber = 0;
-      this.loader.reset();
+      this.loader.stateChanger.reset();
       this.dialogOpened = false;
       this.editButtonVisible = false;
       this.completeButtonVisible = false;

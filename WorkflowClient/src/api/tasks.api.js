@@ -27,5 +27,9 @@ export default {
       }
     }),
   removeAttachments: attachmentIds =>
-    httpClient.patch(`/api/Goals/RemoveAttachments`, attachmentIds)
+    httpClient.patch(`/api/Goals/RemoveAttachments`, attachmentIds),
+  downloadAttachmentFile: attachmentId =>
+    httpClient.get(`/api/Goals/DownloadAttachmentFile/${attachmentId}`, {
+      responseType: 'blob'
+    })
 };
