@@ -9,12 +9,7 @@ export default {
         filter: '',
         pageNumber: 0,
         pageSize: 20,
-        sortFields: [{ fieldName: 'creationDate', sortType: 'Ascending' }]
-      },
-      sort: {
-        field: 'creationDate',
-        type: 'Ascending',
-        fields: []
+        sortFields: [{ fieldName: 'creationDate', sortType: 'Descending' }]
       },
       dialogVisible: false,
       dialogData: null,
@@ -44,6 +39,14 @@ export default {
     isMultipleSelected() {
       return this.table.selection?.length > 1;
     }
+  },
+  watch: {
+    $route(to, from) {
+      this.applyQuery();
+    }
+  },
+  mounted() {
+    this.applyQuery();
   },
   methods: {
     ...mapActions({
@@ -82,18 +85,34 @@ export default {
         console.log(e);
       }
     },
+    applyQuery() {
+      if (this.$route.query.sort) {
+        this.query.sortFields[0] = {
+          fieldName:
+            this.$route.query.sort || this.query.sortFields[0].fieldName,
+          sortType: this.$route.query.order || this.query.sortFields[0].sortType
+        };
+        this.refresh();
+      }
+    },
     applySort() {
-      this.query.sortFields[0] = {
-        fieldName: this.sort.field,
-        sortType: this.sort.type
-      };
-      this.refresh();
+      this.$router.push({
+        query: {
+          sort: this.query.sortFields[0].fieldName,
+          order: this.query.sortFields[0].sortType
+        }
+      });
     },
     switchSortType() {
-      this.sort.type =
-        this.sort.type === 'Ascending' ? 'Descending' : 'Ascending';
-      this.query.sortFields[0].sortType = this.sort.type;
-      this.refresh();
+      this.$router.push({
+        query: {
+          sort: this.query.sortFields[0].fieldName,
+          order:
+            this.query.sortFields[0].sortType === 'Ascending'
+              ? 'Descending'
+              : 'Ascending'
+        }
+      });
     },
     onItemSelect(selection, row) {
       this.selectedRow = row;

@@ -50,14 +50,14 @@
 
         template(slot="view")
           el-button(type="text" size="mini" @click="switchSortType")
-            feather(:type="sort.type === 'Ascending' ? 'align-left' : 'align-right'" size="20")
+            feather(:type="query.sortFields[0].sortType === 'Ascending' ? 'align-left' : 'align-right'" size="20")
           el-select(
-            v-model="sort.field"
+            v-model="query.sortFields[0].fieldName"
             size="medium"
             placeholder="По дате создания"
             @change="applySort"
             clearable)
-            el-option(v-for="option in sort.fields" :key="option.value" :value="option.value", :label="option.label")
+            el-option(v-for="option in sortFields" :key="option.value" :value="option.value", :label="option.label")
           el-button(type="text" size="mini")
             feather(type="grid" size="20")
           el-button.active(type="text" size="mini")
@@ -120,16 +120,18 @@ export default {
   mixins: [tableMixin],
   data() {
     return {
-      sort: {
-        field: 'lastName',
-        type: 'Ascending',
-        fields: [
-          { value: 'lastName', label: 'По фамилии' },
-          { value: 'firstName', label: 'По имени' },
-          { value: 'middleName', label: 'По отчеству' },
-          { value: 'email', label: 'По почте' }
-        ]
+      query: {
+        filter: '',
+        pageNumber: 0,
+        pageSize: 20,
+        sortFields: [{ fieldName: 'lastName', sortType: 'Ascending' }]
       },
+      sortFields: [
+        { value: 'lastName', label: 'По фамилии' },
+        { value: 'firstName', label: 'По имени' },
+        { value: 'middleName', label: 'По отчеству' },
+        { value: 'email', label: 'По почте' }
+      ],
       filtersVisible: false,
       filters: {
         position: {
