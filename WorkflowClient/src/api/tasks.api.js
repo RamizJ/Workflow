@@ -3,12 +3,7 @@ import qs from 'qs';
 
 export default {
   get: id => httpClient.get(`/api/Goals/Get/${id}`),
-  getPage: query =>
-    httpClient.get(
-      `/api/Goals/GetPage${qs.stringify(query, {
-        addQueryPrefix: true
-      })}`
-    ),
+  getPage: query => httpClient.post(`/api/Goals/GetPage`, query),
   getRange: query =>
     httpClient.get(
       `/api/Goals/GetRange${qs.stringify(query, { addQueryPrefix: true })}`

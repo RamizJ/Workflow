@@ -151,7 +151,7 @@
               el-table-column(type="selection" width="38")
               el-table-column(prop="title" label="Задача" width="500")
               el-table-column(prop="projectName" label="Проект")
-              el-table-column(prop="state" label="Статус" width="120" :formatter="stateFormatter")
+              //el-table-column(prop="state" label="Статус" width="120" :formatter="stateFormatter")
               el-table-column(prop="priority" label="Приоритет" width="120" :formatter="priorityFormatter")
               el-table-column(prop="creationDate" label="Добавлено" width="170" :formatter="dateFormatter")
               infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
@@ -213,8 +213,8 @@ export default {
         fields: [
           { value: 'creationDate', label: 'По дате создания' },
           { value: 'title', label: 'По названию' },
-          { value: 'goalState', label: 'По статусу' },
-          { value: 'scopeId', label: 'По проекту' }
+          { value: 'state', label: 'По статусу' },
+          { value: 'projectName', label: 'По проекту' }
         ]
       },
       filtersVisible: false,

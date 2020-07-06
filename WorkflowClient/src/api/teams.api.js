@@ -13,20 +13,13 @@ export default {
   addProject: teamId => httpClient.patch(`/api/Teams/AddProject/${teamId}`),
   removeProject: (teamId, projectId) =>
     httpClient.patch(`/api/Teams/RemoveProject/${teamId}/${projectId}`),
-  getPage: query =>
-    httpClient.get(
-      `/api/Teams/GetPage${qs.stringify(query, { addQueryPrefix: true })}`
-    ),
+  getPage: query => httpClient.post(`/api/Teams/GetPage`, query),
   getUsersPage: query =>
     httpClient.get(
       `/api/Teams/GetUsersPage${qs.stringify(query, { addQueryPrefix: true })}`
     ),
   getProjectsPage: query =>
-    httpClient.get(
-      `/api/Teams/GetProjectsPage${qs.stringify(query, {
-        addQueryPrefix: true
-      })}`
-    ),
+    httpClient.post(`/api/Teams/GetProjectsPage`, query),
   getRange: query =>
     httpClient.get(
       `/api/Teams/GetRange${qs.stringify(query, { addQueryPrefix: true })}`
