@@ -9,7 +9,12 @@ export default {
         filter: '',
         pageNumber: 0,
         pageSize: 20,
-        sortFields: [{ fieldName: 'creationDate', sortType: 'Descending' }]
+        sortFields: [
+          {
+            fieldName: this.$route.query.sort || 'creationDate',
+            sortType: this.$route.query.order || 'Descending'
+          }
+        ]
       },
       dialogVisible: false,
       dialogData: null,
@@ -44,9 +49,6 @@ export default {
     $route(to, from) {
       this.applyQuery();
     }
-  },
-  mounted() {
-    this.applyQuery();
   },
   methods: {
     ...mapActions({
@@ -95,24 +97,19 @@ export default {
         this.refresh();
       }
     },
+    applyFilters() {},
     applySort() {
-      this.$router.push({
-        query: {
-          sort: this.query.sortFields[0].fieldName,
-          order: this.query.sortFields[0].sortType
-        }
-      });
+      const query = { ...this.$route.query };
+      query.sort = this.query.sortFields[0].fieldName;
+      this.$router.push({ query });
     },
-    switchSortType() {
-      this.$router.push({
-        query: {
-          sort: this.query.sortFields[0].fieldName,
-          order:
-            this.query.sortFields[0].sortType === 'Ascending'
-              ? 'Descending'
-              : 'Ascending'
-        }
-      });
+    switchOrder() {
+      const query = { ...this.$route.query };
+      query.order =
+        this.query.sortFields[0].sortType === 'Ascending'
+          ? 'Descending'
+          : 'Ascending';
+      this.$router.push({ query });
     },
     onItemSelect(selection, row) {
       this.selectedRow = row;

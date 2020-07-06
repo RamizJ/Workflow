@@ -50,7 +50,7 @@
               span Редактировать
 
         template(slot="view")
-          el-button(type="text" size="mini" @click="switchSortType")
+          el-button(type="text" size="mini" @click="switchOrder")
             feather(:type="query.sortFields[0].sortType === 'Ascending' ? 'align-left' : 'align-right'" size="20")
           el-select(
             v-model="query.sortFields[0].fieldName"
@@ -174,9 +174,12 @@ export default {
     async refresh() {
       this.tableData = [];
       this.query.pageNumber = 0;
-      this.$refs.loader.stateChanger.reset();
-      await this.fetchSidebarItems({ reload: true });
+      this.loader.stateChanger.reset();
       this.dialogVisible = false;
+      this.editButtonVisible = false;
+      this.completeButtonVisible = false;
+      this.deleteButtonVisible = false;
+      await this.fetchSidebarItems({ reload: true });
     },
     async applyFilters() {},
     onItemDoubleClick(row, column, event) {

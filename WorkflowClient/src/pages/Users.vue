@@ -49,7 +49,7 @@
               span Редактировать
 
         template(slot="view")
-          el-button(type="text" size="mini" @click="switchSortType")
+          el-button(type="text" size="mini" @click="switchOrder")
             feather(:type="query.sortFields[0].sortType === 'Ascending' ? 'align-left' : 'align-right'" size="20")
           el-select(
             v-model="query.sortFields[0].fieldName"

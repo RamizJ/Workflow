@@ -120,7 +120,7 @@
               span Редактировать
 
         template(slot="view")
-          el-button(type="text" size="mini" @click="switchSortType")
+          el-button(type="text" size="mini" @click="switchOrder")
             feather(:type="query.sortFields[0].sortType === 'Ascending' ? 'align-left' : 'align-right'" size="20")
           el-select(
             v-model="query.sortFields[0].fieldName"
@@ -200,6 +200,7 @@ export default {
         projectId: this.$route.params.projectId,
         pageNumber: 0,
         pageSize: 20,
+        sortFields: [{ fieldName: 'creationDate', sortType: 'Descending' }],
         filterFields: [
           {
             fieldName: 'state',
@@ -209,7 +210,7 @@ export default {
       },
       sortFields: [
         { value: 'creationDate', label: 'По дате создания' },
-        { value: 'title', label: 'По названию' },
+        { value: 'name', label: 'По названию' },
         { value: 'state', label: 'По статусу' },
         { value: 'projectName', label: 'По проекту' }
       ],
