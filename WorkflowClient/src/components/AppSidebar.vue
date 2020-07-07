@@ -23,15 +23,6 @@
       el-menu-item(index="/tasks")
         feather(type="list")
         span Задачи
-      el-menu-item(index="/projects")
-        feather(type="layers")
-        span Проекты
-      el-menu-item(index="/teams")
-        feather(type="user")
-        span Команды
-      //el-menu-item(index="/scopes" disabled)
-        feather(type="hexagon")
-        span Области
       el-menu-item(index="/journal")
         feather(type="check-circle")
         span Журнал
@@ -41,12 +32,22 @@
 
       div.divider
 
-      el-menu-item(index="/settings")
-        feather(type="settings")
-        span Настройки
+      //el-menu-item(index="/scopes" disabled)
+        feather(type="hexagon")
+        span Области
+      el-menu-item(index="/projects")
+        feather(type="layers")
+        span Проекты
+      el-menu-item(index="/teams")
+        feather(type="user")
+        span Команды
       el-menu-item(index="/users")
         feather(type="users")
         span Пользователи
+      el-menu-item(index="/settings")
+        feather(type="settings")
+        span Настройки
+
 
       div.divider
 

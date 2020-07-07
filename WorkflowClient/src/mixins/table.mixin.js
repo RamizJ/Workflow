@@ -202,6 +202,10 @@ export default {
       this.onItemEdit(event, row);
     },
     onItemRightClick(row, column, event) {
+      if (!this.isMultipleSelected) {
+        this.table.clearSelection();
+        this.table.toggleRowSelection(row);
+      }
       this.table.setCurrentRow(row);
       this.contextMenu.open(event, { row, column });
       event.preventDefault();
