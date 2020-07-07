@@ -16,6 +16,7 @@ import {
   Collapse,
   CollapseItem,
   Card,
+  Popover,
   Avatar,
   Dialog,
   Form,
@@ -47,6 +48,7 @@ Vue.component(TabPane.name, TabPane);
 Vue.component(Collapse.name, Collapse);
 Vue.component(CollapseItem.name, CollapseItem);
 Vue.component(Card.name, Card);
+Vue.component(Popover.name, Popover);
 Vue.component(Avatar.name, Avatar);
 Vue.component(Dialog.name, Dialog);
 Vue.component(Form.name, Form);

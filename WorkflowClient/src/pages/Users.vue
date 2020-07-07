@@ -11,20 +11,8 @@
             @change="applyFilters")
             el-button(slot="prefix" type="text" size="mini")
               feather(type="search" size="16")
-            el-button(slot="suffix" type="text" size="mini" :class="filtersVisible ? 'active' : ''" @click="filtersVisible = !filtersVisible")
-              feather(type="sliders" size="16")
 
       page-toolbar
-        template(v-if="filtersVisible" slot="filters")
-          el-row
-            el-select(
-              v-model="filters.position.value"
-              size="small"
-              placeholder="Должность"
-              @change="applyFilters"
-              multiple collapse-tags)
-              el-option(v-for="option in filters.position.items" :key="option.value" :value="option.value", :label="option.label")
-
         template(slot="actions")
           transition(name="fade")
             el-button(
@@ -61,7 +49,7 @@
           el-button(type="text" size="mini")
             feather(type="grid" size="20")
           el-button.active(type="text" size="mini")
-            feather(type="list" size="20")
+            feather(type="menu" size="20")
 
       table-content
         el-table(
@@ -131,15 +119,7 @@ export default {
         { value: 'firstName', label: 'По имени' },
         { value: 'middleName', label: 'По отчеству' },
         { value: 'email', label: 'По почте' }
-      ],
-      filtersVisible: false,
-      filters: {
-        position: {
-          value: null,
-          fieldName: 'position',
-          items: []
-        }
-      }
+      ]
     };
   },
   computed: {
@@ -151,15 +131,6 @@ export default {
       deleteItem: 'users/deleteUser',
       deleteItems: 'users/deleteUsers'
     }),
-    async applyFilters() {
-      this.query.filterFields = [];
-      if (this.filters.position.value)
-        this.query.filterFields.push({
-          fieldName: this.filters.position.fieldName,
-          value: this.filters.position.value
-        });
-      await this.refresh();
-    },
     onItemAddToTeam(event, row) {}
   }
 };

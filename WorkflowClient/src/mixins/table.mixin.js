@@ -16,6 +16,19 @@ export default {
           }
         ]
       },
+      statuses: [
+        { value: 'New', label: 'Новое' },
+        { value: 'Perform', label: 'В работе' },
+        { value: 'Delay', label: 'Отложено' },
+        { value: 'Testing', label: 'Тестируется' },
+        { value: 'Succeed', label: 'Выполнено' },
+        { value: 'Rejected', label: 'Отклонено' }
+      ],
+      priorities: [
+        { value: 'Low', label: 'Низкий' },
+        { value: 'Normal', label: 'Обычный' },
+        { value: 'High', label: 'Высокий' }
+      ],
       dialogVisible: false,
       dialogData: null,
       selectedRow: null,
@@ -23,11 +36,16 @@ export default {
       editButtonVisible: false,
       completeButtonVisible: false,
       deleteButtonVisible: false,
-      filtersVisible: false
+      filtersActive: false
     };
   },
   computed: {
-    ...mapGetters({ items: '' }),
+    ...mapGetters({
+      items: '',
+      projects: 'projects/getProjects',
+      teams: 'teams/getTeams',
+      users: 'users/getUsers'
+    }),
     table() {
       if (Array.isArray(this.$refs.table)) return this.$refs.table[0];
       else return this.$refs.table;
@@ -43,6 +61,30 @@ export default {
     },
     isMultipleSelected() {
       return this.table.selection?.length > 1;
+    },
+    projectList() {
+      return this.projects.map(project => {
+        return {
+          value: project.name,
+          id: project.id
+        };
+      });
+    },
+    teamList() {
+      return this.teams.map(project => {
+        return {
+          value: project.name,
+          id: project.id
+        };
+      });
+    },
+    userList() {
+      return this.users.map(user => {
+        return {
+          value: `${user.lastName} ${user.firstName}`,
+          id: user.id
+        };
+      });
     }
   },
   watch: {
@@ -56,8 +98,33 @@ export default {
       deleteItem: '',
       deleteItems: '',
       completeItem: '',
-      completeItems: ''
+      completeItems: '',
+
+      fetchProjects: 'projects/fetchProjects',
+      fetchTeams: 'teams/fetchTeams',
+      fetchUsers: 'users/fetchUsers'
     }),
+    async searchProjects(query) {
+      await this.fetchProjects({
+        filter: query,
+        pageNumber: 0,
+        pageSize: 10
+      });
+    },
+    async searchTeams(query) {
+      await this.fetchTeams({
+        filter: query,
+        pageNumber: 0,
+        pageSize: 10
+      });
+    },
+    async searchUsers(query) {
+      await this.fetchUsers({
+        filter: query,
+        pageNumber: 0,
+        pageSize: 10
+      });
+    },
     refresh() {
       this.tableData = [];
       this.query.pageNumber = 0;
@@ -88,7 +155,7 @@ export default {
       }
     },
     applyQuery() {
-      if (this.$route.query.sort) {
+      if (this.$route.query.sort || this.$route.query.order) {
         this.query.sortFields[0] = {
           fieldName:
             this.$route.query.sort || this.query.sortFields[0].fieldName,
@@ -109,6 +176,7 @@ export default {
         this.query.sortFields[0].sortType === 'Ascending'
           ? 'Descending'
           : 'Ascending';
+      this.query.sortFields[0].sortType = query.order;
       this.$router.push({ query });
     },
     onItemSelect(selection, row) {
@@ -164,34 +232,11 @@ export default {
       return dateRu;
     },
     priorityFormatter(row, column, cellValue, index) {
-      switch (cellValue) {
-        case 'Low':
-          return 'Низкий';
-        case 'Normal':
-          return 'Обычный';
-        case 'High':
-          return 'Высокий';
-        default:
-          return 'Отсутствует';
-      }
+      return this.priorities.find(priority => priority.value === cellValue)
+        .label;
     },
     stateFormatter(row, column, cellValue, index) {
-      switch (cellValue) {
-        case 'New':
-          return 'Новое';
-        case 'Perform':
-          return 'В работе';
-        case 'Delay':
-          return 'Отложено';
-        case 'Testing':
-          return 'Тестируется';
-        case 'Succeed':
-          return 'Выполнено';
-        case 'Rejected':
-          return 'Отклонено';
-        default:
-          return 'Отсутствует';
-      }
+      return this.statuses.find(status => status.value === cellValue).label;
     }
   }
 };

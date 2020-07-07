@@ -11,49 +11,54 @@
             @change="refresh")
             el-button(slot="prefix" type="text" size="mini")
               feather(type="search" size="16")
-            el-button(slot="suffix" type="text" size="mini" :class="filtersVisible ? 'active' : ''" @click="filtersVisible = !filtersVisible")
-              feather(type="sliders" size="16")
+            el-popover(slot="suffix" placement="bottom" width="335" transition="fade" trigger="click")
+              el-button(
+                slot="reference"
+                type="text"
+                size="mini"
+                :class="filtersActive ? 'active' : ''")
+                feather(type="sliders" size="16")
+
+              el-row(:gutter="10" style="margin-bottom: 10px;")
+                el-col(:span="12")
+                  el-select(
+                    v-model="filterFields.state.values"
+                    size="small"
+                    placeholder="Статус"
+                    @change="applyFilters"
+                    multiple collapse-tags)
+                    el-option(v-for="option in statuses" :key="option.value" :value="option.value", :label="option.label")
+                el-col(:span="12")
+                  el-select(
+                    v-model="filterFields.priority.values"
+                    size="small"
+                    placeholder="Приоритет"
+                    @change="applyFilters"
+                    multiple collapse-tags)
+                    el-option(v-for="option in priorities" :key="option.value" :value="option.value", :label="option.label")
+              el-row(:gutter="10")
+                el-col(:span="12")
+                  el-select(
+                    v-model="filterFields.performer.values[0]"
+                    size="small"
+                    placeholder="Ответственный"
+                    :remote-method="searchUsers"
+                    @focus="searchUsers('')"
+                    @change="applyFilters"
+                    filterable remote clearable default-first-option collapse-tags)
+                    el-option(v-for="option in userList" :key="option.value" :value="option.value", :label="option.label")
+                el-col(:span="12")
+                  el-select(
+                    v-model="filterFields.project.values[0]"
+                    size="small"
+                    placeholder="Проект"
+                    :remote-method="searchProjects"
+                    @focus="searchProjects('')"
+                    @change="applyFilters"
+                    filterable remote clearable default-first-option collapse-tags)
+                    el-option(v-for="option in projectList" :key="option.value" :value="option.value", :label="option.label")
 
       page-toolbar
-        template(v-if="filtersVisible" slot="filters")
-          el-row
-            el-select(
-              v-model="filters.performer.value"
-              size="small"
-              placeholder="Ответственный"
-              @change="applyFilters"
-              multiple collapse-tags)
-              el-option(v-for="option in filters.performer.items" :key="option.value" :value="option.value", :label="option.label")
-            el-select(
-              v-model="filters.priority.value"
-              size="small"
-              placeholder="Приоритет"
-              @change="applyFilters"
-              multiple collapse-tags)
-              el-option(v-for="option in filters.priority.items" :key="option.value" :value="option.value", :label="option.label")
-            el-select(
-              v-model="filters.status.value"
-              size="small"
-              placeholder="Статус"
-              @change="applyFilters"
-              multiple collapse-tags)
-              el-option(v-for="option in filters.status.items" :key="option.value" :value="option.value", :label="option.label")
-          el-row
-            el-select(
-              v-model="filters.project.value"
-              size="small"
-              placeholder="Проект"
-              @change="applyFilters"
-              multiple collapse-tags)
-              el-option(v-for="option in filters.project.items" :key="option.value" :value="option.value", :label="option.label")
-            el-select(
-              v-model="filters.tags.value"
-              size="small"
-              placeholder="Тег"
-              @change="applyFilters"
-              multiple collapse-tags)
-              el-option(v-for="option in filters.tags.items" :key="option.value" :value="option.value", :label="option.label")
-
         template(slot="actions")
           transition(name="fade")
             el-button(
@@ -161,39 +166,11 @@ export default {
         { value: 'projectName', label: 'По проекту' },
         { value: 'priority', label: 'По приоритету' }
       ],
-      filters: {
-        status: {
-          fieldName: 'goalState',
-          value: null,
-          items: [
-            { value: 'New', label: 'Новое' },
-            { value: 'Completed', label: 'Завершённое' }
-          ]
-        },
-        performer: {
-          fieldName: 'performer',
-          value: null,
-          items: []
-        },
-        project: {
-          fieldName: 'projectId',
-          value: null,
-          items: []
-        },
-        priority: {
-          fieldName: 'priority',
-          value: null,
-          items: [
-            { value: 'Low', label: 'Низкий' },
-            { value: 'Normal', label: 'Обычный' },
-            { value: 'High', label: 'Высокий' }
-          ]
-        },
-        tags: {
-          fieldName: 'tag',
-          value: null,
-          items: []
-        }
+      filterFields: {
+        state: { fieldName: 'state', values: [] },
+        priority: { fieldName: 'priority', values: [] },
+        performer: { fieldName: 'performerFio', values: [] },
+        project: { fieldName: 'projectName', values: [] }
       }
     };
   },
@@ -210,32 +187,32 @@ export default {
     }),
     async applyFilters() {
       this.query.filterFields = [];
-      if (this.filters.status.value)
+      if (this.filterFields.state.values.length)
         this.query.filterFields.push({
-          fieldName: this.filters.status.fieldName,
-          value: this.filters.status.value
+          fieldName: this.filterFields.state.fieldName,
+          values: this.filterFields.state.values
         });
-      if (this.filters.performer.value)
+      if (this.filterFields.priority.values.length)
         this.query.filterFields.push({
-          fieldName: this.filters.performer.fieldName,
-          value: this.filters.performer.value
+          fieldName: this.filterFields.priority.fieldName,
+          values: this.filterFields.priority.values
         });
-      if (this.filters.project.value)
+      if (this.filterFields.performer.values.length)
         this.query.filterFields.push({
-          fieldName: this.filters.project.fieldName,
-          value: this.filters.project.value
+          fieldName: this.filterFields.performer.fieldName,
+          values: this.filterFields.performer.values
         });
-      if (this.filters.priority.value)
+      if (this.filterFields.project.values.length)
         this.query.filterFields.push({
-          fieldName: this.filters.priority.fieldName,
-          value: this.filters.priority.value
+          fieldName: this.filterFields.project.fieldName,
+          values: this.filterFields.project.values
         });
-      if (this.filters.tags.value?.length)
-        this.query.filterFields.push({
-          fieldName: this.filters.tags.fieldName,
-          value: this.filters.tags.value
-        });
-      await this.refresh();
+
+      this.filtersActive = !!this.query.filterFields.filter(
+        field => !!field.values[0]
+      ).length;
+
+      if (this.query.filterFields.length) await this.refresh();
     }
   }
 };

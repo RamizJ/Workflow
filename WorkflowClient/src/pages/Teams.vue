@@ -11,17 +11,8 @@
             @change="applyFilters")
             el-button(slot="prefix" type="text" size="mini")
               feather(type="search" size="16")
-            el-button(slot="suffix" type="text" size="mini" :class="filtersVisible ? 'active' : ''" @click="filtersVisible = !filtersVisible")
-              feather(type="sliders" size="16")
 
       page-toolbar
-        template(v-if="filtersVisible" slot="filters")
-          el-row
-            el-select(v-model="filters.status.value" size="small" placeholder="Участник")
-              el-option(v-for="option in filters.status.items" :key="option.value" :value="option.value", :label="option.label")
-            el-select(v-model="filters.performer.value" size="small" placeholder="Проект")
-              el-option(v-for="option in filters.performer.items" :key="option.value" :value="option.value", :label="option.label")
-
         template(slot="actions")
           transition(name="fade")
             el-button(
@@ -58,7 +49,7 @@
           el-button(type="text" size="mini")
             feather(type="grid" size="20")
           el-button.active(type="text" size="mini")
-            feather(type="list" size="20")
+            feather(type="menu" size="20")
 
       table-content
         el-table(
@@ -117,43 +108,7 @@ export default {
         pageSize: 20,
         sortFields: [{ fieldName: 'name', sortType: 'Ascending' }]
       },
-      sortFields: [{ value: 'name', label: 'По названию' }],
-      filtersVisible: false,
-      filters: {
-        status: {
-          value: null,
-          field: 'goalState',
-          items: [
-            { value: 0, label: 'Новое' },
-            { value: 1, label: 'Завершённое' }
-          ]
-        },
-        performer: {
-          value: null,
-          field: 'performer',
-          items: []
-        },
-        project: {
-          value: null,
-          field: 'project',
-          items: []
-        },
-        priority: {
-          value: null,
-          field: 'priority',
-          items: [
-            { value: 0, label: 'Низкий' },
-            { value: 1, label: 'Средний' },
-            { value: 2, label: 'Высокий' }
-          ]
-        },
-        tag: {
-          value: null,
-          field: 'tag',
-          items: []
-        }
-      },
-      value: ''
+      sortFields: [{ value: 'name', label: 'По названию' }]
     };
   },
   computed: {
@@ -164,8 +119,7 @@ export default {
       fetchItems: 'teams/fetchTeams',
       deleteItem: 'teams/deleteTeam',
       deleteItems: 'teams/deleteTeams'
-    }),
-    async applyFilters() {}
+    })
   }
 };
 </script>

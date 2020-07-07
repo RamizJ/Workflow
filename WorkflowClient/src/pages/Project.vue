@@ -16,8 +16,44 @@
             @change="refresh")
             el-button(slot="prefix" type="text" size="mini")
               feather(type="search" size="16")
-            el-button(slot="suffix" type="text" size="mini" :class="filtersVisible ? 'active' : ''" @click="filtersVisible = !filtersVisible")
-              feather(type="sliders" size="16")
+            el-popover(slot="suffix" placement="bottom" width="500" transition="fade" trigger="click")
+              el-button(
+                slot="reference"
+                type="text"
+                size="mini"
+                :class="filtersActive ? 'active' : ''")
+                feather(type="sliders" size="16")
+
+              el-row(:gutter="10")
+                el-col(:span="8")
+                  el-select(
+                    v-model="filterFields.priority.values"
+                    size="small"
+                    placeholder="Приоритет"
+                    @change="applyFilters"
+                    multiple collapse-tags)
+                    el-option(v-for="option in priorities" :key="option.value" :value="option.value", :label="option.label")
+                el-col(:span="8")
+                  el-select(
+                    v-model="filterFields.performer.values[0]"
+                    size="small"
+                    placeholder="Ответственный"
+                    :remote-method="searchUsers"
+                    @focus="searchUsers('')"
+                    @change="applyFilters"
+                    filterable remote clearable default-first-option collapse-tags)
+                    el-option(v-for="option in userList" :key="option.value" :value="option.value", :label="option.label")
+                el-col(:span="8")
+                  el-select(
+                    v-model="filterFields.project.values[0]"
+                    size="small"
+                    placeholder="Проект"
+                    :remote-method="searchProjects"
+                    @focus="searchProjects('')"
+                    @change="applyFilters"
+                    filterable remote clearable default-first-option collapse-tags)
+                    el-option(v-for="option in projectList" :key="option.value" :value="option.value", :label="option.label")
+              
         template(slot="action")
           el-button(size="mini" @click="onDelete")
             feather(type="trash-2" size="14")
@@ -44,45 +80,6 @@
             @change="update")
 
       page-toolbar
-        template(v-if="filtersVisible" slot="filters")
-          el-row
-            el-select(
-              v-model="filters.performer.value"
-              size="small"
-              placeholder="Ответственный"
-              @change="refresh"
-              multiple collapse-tags)
-              el-option(v-for="option in filters.performer.items" :key="option.value" :value="option.value", :label="option.label")
-            el-select(
-              v-model="filters.priority.value"
-              size="small"
-              placeholder="Приоритет"
-              @change="refresh"
-              multiple collapse-tags)
-              el-option(v-for="option in filters.priority.items" :key="option.value" :value="option.value", :label="option.label")
-            el-select(
-              v-model="filters.status.value"
-              size="small"
-              placeholder="Статус"
-              @change="refresh"
-              multiple collapse-tags)
-              el-option(v-for="option in filters.status.items" :key="option.value" :value="option.value", :label="option.label")
-          el-row
-            el-select(
-              v-model="filters.project.value"
-              size="small"
-              placeholder="Проект"
-              @change="refresh"
-              multiple collapse-tags)
-              el-option(v-for="option in filters.project.items" :key="option.value" :value="option.value", :label="option.label")
-            el-select(
-              v-model="filters.tags.value"
-              size="small"
-              placeholder="Тег"
-              @change="refresh"
-              multiple collapse-tags)
-              el-option(v-for="option in filters.tags.items" :key="option.value" :value="option.value", :label="option.label")
-
         template(slot="actions")
           transition(name="fade")
             el-button(
@@ -135,10 +132,10 @@
             feather(type="list" size="20")
 
       el-tabs(ref="tabs" v-model="activeTab" @tab-click="onTabClick")
-        el-tab-pane(v-for="(tab, index) in tabs" :key="index" :label="tab.label" :name="tab.name")
+        el-tab-pane(v-for="(tab, index) in statuses" :key="index" :label="tab.label" :name="tab.value")
           table-content
             el-table(
-              v-if="tab.name === activeTab"
+              v-if="tab.value === activeTab"
               :data="tableData"
               ref="table"
               height="100%"
@@ -201,53 +198,18 @@ export default {
         pageNumber: 0,
         pageSize: 20,
         sortFields: [{ fieldName: 'creationDate', sortType: 'Descending' }],
-        filterFields: [
-          {
-            fieldName: 'state',
-            values: ['New']
-          }
-        ]
+        filterFields: [{ fieldName: 'state', values: ['New'] }]
       },
       sortFields: [
         { value: 'creationDate', label: 'По дате создания' },
         { value: 'name', label: 'По названию' },
-        { value: 'state', label: 'По статусу' },
         { value: 'projectName', label: 'По проекту' }
       ],
-      filtersVisible: false,
-      filters: {
-        status: {
-          fieldName: 'goalState',
-          value: null,
-          items: [
-            { value: 'New', label: 'Новое' },
-            { value: 'Completed', label: 'Завершённое' }
-          ]
-        },
-        performer: {
-          fieldName: 'performer',
-          value: null,
-          items: []
-        },
-        project: {
-          fieldName: 'projectId',
-          value: null,
-          items: []
-        },
-        priority: {
-          fieldName: 'priority',
-          value: null,
-          items: [
-            { value: 'Low', label: 'Низкий' },
-            { value: 'Normal', label: 'Обычный' },
-            { value: 'High', label: 'Высокий' }
-          ]
-        },
-        tags: {
-          fieldName: 'tag',
-          value: null,
-          items: []
-        }
+      filterFields: {
+        state: { fieldName: 'state', values: [] },
+        priority: { fieldName: 'priority', values: [] },
+        performer: { fieldName: 'performerFio', values: [] },
+        project: { fieldName: 'projectName', values: [] }
       },
       projectItem: {
         name: '',
@@ -261,18 +223,10 @@ export default {
         groupName: null,
         creationDate: new Date()
       },
+      activeTab: 'New',
       inputVisible: false,
       inputValue: '',
-      teamDialogVisible: false,
-      tabs: [
-        { label: 'Новое', name: 'New' },
-        { label: 'В работе', name: 'Perform' },
-        { label: 'Отложенное', name: 'Delay' },
-        { label: 'Тестируется', name: 'Testing' },
-        { label: 'Выполненное', name: 'Succeed' },
-        { label: 'Отклонённое', name: 'Rejected' }
-      ],
-      activeTab: 'New'
+      teamDialogVisible: false
     };
   },
   computed: {
@@ -301,6 +255,35 @@ export default {
     onTabClick(tab) {
       this.query.filterFields[0].values[0] = tab.name;
       this.refresh();
+    },
+    async applyFilters() {
+      this.query.filterFields = [];
+      if (this.filterFields.priority.values.length)
+        this.query.filterFields.push({
+          fieldName: this.filterFields.priority.fieldName,
+          values: this.filterFields.priority.values
+        });
+      if (this.filterFields.performer.values.length)
+        this.query.filterFields.push({
+          fieldName: this.filterFields.performer.fieldName,
+          values: this.filterFields.performer.values
+        });
+      if (this.filterFields.project.values.length)
+        this.query.filterFields.push({
+          fieldName: this.filterFields.project.fieldName,
+          values: this.filterFields.project.values
+        });
+
+      this.filtersActive = !!this.query.filterFields.filter(
+        field => !!field.values[0]
+      ).length;
+
+      this.query.filterFields.push({
+        fieldName: 'state',
+        values: [this.activeTab]
+      });
+
+      if (this.query.filterFields.length) await this.refresh();
     },
     async update(e) {
       await this.updateProject(this.projectItem);

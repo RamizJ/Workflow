@@ -11,21 +11,27 @@
             @change="refresh")
             el-button(slot="prefix" type="text" size="mini")
               feather(type="search" size="16")
-            el-button(slot="suffix" type="text" size="mini" :class="filtersVisible ? 'active' : ''" @click="filtersVisible = !filtersVisible")
-              feather(type="sliders" size="16")
+            el-popover(slot="suffix" placement="bottom" width="270" transition="fade" trigger="click")
+              el-button(
+                slot="reference"
+                type="text"
+                size="mini"
+                :class="filtersActive ? 'active' : ''")
+                feather(type="sliders" size="16")
+
+              el-row(:gutter="10")
+                el-col(:span="24")
+                  el-select(
+                    v-model="filterFields.owner.values[0]"
+                    size="small"
+                    placeholder="Руководитель"
+                    :remote-method="searchUsers"
+                    @focus="searchUsers('')"
+                    @change="applyFilters"
+                    filterable remote clearable default-first-option collapse-tags)
+                    el-option(v-for="option in userList" :key="option.value" :value="option.value", :label="option.label")
 
       page-toolbar
-        template(v-if="filtersVisible" slot="filters")
-          el-row
-            el-select(v-model="filters.status.value" size="small" placeholder="Команда")
-              el-option(v-for="option in filters.status.items" :key="option.value" :value="option.value", :label="option.label")
-            el-select(v-model="filters.status.value" size="small" placeholder="Область")
-              el-option(v-for="option in filters.status.items" :key="option.value" :value="option.value", :label="option.label")
-            el-select(v-model="filters.performer.value" size="small" placeholder="Руководитель")
-              el-option(v-for="option in filters.performer.items" :key="option.value" :value="option.value", :label="option.label")
-            el-select(v-model="filters.tag.value" size="small" placeholder="Тег")
-              el-option(v-for="option in filters.tag.items" :key="option.value" :value="option.value", :label="option.label")
-
         template(slot="actions")
           transition(name="fade")
             el-button(
@@ -62,7 +68,7 @@
           el-button(type="text" size="mini")
             feather(type="grid" size="20")
           el-button.active(type="text" size="mini")
-            feather(type="list" size="20")
+            feather(type="menu" size="20")
 
       table-content
         el-table(
@@ -120,44 +126,10 @@ export default {
       sortFields: [
         { value: 'creationDate', label: 'По дате создания' },
         { value: 'name', label: 'По названию' },
-        { value: 'ownerFio', label: 'По руководителю' },
-        { value: 'teamName', label: 'По команде' },
-        { value: 'groupName', label: 'По области' }
+        { value: 'ownerFio', label: 'По руководителю' }
       ],
-      filtersVisible: false,
-      filters: {
-        status: {
-          value: null,
-          field: 'goalState',
-          items: [
-            { value: 0, label: 'Новое' },
-            { value: 1, label: 'Завершённое' }
-          ]
-        },
-        performer: {
-          value: null,
-          field: 'performer',
-          items: []
-        },
-        project: {
-          value: null,
-          field: 'project',
-          items: []
-        },
-        priority: {
-          value: null,
-          field: 'priority',
-          items: [
-            { value: 0, label: 'Низкий' },
-            { value: 1, label: 'Средний' },
-            { value: 2, label: 'Высокий' }
-          ]
-        },
-        tag: {
-          value: null,
-          field: 'tag',
-          items: []
-        }
+      filterFields: {
+        owner: { fieldName: 'ownerFio', values: [] }
       }
     };
   },
@@ -181,7 +153,20 @@ export default {
       this.deleteButtonVisible = false;
       await this.fetchSidebarItems({ reload: true });
     },
-    async applyFilters() {},
+    async applyFilters() {
+      this.query.filterFields = [];
+      if (this.filterFields.owner.values.length)
+        this.query.filterFields.push({
+          fieldName: this.filterFields.owner.fieldName,
+          values: this.filterFields.owner.values
+        });
+
+      this.filtersActive = !!this.query.filterFields.filter(
+        field => !!field.values[0]
+      ).length;
+
+      if (this.query.filterFields.length) await this.refresh();
+    },
     onItemDoubleClick(row, column, event) {
       this.$router.push(`/projects/${row.id}`);
     }
