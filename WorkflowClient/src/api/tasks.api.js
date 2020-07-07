@@ -3,7 +3,13 @@ import qs from 'qs';
 
 export default {
   get: id => httpClient.get(`/api/Goals/Get/${id}`),
-  getPage: query => httpClient.post(`/api/Goals/GetPage`, query),
+  getPage: query =>
+    httpClient.post(
+      `/api/Goals/GetPage${
+        query.projectId ? '?projectId=' + query.projectId : ''
+      }`,
+      query
+    ),
   getRange: query =>
     httpClient.get(
       `/api/Goals/GetRange${qs.stringify(query, { addQueryPrefix: true })}`

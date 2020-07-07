@@ -159,6 +159,14 @@ export default {
   mixins: [tableMixin],
   data() {
     return {
+      query: {
+        filter: '',
+        pageNumber: 0,
+        pageSize: 20,
+        filterFields: [
+          { fieldName: 'state', values: ['New', 'Perform', 'Delay', 'Testing'] }
+        ]
+      },
       sortFields: [
         { value: 'creationDate', label: 'По дате создания' },
         { value: 'title', label: 'По названию' },
@@ -211,6 +219,11 @@ export default {
       this.filtersActive = !!this.query.filterFields.filter(
         field => !!field.values[0]
       ).length;
+
+      this.query.filterFields.push({
+        fieldName: 'state',
+        values: ['New', 'Perform', 'Delay', 'Testing']
+      });
 
       if (this.query.filterFields.length) await this.refresh();
     }

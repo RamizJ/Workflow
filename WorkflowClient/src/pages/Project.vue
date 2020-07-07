@@ -194,7 +194,7 @@ export default {
   data() {
     return {
       query: {
-        projectId: this.$route.params.projectId,
+        projectId: parseInt(this.$route.params.projectId),
         pageNumber: 0,
         pageSize: 20,
         sortFields: [{ fieldName: 'creationDate', sortType: 'Descending' }],
