@@ -129,7 +129,7 @@
           el-button(type="text" size="mini")
             feather(type="grid" size="20")
           el-button.active(type="text" size="mini")
-            feather(type="list" size="20")
+            feather(type="menu" size="20")
 
       el-tabs(ref="tabs" v-model="activeTab" @tab-click="onTabClick")
         el-tab-pane(v-for="(tab, index) in statuses" :key="index" :label="tab.label" :name="tab.value")
@@ -202,7 +202,7 @@ export default {
       },
       sortFields: [
         { value: 'creationDate', label: 'По дате создания' },
-        { value: 'name', label: 'По названию' },
+        { value: 'title', label: 'По названию' },
         { value: 'projectName', label: 'По проекту' }
       ],
       filterFields: {

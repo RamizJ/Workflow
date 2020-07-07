@@ -80,6 +80,7 @@ export default {
     }
   }
   .el-button {
+    width: 21px;
     color: var(--text-muted);
     &.active {
       color: var(--color-primary);
