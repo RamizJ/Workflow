@@ -23,7 +23,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import BaseDialog from '~/components/BaseDialog';
+import BaseDialog from '~/components/Dialog';
 
 export default {
   components: { BaseDialog },

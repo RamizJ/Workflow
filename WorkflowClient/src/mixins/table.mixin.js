@@ -9,6 +9,7 @@ export default {
         filter: '',
         pageNumber: 0,
         pageSize: 20,
+        filterFields: [],
         sortFields: [
           {
             fieldName: this.$route.query.sort || 'creationDate',
@@ -32,11 +33,11 @@ export default {
       dialogVisible: false,
       dialogData: null,
       selectedRow: null,
-      addButtonVisible: true,
-      editButtonVisible: false,
-      completeButtonVisible: false,
-      deleteButtonVisible: false,
-      filtersActive: false
+
+      isEditVisible: false,
+      isCompleteVisible: false,
+      isDeleteVisible: false,
+      isRestoreVisible: false
     };
   },
   computed: {
@@ -92,11 +93,19 @@ export default {
       this.applyQuery();
     }
   },
+  mounted() {
+    this.table.sort(
+      this.query.sortFields[0].fieldName,
+      this.query.sortFields[0].sortType.toLowerCase()
+    );
+  },
   methods: {
     ...mapActions({
       fetchItems: '',
       deleteItem: '',
       deleteItems: '',
+      restoreItem: '',
+      restoreItems: '',
       completeItem: '',
       completeItems: '',
 
@@ -164,20 +173,19 @@ export default {
         this.refresh();
       }
     },
-    applyFilters() {},
-    applySort() {
+    onSortChange({ column, prop, order }) {
+      this.query.sortFields[0].fieldName = prop;
+      this.query.sortFields[0].sortType =
+        order?.charAt(0).toUpperCase() + order?.slice(1) ||
+        this.query.sortFields[0].sortType;
       const query = { ...this.$route.query };
       query.sort = this.query.sortFields[0].fieldName;
-      this.$router.push({ query });
+      query.order = this.query.sortFields[0].sortType;
+      if (JSON.stringify(query) !== JSON.stringify(this.$route.query))
+        this.$router.push({ query });
     },
-    switchOrder() {
-      const query = { ...this.$route.query };
-      query.order =
-        this.query.sortFields[0].sortType === 'Ascending'
-          ? 'Descending'
-          : 'Ascending';
-      this.query.sortFields[0].sortType = query.order;
-      this.$router.push({ query });
+    onFilterChange(filters) {
+      console.log(filters);
     },
     onItemSelect(selection, row) {
       this.selectedRow = row;
@@ -220,6 +228,14 @@ export default {
     },
     async onItemMultipleDelete(event, row) {
       await this.deleteItems(this.table.selection.map(item => item.id));
+      await this.refresh();
+    },
+    async onItemRestore(event, row) {
+      await this.restoreItem(row.id);
+      await this.refresh();
+    },
+    async onItemMultipleRestore(event, row) {
+      await this.restoreItems(this.table.selection.map(item => item.id));
       await this.refresh();
     },
     async onItemComplete(event, row) {

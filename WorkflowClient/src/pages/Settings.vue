@@ -1,27 +1,24 @@
 <template lang="pug">
   page
-    page-content
-      page-header
-        template(slot="title") Настройки
+    page-header
+      template(slot="title") Настройки
 
-      div.item
-        div.item__title Оформление
-        div.item__content
-          img.theme-icon(@click="switchTheme('light')" :class="appearance === 'light' ? 'active' : ''" src="../assets/icons/theme-light.png")
-          img.theme-icon(@click="switchTheme('dark')" :class="appearance === 'dark' ? 'active' : ''" src="../assets/icons/theme-dark.png")
+    div.item
+      div.item__title Оформление
+      div.item__content
+        img.theme-icon(@click="switchTheme('light')" :class="appearance === 'light' ? 'active' : ''" src="../assets/icons/theme-light.png")
+        img.theme-icon(@click="switchTheme('dark')" :class="appearance === 'dark' ? 'active' : ''" src="../assets/icons/theme-dark.png")
 </template>
 
 <script>
 import Page from '~/components/Page';
 import PageHeader from '~/components/PageHeader';
-import PageContent from '~/components/PageContent';
 
 export default {
   name: 'Settings',
   components: {
     Page,
-    PageHeader,
-    PageContent
+    PageHeader
   },
   data() {
     return {

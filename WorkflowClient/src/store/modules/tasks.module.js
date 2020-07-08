@@ -65,6 +65,16 @@ export default {
       const tasks = response.data;
       if (!tasks) throw Error;
     },
+    async restoreTask({ commit }, id) {
+      const response = await tasksAPI.restore(id);
+      const task = response.data;
+      if (!task) throw Error;
+    },
+    async restoreTasks({ commit }, ids) {
+      const response = await tasksAPI.restoreRange(ids);
+      const tasks = response.data;
+      if (!tasks) throw Error;
+    },
     async fetchAttachments({ commit }, taskId) {
       const response = await tasksAPI.getAttachments(taskId);
       const attachments = response.data;

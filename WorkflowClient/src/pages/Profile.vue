@@ -1,51 +1,50 @@
 <template lang="pug">
   page
-    page-content
-      page-header(v-if="!!me")
-        template(slot="title") {{ `${me.lastName} ${me.firstName}` }}
+    page-header(v-if="!!me")
+      template(slot="title") {{ `${me.lastName} ${me.firstName}` }}
 
-      el-form.profile-fields(:model="form" :rules="rules" ref="form")
-        div.items
-          div.item
-            div.item__title Логин
-            div.item__content
-              el-form-item(prop="userName")
-                el-input(v-model="form.userName" @change="updateProfile" :placeholder="emptyText")
-          div.item
-            div.item__title Пароль
-            div.item__content
-              el-form-item(prop="password")
-                el-input(v-model="form.password" @change="updateProfile" type="password" placeholder="**********" readonly onfocus="this.removeAttribute('readonly')")
-          div.item
-            div.item__title Почта
-            div.item__content
-              el-form-item(prop="email")
-                el-input(v-model="form.email" @change="updateProfile" :placeholder="emptyText")
-          div.item
-            div.item__title Телефон
-            div.item__content
-              el-form-item(prop="phone")
-                el-input(v-model="form.phone" @change="updateProfile" :placeholder="emptyText")
-          div.item
-            div.item__title Фамилия
-            div.item__content
-              el-form-item(prop="lastName")
-                el-input(v-model="form.lastName" @change="updateProfile" :placeholder="emptyText")
-          div.item
-            div.item__title Имя
-            div.item__content
-              el-form-item(prop="firstName")
-                el-input(v-model="form.firstName" @change="updateProfile" :placeholder="emptyText")
-          div.item
-            div.item__title Отчество
-            div.item__content
-              el-form-item(prop="middleName")
-                el-input(v-model="form.middleName" @change="updateProfile" :placeholder="emptyText")
-          div.item
-            div.item__title Должность
-            div.item__content
-              el-form-item(prop="position")
-                el-input(v-model="form.position" @change="updateProfile" :placeholder="emptyText")
+    el-form.profile-fields(:model="form" :rules="rules" ref="form")
+      div.items
+        div.item
+          div.item__title Логин
+          div.item__content
+            el-form-item(prop="userName")
+              el-input(v-model="form.userName" @change="updateProfile" :placeholder="emptyText")
+        div.item
+          div.item__title Пароль
+          div.item__content
+            el-form-item(prop="password")
+              el-input(v-model="form.password" @change="updateProfile" type="password" placeholder="**********" readonly onfocus="this.removeAttribute('readonly')")
+        div.item
+          div.item__title Почта
+          div.item__content
+            el-form-item(prop="email")
+              el-input(v-model="form.email" @change="updateProfile" :placeholder="emptyText")
+        div.item
+          div.item__title Телефон
+          div.item__content
+            el-form-item(prop="phone")
+              el-input(v-model="form.phone" @change="updateProfile" :placeholder="emptyText")
+        div.item
+          div.item__title Фамилия
+          div.item__content
+            el-form-item(prop="lastName")
+              el-input(v-model="form.lastName" @change="updateProfile" :placeholder="emptyText")
+        div.item
+          div.item__title Имя
+          div.item__content
+            el-form-item(prop="firstName")
+              el-input(v-model="form.firstName" @change="updateProfile" :placeholder="emptyText")
+        div.item
+          div.item__title Отчество
+          div.item__content
+            el-form-item(prop="middleName")
+              el-input(v-model="form.middleName" @change="updateProfile" :placeholder="emptyText")
+        div.item
+          div.item__title Должность
+          div.item__content
+            el-form-item(prop="position")
+              el-input(v-model="form.position" @change="updateProfile" :placeholder="emptyText")
 
 </template>
 
@@ -53,11 +52,10 @@
 import { mapActions, mapGetters } from 'vuex';
 import Page from '~/components/Page';
 import PageHeader from '~/components/PageHeader';
-import PageContent from '~/components/PageContent';
 
 export default {
   name: 'Profile',
-  components: { Page, PageHeader, PageContent },
+  components: { Page, PageHeader },
   data() {
     return {
       emptyText: '-',

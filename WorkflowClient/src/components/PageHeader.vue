@@ -79,8 +79,8 @@ input {
   margin-left: 5px;
   i,
   button {
-    padding: 3px 10px;
-    border-radius: 6px;
+    padding: 0;
+    //border-radius: 6px;
   }
 }
 .page-header .actions {

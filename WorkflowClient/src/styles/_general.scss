@@ -192,6 +192,7 @@ a {
 }
 .el-table td, .el-table th {
   padding: 5px 0;
+  transition: 0s !important;
 }
 .el-table--border::after, .el-table--group::after, .el-table::before {
   background-color: transparent;
