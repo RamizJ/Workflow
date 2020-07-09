@@ -196,12 +196,12 @@ namespace Workflow.Services
             var words = filter.Split(" ");
             foreach (var word in words.Select(w => w.ToLower()))
             {
-                int.TryParse(word, out int intValue);
+                bool isIntValue = int.TryParse(word, out int intValue);
                 query = query
                     .Where(goal => goal.Title.ToLower().Contains(word)
                                    || goal.Description.ToLower().Contains(word)
                                    || goal.Project.Name.ToLower().Contains(word)
-                                   || goal.GoalNumber == intValue
+                                   || isIntValue && goal.GoalNumber == intValue
                                    || goal.Owner.FirstName.ToLower().Contains(word)
                                    || goal.Owner.MiddleName.ToLower().Contains(word)
                                    || goal.Owner.LastName.ToLower().Contains(word)

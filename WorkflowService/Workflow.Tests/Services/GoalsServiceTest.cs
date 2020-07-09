@@ -103,11 +103,13 @@ namespace Workflow.Tests.Services
         [TestCase(0, 5, "Goal1", 5)]
         [TestCase(1, 5, "Goal1", 1)]
         [TestCase(0, 5, "Goal2", 3)]
+        [TestCase(1, 5, "Scope1", 1)]
         public async Task GetPageFilterTest(int pageNumber, int pageSize,
             string filter, int expectedCount)
         {
             //Arrange
-            var projectId = _testData.Projects.First().Id;
+            //var projectId = _testData.Projects.First().Id;
+
             var pageOptions = new PageOptions
             {
                 PageNumber = pageNumber,
@@ -116,7 +118,7 @@ namespace Workflow.Tests.Services
             };
 
             //Act
-            var result = (await _service.GetPage(_currentUser, projectId, pageOptions)).ToArray();
+            var result = (await _service.GetPage(_currentUser, null, pageOptions)).ToArray();
 
             //Assert
             Assert.AreEqual(expectedCount, result.Length);

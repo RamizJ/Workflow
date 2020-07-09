@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
-using Workflow.VM.Common;
 using Workflow.VM.ViewModels;
 using WorkflowService.Services;
 
@@ -57,7 +56,8 @@ namespace WorkflowService.Controllers
             [FromBody] PageOptions pageOptions)
         {
             var currentUser = await _currentUserService.Get(User);
-            return await _service.GetPage(currentUser, projectId, pageOptions);
+            var page = await _service.GetPage(currentUser, projectId, pageOptions);
+            return page;
         }
 
         /// <summary>

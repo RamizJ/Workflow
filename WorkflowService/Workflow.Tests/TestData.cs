@@ -87,9 +87,8 @@ namespace Workflow.Tests
                 .Build().ToList();
 
             Goals = Builder<Goal>.CreateListOfSize(10)
-                .All()
-                .With(x => x.ProjectId = Projects.First().Id)
                 .TheFirst(6)
+                .With(x => x.ProjectId = Projects.First().Id)
                 .With(x => x.OwnerId = Users[0].Id)
                 .With(x => x.PerformerId = Users[0].Id)
                 .With(x => x.ParentGoalId = null)
@@ -97,6 +96,7 @@ namespace Workflow.Tests
                 .With(x => x.State = GoalState.Succeed)
                 .With(x => x.Priority = GoalPriority.Low)
                 .TheNext(4)
+                .With(x => x.ProjectId = Projects.Last().Id)
                 .With(x => x.OwnerId = Users[1].Id)
                 .With(x => x.PerformerId = Users[1].Id)
                 .With(x => x.ParentGoalId = null)
