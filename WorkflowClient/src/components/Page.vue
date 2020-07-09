@@ -19,7 +19,7 @@ export default {
 .page-content {
   display: flex;
   position: relative;
-  overflow: hidden;
+  overflow: auto;
   padding: 0 30px;
   height: 100%;
   width: 100%;

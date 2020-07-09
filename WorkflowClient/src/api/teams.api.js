@@ -4,7 +4,12 @@ import qs from 'qs';
 export default {
   get: id => httpClient.get(`/api/Teams/Get/${id}`),
   create: team => httpClient.post(`/api/Teams/CreateByForm`, team),
-  update: team => httpClient.put(`/api/Teams/UpdateByForm`, team),
+  update: team =>
+    httpClient.put(`/api/Teams/UpdateByForm`, {
+      team,
+      projectIds: team.projectIds,
+      userIds: team.userIds
+    }),
   delete: teamId => httpClient.delete(`/api/Teams/Delete/${teamId}`),
   deleteRange: teamIds => httpClient.patch(`/api/Teams/DeleteRange`, teamIds),
   addUser: teamId => httpClient.patch(`/api/Teams/AddUser/${teamId}`),

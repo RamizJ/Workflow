@@ -9,7 +9,7 @@
 
     el-tabs(ref="tabs" v-model="activeTab" @tab-click="onTabClick")
       el-tab-pane(v-for="(tab, index) in tabs" :key="index" :label="tab.label" :name="tab.value")
-        table-projects(v-if="tab.value === activeTab" ref="projects" :search="searchQuery" :status="tab.value")
+        table-projects(v-if="tab.value === activeTab" ref="list" :search="searchQuery" :status="tab.value")
 
 </template>
 
@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     openDialog() {
-      this.$refs.projects[0].dialogVisible = true;
+      this.$refs.list[0].onItemCreate();
     },
     onTabClick() {
       const query = { ...this.$route.query };

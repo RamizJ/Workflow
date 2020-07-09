@@ -25,12 +25,18 @@ export default {
   actions: {
     async fetchTeams({ commit }, params) {
       const response = await teamsAPI.getPage(params);
-      const teams = response.data;
+      const teams = response.data.map(team => {
+        team.userIds = [];
+        team.projectIds = [];
+        return team;
+      });
       commit('setTeams', teams);
     },
     async fetchTeam({ commit }, id) {
       const response = await teamsAPI.get(id);
       const team = response.data;
+      team.userIds = [];
+      team.projectIds = [];
       commit('setTeam', team);
     },
     async fetchTeamUsers({ commit }, params) {

@@ -22,7 +22,7 @@
 
     el-tabs(ref="tabs" v-model="activeTab" @tab-click="onTabClick")
       el-tab-pane(v-for="(tab, index) in tabs" :key="index" :label="tab.label" :name="tab.value")
-        table-tasks(v-if="tab.value === activeTab" ref="tasks" :search="searchQuery" :status="tab.value")
+        table-tasks(v-if="tab.value === activeTab" ref="list" :search="searchQuery" :status="tab.value")
 
     team-dialog(v-if="teamDialogVisible" @close="teamDialogVisible = false")
 
@@ -99,7 +99,7 @@ export default {
       fetchSidebarProjects: 'projects/fetchSidebarProjects'
     }),
     openDialog() {
-      this.$refs.tasks[0].dialogVisible = true;
+      this.$refs.list[0].onItemCreate();
     },
     onTabClick(tab) {
       const query = { ...this.$route.query };

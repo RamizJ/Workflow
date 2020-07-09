@@ -91,12 +91,6 @@ export default {
             message: 'Некорректный адрес эл. почты',
             trigger: 'blur'
           }
-        ],
-        phone: [
-          { required: true, message: 'Введите номер телефона', trigger: 'blur' }
-        ],
-        positionId: [
-          { required: true, message: 'Введите должность', trigger: 'blur' }
         ]
       }
     };

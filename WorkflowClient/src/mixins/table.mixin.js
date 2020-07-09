@@ -218,6 +218,10 @@ export default {
       this.contextMenu.open(event, { row, column });
       event.preventDefault();
     },
+    onItemCreate() {
+      this.dialogData = null;
+      this.dialogVisible = true;
+    },
     onItemEdit(event, row) {
       this.dialogData = row;
       this.dialogVisible = true;

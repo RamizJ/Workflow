@@ -4,7 +4,7 @@
       :router="true"
       :default-active="$route.path")
 
-      div.profile(v-if="me")
+      //div.profile(v-if="me")
         router-link(to="/profile")
           div.avatar
             el-avatar(:size="40" icon="el-icon-user-solid")
@@ -27,8 +27,11 @@
         feather(type="layers")
         span Проекты
       el-menu-item(index="/teams")
-        feather(type="user")
+        feather(type="users")
         span Команды
+      el-menu-item(index="/users")
+        feather(type="user")
+        span Пользователи
       //el-menu-item(index="/journal")
         feather(type="check-circle")
         span Журнал
@@ -46,9 +49,7 @@
       el-menu-item(index="/settings")
         feather(type="settings")
         span Настройки
-      el-menu-item(index="/users")
-        feather(type="users")
-        span Пользователи
+
 
 
       div.divider

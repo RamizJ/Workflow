@@ -13,8 +13,8 @@
       @filter-change="onFilterChange"
       highlight-current-row border)
       el-table-column(type="selection" width="38")
-      el-table-column(prop="title" label="Задача" width="500" sortable="custom")
-      el-table-column(prop="projectName" label="Проект" sortable="custom")
+      el-table-column(prop="title" label="Задача" sortable="custom")
+      el-table-column(v-if="!$route.params.projectId" prop="projectName" label="Проект" width="150" sortable="custom")
       el-table-column(prop="state" label="Статус" width="120" :formatter="stateFormatter" sortable="custom")
       el-table-column(prop="priority" label="Приоритет" width="120" :formatter="priorityFormatter" sortable="custom")
       el-table-column(prop="creationDate" label="Добавлено" width="170" :formatter="dateFormatter" sortable="custom")
