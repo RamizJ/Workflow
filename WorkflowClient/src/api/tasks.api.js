@@ -4,10 +4,11 @@ import qs from 'qs';
 export default {
   get: id => httpClient.get(`/api/Goals/Get/${id}`),
   getPage: query =>
-    httpClient.get(
-      `/api/Goals/GetPage${qs.stringify(query, {
-        addQueryPrefix: true
-      })}`
+    httpClient.post(
+      `/api/Goals/GetPage${
+        query.projectId ? '?projectId=' + query.projectId : ''
+      }`,
+      query
     ),
   getRange: query =>
     httpClient.get(
@@ -18,6 +19,8 @@ export default {
   updateRange: tasks => httpClient.put(`/api/Goals/UpdateRange`, tasks),
   delete: taskId => httpClient.delete(`/api/Goals/Delete/${taskId}`),
   deleteRange: taskIds => httpClient.patch(`/api/Goals/DeleteRange`, taskIds),
+  restore: taskId => httpClient.patch(`/api/Goals/Restore/${taskId}`),
+  restoreRange: taskIds => httpClient.patch(`/api/Goals/RestoreRange`, taskIds),
   getAttachments: taskId =>
     httpClient.get(`/api/Goals/GetAttachments/${taskId}`),
   addAttachments: (taskId, files) =>

@@ -47,6 +47,7 @@ namespace Workflow.VM.ViewModelConverters
                 Description = model.Description,
                 GoalNumber = model.GoalNumber,
                 PerformerId = model.PerformerId,
+                PerformerFio = model.Performer?.Fio,
                 //Observers = model.Observers?.Select(x => x.ObserverId).ToList(),
                 ProjectId = model.ProjectId,
                 ProjectName = model.Project?.Name,

@@ -12,16 +12,8 @@ export default {
     httpClient.patch(`/api/Projects/AddTeam/${teamId}?projectId=${projectId}`),
   removeTeam: (teamId, projectId) =>
     httpClient.patch(`/api/Projects/RemoveTeam/${teamId}/${projectId}`),
-  getPage: query =>
-    httpClient.get(
-      `/api/Projects/GetPage${qs.stringify(query, { addQueryPrefix: true })}`
-    ),
-  getTeamsPage: query =>
-    httpClient.get(
-      `/api/Projects/GetTeamsPage${qs.stringify(query, {
-        addQueryPrefix: true
-      })}`
-    ),
+  getPage: query => httpClient.post(`/api/Projects/GetPage`, query),
+  getTeamsPage: query => httpClient.post(`/api/Projects/GetTeamsPage`, query),
   getRange: query =>
     httpClient.get(
       `/api/Projects/GetRange${qs.stringify(query, { addQueryPrefix: true })}`

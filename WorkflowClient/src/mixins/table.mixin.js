@@ -9,25 +9,44 @@ export default {
         filter: '',
         pageNumber: 0,
         pageSize: 20,
-        sortFields: [{ fieldName: 'creationDate', sortType: 'Ascending' }]
+        filterFields: [],
+        sortFields: [
+          {
+            fieldName: this.$route.query.sort || 'creationDate',
+            sortType: this.$route.query.order || 'Descending'
+          }
+        ]
       },
-      sort: {
-        field: 'creationDate',
-        type: 'Ascending',
-        fields: []
-      },
+      statuses: [
+        { value: 'New', label: 'Новое' },
+        { value: 'Perform', label: 'В работе' },
+        { value: 'Delay', label: 'Отложено' },
+        { value: 'Testing', label: 'Тестируется' },
+        { value: 'Succeed', label: 'Выполнено' },
+        { value: 'Rejected', label: 'Отклонено' }
+      ],
+      priorities: [
+        { value: 'Low', label: 'Низкий' },
+        { value: 'Normal', label: 'Обычный' },
+        { value: 'High', label: 'Высокий' }
+      ],
       dialogVisible: false,
       dialogData: null,
       selectedRow: null,
-      addButtonVisible: true,
-      editButtonVisible: false,
-      completeButtonVisible: false,
-      deleteButtonVisible: false,
-      filtersVisible: false
+
+      isEditVisible: false,
+      isCompleteVisible: false,
+      isDeleteVisible: false,
+      isRestoreVisible: false
     };
   },
   computed: {
-    ...mapGetters({ items: '' }),
+    ...mapGetters({
+      items: '',
+      projects: 'projects/getProjects',
+      teams: 'teams/getTeams',
+      users: 'users/getUsers'
+    }),
     table() {
       if (Array.isArray(this.$refs.table)) return this.$refs.table[0];
       else return this.$refs.table;
@@ -43,16 +62,78 @@ export default {
     },
     isMultipleSelected() {
       return this.table.selection?.length > 1;
+    },
+    projectList() {
+      return this.projects.map(project => {
+        return {
+          value: project.name,
+          id: project.id
+        };
+      });
+    },
+    teamList() {
+      return this.teams.map(project => {
+        return {
+          value: project.name,
+          id: project.id
+        };
+      });
+    },
+    userList() {
+      return this.users.map(user => {
+        return {
+          value: `${user.lastName} ${user.firstName}`,
+          id: user.id
+        };
+      });
     }
+  },
+  watch: {
+    $route(to, from) {
+      this.applyQuery();
+    }
+  },
+  mounted() {
+    this.table.sort(
+      this.query.sortFields[0].fieldName,
+      this.query.sortFields[0].sortType.toLowerCase()
+    );
   },
   methods: {
     ...mapActions({
       fetchItems: '',
       deleteItem: '',
       deleteItems: '',
+      restoreItem: '',
+      restoreItems: '',
       completeItem: '',
-      completeItems: ''
+      completeItems: '',
+
+      fetchProjects: 'projects/fetchProjects',
+      fetchTeams: 'teams/fetchTeams',
+      fetchUsers: 'users/fetchUsers'
     }),
+    async searchProjects(query) {
+      await this.fetchProjects({
+        filter: query,
+        pageNumber: 0,
+        pageSize: 10
+      });
+    },
+    async searchTeams(query) {
+      await this.fetchTeams({
+        filter: query,
+        pageNumber: 0,
+        pageSize: 10
+      });
+    },
+    async searchUsers(query) {
+      await this.fetchUsers({
+        filter: query,
+        pageNumber: 0,
+        pageSize: 10
+      });
+    },
     refresh() {
       this.tableData = [];
       this.query.pageNumber = 0;
@@ -82,18 +163,29 @@ export default {
         console.log(e);
       }
     },
-    applySort() {
-      this.query.sortFields[0] = {
-        fieldName: this.sort.field,
-        sortType: this.sort.type
-      };
-      this.refresh();
+    applyQuery() {
+      if (this.$route.query.sort || this.$route.query.order) {
+        this.query.sortFields[0] = {
+          fieldName:
+            this.$route.query.sort || this.query.sortFields[0].fieldName,
+          sortType: this.$route.query.order || this.query.sortFields[0].sortType
+        };
+        this.refresh();
+      }
     },
-    switchSortType() {
-      this.sort.type =
-        this.sort.type === 'Ascending' ? 'Descending' : 'Ascending';
-      this.query.sortFields[0].sortType = this.sort.type;
-      this.refresh();
+    onSortChange({ column, prop, order }) {
+      this.query.sortFields[0].fieldName = prop;
+      this.query.sortFields[0].sortType =
+        order?.charAt(0).toUpperCase() + order?.slice(1) ||
+        this.query.sortFields[0].sortType;
+      const query = { ...this.$route.query };
+      query.sort = this.query.sortFields[0].fieldName;
+      query.order = this.query.sortFields[0].sortType;
+      if (JSON.stringify(query) !== JSON.stringify(this.$route.query))
+        this.$router.push({ query });
+    },
+    onFilterChange(filters) {
+      console.log(filters);
     },
     onItemSelect(selection, row) {
       this.selectedRow = row;
@@ -118,9 +210,17 @@ export default {
       this.onItemEdit(event, row);
     },
     onItemRightClick(row, column, event) {
+      if (!this.isMultipleSelected) {
+        this.table.clearSelection();
+        this.table.toggleRowSelection(row);
+      }
       this.table.setCurrentRow(row);
       this.contextMenu.open(event, { row, column });
       event.preventDefault();
+    },
+    onItemCreate() {
+      this.dialogData = null;
+      this.dialogVisible = true;
     },
     onItemEdit(event, row) {
       this.dialogData = row;
@@ -132,6 +232,14 @@ export default {
     },
     async onItemMultipleDelete(event, row) {
       await this.deleteItems(this.table.selection.map(item => item.id));
+      await this.refresh();
+    },
+    async onItemRestore(event, row) {
+      await this.restoreItem(row.id);
+      await this.refresh();
+    },
+    async onItemMultipleRestore(event, row) {
+      await this.restoreItems(this.table.selection.map(item => item.id));
       await this.refresh();
     },
     async onItemComplete(event, row) {
@@ -148,34 +256,11 @@ export default {
       return dateRu;
     },
     priorityFormatter(row, column, cellValue, index) {
-      switch (cellValue) {
-        case 'Low':
-          return 'Низкий';
-        case 'Normal':
-          return 'Обычный';
-        case 'High':
-          return 'Высокий';
-        default:
-          return 'Отсутствует';
-      }
+      return this.priorities.find(priority => priority.value === cellValue)
+        .label;
     },
     stateFormatter(row, column, cellValue, index) {
-      switch (cellValue) {
-        case 'New':
-          return 'Новое';
-        case 'Perform':
-          return 'В работе';
-        case 'Delay':
-          return 'Отложено';
-        case 'Testing':
-          return 'Тестируется';
-        case 'Succeed':
-          return 'Выполнено';
-        case 'Rejected':
-          return 'Отклонено';
-        default:
-          return 'Отсутствует';
-      }
+      return this.statuses.find(status => status.value === cellValue).label;
     }
   }
 };

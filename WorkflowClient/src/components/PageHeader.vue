@@ -21,7 +21,7 @@ export default {
 
 <style lang="scss" scoped>
 .page-header {
-  padding: 30px 0 15px;
+  padding: 25px 0 15px;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -79,8 +79,8 @@ input {
   margin-left: 5px;
   i,
   button {
-    padding: 3px 10px;
-    border-radius: 6px;
+    padding: 0;
+    //border-radius: 6px;
   }
 }
 .page-header .actions {

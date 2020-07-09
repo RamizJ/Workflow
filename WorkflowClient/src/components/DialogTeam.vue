@@ -48,7 +48,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import BaseDialog from '~/components/BaseDialog';
+import BaseDialog from '~/components/Dialog';
 import dialogMixin from '~/mixins/dialog.mixin';
 
 export default {
@@ -95,8 +95,12 @@ export default {
         pageNumber: 0,
         pageSize: 10
       });
-      this.form.userIds = this.teamUsers.map(user => user.id);
-      this.form.projectIds = this.teamProjects.map(project => project.id);
+      for (let user of this.teamUsers) {
+        this.form.userIds.push(user.id);
+      }
+      for (let project of this.teamProjects) {
+        this.form.projectIds.push(project.id);
+      }
       this.loading = false;
     }
     this.$refs.title.focus();

@@ -1,6 +1,7 @@
 <template lang="pug">
   div.page
-    slot
+    div.page-content
+      slot
 </template>
 
 <script>
@@ -13,6 +14,15 @@ export default {
 .page {
   width: 100%;
   display: flex;
+  flex-direction: column;
+}
+.page-content {
+  display: flex;
+  position: relative;
+  overflow: auto;
+  padding: 0 30px;
+  height: 100%;
+  width: 100%;
   flex-direction: column;
 }
 </style>

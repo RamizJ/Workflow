@@ -39,7 +39,7 @@
 
 .el-zoom-in-top-enter-active,
 .el-zoom-in-top-leave-active {
-  transition: .3s;
+  transition: .25s;
 }
 .el-zoom-in-top-enter {
   opacity: 0;
@@ -47,5 +47,5 @@
 }
 .el-zoom-in-top-leave-to {
   opacity: 0;
-  transform: scale(0.92) translateY(8px);
+  transform: scale(0.92) translateY(-8px);
 }
