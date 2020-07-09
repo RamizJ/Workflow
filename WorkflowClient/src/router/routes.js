@@ -34,12 +34,6 @@ export const routes = [
     meta: { layout: LayoutDefault }
   },
   {
-    path: '/scopes',
-    name: 'Scopes',
-    component: () => import('~/pages/Scopes.vue'),
-    meta: { layout: LayoutDefault }
-  },
-  {
     path: '/login',
     name: 'Login',
     component: () => import('~/pages/Login.vue'),
@@ -61,18 +55,6 @@ export const routes = [
     path: '/users',
     name: 'Users',
     component: () => import('~/pages/Users.vue'),
-    meta: { layout: LayoutDefault }
-  },
-  {
-    path: '/journal',
-    name: 'Journal',
-    component: () => import('~/pages/Journal.vue'),
-    meta: { layout: LayoutDefault }
-  },
-  {
-    path: '/trash',
-    name: 'Trash',
-    component: () => import('~/pages/Trash.vue'),
     meta: { layout: LayoutDefault }
   }
 ];

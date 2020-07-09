@@ -12,10 +12,7 @@ export default {
   isEmailExist: email => httpClient.get(`/api/Users/IsEmailExist/${email}`),
   isUserNameExist: userName =>
     httpClient.get(`/api/Users/IsUserNameExist/${userName}`),
-  getPage: query =>
-    httpClient.get(
-      `/api/Users/GetPage${qs.stringify(query, { addQueryPrefix: true })}`
-    ),
+  getPage: query => httpClient.post(`/api/Users/GetPage`, query),
   getRange: query =>
     httpClient.get(
       `/api/Users/GetRange${qs.stringify(query, { addQueryPrefix: true })}`
