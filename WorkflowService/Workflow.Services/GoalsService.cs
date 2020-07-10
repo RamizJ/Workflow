@@ -378,6 +378,21 @@ namespace Workflow.Services
                             : orderedQuery.ThenByDescending(goal => goal.State);
                     }
                 }
+                else if (field.Is(nameof(VmGoal.Priority)))
+                {
+                    if (orderedQuery == null)
+                    {
+                        orderedQuery = field.SortType == SortType.Ascending
+                            ? query.OrderBy(goal => goal.Priority)
+                            : query.OrderByDescending(goal => goal.Priority);
+                    }
+                    else
+                    {
+                        orderedQuery = field.SortType == SortType.Ascending
+                            ? orderedQuery.ThenBy(goal => goal.Priority)
+                            : orderedQuery.ThenByDescending(goal => goal.Priority);
+                    }
+                }
                 else if (field.Is(nameof(VmGoal.OwnerFio)))
                 {
                     if (orderedQuery == null)

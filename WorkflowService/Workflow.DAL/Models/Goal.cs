@@ -22,8 +22,8 @@ namespace Workflow.DAL.Models
         public DateTime ExpectedCompletedDate { get; set; }
         public TimeSpan EstimatedPerformingTime { get; set; }
 
-        public GoalState State { get; set; }
-        public GoalPriority Priority { get; set; }
+        public GoalState State { get; set; } = GoalState.New;
+        public GoalPriority Priority { get; set; } = GoalPriority.Normal;
 
         public string OwnerId { get; set; }
         public ApplicationUser Owner { get; set; }
@@ -78,15 +78,16 @@ namespace Workflow.DAL.Models
     /// Приоритет задачи
     /// </summary>
     public enum GoalPriority
-    {   /// <summary>
-        /// Нормальный 
-        /// </summary>
-        Normal,
-
+    {
         /// <summary>
         /// Низкий
         /// </summary>
         Low,
+
+        /// <summary>
+        /// Нормальный 
+        /// </summary>
+        Normal,
 
         /// <summary>
         /// Высокий
