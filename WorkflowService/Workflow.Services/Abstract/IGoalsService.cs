@@ -115,5 +115,31 @@ namespace Workflow.Services.Abstract
         /// <param name="ids"></param>
         /// <returns></returns>
         Task<IEnumerable<VmGoal>> RestoreRange(ApplicationUser currentUser, IEnumerable<int> ids);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="currentUser"></param>
+        /// <param name="goalId"></param>
+        /// <param name="withRemoved"></param>
+        /// <returns></returns>
+        Task<IEnumerable<VmGoal>> GetChildGoals(ApplicationUser currentUser, int goalId, bool withRemoved);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="currentUser"></param>
+        /// <param name="goalId"></param>
+        /// <returns></returns>
+        Task<VmGoal> GetParentGoal(ApplicationUser currentUser, int goalId);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="currentUser"></param>
+        /// <param name="parentGoalId"></param>
+        /// <param name="childGoalIds"></param>
+        /// <returns></returns>
+        Task AddChildGoals(ApplicationUser currentUser, int? parentGoalId, IEnumerable<int> childGoalIds);
     }
 }

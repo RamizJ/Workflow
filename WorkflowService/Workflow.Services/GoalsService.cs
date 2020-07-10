@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
@@ -121,11 +122,13 @@ namespace Workflow.Services
             });
         }
 
+        /// <inheritdoc />
         public async Task UpdateRange(ApplicationUser currentUser, IEnumerable<VmGoal> goals)
         {
             await UpdateGoals(currentUser, goals?.ToArray());
         }
 
+        /// <inheritdoc />
         public async Task UpdateByFormRange(ApplicationUser currentUser, IEnumerable<VmGoalForm> goalForms)
         {
             if (goalForms == null)
@@ -150,16 +153,50 @@ namespace Workflow.Services
             return goals.FirstOrDefault();
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<VmGoal>> DeleteRange(ApplicationUser currentUser, IEnumerable<int> ids)
         {
             return await RemoveRestore(currentUser, ids, true);
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<VmGoal>> RestoreRange(ApplicationUser currentUser, IEnumerable<int> ids)
         {
             return await RemoveRestore(currentUser, ids, false);
         }
 
+        /// <inheritdoc />
+        public async Task<IEnumerable<VmGoal>> GetChildGoals(ApplicationUser currentUser, 
+            int goalId, bool withRemoved)
+        {
+            var query = await GetQuery(currentUser, withRemoved, true);
+            return query.Where(g => g.ParentGoalId == goalId)
+                .Select(g => _vmConverter.ToViewModel(g));
+        }
+
+        /// <inheritdoc />
+        public async Task<VmGoal> GetParentGoal(ApplicationUser currentUser, int goalId)
+        {
+            var query = await GetQuery(currentUser, true, true);
+            var goal = query.FirstOrDefault(g => g.Id == goalId);
+            return _vmConverter.ToViewModel(goal?.ParentGoal);
+        }
+
+        /// <inheritdoc />
+        public async Task AddChildGoals(ApplicationUser currentUser, 
+            int? parentGoalId, IEnumerable<int> childGoalIds)
+        {
+            var query = await GetQuery(currentUser, true, true);
+            var childGoals = await query.Where(g => childGoalIds.Any(cId => cId == g.Id))
+                .ToArrayAsync();
+
+            foreach (var childGoal in childGoals) 
+                childGoal.ParentGoalId = parentGoalId;
+
+            await _dataContext.BulkUpdateAsync(childGoals);
+        }
+
+        /// <inheritdoc />
         public async Task<VmGoal> Restore(ApplicationUser currentUser, int goalId)
         {
             var goals = await RemoveRestore(currentUser, new[] { goalId }, false);
