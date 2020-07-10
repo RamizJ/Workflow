@@ -1,5 +1,5 @@
 <template lang="pug">
-  dialog(v-if="visible" @close="exit" ref="dialog")
+  base-dialog(v-if="visible" @close="exit" ref="dialog")
     h1(slot="title") Проект
     el-form(slot="body" :model="form" :rules="rules" ref="form" v-loading="loading" @submit.native.prevent="submit")
       el-row(:gutter="20")
@@ -46,11 +46,11 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import Dialog from '~/components/Dialog';
+import BaseDialog from '~/components/BaseDialog';
 import dialogMixin from '~/mixins/dialog.mixin';
 
 export default {
-  components: { Dialog },
+  components: { BaseDialog },
   mixins: [dialogMixin],
   data() {
     return {

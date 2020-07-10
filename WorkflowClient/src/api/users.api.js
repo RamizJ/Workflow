@@ -16,5 +16,7 @@ export default {
   getRange: query =>
     httpClient.get(
       `/api/Users/GetRange${qs.stringify(query, { addQueryPrefix: true })}`
-    )
+    ),
+  restore: userId => httpClient.patch(`/api/Users/Restore/${userId}`),
+  restoreRange: userIds => httpClient.patch(`/api/Users/RestoreRange`, userIds)
 };

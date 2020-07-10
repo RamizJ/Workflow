@@ -1,4 +1,5 @@
 import teamsAPI from '~/api/teams.api';
+import projectsAPI from '~/api/projects.api';
 
 export default {
   namespaced: true,
@@ -73,6 +74,16 @@ export default {
       const response = await teamsAPI.deleteRange(ids);
       const team = response.data;
       if (!team) throw Error;
+    },
+    async restoreTeam({ commit }, id) {
+      const response = await teamsAPI.restore(id);
+      const team = response.data;
+      if (!team) throw Error;
+    },
+    async restoreTeams({ commit }, ids) {
+      const response = await teamsAPI.restoreRange(ids);
+      const teams = response.data;
+      if (!teams) throw Error;
     }
   },
   getters: {

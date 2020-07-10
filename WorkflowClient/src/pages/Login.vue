@@ -1,5 +1,5 @@
 <template lang="pug">
-  el-card(shadow="never" v-loading="loading")
+  el-card(shadow="never")
     el-form(:model="form" :rules="rules" ref="form" @keyup.enter.native="submit")
       h1.title Вход
       el-form-item(prop="login")
@@ -7,7 +7,7 @@
       el-form-item(prop="password")
         el-input(v-model="form.password" type="password" autocomplete="off" placeholder="Пароль")
       el-form-item
-        el-button(type="primary" @click="submit") Войти
+        el-button(type="primary" :loading="loading" @click="submit") Войти
       //el-checkbox(v-model="form.rememberMe") Запомнить меня
 </template>
 
@@ -36,12 +36,12 @@ export default {
   methods: {
     ...mapActions({ login: 'auth/login' }),
     async submit() {
-      this.loading = true;
       const credentials = { ...this.form };
       const form = this.$refs.form;
       form.validate(async valid => {
         if (valid) {
           try {
+            this.loading = true;
             await this.login(credentials);
             form.resetFields();
             await this.$router.push('/tasks');
@@ -53,6 +53,7 @@ export default {
               type: 'error'
             });
           }
+          this.loading = false;
         } else {
           this.$message({
             showClose: true,
@@ -61,7 +62,6 @@ export default {
           });
         }
       });
-      this.loading = false;
     }
   }
 };

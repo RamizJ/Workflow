@@ -42,18 +42,9 @@ export default {
       const response = await tasksAPI.update(task);
       commit('setTask', response.data);
     },
-    async completeTask({ commit }, task) {
-      let completedTask = task;
-      completedTask.state = 'Succeed';
-      const response = await tasksAPI.update(completedTask);
-      commit('setTask', response.data);
-    },
-    async completeTasks({ commit }, tasks) {
-      let completedTasks = tasks.map(task => {
-        task.state = 'Succeed';
-        return task;
-      });
-      const response = await tasksAPI.updateRange(completedTasks);
+    async updateTasks({ commit }, tasks) {
+      const response = await tasksAPI.updateRange(tasks);
+      commit('setTasks', response.data);
     },
     async deleteTask({ commit }, id) {
       const response = await tasksAPI.delete(id);

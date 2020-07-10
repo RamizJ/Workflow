@@ -29,9 +29,9 @@ export default {
   data() {
     return {
       searchQuery: '',
-      activeTab: 'All',
+      activeTab: 'Active',
       tabs: [
-        { value: 'All', label: 'Активные' },
+        { value: 'Active', label: 'Активные' },
         { value: 'Deleted', label: 'Удаленные' }
       ]
     };

@@ -20,13 +20,16 @@
 
     vue-context(ref="contextMenu")
       template(slot-scope="child")
-        li(v-if="isEditVisible" @click.prevent="onItemEdit($event, child.data.row)") Редактировать
-        li(v-if="isCompleteVisible && !isMultipleSelected" @click.prevent="onItemComplete($event, child.data.row)") Завершить
-        li(v-if="isCompleteVisible && isMultipleSelected" @click.prevent="onItemMultipleComplete($event, child.data.row)") Завершить выделенное
-        li(v-if="isDeleteVisible && !isMultipleSelected" @click.prevent="onItemDelete($event, child.data.row)") Удалить
-        li(v-if="isDeleteVisible && isMultipleSelected" @click.prevent="onItemMultipleDelete($event, child.data.row)") Удалить выделенное
-        li(v-if="isRestoreVisible && !isMultipleSelected" @click.prevent="onItemRestore($event, child.data.row)") Восстановить
-        li(v-if="isRestoreVisible && isMultipleSelected" @click.prevent="onItemMultipleRestore($event, child.data.row)") Восстановить выделенное
+        li(v-if="isEditVisible" @click.prevent="onItemEdit($event, child.data.row)") Изменить
+        el-divider(v-if="isEditVisible")
+        li(@click.prevent="onItemCreate") Новая команда
+        el-divider
+        li(
+          v-if="isDeleteVisible"
+          @click.prevent="onItemDelete($event, child.data.row)") Переместить в корзину
+        li(
+          v-if="isRestoreVisible"
+          @click.prevent="onItemRestore($event, child.data.row)") Восстановить
 
     dialog-team(v-if="dialogVisible" :data="dialogData" @close="dialogVisible = false" @submit="refresh")
 
@@ -58,12 +61,6 @@ export default {
   computed: {
     ...mapGetters({ items: 'teams/getTeams' })
   },
-  watch: {
-    search() {
-      this.query.filter = this.search;
-      if (this.query.filter.length > 2) this.refresh();
-    }
-  },
   mounted() {
     switch (this.status) {
       case 'All':
@@ -90,9 +87,7 @@ export default {
       deleteItem: 'teams/deleteTeam',
       deleteItems: 'teams/deleteTeams',
       restoreItem: 'teams/restoreTeam',
-      restoreItems: 'teams/restoreTeams',
-      completeItem: 'teams/completeTeam',
-      completeItems: 'teams/completeTeams'
+      restoreItems: 'teams/restoreTeams'
     })
   }
 };
