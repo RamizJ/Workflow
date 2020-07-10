@@ -303,6 +303,11 @@ namespace Workflow.Services
                     if (queries.Any())
                         query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
+                else if (field.SameAs(nameof(VmGoal.IsRemoved)))
+                {
+                    var values = field.Values.OfType<bool>().ToArray();
+                    query = query.Where(g => values.Any(v => v == g.IsRemoved));
+                }
             }
 
             return query;

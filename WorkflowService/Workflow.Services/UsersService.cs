@@ -391,6 +391,21 @@ namespace Workflow.Services
                             : orderedQuery.ThenByDescending(u => u.MiddleName);
                     }
                 }
+                else if (field.Is(nameof(VmUser.IsRemoved)))
+                {
+                    if (orderedQuery == null)
+                    {
+                        orderedQuery = field.SortType == SortType.Ascending
+                            ? query.OrderBy(u => u.IsRemoved)
+                            : query.OrderByDescending(u => u.IsRemoved);
+                    }
+                    else
+                    {
+                        orderedQuery = field.SortType == SortType.Ascending
+                            ? orderedQuery.ThenBy(u => u.IsRemoved)
+                            : orderedQuery.ThenByDescending(u => u.IsRemoved);
+                    }
+                }
             }
 
             return orderedQuery ?? query;
