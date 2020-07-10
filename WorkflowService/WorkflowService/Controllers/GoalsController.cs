@@ -269,9 +269,9 @@ namespace WorkflowService.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Загрузка файла вложения
         /// </summary>
-        /// <param name="attachmentId"></param>
+        /// <param name="attachmentId">Идентификатор вложения</param>
         /// <returns></returns>
         [HttpGet("{attachmentId}")]
         public async Task<FileResult> DownloadAttachmentFile(int attachmentId)
@@ -283,6 +283,46 @@ namespace WorkflowService.Controllers
             return File(memoryStream, attachment.FileType ?? "*/*");
         }
 
+        /// <summary>
+        /// Получение дочерних задач
+        /// </summary>
+        /// <param name="goalId"></param>
+        /// <returns></returns>
+        [HttpGet("{goalId}")]
+        public async Task<ActionResult<IEnumerable<VmGoal>>> GetChildGoals(int goalId)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var childGoals = _service.GetChildGoals(currentUser, goalId, true);
+            return Ok(childGoals);
+        }
+
+        /// <summary>
+        /// Получение родительской задачи
+        /// </summary>
+        /// <param name="goalId">Идентификатор задачи</param>
+        /// <returns></returns>
+        [HttpGet("{goalId}")]
+        public async Task<ActionResult<VmGoal>> GetParentGoal(int goalId)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var parentGoal = _service.GetParentGoal(currentUser, goalId);
+            return Ok(parentGoal);
+        }
+
+        /// <summary>
+        /// Добавление дочерних задач
+        /// </summary>
+        /// <param name="parentGoalId">Родительская задача</param>
+        /// <param name="childGoalIds">Идентификаторы дочерних задач</param>
+        /// <returns></returns>
+        [HttpPatch("{parentGoalId}")]
+        public async Task<ActionResult<VmGoal>> AddChildGoals(int parentGoalId, 
+            [FromBody] IEnumerable<int> childGoalIds)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var parentGoal = _service.AddChildGoals(currentUser, parentGoalId, childGoalIds);
+            return Ok(parentGoal);
+        }
 
 
         private readonly UserManager<ApplicationUser> _userManager;
