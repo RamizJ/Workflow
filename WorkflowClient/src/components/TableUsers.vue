@@ -64,12 +64,6 @@ export default {
   computed: {
     ...mapGetters({ items: 'users/getUsers' })
   },
-  watch: {
-    search() {
-      this.query.filter = this.search;
-      if (this.query.filter.length > 2) this.refresh();
-    }
-  },
   mounted() {
     switch (this.status) {
       case 'All':

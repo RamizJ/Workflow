@@ -60,12 +60,6 @@ export default {
   computed: {
     ...mapGetters({ items: 'projects/getProjects' })
   },
-  watch: {
-    search() {
-      this.query.filter = this.search;
-      if (this.query.filter.length > 2) this.refresh();
-    }
-  },
   mounted() {
     switch (this.status) {
       case 'All':

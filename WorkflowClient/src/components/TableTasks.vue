@@ -62,12 +62,6 @@ export default {
   computed: {
     ...mapGetters({ items: 'tasks/getTasks' })
   },
-  watch: {
-    search() {
-      this.query.filter = this.search;
-      if (this.query.filter.length > 2) this.refresh();
-    }
-  },
   mounted() {
     if (this.$route.params.projectId)
       this.query.projectId = this.$route.params.projectId;

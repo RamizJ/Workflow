@@ -58,12 +58,6 @@ export default {
   computed: {
     ...mapGetters({ items: 'teams/getTeams' })
   },
-  watch: {
-    search() {
-      this.query.filter = this.search;
-      if (this.query.filter.length > 2) this.refresh();
-    }
-  },
   mounted() {
     switch (this.status) {
       case 'All':

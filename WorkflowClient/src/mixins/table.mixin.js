@@ -91,6 +91,9 @@ export default {
   watch: {
     $route(to, from) {
       this.applyQuery();
+    },
+    search() {
+      this.query.filter = this.search;
     }
   },
   mounted() {
@@ -139,9 +142,6 @@ export default {
       this.query.pageNumber = 0;
       this.loader.stateChanger.reset();
       this.dialogVisible = false;
-      this.editButtonVisible = false;
-      this.completeButtonVisible = false;
-      this.deleteButtonVisible = false;
     },
     async load($state) {
       const firstLoad = !this.tableData.length;

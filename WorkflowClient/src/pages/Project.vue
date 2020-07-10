@@ -50,7 +50,7 @@ export default {
   data() {
     return {
       searchQuery: '',
-      activeTab: 'All',
+      activeTab: 'New',
       tabs: [
         { value: 'All', label: 'Все' },
         { value: 'New', label: 'Новые' },
