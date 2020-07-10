@@ -34,5 +34,7 @@ export default {
   getRange: query =>
     httpClient.get(
       `/api/Teams/GetRange${qs.stringify(query, { addQueryPrefix: true })}`
-    )
+    ),
+  restore: teamId => httpClient.patch(`/api/Teams/Restore/${teamId}`),
+  restoreRange: teamIds => httpClient.patch(`/api/Teams/RestoreRange`, teamIds)
 };

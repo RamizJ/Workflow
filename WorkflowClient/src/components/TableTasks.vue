@@ -24,13 +24,23 @@
 
     vue-context(ref="contextMenu")
       template(slot-scope="child")
-        li(v-if="isEditVisible" @click.prevent="onItemEdit($event, child.data.row)") Редактировать
-        li(v-if="isCompleteVisible && !isMultipleSelected" @click.prevent="onItemComplete($event, child.data.row)") Завершить
-        li(v-if="isCompleteVisible && isMultipleSelected" @click.prevent="onItemMultipleComplete($event, child.data.row)") Завершить выделенное
-        li(v-if="isDeleteVisible && !isMultipleSelected" @click.prevent="onItemDelete($event, child.data.row)") Удалить
-        li(v-if="isDeleteVisible && isMultipleSelected" @click.prevent="onItemMultipleDelete($event, child.data.row)") Удалить выделенное
-        li(v-if="isRestoreVisible && !isMultipleSelected" @click.prevent="onItemRestore($event, child.data.row)") Восстановить
-        li(v-if="isRestoreVisible && isMultipleSelected" @click.prevent="onItemMultipleRestore($event, child.data.row)") Восстановить выделенное
+        li(v-if="isEditVisible" @click.prevent="onItemEdit($event, child.data.row)") Изменить
+        el-divider(v-if="isEditVisible")
+        li(@click.prevent="onItemCreate") Новая задача
+        el-divider
+        li.v-context__sub(v-if="isStatusVisible") Изменить статус
+          ul.v-context
+            li(@click.prevent="onItemStatusChange($event, child.data.row, 'Perform')") Выполняется
+            li(@click.prevent="onItemStatusChange($event, child.data.row, 'Testing')") Проверяется
+            li(@click.prevent="onItemStatusChange($event, child.data.row, 'Succeed')") Выполнено
+            li(@click.prevent="onItemStatusChange($event, child.data.row, 'Delay')") Отложено
+            li(@click.prevent="onItemStatusChange($event, child.data.row, 'Rejected')") Отклонено
+        li(
+          v-if="isDeleteVisible"
+          @click.prevent="onItemDelete($event, child.data.row)") {{ isMultipleSelected ? 'Удалить выделенное' : 'Переместить в корзину' }}
+        li(
+          v-if="isRestoreVisible"
+          @click.prevent="onItemRestore($event, child.data.row)") {{ isMultipleSelected ? 'Восстановить выделенное' : 'Восстановить' }}
 
     dialog-task(v-if="dialogVisible" :data="dialogData" @close="dialogVisible = false" @submit="refresh")
 
@@ -68,22 +78,13 @@ export default {
     switch (this.status) {
       case 'All':
         this.isEditVisible = true;
-        this.isCompleteVisible = true;
+        this.isStatusVisible = true;
         this.isDeleteVisible = true;
         this.isRestoreVisible = false;
         break;
-      case 'Completed':
-        this.isEditVisible = false;
-        this.isCompleteVisible = false;
-        this.isRestoreVisible = false;
-        this.query.filterFields.push({
-          fieldName: 'state',
-          values: ['Succeed', 'Rejected']
-        });
-        break;
       case 'Deleted':
         this.isEditVisible = false;
-        this.isCompleteVisible = false;
+        this.isStatusVisible = false;
         this.isDeleteVisible = false;
         this.isRestoreVisible = true;
         this.query.filterFields.push({
@@ -94,7 +95,7 @@ export default {
         break;
       default:
         this.isEditVisible = true;
-        this.isCompleteVisible = true;
+        this.isStatusVisible = true;
         this.isDeleteVisible = true;
         this.isRestoreVisible = false;
         this.query.filterFields.push({
@@ -111,8 +112,8 @@ export default {
       deleteItems: 'tasks/deleteTasks',
       restoreItem: 'tasks/restoreTask',
       restoreItems: 'tasks/restoreTasks',
-      completeItem: 'tasks/completeTask',
-      completeItems: 'tasks/completeTasks'
+      updateItem: 'tasks/updateTask',
+      updateItems: 'tasks/updateTasks'
     })
   }
 };

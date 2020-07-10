@@ -48,7 +48,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import BaseDialog from '~/components/Dialog';
+import BaseDialog from '~/components/BaseDialog';
 import dialogMixin from '~/mixins/dialog.mixin';
 
 export default {

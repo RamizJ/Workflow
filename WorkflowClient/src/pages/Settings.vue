@@ -3,7 +3,7 @@
     page-header
       template(slot="title") Настройки
 
-    el-tabs(ref="tabs" v-model="activeTab" @tab-click="onTabClick")
+    el-tabs(ref="tabs" v-model="activeTab")
       el-tab-pane(label="Аккаунт" name="Account")
         el-form(:model="form" :rules="rules" ref="form")
           el-row

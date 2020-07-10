@@ -26,13 +26,16 @@
 
     vue-context(ref="contextMenu")
       template(slot-scope="child")
-        li(v-if="isEditVisible" @click.prevent="onItemEdit($event, child.data.row)") Редактировать
-        li(v-if="isCompleteVisible && !isMultipleSelected" @click.prevent="onItemComplete($event, child.data.row)") Завершить
-        li(v-if="isCompleteVisible && isMultipleSelected" @click.prevent="onItemMultipleComplete($event, child.data.row)") Завершить выделенное
-        li(v-if="isDeleteVisible && !isMultipleSelected" @click.prevent="onItemDelete($event, child.data.row)") Удалить
-        li(v-if="isDeleteVisible && isMultipleSelected" @click.prevent="onItemMultipleDelete($event, child.data.row)") Удалить выделенное
-        li(v-if="isRestoreVisible && !isMultipleSelected" @click.prevent="onItemRestore($event, child.data.row)") Восстановить
-        li(v-if="isRestoreVisible && isMultipleSelected" @click.prevent="onItemMultipleRestore($event, child.data.row)") Восстановить выделенное
+        li(v-if="isEditVisible" @click.prevent="onItemEdit($event, child.data.row)") Изменить
+        el-divider(v-if="isEditVisible")
+        li(@click.prevent="onItemCreate") Новый пользователь
+        el-divider
+        li(
+          v-if="isDeleteVisible"
+          @click.prevent="onItemDelete($event, child.data.row)") Переместить в корзину
+        li(
+          v-if="isRestoreVisible"
+          @click.prevent="onItemRestore($event, child.data.row)") Восстановить
 
     dialog-user(v-if="dialogVisible" :data="dialogData" @close="dialogVisible = false" @submit="refresh")
 
@@ -90,9 +93,7 @@ export default {
       deleteItem: 'users/deleteUser',
       deleteItems: 'users/deleteUsers',
       restoreItem: 'users/restoreUser',
-      restoreItems: 'users/restoreUsers',
-      completeItem: 'users/completeUser',
-      completeItems: 'users/completeUsers'
+      restoreItems: 'users/restoreUsers'
     })
   }
 };

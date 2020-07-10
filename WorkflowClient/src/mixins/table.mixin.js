@@ -19,9 +19,9 @@ export default {
       },
       statuses: [
         { value: 'New', label: 'Новое' },
-        { value: 'Perform', label: 'В работе' },
+        { value: 'Perform', label: 'Выполняется' },
+        { value: 'Testing', label: 'Проверяется' },
         { value: 'Delay', label: 'Отложено' },
-        { value: 'Testing', label: 'Тестируется' },
         { value: 'Succeed', label: 'Выполнено' },
         { value: 'Rejected', label: 'Отклонено' }
       ],
@@ -35,7 +35,7 @@ export default {
       selectedRow: null,
 
       isEditVisible: false,
-      isCompleteVisible: false,
+      isStatusVisible: false,
       isDeleteVisible: false,
       isRestoreVisible: false
     };
@@ -94,6 +94,7 @@ export default {
     },
     search() {
       this.query.filter = this.search;
+      this.refresh();
     }
   },
   mounted() {
@@ -109,8 +110,8 @@ export default {
       deleteItems: '',
       restoreItem: '',
       restoreItems: '',
-      completeItem: '',
-      completeItems: '',
+      updateItem: '',
+      updateItems: '',
 
       fetchProjects: 'projects/fetchProjects',
       fetchTeams: 'teams/fetchTeams',
@@ -189,22 +190,11 @@ export default {
     },
     onItemSelect(selection, row) {
       this.selectedRow = row;
-      this.editButtonVisible = true;
-      this.completeButtonVisible = true;
-      this.deleteButtonVisible = true;
-      if (!selection.length) {
-        this.editButtonVisible = false;
-        this.completeButtonVisible = false;
-        this.deleteButtonVisible = false;
-      }
     },
     onItemSingleClick(row, column, event) {
       this.table.clearSelection();
       this.table.toggleRowSelection(row);
       this.selectedRow = row;
-      this.editButtonVisible = true;
-      this.completeButtonVisible = true;
-      this.deleteButtonVisible = true;
     },
     onItemDoubleClick(row, column, event) {
       this.onItemEdit(event, row);
@@ -227,27 +217,29 @@ export default {
       this.dialogVisible = true;
     },
     async onItemDelete(event, row) {
-      await this.deleteItem(row.id);
-      await this.refresh();
-    },
-    async onItemMultipleDelete(event, row) {
-      await this.deleteItems(this.table.selection.map(item => item.id));
+      if (this.isMultipleSelected)
+        await this.deleteItems(this.table.selection.map(item => item.id));
+      else await this.deleteItem(row.id);
       await this.refresh();
     },
     async onItemRestore(event, row) {
-      await this.restoreItem(row.id);
+      if (this.isMultipleSelected)
+        await this.restoreItems(this.table.selection.map(item => item.id));
+      else await this.restoreItem(row.id);
       await this.refresh();
     },
-    async onItemMultipleRestore(event, row) {
-      await this.restoreItems(this.table.selection.map(item => item.id));
-      await this.refresh();
-    },
-    async onItemComplete(event, row) {
-      await this.completeItem(row);
-      await this.refresh();
-    },
-    async onItemMultipleComplete(event, row) {
-      await this.completeItems(this.table.selection);
+    async onItemStatusChange(event, row, status) {
+      if (this.isMultipleSelected) {
+        const items = this.table.selection.map(item => {
+          item.state = status;
+          return item;
+        });
+        await this.updateItems(items);
+      } else {
+        const item = row;
+        item.state = status;
+        await this.updateItem(item);
+      }
       await this.refresh();
     },
     dateFormatter(row, column, cellValue, index) {
