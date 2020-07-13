@@ -49,7 +49,10 @@ export default {
     },
     async fetchProjects({ commit }, params) {
       const response = await projectsAPI.getPage(params);
-      const projects = response.data;
+      const projects = response.data.map(project => {
+        project.teamIds = [];
+        return project;
+      });
       commit('setProjects', projects);
     },
     async fetchProject({ commit, dispatch, state }, id) {

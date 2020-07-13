@@ -13,7 +13,11 @@ export default {
   removeTeam: (teamId, projectId) =>
     httpClient.patch(`/api/Projects/RemoveTeam/${teamId}/${projectId}`),
   getPage: query => httpClient.post(`/api/Projects/GetPage`, query),
-  getTeamsPage: query => httpClient.post(`/api/Projects/GetTeamsPage`, query),
+  getTeamsPage: query =>
+    httpClient.post(
+      `/api/Projects/GetTeamsPage?projectId=${query.projectId}`,
+      query
+    ),
   getRange: query =>
     httpClient.get(
       `/api/Projects/GetRange${qs.stringify(query, { addQueryPrefix: true })}`

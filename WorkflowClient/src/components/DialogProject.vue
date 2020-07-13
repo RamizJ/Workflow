@@ -79,8 +79,15 @@ export default {
     })
   },
   async mounted() {
+    this.loading = true;
     await this.searchTeams();
-    this.$refs.title.focus();
+    await this.fetchProjectTeams({
+      projectId: this.data.id,
+      pageNumber: 0,
+      pageSize: 10
+    });
+    this.form.teamIds = this.projectTeams.map(team => team.id);
+    this.loading = false;
   },
   methods: {
     ...mapActions({
