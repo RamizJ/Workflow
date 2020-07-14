@@ -323,3 +323,9 @@ a {
 .el-tabs__nav-wrap::after {
   background-color: transparent;
 }
+
+.el-card {
+  border-radius: 8px;
+  background-color: var(--input-background);
+  border-color: var(--input-border);
+}

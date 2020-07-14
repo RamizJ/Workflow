@@ -12,13 +12,6 @@
             el-input(v-model="form.description" :autosize="{ minRows: 2 }" type="textarea" placeholder="Описание")
       el-row(:gutter="20")
         transition(name="fade")
-          el-col(v-if="tagsVisible || (form.tags && form.tags.length)" :span="24")
-            el-form-item(prop="tags")
-              el-select(
-                v-model="form.tags"
-                placeholder="Теги"
-                multiple filterable allow-create default-first-option)
-        transition(name="fade")
           el-col(v-if="teamsVisible || (form.teamIds && form.teamIds.length)" :span="24")
             el-form-item(prop="teamIds")
               el-select(
@@ -32,9 +25,6 @@
         el-tooltip(content="Описание" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
           el-button(v-if="!form.description" type="text" title="Теги" @click="descriptionVisible = !descriptionVisible" circle)
             feather(type="align-left")
-        el-tooltip(content="Теги" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-          el-button(v-if="!(form.tags && form.tags.length)" type="text" title="Теги" @click="tagsVisible = !tagsVisible" circle)
-            feather(type="tag")
         el-tooltip(content="Команды" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
           el-button(v-if="!(form.teamIds && form.teamIds.length)" type="text" title="Теги" @click="teamsVisible = !teamsVisible" circle)
             feather(type="users")
@@ -62,14 +52,12 @@ export default {
         creationDate: new Date(),
         groupId: null,
         groupName: null,
-        teamIds: [],
-        tags: []
+        teamIds: []
       },
       rules: {
         name: [{ required: true, message: '!', trigger: 'blur' }]
       },
       descriptionVisible: null,
-      tagsVisible: null,
       teamsVisible: null
     };
   },

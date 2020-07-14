@@ -21,6 +21,10 @@ export default {
   deleteRange: taskIds => httpClient.patch(`/api/Goals/DeleteRange`, taskIds),
   restore: taskId => httpClient.patch(`/api/Goals/Restore/${taskId}`),
   restoreRange: taskIds => httpClient.patch(`/api/Goals/RestoreRange`, taskIds),
+  getChildTasks: taskId => httpClient.get(`/api/Goals/GetChildGoals/${taskId}`),
+  getParentTask: taskId => httpClient.get(`/api/Goals/GetParentGoal/${taskId}`),
+  addChildTasks: (parentTaskId, childTaskIds) =>
+    httpClient.patch(`/api/Goals/AddChildGoals/${parentTaskId}`, childTaskIds),
   getAttachments: taskId =>
     httpClient.get(`/api/Goals/GetAttachments/${taskId}`),
   addAttachments: (taskId, files) =>

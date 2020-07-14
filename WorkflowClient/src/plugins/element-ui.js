@@ -24,6 +24,7 @@ import {
   Row,
   Col,
   Divider,
+  Checkbox,
   Loading
 } from 'element-ui';
 import language from 'element-ui/lib/locale/lang/ru-RU';
@@ -56,4 +57,5 @@ Vue.component(FormItem.name, FormItem);
 Vue.component(Row.name, Row);
 Vue.component(Col.name, Col);
 Vue.component(Divider.name, Divider);
+Vue.component(Checkbox.name, Checkbox);
 Loading.install(Vue);

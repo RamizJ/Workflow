@@ -20,7 +20,7 @@ export default {
   display: flex;
   position: relative;
   overflow: auto;
-  padding: 0 30px;
+  padding: 0 30px 20px;
   height: 100%;
   width: 100%;
   flex-direction: column;
