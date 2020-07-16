@@ -265,6 +265,11 @@ namespace Workflow.Services
                     var values = field.Values.OfType<DateTime>().ToArray();
                     query = query.Where(p => values.Any(v => v == p.CreationDate));
                 }
+                else if (field.SameAs(nameof(VmProject.ExpectedCompletedDate)))
+                {
+                    var values = field.Values.OfType<DateTime>().ToArray();
+                    query = query.Where(p => values.Any(v => v == p.ExpectedCompletedDate));
+                }
                 else if (field.SameAs(nameof(VmProject.OwnerFio)))
                 {
                     var names = strValues.SelectMany(sv => sv.Split(" "));
@@ -341,6 +346,21 @@ namespace Workflow.Services
                         orderedQuery = field.SortType == SortType.Ascending
                             ? orderedQuery.ThenBy(s => s.CreationDate)
                             : orderedQuery.ThenByDescending(s => s.CreationDate);
+                    }
+                }
+                else if (field.Is(nameof(VmProject.ExpectedCompletedDate)))
+                {
+                    if (orderedQuery == null)
+                    {
+                        orderedQuery = field.SortType == SortType.Ascending
+                            ? query.OrderBy(s => s.ExpectedCompletedDate)
+                            : query.OrderByDescending(s => s.ExpectedCompletedDate);
+                    }
+                    else
+                    {
+                        orderedQuery = field.SortType == SortType.Ascending
+                            ? orderedQuery.ThenBy(s => s.ExpectedCompletedDate)
+                            : orderedQuery.ThenByDescending(s => s.ExpectedCompletedDate);
                     }
                 }
                 else if (field.Is(nameof(VmProject.IsRemoved)))

@@ -13,6 +13,7 @@ namespace Workflow.VM.ViewModels
         public string OwnerId { get; set; }
         public string OwnerFio { get; set; }
         public DateTime CreationDate { get; set; }
+        public DateTime? ExpectedCompletedDate { get; set; }
         public int? GroupId { get; set; }
         public string GroupName { get; set; }
         public bool IsRemoved { get; set; }

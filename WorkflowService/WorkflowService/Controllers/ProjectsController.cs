@@ -70,9 +70,8 @@ namespace WorkflowService.Controllers
             return await _projectTeamsService.GetPage(currentUser, projectId, pageOptions);
         }
 
-
         /// <summary>
-        /// Получение проектов по идентификаторам
+        /// Получение 
         /// </summary>
         /// <param name="ids">Идентификаторы проектов</param>
         /// <returns>Коллекция проектов</returns>

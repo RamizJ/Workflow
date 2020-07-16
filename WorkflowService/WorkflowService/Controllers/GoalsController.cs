@@ -73,6 +73,31 @@ namespace WorkflowService.Controllers
         }
 
         /// <summary>
+        /// Получение кол-ва задач проекта
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <returns></returns>
+        [HttpGet("{projectId}")]
+        public async Task<int> GetTotalProjectGoalsCount(int projectId)
+        {
+            var currentUser = await _currentUserService.Get(User);
+            return await _service.GetTotalProjectGoalsCount(currentUser, projectId);
+        }
+
+        /// <summary>
+        /// Получение кол-ва задач проекта по состоянию задачи
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="goalState">Состояние задачи</param>
+        /// <returns></returns>
+        [HttpGet("{projectId}")]
+        public async Task<int> GetProjectGoalsByStateCount(int projectId, [FromQuery]GoalState goalState)
+        {
+            var currentUser = await _currentUserService.Get(User);
+            return await _service.GetProjectGoalsByStateCount(currentUser, projectId, goalState);
+        }
+
+        /// <summary>
         /// Создание задачи
         /// </summary>
         /// <param name="goal">Создаваемая задача</param>

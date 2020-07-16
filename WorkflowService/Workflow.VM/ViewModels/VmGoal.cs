@@ -19,7 +19,7 @@ namespace Workflow.VM.ViewModels
         //public List<int> ChildGoals { get; set; }
 
         public DateTime CreationDate { get; set; }
-        public DateTime ExpectedCompletedDate { get; set; }
+        public DateTime? ExpectedCompletedDate { get; set; }
         public TimeSpan EstimatedPerformingTime { get; set; }
 
         public GoalState State { get; set; }

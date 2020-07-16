@@ -39,6 +39,23 @@ namespace Workflow.Services.Abstract
         /// 
         /// </summary>
         /// <param name="currentUser"></param>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
+        Task<int> GetTotalProjectGoalsCount(ApplicationUser currentUser, int projectId);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="currentUser"></param>
+        /// <param name="projectId"></param>
+        /// <param name="goalState"></param>
+        /// <returns></returns>
+        Task<int> GetProjectGoalsByStateCount(ApplicationUser currentUser, int projectId, GoalState goalState);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="currentUser"></param>
         /// <param name="goal"></param>
         /// <returns></returns>
         Task<VmGoal> Create(ApplicationUser currentUser, VmGoal goal);
