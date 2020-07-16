@@ -13,6 +13,7 @@ namespace Workflow.DAL.Models
         public ApplicationUser Owner { get; set; }
 
         public DateTime CreationDate { get; set; }
+        public DateTime? ExpectedCompletedDate { get; set; }
 
         //public int? TeamId { get; set; }
         //public Team Team { get; set; }

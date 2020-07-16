@@ -76,6 +76,20 @@ namespace Workflow.Services
         }
 
         /// <inheritdoc />
+        public async Task<int> GetTotalProjectGoalsCount(ApplicationUser currentUser, int projectId)
+        {
+            var query = await GetQuery(currentUser, false);
+            return await query.CountAsync(g => g.ProjectId == projectId);
+        }
+
+        public async Task<int> GetProjectGoalsByStateCount(ApplicationUser currentUser, int projectId, GoalState goalState)
+        {
+            var query = await GetQuery(currentUser, false);
+            return await query.CountAsync(g => g.ProjectId == projectId 
+                                               && g.State == goalState);
+        }
+
+        /// <inheritdoc />
         public async Task<VmGoal> Create(ApplicationUser currentUser, VmGoal goal)
         {
             var model = await CreateGoal(currentUser, goal);
@@ -388,6 +402,51 @@ namespace Workflow.Services
                         orderedQuery = field.SortType == SortType.Ascending
                             ? orderedQuery.ThenBy(s => s.Description)
                             : orderedQuery.ThenByDescending(s => s.Description);
+                    }
+                }
+                if (field.Is(nameof(VmGoal.ProjectName)))
+                {
+                    if (orderedQuery == null)
+                    {
+                        orderedQuery = field.SortType == SortType.Ascending
+                            ? query.OrderBy(goal => goal.Project.Name)
+                            : query.OrderByDescending(goal => goal.Project.Name);
+                    }
+                    else
+                    {
+                        orderedQuery = field.SortType == SortType.Ascending
+                            ? orderedQuery.ThenBy(s => s.Project.Name)
+                            : orderedQuery.ThenByDescending(s => s.Project.Name);
+                    }
+                }
+                if(field.Is(nameof(VmGoal.CreationDate)))
+                {
+                    if (orderedQuery == null)
+                    {
+                        orderedQuery = field.SortType == SortType.Ascending
+                            ? query.OrderBy(goal => goal.CreationDate)
+                            : query.OrderByDescending(goal => goal.CreationDate);
+                    }
+                    else
+                    {
+                        orderedQuery = field.SortType == SortType.Ascending
+                            ? orderedQuery.ThenBy(s => s.CreationDate)
+                            : orderedQuery.ThenByDescending(s => s.CreationDate);
+                    }
+                }
+                if(field.Is(nameof(VmGoal.ExpectedCompletedDate)))
+                {
+                    if (orderedQuery == null)
+                    {
+                        orderedQuery = field.SortType == SortType.Ascending
+                            ? query.OrderBy(goal => goal.ExpectedCompletedDate)
+                            : query.OrderByDescending(goal => goal.ExpectedCompletedDate);
+                    }
+                    else
+                    {
+                        orderedQuery = field.SortType == SortType.Ascending
+                            ? orderedQuery.ThenBy(s => s.ExpectedCompletedDate)
+                            : orderedQuery.ThenByDescending(s => s.ExpectedCompletedDate);
                     }
                 }
                 else if (field.Is(nameof(VmGoal.GoalNumber)))

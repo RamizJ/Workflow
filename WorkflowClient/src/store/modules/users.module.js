@@ -1,5 +1,6 @@
 import usersAPI from '~/api/users.api';
 import { Message } from 'element-ui';
+import teamsAPI from '~/api/teams.api';
 
 export default {
   namespaced: true,
@@ -43,6 +44,16 @@ export default {
     },
     async deleteUsers({ commit }, ids) {
       const response = await usersAPI.deleteRange(ids);
+      const users = response.data;
+      if (!users) throw Error;
+    },
+    async restoreUser({ commit }, id) {
+      const response = await usersAPI.restore(id);
+      const user = response.data;
+      if (!user) throw Error;
+    },
+    async restoreUsers({ commit }, ids) {
+      const response = await usersAPI.restoreRange(ids);
       const users = response.data;
       if (!users) throw Error;
     },

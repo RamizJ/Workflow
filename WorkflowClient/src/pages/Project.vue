@@ -1,9 +1,8 @@
 <template lang="pug">
-  page
+  page(v-loading="loading")
     page-header
       template(slot="title")
         input.title(
-          placeholder="Заголовок"
           v-model="projectItem.name"
           v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
           @change="onUpdate")
@@ -15,12 +14,11 @@
         base-search(:query.sync="searchQuery")
       template(slot="subtitle")
         input.subtitle(
-          placeholder="Описание"
           v-model="projectItem.description"
           v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
           @change="onUpdate")
 
-    el-tabs(ref="tabs" v-model="activeTab" @tab-click="onTabClick")
+    el-tabs(v-if="projectItem.id" ref="tabs" v-model="activeTab" @tab-click="onTabClick")
       el-tab-pane(v-for="(tab, index) in tabs" :key="index" :label="tab.label" :name="tab.value")
         table-tasks(v-if="tab.value === activeTab" ref="list" :search="searchQuery" :status="tab.value")
 
@@ -49,8 +47,9 @@ export default {
   },
   data() {
     return {
+      loading: true,
       searchQuery: '',
-      activeTab: 'All',
+      activeTab: 'New',
       tabs: [
         { value: 'All', label: 'Все' },
         { value: 'New', label: 'Новые' },
@@ -82,6 +81,7 @@ export default {
     })
   },
   async mounted() {
+    this.loading = true;
     const query = { ...this.$route.query };
     query.status = query.status || this.activeTab;
     this.activeTab = query.status;
@@ -90,6 +90,7 @@ export default {
 
     await this.fetchProject(this.$route.params.projectId);
     this.projectItem = { ...this.project };
+    this.loading = false;
   },
   methods: {
     ...mapActions({

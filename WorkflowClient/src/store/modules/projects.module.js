@@ -1,4 +1,5 @@
 import projectsAPI from '~/api/projects.api';
+import tasksAPI from '~/api/tasks.api';
 
 export default {
   namespaced: true,
@@ -99,6 +100,16 @@ export default {
     },
     async deleteProjects({ commit }, ids) {
       const response = await projectsAPI.deleteRange(ids);
+      const projects = response.data;
+      if (!projects) throw Error;
+    },
+    async restoreProject({ commit }, id) {
+      const response = await projectsAPI.restore(id);
+      const project = response.data;
+      if (!project) throw Error;
+    },
+    async restoreProjects({ commit }, ids) {
+      const response = await projectsAPI.restoreRange(ids);
       const projects = response.data;
       if (!projects) throw Error;
     }

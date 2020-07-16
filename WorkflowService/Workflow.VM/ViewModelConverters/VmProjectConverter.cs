@@ -16,6 +16,7 @@ namespace Workflow.VM.ViewModelConverters
                 Id = viewModel.Id,
                 Name = viewModel.Name,
                 Description = viewModel.Description,
+                ExpectedCompletedDate = viewModel.ExpectedCompletedDate,
                 OwnerId = viewModel.OwnerId,
                 GroupId = viewModel.GroupId,
             };
@@ -36,6 +37,7 @@ namespace Workflow.VM.ViewModelConverters
                 GroupId = model.GroupId,
                 GroupName = model.Group?.Name,
                 CreationDate = model.CreationDate,
+                ExpectedCompletedDate = model.ExpectedCompletedDate,
                 IsRemoved = model.IsRemoved
             };
         }

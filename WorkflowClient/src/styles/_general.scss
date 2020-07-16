@@ -154,6 +154,9 @@ a {
   border-color: var(--button-hover-border);
   background-color: var(--button-hover-background);
 }
+.el-button--text {
+  color: var(--color-primary);
+}
 .el-range-input,
 .el-input__inner,
 .el-textarea__inner {
