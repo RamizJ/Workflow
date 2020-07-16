@@ -3,8 +3,8 @@
     v-model="value"
     size="medium"
     :placeholder="placeholder"
-    @change="$emit('update:query', value)")
-    el-button(slot="prefix" type="text" size="mini" @click="$emit('update:query', value)")
+    @change="onChange")
+    el-button(slot="prefix" type="text" size="mini" @click="onChange")
       feather(type="search" size="16")
     el-popover(v-if="filters" slot="suffix" placement="bottom" transition="fade" trigger="click")
       el-button(
@@ -28,6 +28,12 @@ export default {
     return {
       value: ''
     };
+  },
+  methods: {
+    onChange() {
+      this.$emit('update:query', this.value);
+      this.$emit('change', this.value);
+    }
   }
 };
 </script>

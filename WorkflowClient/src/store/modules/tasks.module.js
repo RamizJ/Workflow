@@ -80,6 +80,14 @@ export default {
       const tasks = response.data;
       if (!tasks) throw Error;
     },
+    async getTasksCount({ commit }, projectId) {
+      const response = await tasksAPI.getTasksCount(projectId);
+      return response.data;
+    },
+    async getTasksCountByStatus({ commit }, { projectId, status }) {
+      const response = await tasksAPI.getTasksCountByStatus(projectId, status);
+      return response.data;
+    },
     async fetchAttachments({ commit }, taskId) {
       const response = await tasksAPI.getAttachments(taskId);
       const attachments = response.data;

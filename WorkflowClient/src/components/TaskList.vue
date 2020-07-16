@@ -1,5 +1,5 @@
 <template lang="pug">
-  table-content
+  div.table-container
     el-table(
       :data="tableData"
       ref="table"
@@ -9,15 +9,13 @@
       @row-click="onItemSingleClick"
       @row-contextmenu="onItemRightClick"
       @row-dblclick="onItemDoubleClick"
-      @sort-change="onSortChange"
-      @filter-change="onFilterChange"
       highlight-current-row border)
       el-table-column(type="selection" width="38")
-      el-table-column(prop="title" label="Задача" sortable="custom")
-      el-table-column(v-if="!$route.params.projectId" prop="projectName" label="Проект" width="150" sortable="custom")
-      el-table-column(prop="state" label="Статус" width="120" :formatter="stateFormatter" sortable="custom")
-      el-table-column(prop="priority" label="Приоритет" width="120" :formatter="priorityFormatter" sortable="custom")
-      el-table-column(prop="creationDate" label="Добавлено" width="180" :formatter="dateFormatter" sortable="custom")
+      el-table-column(prop="title" label="Задача")
+      el-table-column(v-if="!$route.params.projectId" prop="projectName" label="Проект" width="150")
+      el-table-column(prop="state" label="Статус" width="120" :formatter="stateFormatter")
+      el-table-column(prop="priority" label="Приоритет" width="120" :formatter="priorityFormatter")
+      el-table-column(prop="creationDate" label="Добавлено" width="180" :formatter="dateFormatter")
       infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
         div(slot="no-more")
         div(slot="no-results")
@@ -43,68 +41,21 @@
           v-if="isRestoreVisible"
           @click.prevent="onItemRestore($event, child.data.row)") {{ isMultipleSelected ? 'Восстановить выделенное' : 'Восстановить' }}
 
-    dialog-task(v-if="dialogVisible" :data="dialogData" @close="dialogVisible = false" @submit="refresh")
+    task-dialog(v-if="dialogVisible" :data="dialogData" @close="dialogVisible = false" @submit="refresh")
 
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import TableContent from '~/components/TableContent';
-import DialogTask from '~/components/DialogTask';
-import tableMixin from '~/mixins/table.mixin';
-import BaseSearch from '~/components/BaseSearch';
+import listMixin from '~/mixins/list.mixin';
+import TaskDialog from '~/components/TaskDialog';
 
 export default {
-  name: 'TableTasks',
-  props: {
-    search: {
-      type: String
-    },
-    status: {
-      type: String
-    }
-  },
-  components: {
-    BaseSearch,
-    TableContent,
-    DialogTask
-  },
-  mixins: [tableMixin],
+  name: 'TaskList',
+  components: { TaskDialog },
+  mixins: [listMixin],
   computed: {
     ...mapGetters({ items: 'tasks/getTasks' })
-  },
-  mounted() {
-    if (this.$route.params.projectId)
-      this.query.projectId = this.$route.params.projectId;
-    switch (this.status) {
-      case 'All':
-        this.isEditVisible = true;
-        this.isStatusVisible = true;
-        this.isDeleteVisible = true;
-        this.isRestoreVisible = false;
-        break;
-      case 'Deleted':
-        this.isEditVisible = false;
-        this.isStatusVisible = false;
-        this.isDeleteVisible = false;
-        this.isRestoreVisible = true;
-        this.query.filterFields.push({
-          fieldName: 'isRemoved',
-          values: [true]
-        });
-        this.query.withRemoved = true;
-        break;
-      default:
-        this.isEditVisible = true;
-        this.isStatusVisible = true;
-        this.isDeleteVisible = true;
-        this.isRestoreVisible = false;
-        this.query.filterFields.push({
-          fieldName: 'state',
-          values: [this.status]
-        });
-        break;
-    }
   },
   methods: {
     ...mapActions({

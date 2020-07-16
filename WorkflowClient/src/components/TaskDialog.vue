@@ -3,10 +3,10 @@
     h1(slot="title") Задача
     el-form(slot="body" :model="form" :rules="rules" ref="form" v-loading="loading" @submit.native.prevent="submit")
       el-row(:gutter="20")
-        el-col(:span="!$route.params.projectId ? 16 : 24")
+        el-col(:span="$route.params.projectId ? 15 : 24")
           el-form-item(prop="title")
             el-input(ref="title" v-model="form.title" placeholder="Новая задача")
-        el-col(v-if="!$route.params.projectId" :span="8")
+        el-col(v-if="!$route.params.projectId" :span="12")
           el-form-item(prop="projectId")
             el-select(
               v-model="form.projectId"
@@ -14,6 +14,12 @@
               :remote-method="searchProjects"
               filterable remote clearable default-first-option)
               el-option(v-for="item in projectList" :key="item.id" :label="item.value" :value="item.id")
+        el-col(v-if="priorityVisible || form.priority" :span="$route.params.projectId ? 9 : 12")
+          el-form-item(prop="priority")
+            el-select(
+              v-model="form.priority"
+              placeholder="Приоритет")
+              el-option(v-for="item in priorities" :key="item.value" :label="item.label" :value="item.value")
       el-row(:gutter="20")
         transition(name="fade")
           el-col(v-if="descriptionVisible || form.description" :span="24")
@@ -34,14 +40,7 @@
                   :key="index"
                   v-model="checklist[index].checked") {{ checklistItem.title }}
         transition(name="fade")
-          el-col(v-if="priorityVisible || form.priority" :span="8")
-            el-form-item(prop="priority")
-              el-select(
-                v-model="form.priority"
-                placeholder="Приоритет")
-                el-option(v-for="item in priorities" :key="item.value" :label="item.label" :value="item.value")
-        transition(name="fade")
-          el-col(v-if="performerVisible || form.performerId" :span="8")
+          el-col(v-if="performerVisible || form.performerId" :span="7")
             el-form-item(prop="performerId")
               el-select(
                 v-model="form.performerId"
@@ -121,7 +120,7 @@ export default {
         creationDate: new Date(),
         expectedCompletedDate: null,
         state: 'New',
-        priority: null,
+        priority: 'Normal',
         ownerId: null,
         ownerFio: null,
         performerId: null,
@@ -136,9 +135,9 @@ export default {
         projectId: [{ required: true, message: '!', trigger: 'blur' }]
       },
       priorities: [
-        { value: 'High', label: 'Высокий' },
-        { value: 'Normal', label: 'Обычный' },
-        { value: 'Low', label: 'Низкий' }
+        { value: 'High', label: 'Высокий приоритет' },
+        { value: 'Normal', label: 'Средний приоритет' },
+        { value: 'Low', label: 'Низкий приоритет' }
       ],
       attachmentList: [],
       descriptionVisible: null,

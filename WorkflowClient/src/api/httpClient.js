@@ -23,24 +23,29 @@ const errorResponseHandler = error => {
     switch (statusCode) {
       case 400:
         Message({
-          message: `Синтаксическая ошибка в запросе «${url}»`,
+          message: `Синтаксическая ошибка в отправляемых данных`,
           type: 'error',
           duration: 5000
         });
+        console.error(`Синтаксическая ошибка в запросе к «${url}»`);
         break;
       case 401:
         Message({
-          message: `Для выполнения запроса требуется аутентификация «${url}»`,
+          message: `Неверные учётные данные`,
           type: 'error',
           duration: 5000
         });
+        console.error(
+          `Для выполнения запроса к «${url}» требуется аутентификация`
+        );
         break;
       case 403:
         Message({
-          message: `Доступ к содержимому запрещён «${url}»`,
+          message: `Попытка доступа к запрещённному содержимому`,
           type: 'error',
           duration: 5000
         });
+        console.error(`Доступ к «${url}» запрещён`);
         break;
       case 404:
         Message({
@@ -64,14 +69,6 @@ const errorResponseHandler = error => {
         });
         break;
     }
-    if (data)
-      Message({
-        message: `${data}`,
-        type: 'error',
-        duration: 6000,
-        showClose: true,
-        offset: 55
-      });
   } else {
     // Message({
     //   message: `Неизвестная ошибка при запросе «${url}»`,

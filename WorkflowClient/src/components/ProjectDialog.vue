@@ -69,12 +69,14 @@ export default {
   async mounted() {
     this.loading = true;
     await this.searchTeams();
-    await this.fetchProjectTeams({
-      projectId: this.data.id,
-      pageNumber: 0,
-      pageSize: 10
-    });
-    this.form.teamIds = this.projectTeams.map(team => team.id);
+    if (this.isEdit) {
+      await this.fetchProjectTeams({
+        projectId: this.data.id,
+        pageNumber: 0,
+        pageSize: 10
+      });
+      this.form.teamIds = this.projectTeams.map(team => team.id);
+    }
     this.loading = false;
   },
   methods: {
