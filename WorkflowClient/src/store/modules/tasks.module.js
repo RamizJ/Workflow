@@ -34,6 +34,20 @@ export default {
       const task = response.data;
       commit('setTask', task);
     },
+    async fetchChildTasks({ commit }, id) {
+      const response = await tasksAPI.getChildTasks(id);
+      const tasks = response.data;
+      return tasks;
+    },
+    async addChildTasks({ state, dispatch, commit }, { parentId, tasks }) {
+      let taskIds = [];
+      for (let task of tasks) {
+        await dispatch('createTask', task);
+        taskIds.push(state.task.id);
+      }
+      const response = await tasksAPI.addChildTasks(parentId, taskIds);
+      return response.data;
+    },
     async createTask({ commit }, task) {
       const response = await tasksAPI.create(task);
       commit('setTask', response.data);

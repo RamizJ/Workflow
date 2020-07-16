@@ -17,7 +17,7 @@
       el-table-column(v-if="!$route.params.projectId" prop="projectName" label="Проект" width="150" sortable="custom")
       el-table-column(prop="state" label="Статус" width="120" :formatter="stateFormatter" sortable="custom")
       el-table-column(prop="priority" label="Приоритет" width="120" :formatter="priorityFormatter" sortable="custom")
-      el-table-column(prop="creationDate" label="Добавлено" width="170" :formatter="dateFormatter" sortable="custom")
+      el-table-column(prop="creationDate" label="Добавлено" width="180" :formatter="dateFormatter" sortable="custom")
       infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
         div(slot="no-more")
         div(slot="no-results")
@@ -30,11 +30,12 @@
         el-divider
         li.v-context__sub(v-if="isStatusVisible") Изменить статус
           ul.v-context
-            li(@click.prevent="onItemStatusChange($event, child.data.row, 'Perform')") Выполняется
-            li(@click.prevent="onItemStatusChange($event, child.data.row, 'Testing')") Проверяется
             li(@click.prevent="onItemStatusChange($event, child.data.row, 'Succeed')") Выполнено
             li(@click.prevent="onItemStatusChange($event, child.data.row, 'Delay')") Отложено
             li(@click.prevent="onItemStatusChange($event, child.data.row, 'Rejected')") Отклонено
+            el-divider
+            li(@click.prevent="onItemStatusChange($event, child.data.row, 'Perform')") Выполняется
+            li(@click.prevent="onItemStatusChange($event, child.data.row, 'Testing')") Проверяется
         li(
           v-if="isDeleteVisible"
           @click.prevent="onItemDelete($event, child.data.row)") {{ isMultipleSelected ? 'Удалить выделенное' : 'Переместить в корзину' }}

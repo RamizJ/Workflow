@@ -156,13 +156,8 @@ export default {
       if (firstLoad) this.loading = false;
     },
     async fetch(params) {
-      try {
-        await this.fetchItems(params);
-        this.query.pageNumber++;
-      } catch (e) {
-        this.$message.error('Не удалось получить данные');
-        console.log(e);
-      }
+      await this.fetchItems(params);
+      this.query.pageNumber++;
     },
     applyQuery() {
       if (this.$route.query.sort || this.$route.query.order) {
