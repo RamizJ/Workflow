@@ -1,5 +1,4 @@
 import projectsAPI from '~/api/projects.api';
-import tasksAPI from '~/api/tasks.api';
 
 export default {
   namespaced: true,

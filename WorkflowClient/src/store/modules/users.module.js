@@ -1,6 +1,5 @@
 import usersAPI from '~/api/users.api';
 import { Message } from 'element-ui';
-import teamsAPI from '~/api/teams.api';
 
 export default {
   namespaced: true,

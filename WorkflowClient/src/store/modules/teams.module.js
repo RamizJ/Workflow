@@ -1,5 +1,4 @@
 import teamsAPI from '~/api/teams.api';
-import projectsAPI from '~/api/projects.api';
 
 export default {
   namespaced: true,
