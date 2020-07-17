@@ -37,7 +37,6 @@ export default {
     },
     onSortChange(value) {
       this.sort = value;
-      console.log(value);
       this.updateUrl('sort', value);
     },
     onViewChange(value) {
@@ -46,7 +45,7 @@ export default {
     },
     updateUrl(queryLabel, queryValue) {
       const query = { ...this.$route.query };
-      if (query[queryLabel] !== queryValue) {
+      if (query[queryLabel] && query[queryLabel] !== queryValue) {
         query[queryLabel] = queryValue || undefined;
         this.$router.push({ query });
       }
