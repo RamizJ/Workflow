@@ -262,7 +262,7 @@ export default {
       await this.refresh();
     },
     dateFormatter(row, column, cellValue, index) {
-      const dateRaw = new Date(cellValue);
+      const dateRaw = new Date(`${cellValue}Z`);
       const dateRu = dateRaw.toLocaleString();
       return dateRu;
     },
