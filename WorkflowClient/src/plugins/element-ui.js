@@ -25,6 +25,11 @@ import {
   Col,
   Divider,
   Checkbox,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem,
+  Switch,
+  Progress,
   Loading
 } from 'element-ui';
 import language from 'element-ui/lib/locale/lang/ru-RU';
@@ -58,4 +63,9 @@ Vue.component(Row.name, Row);
 Vue.component(Col.name, Col);
 Vue.component(Divider.name, Divider);
 Vue.component(Checkbox.name, Checkbox);
+Vue.component(Dropdown.name, Dropdown);
+Vue.component(DropdownMenu.name, DropdownMenu);
+Vue.component(DropdownItem.name, DropdownItem);
+Vue.component(Switch.name, Switch);
+Vue.component(Progress.name, Progress);
 Loading.install(Vue);

@@ -59,9 +59,13 @@
   --card-border: var(--background-4);
 
   --popover-background: rgba(255, 255, 255);
-  --popover-border: #f1f1f1;
+  --popover-border: var(--popover-background);
   --popover-hover: #f1f1f1;
-  --popover-shadow: 0 0 20px rgba(0,0,0,.05);
+  --popover-shadow: 0 14px 30px rgba(103,132,187,.15),0 4px 4px rgba(103,132,187,.05);
+
+  --dropdown-background: #ffffff;
+  --dropdown-shadow: 0 14px 30px rgba(101, 185, 172, 0.25), 0 4px 4px rgba(103, 187, 174, .1);
+  --dropdown-item-hover-background: rgb(237, 245, 245);
 
   --tag-background: var(--background-3);
   --tag-border: var(--background-4);
@@ -137,6 +141,10 @@
   --popover-border: var(--background-3);
   --popover-hover: var(--background-5);
   --popover-shadow: 0 0 20px rgba(0,0,0,.05);
+
+  --dropdown-background: #242424;
+  --dropdown-shadow: 0 14px 30px rgba(27, 27, 27, 0.15), 0 4px 4px rgba(27, 27, 27, .05);
+  --dropdown-item-hover-background: rgba(27,27,27,.6);
 
   --tag-background: var(--background-2);
   --tag-border: var(--background-4);

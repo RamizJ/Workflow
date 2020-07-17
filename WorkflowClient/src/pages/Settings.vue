@@ -4,82 +4,83 @@
       template(slot="title") Настройки
 
     el-tabs(ref="tabs" v-model="activeTab")
-      el-tab-pane(label="Аккаунт" name="Account")
+      el-tab-pane(label="Профиль" name="profile")
+        div.section
+          h2 Оформление
+          el-tooltip(content="Светлое" placement="top")
+            el-button.theme-preview.light(type="text" @click="switchTheme('light')") А
+          el-tooltip(content="Тёмное" placement="top")
+            el-button.theme-preview.dark(type="text" @click="switchTheme('dark')") А
+        div.section
+          h2 Диалоговые окна
+          el-checkbox(
+            v-model="confirmDialogClose"
+            label="Подтверждать закрытие диалоговых окон"
+            @change="switchConfirmDialogClose")
+        div.section
+          h2 Отладка (для разработчиков)
+          el-checkbox(
+            v-model="debugMode"
+            label="Включить режим отладки"
+            @change="switchDebugMode")
+
+      el-tab-pane(label="Аккаунт" name="account")
         el-form(:model="form" :rules="rules" ref="form")
-          el-row
-            el-col(:span="24")
-              div.item
-                div.item__title Логин
-                div.item__content
-                  el-form-item(prop="userName")
-                    el-input(v-model="form.userName")
-          el-row
-            el-col(:span="24")
-              div.item
-                div.item__title Почта
-                div.item__content
-                  el-form-item(prop="email")
-                    el-input(v-model="form.email")
-          el-row(:gutter="40")
-            el-col(:span="6")
-              div.item
-                div.item__title Телефон
-                div.item__content
-                  el-form-item(prop="phone")
-                    el-input(v-model="form.phone")
-            el-col(:span="6")
-              div.item
-                div.item__title Фамилия
-                div.item__content
-                  el-form-item(prop="lastName")
-                    el-input(v-model="form.lastName")
-            el-col(:span="6")
-              div.item
-                div.item__title Имя
-                div.item__content
-                  el-form-item(prop="firstName")
-                    el-input(v-model="form.firstName")
-            el-col(:span="6")
-              div.item
-                div.item__title Отчество
-                div.item__content
-                  el-form-item(prop="middleName")
-                    el-input(v-model="form.middleName")
-          el-row
-            el-col(:span="24")
-              div.item
-                div.item__title Смена пароля
-                div.item__content
-                  el-form-item(prop="newPassword")
-                    el-input(v-model="form.newPassword" type="password" placeholder="Новый пароль" readonly onfocus="this.removeAttribute('readonly')")
-          el-row
-            el-col(:span="24")
-              div.item
-                div.item__title Подтвердите текущий пароль
-                div.item__content
-                  el-form-item(prop="currentPassword")
-                    el-input(v-model="form.currentPassword" type="password" placeholder="Текущий пароль" readonly onfocus="this.removeAttribute('readonly')")
-          el-row
-            el-col(:span="24")
-              div.item
-                div.item__content
-                  el-form-item(prop="password")
-                    el-button(type="primary" @click="updateAccount") Сохранить
-                    el-button(@click="exit") Выйти
-
-      el-tab-pane(label="Внешний вид" name="Appearance")
-        div.item
-          div.item__title Оформление
-          div.item__content
-            img.theme-icon(@click="switchTheme('light')" :class="appearance === 'light' ? 'active' : ''" src="../assets/icons/theme-light.png")
-            img.theme-icon(@click="switchTheme('dark')" :class="appearance === 'dark' ? 'active' : ''" src="../assets/icons/theme-dark.png")
-
+          div.section
+            h2 Логин
+            el-form-item(prop="userName")
+              el-input(v-model="form.userName")
+          div.section
+            h2 Почта
+            el-form-item(prop="email")
+              el-input(v-model="form.email")
+          div.section
+            h2 Телефон
+            el-form-item(prop="phone")
+              el-input(v-model="form.phone")
+          div.section
+            h2 Фамилия
+            el-form-item(prop="lastName")
+              el-input(v-model="form.lastName")
+          div.section
+            h2 Имя
+            el-form-item(prop="firstName")
+              el-input(v-model="form.firstName")
+          div.section
+            h2 Отчество
+            el-form-item(prop="middleName")
+              el-input(v-model="form.middleName")
+          div.section
+            h2 Смена пароля
+            el-form-item(prop="newPassword")
+              el-input(
+                v-model="form.newPassword"
+                type="password"
+                placeholder="Новый пароль" readonly
+                onfocus="this.removeAttribute('readonly')")
+            el-form-item(prop="confirmNewPassword")
+              el-input(
+                v-model="form.confirmNewPassword"
+                type="password"
+                placeholder="Новый пароль ещё раз" readonly
+                onfocus="this.removeAttribute('readonly')")
+          div.section
+            h2 Подтвердите текущий пароль
+            el-form-item(prop="currentPassword")
+              el-input(
+                v-model="form.currentPassword"
+                type="password"
+                placeholder="Текущий пароль" readonly
+                onfocus="this.removeAttribute('readonly')")
+          div.section
+            el-button(type="primary" @click="updateAccount") Сохранить
+            el-button(@click="exit") Выйти
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import Page from '~/components/Page';
-import PageHeader from '~/components/PageHeader';
+import PageHeader from '~/components/BaseHeader';
 
 export default {
   name: 'Settings',
@@ -97,6 +98,7 @@ export default {
         middleName: '',
         userName: '',
         newPassword: '',
+        confirmNewPassword: '',
         currentPassword: '',
         email: '',
         phone: '',
@@ -125,12 +127,10 @@ export default {
           }
         ]
       },
-      activeTab: 'Account',
-      tabs: [
-        { value: 'General', label: 'Общее' },
-        { value: 'Account', label: 'Аккаунт' }
-      ],
-      appearance: localStorage.getItem('theme') || 'light'
+      activeTab: 'profile',
+      appearance: localStorage.getItem('theme') || 'light',
+      confirmDialogClose: localStorage.confirmDialogClose === 'true',
+      debugMode: localStorage.debugMode === 'true'
     };
   },
   mounted() {
@@ -172,29 +172,47 @@ export default {
       localStorage.setItem('theme', appearance);
       document.documentElement.setAttribute('theme', appearance);
       this.appearance = appearance;
+    },
+    switchConfirmDialogClose(value) {
+      localStorage.confirmDialogClose = value;
+    },
+    switchDebugMode(value) {
+      localStorage.debugMode = value;
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.item__title {
-  margin-top: 15px;
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 15px;
+.section {
+  margin-bottom: 30px;
+  h2 {
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
 }
-.item__content {
-}
-.theme-icon {
+.theme-preview {
+  border-radius: 3px;
+  border: solid 3px var(--color-primary);
   cursor: pointer;
-  height: 65px;
-  border-radius: 10px;
-  border: 3px solid var(--input-background);
-  margin-right: 15px;
-  transition: border-color 0.25s;
-  &.active {
-    border-color: var(--color-primary);
+  display: inline-block;
+  font-weight: 500;
+  height: 40px;
+  margin-right: 10px;
+  padding-left: 4px;
+  padding-top: 14px;
+  width: 40px;
+  font-size: 18px;
+  text-align: left;
+  &.dark {
+    background: #1b1b1b;
+    color: #eeeeee;
+  }
+  &.light {
+    background: #f6f6f6;
+    color: #303030;
   }
 }
 </style>

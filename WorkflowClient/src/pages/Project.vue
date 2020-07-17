@@ -1,64 +1,82 @@
 <template lang="pug">
   page(v-loading="loading")
-    page-header
+    base-header
       template(slot="title")
         input.title(
           v-model="projectItem.name"
           v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
-          @change="onUpdate")
+          @change="onProjectUpdate")
       template(slot="action")
-        el-button(type="text" size="mini" @click="onDelete") Удалить
-        el-button(type="text" size="mini" @click="openDialog") Добавить задачу
-        el-button(type="text" size="mini" @click="teamDialogVisible = true") Добавить команду
-      template(slot="search")
-        base-search(:query.sync="searchQuery")
-      template(slot="subtitle")
+        el-dropdown(placement="bottom" :show-timeout="0")
+          el-button(type="text" size="mini")
+            feather(type="chevron-down" size="22")
+          el-dropdown-menu(slot="dropdown")
+            el-dropdown-item
+              el-button(type="text" size="mini" @click="onTaskCreate") Создать задачу
+            el-dropdown-item
+              el-button(type="text" size="mini" @click="onTeamCreate") Создать команду
+            el-divider
+            el-dropdown-item
+              el-button(type="text" size="mini" @click="onProjectEdit") Редактировать
+            el-dropdown-item
+              el-button(type="text" size="mini" @click="onProjectDelete") Переместить в корзину
+      //template(slot="subtitle")
         input.subtitle(
           v-model="projectItem.description"
           v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
-          @change="onUpdate")
+          @change="onProjectUpdate")
+      //template(slot="search")
+        base-search(:query.sync="searchQuery")
 
-    el-tabs(v-if="projectItem.id" ref="tabs" v-model="activeTab" @tab-click="onTabClick")
-      el-tab-pane(v-for="(tab, index) in tabs" :key="index" :label="tab.label" :name="tab.value")
-        table-tasks(v-if="tab.value === activeTab" ref="list" :search="searchQuery" :status="tab.value")
+    el-tabs(v-if="projectItem.id" ref="tabs" v-model="activeTab" @tab-click="setTab")
+      el-tab-pane(name="overview" label="Обзор")
+        project-overview(v-if="activeTab === 'overview'" :data="projectItem")
+      el-tab-pane(name="tasks" label="Задачи")
+        project-tasks(v-if="activeTab === 'tasks'" ref="projectTasks")
+      el-tab-pane(name="team" label="Команды")
+        project-teams(v-if="activeTab === 'team'")
 
-    team-dialog(v-if="teamDialogVisible" @close="teamDialogVisible = false")
+    project-dialog(v-if="dialogProjectVisible" :data="projectItem" @close="dialogProjectVisible = false")
+    task-dialog(v-if="dialogTaskVisible" @close="dialogTaskVisible = false")
+    team-dialog(v-if="dialogTeamVisible" @close="dialogTeamVisible = false")
 
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import Page from '~/components/Page';
-import PageHeader from '~/components/PageHeader';
-import TableContent from '~/components/TableContent';
-import TeamDialog from '~/components/DialogTeam';
-import TableTasks from '~/components/TableTasks';
+import BaseHeader from '~/components/BaseHeader';
 import BaseSearch from '~/components/BaseSearch';
+import ProjectOverview from '~/components/ProjectOverview';
+import ProjectTasks from '~/components/ProjectTasks';
+import ProjectTeams from '@/components/ProjectTeams';
+import ProjectDialog from '~/components/ProjectDialog';
+import TaskDialog from '~/components/TaskDialog';
+import TeamDialog from '~/components/TeamDialog';
 
 export default {
   name: 'Project',
   components: {
-    BaseSearch,
     Page,
-    PageHeader,
-    TableContent,
-    TeamDialog,
-    TableTasks
+    BaseHeader,
+    BaseSearch,
+    ProjectOverview,
+    ProjectTeams,
+    ProjectTasks,
+    ProjectDialog,
+    TaskDialog,
+    TeamDialog
   },
   data() {
     return {
       loading: true,
       searchQuery: '',
-      activeTab: 'New',
+      activeTab: 'overview',
       tabs: [
-        { value: 'All', label: 'Все' },
-        { value: 'New', label: 'Новые' },
-        { value: 'Perform', label: 'Выполняются' },
-        { value: 'Testing', label: 'Проверяются' },
-        { value: 'Delay', label: 'Отложенные' },
-        { value: 'Succeed', label: 'Выполненные' },
-        { value: 'Rejected', label: 'Отклоненные' },
-        { value: 'Deleted', label: 'Удаленные' }
+        { value: 'overview', label: 'Общее' },
+        { value: 'tasks', label: 'Задачи' },
+        { value: 'team', label: 'Команда' },
+        { value: 'history', label: 'История' }
       ],
       projectItem: {
         name: '',
@@ -69,10 +87,11 @@ export default {
         teamId: null,
         teamName: null,
         groupId: null,
-        groupName: null,
-        creationDate: new Date()
+        groupName: null
       },
-      teamDialogVisible: false
+      dialogProjectVisible: false,
+      dialogTaskVisible: false,
+      dialogTeamVisible: false
     };
   },
   computed: {
@@ -82,12 +101,7 @@ export default {
   },
   async mounted() {
     this.loading = true;
-    const query = { ...this.$route.query };
-    query.status = query.status || this.activeTab;
-    this.activeTab = query.status;
-    if (JSON.stringify(query) !== JSON.stringify(this.$route.query))
-      await this.$router.push({ query });
-
+    this.loadTab();
     await this.fetchProject(this.$route.params.projectId);
     this.projectItem = { ...this.project };
     this.loading = false;
@@ -99,18 +113,34 @@ export default {
       deleteProject: 'projects/deleteProject',
       fetchSidebarProjects: 'projects/fetchSidebarProjects'
     }),
-    openDialog() {
-      this.$refs.list[0].onItemCreate();
-    },
-    onTabClick(tab) {
+    loadTab() {
       const query = { ...this.$route.query };
-      query.status = this.activeTab;
-      this.$router.push({ query });
+      query.tab = query.tab || this.activeTab;
+      this.activeTab = query.tab;
+      if (JSON.stringify(query) !== JSON.stringify(this.$route.query))
+        this.$router.push({ query });
     },
-    async onUpdate(e) {
+    setTab() {
+      const query = {};
+      query.tab = this.activeTab;
+      if (JSON.stringify(query) !== JSON.stringify(this.$route.query))
+        this.$router.push({ query });
+    },
+    async onTaskCreate(e) {
+      if (this.activeTab === 'tasks')
+        this.$refs.projectTasks.$refs.items.onItemCreate();
+      else this.dialogTaskVisible = true;
+    },
+    async onTeamCreate(e) {
+      this.dialogTeamVisible = true;
+    },
+    async onProjectEdit(e) {
+      this.dialogProjectVisible = true;
+    },
+    async onProjectUpdate(e) {
       await this.updateProject(this.projectItem);
     },
-    async onDelete() {
+    async onProjectDelete() {
       await this.deleteProject(this.projectItem.id);
       await this.fetchSidebarProjects({ reload: true });
       await this.$router.push({ name: 'Projects' });

@@ -96,12 +96,8 @@ export default {
     async sendForm() {
       const payload = { ...this.form };
       this.loading = true;
-      try {
-        if (this.isEdit) await this.updateItem(payload);
-        else await this.createItem(payload);
-      } catch (error) {
-        this.$message.error(`Ошибка отправки запроса`);
-      }
+      if (this.isEdit) await this.updateItem(payload);
+      else await this.createItem(payload);
       this.loading = false;
     },
     async submit(event) {

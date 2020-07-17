@@ -1,57 +1,53 @@
 <template lang="pug">
   page
-    page-header
+    base-header
       template(slot="title") Проекты
       template(slot="action")
-        el-button(type="text" size="mini" @click="openDialog") Создать
-      template(slot="search")
-        base-search(:query.sync="searchQuery")
+        el-button(type="text" size="mini" @click="onCreate") Создать
 
     el-tabs(ref="tabs" v-model="activeTab" @tab-click="onTabClick")
       el-tab-pane(v-for="(tab, index) in tabs" :key="index" :label="tab.label" :name="tab.value")
-        table-projects(v-if="tab.value === activeTab" ref="list" :search="searchQuery" :status="tab.value")
+        base-toolbar(
+          v-if="activeTab === tab.value"
+          :sort-fields="sortFields"
+          @search="onSearch"
+          @order="onOrderChange"
+          @sort="onSortChange"
+          @view="onViewChange")
+        project-list(
+          v-if="activeTab === tab.value && view === 'list'"
+          ref="items"
+          :search="search"
+          :order="order"
+          :sort="sort")
 
 </template>
 
 <script>
 import Page from '~/components/Page';
-import PageHeader from '~/components/PageHeader';
-import TableProjects from '~/components/TableProjects';
-import BaseSearch from '~/components/BaseSearch';
+import BaseHeader from '~/components/BaseHeader';
+import BaseToolbar from '~/components/BaseToolbar';
+import ProjectList from '~/components/ProjectList';
+import pageMixin from '~/mixins/page.mixin';
 
 export default {
   components: {
-    BaseSearch,
     Page,
-    PageHeader,
-    TableProjects
+    BaseHeader,
+    BaseToolbar,
+    ProjectList
   },
+  mixins: [pageMixin],
   data() {
     return {
-      searchQuery: '',
-      activeTab: 'Active',
-      tabs: [
-        { value: 'Active', label: 'Активные' },
-        { value: 'Deleted', label: 'Удаленные' }
+      sortFields: [
+        { value: 'creationDate', label: 'По дате создания' },
+        { value: 'title', label: 'По названию' },
+        { value: 'state', label: 'По статусу' },
+        { value: 'projectName', label: 'По проекту' },
+        { value: 'priority', label: 'По приоритету' }
       ]
     };
-  },
-  mounted() {
-    const query = { ...this.$route.query };
-    query.status = query.status || this.activeTab;
-    this.activeTab = query.status;
-    if (JSON.stringify(query) !== JSON.stringify(this.$route.query))
-      this.$router.push({ query });
-  },
-  methods: {
-    openDialog() {
-      this.$refs.list[0].onItemCreate();
-    },
-    onTabClick() {
-      const query = { ...this.$route.query };
-      query.status = this.activeTab;
-      this.$router.push({ query });
-    }
   }
 };
 </script>

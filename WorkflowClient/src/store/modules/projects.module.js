@@ -1,5 +1,4 @@
 import projectsAPI from '~/api/projects.api';
-import tasksAPI from '~/api/tasks.api';
 
 export default {
   namespaced: true,
@@ -36,24 +35,43 @@ export default {
       state.sidebarProjectsPage = params?.reload
         ? 0
         : state.sidebarProjectsPage;
+      state.sidebarProjects = params?.reload ? [] : state.sidebarProjects;
       const page = state.sidebarProjectsPage;
       if (page === 0) commit('setSidebarProjects', []);
       commit('setSidebarProjectsPage', page + 1);
       const response = await projectsAPI.getPage({
         pageNumber: page,
-        pageSize: params?.pageSize || 10
+        pageSize: params?.pageSize || 20
       });
-      const projects = response.data;
+      const projects = response.data.map(project => {
+        project.teamIds = [];
+        return project;
+      });
       commit('appendSidebarProjects', projects);
       return projects;
     },
-    async fetchProjects({ commit }, params) {
+    async fetchProjects({ state, dispatch, commit }, params) {
       const response = await projectsAPI.getPage(params);
       const projects = response.data.map(project => {
         project.teamIds = [];
         return project;
       });
       commit('setProjects', projects);
+
+      const sidebarProjects = state.sidebarProjects;
+      const reloadSidebarProjects =
+        params.pageNumber === 0 &&
+        projects.length === sidebarProjects.length &&
+        projects.sort().every(function(value, index) {
+          return (
+            JSON.stringify(value) ===
+            JSON.stringify(sidebarProjects.sort()[index])
+          );
+        });
+      if (reloadSidebarProjects)
+        await dispatch('fetchSidebarProjects', { reload: true });
+
+      return projects;
     },
     async fetchProject({ commit, dispatch, state }, id) {
       const response = await projectsAPI.get(id);
@@ -70,6 +88,7 @@ export default {
       const response = await projectsAPI.getTeamsPage(params);
       const projectTeams = response.data;
       commit('setProjectTeams', projectTeams);
+      return response.data;
     },
     async createProject({ commit }, project) {
       let newProject = {
@@ -81,9 +100,11 @@ export default {
       commit('setProject', createdProject);
     },
     async updateProject({ commit }, project) {
+      const teamIds = project.teamIds;
+      delete project.teamIds;
       let newProject = {
-        project: project,
-        teamIds: project.teamIds
+        project,
+        teamIds
       };
       const response = await projectsAPI.update(newProject);
       const updatedProject = response.data;

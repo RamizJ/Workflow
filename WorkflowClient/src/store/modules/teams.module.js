@@ -1,5 +1,4 @@
 import teamsAPI from '~/api/teams.api';
-import projectsAPI from '~/api/projects.api';
 
 export default {
   namespaced: true,
@@ -32,6 +31,7 @@ export default {
         return team;
       });
       commit('setTeams', teams);
+      return teams;
     },
     async fetchTeam({ commit }, id) {
       const response = await teamsAPI.get(id);

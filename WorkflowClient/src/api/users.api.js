@@ -9,7 +9,8 @@ export default {
   deleteRange: userIds => httpClient.patch(`/api/Users/DeleteRange`, userIds),
   resetPassword: userId =>
     httpClient.patch(`/api/Users/ResetPassword/${userId}`),
-  isEmailExist: email => httpClient.get(`/api/Users/IsEmailExist/${email}`),
+  isEmailExist: email =>
+    httpClient.get(`/api/Users/IsEmailExist/${email}?email=${email}`),
   isUserNameExist: userName =>
     httpClient.get(`/api/Users/IsUserNameExist/${userName}`),
   getPage: query => httpClient.post(`/api/Users/GetPage`, query),

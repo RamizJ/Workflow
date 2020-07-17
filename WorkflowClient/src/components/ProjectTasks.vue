@@ -1,25 +1,16 @@
 <template lang="pug">
-  page
-    base-header
-      template(slot="title") Задачи
-      template(slot="action")
-        el-button(type="text" size="mini" @click="onCreate") Создать
-
-    el-tabs(ref="tabs" v-model="activeTab" @tab-click="onTabClick")
-      el-tab-pane(v-for="(tab, index) in tabs" :key="index" :label="tab.label" :name="tab.value")
-        base-toolbar(
-          v-if="activeTab === tab.value"
-          :sort-fields="sortFields"
-          @search="onSearch"
-          @order="onOrderChange"
-          @sort="onSortChange"
-          @view="onViewChange")
-        task-list(
-          v-if="activeTab === tab.value && view === 'list'"
-          ref="items"
-          :search="search"
-          :order="order"
-          :sort="sort")
+  div.project-tasks
+    base-toolbar(
+      :sort-fields="sortFields"
+      @search="onSearch"
+      @order="onOrderChange"
+      @sort="onSortChange"
+      @view="onViewChange")
+    task-list(
+      ref="items"
+      :search="search"
+      :order="order"
+      :sort="sort")
 
 </template>
 
@@ -51,3 +42,11 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.project-tasks {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+</style>

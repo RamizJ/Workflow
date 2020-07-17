@@ -21,8 +21,13 @@ export default {
   actions: {
     async fetchTasks({ commit }, params) {
       const response = await tasksAPI.getPage(params);
-      const tasks = response.data;
+      const tasks = response.data.map(task => {
+        if (task.expectedCompletedDate)
+          task.expectedCompletedDate = `${task.expectedCompletedDate}Z`;
+        return task;
+      });
       commit('setTasks', tasks);
+      return tasks;
     },
     async searchTasks({ commit }, params) {
       const response = await tasksAPI.getPage(params);
@@ -33,6 +38,7 @@ export default {
       const response = await tasksAPI.get(id);
       const task = response.data;
       commit('setTask', task);
+      return task;
     },
     async fetchChildTasks({ commit }, id) {
       const response = await tasksAPI.getChildTasks(id);
@@ -79,6 +85,14 @@ export default {
       const response = await tasksAPI.restoreRange(ids);
       const tasks = response.data;
       if (!tasks) throw Error;
+    },
+    async getTasksCount({ commit }, projectId) {
+      const response = await tasksAPI.getTasksCount(projectId);
+      return response.data;
+    },
+    async getTasksCountByStatus({ commit }, { projectId, status }) {
+      const response = await tasksAPI.getTasksCountByStatus(projectId, status);
+      return response.data;
     },
     async fetchAttachments({ commit }, taskId) {
       const response = await tasksAPI.getAttachments(taskId);

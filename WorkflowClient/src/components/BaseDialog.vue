@@ -1,15 +1,18 @@
 <template lang="pug">
   el-dialog(
-    :visible.sync="showDialog"
+    ref="dialog"
     custom-class="base-dialog"
+    :visible.sync="showDialog"
+    :before-close="confirmClose"
     @closed="$emit('close')")
     div.header(slot="title")
       div.title
         slot(name="title")
-      el-tooltip.submit(content="Сохранить" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="800")
+      //el-tooltip.submit(content="Сохранить" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="800")
         slot(name="submit")
       el-tooltip.close(content="Закрыть" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="800")
-        slot(name="close")
+        el-button(type="text")
+          feather(type="x" @click="close")
     div.body
       slot(name="body")
       div.footer
@@ -17,6 +20,8 @@
 </template>
 
 <script>
+import { MessageBox } from 'element-ui';
+
 export default {
   name: 'BaseDialog',
   data() {
@@ -26,6 +31,29 @@ export default {
   },
   mounted() {
     this.showDialog = true;
+  },
+  methods: {
+    confirmClose(done) {
+      const needConfirm = localStorage.confirmDialogClose === 'true';
+      if (needConfirm) {
+        MessageBox.confirm(
+          'Вы действительно хотите закрыть окно?',
+          'Предупреждение',
+          {
+            confirmButtonText: 'Закрыть',
+            cancelButtonText: 'Отменить',
+            type: 'warning'
+          }
+        )
+          .then(() => {
+            done();
+          })
+          .catch(() => {});
+      } else done();
+    },
+    close() {
+      this.$refs.dialog.hide();
+    }
   }
 };
 </script>

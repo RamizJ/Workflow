@@ -10,7 +10,6 @@
     div.page-header__search
       slot(name="search")
 
-
 </template>
 
 <script>
@@ -49,8 +48,8 @@ input {
   line-height: 34px;
   font-weight: 800;
   &:hover > .page-header__action {
-    opacity: 1;
-    margin-left: 10px;
+    //opacity: 1;
+    //margin-left: 10px;
   }
 }
 .page-header__subtitle > * {
@@ -62,9 +61,9 @@ input {
 
 <style lang="scss">
 .page-header__search {
-  width: 25%;
+  //width: 25%;
   .el-button {
-    padding: 8px 6px;
+    //padding: 8px 6px;
   }
   .el-input__inner {
     padding-left: 35px;
@@ -74,13 +73,12 @@ input {
   }
 }
 .page-header__action {
-  transition: 0.3s;
-  opacity: 0;
-  margin-left: 5px;
-  i,
-  button {
+  margin-left: 6px;
+  height: 34px;
+  i {
+    color: var(--text);
     padding: 0;
-    //border-radius: 6px;
+    vertical-align: text-bottom;
   }
 }
 .page-header .actions {

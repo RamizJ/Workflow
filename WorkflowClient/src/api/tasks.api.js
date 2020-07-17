@@ -14,6 +14,12 @@ export default {
     httpClient.get(
       `/api/Goals/GetRange${qs.stringify(query, { addQueryPrefix: true })}`
     ),
+  getTasksCount: projectId =>
+    httpClient.get(`/api/Goals/GetTotalProjectGoalsCount/${projectId}`),
+  getTasksCountByStatus: (projectId, status) =>
+    httpClient.get(
+      `/api/Goals/GetProjectGoalsByStateCount/${projectId}?goalState=${status}`
+    ),
   create: task => httpClient.post(`/api/Goals/Create`, task),
   update: task => httpClient.put(`/api/Goals/Update`, task),
   updateRange: tasks => httpClient.put(`/api/Goals/UpdateRange`, tasks),

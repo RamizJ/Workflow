@@ -1,6 +1,5 @@
 import usersAPI from '~/api/users.api';
 import { Message } from 'element-ui';
-import teamsAPI from '~/api/teams.api';
 
 export default {
   namespaced: true,
@@ -21,6 +20,7 @@ export default {
       const response = await usersAPI.getPage(params);
       const users = response.data;
       commit('setUsers', users);
+      return users;
     },
     async fetchUser({ commit }, id) {
       const response = await usersAPI.get(id);

@@ -32,13 +32,13 @@
     template(slot="footer")
       div.extra
         el-tooltip(content="Описание" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-          el-button(v-if="!form.description" type="text" title="Теги" @click="descriptionVisible = !descriptionVisible" circle)
+          el-button(v-if="!form.description" type="text" @click="descriptionVisible = !descriptionVisible" circle)
             feather(type="align-left")
         el-tooltip(content="Участники" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-          el-button(size="small" v-if="!(form.userIds && form.userIds.length)" type="text" title="Теги" @click="teamMembersVisible = !teamMembersVisible" circle)
+          el-button(size="small" v-if="!(form.userIds && form.userIds.length)" type="text" @click="teamMembersVisible = !teamMembersVisible" circle)
             feather(type="users")
         el-tooltip(content="Проекты" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-          el-button(size="small" v-if="!(form.projectIds && form.projectIds.length)" type="text" title="Теги" @click="projectsVisible = !projectsVisible" circle)
+          el-button(size="small" v-if="!(form.projectIds && form.projectIds.length)" type="text" @click="projectsVisible = !projectsVisible" circle)
             feather(type="layers")
       div.send
         el-tooltip(content="Сохранить" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")

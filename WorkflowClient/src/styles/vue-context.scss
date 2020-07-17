@@ -1,82 +1,53 @@
 @import '~vue-context/src/sass/vue-context';
 
-//.v-context > li,
-//.v-context ul > li {
-//  padding: 9.5px 16px;
-//  margin: 0 4px;
-//  font-size: 13px;
-//  cursor: pointer;
-//  border-radius: 6px;
-//  transition: background-color 0.05s;
-//  &:hover {
-//    background-color: var(--color-primary);
-//    color: white;
-//  }
-//}
-//.v-context__sub {
-//  > a:after {
-//    //content: "\2bc8";
-//    //float: right;
-//    //padding-left: 1rem;
-//  }
-//
-//  > ul {
-//    //display: none;
-//  }
-//
-//  &:hover > * {
-//    display: block;
-//  }
-//}
-//.v-context,
-//.v-context ul {
-//  background: var(--popover-background);
-//  backdrop-filter: blur(10px);
-//  padding: 4px 0;
-//  border: none;
-//  border-radius: 8px;
-//  box-shadow: var(--popover-shadow), var(--popover-shadow);
-//}
-
 .v-context {
   &, & ul {
-    background: var(--popover-background);
-    backdrop-filter: blur(10px);
-    padding: 4px 0;
+    background: var(--dropdown-background);
+    padding: 10px 0;
     border: none;
     border-radius: 7px;
-    box-shadow: var(--popover-shadow), var(--popover-shadow);
+    box-shadow: var(--dropdown-shadow);
     overflow-y: unset;
-    > li {
-      padding: 7.5px 15px;
-      margin: 0 4px;
-      font-size: 13px;
+    > li a {
+      padding: 10px 15px;
+      margin: 0 10px;
+      font-size: 14px;
       cursor: pointer;
       border-radius: 6px;
       transition: background-color 0.05s;
       color: var(--text);
       &:hover {
-        background-color: var(--color-primary);
-        color: white;
+        background-color: var(--dropdown-item-hover-background);
       }
     }
   }
   &__sub {
-    > a:after {
-      content: "\2bc8";
-      float: right;
-      padding-left: 1rem;
+
+    > a::before,
+    > a::after {
+      float: unset;
+      padding-left: 0;
+      border-right: 1px solid;
+      content: '';
+      display: block;
+      height: 8px;
+      margin-top: -6px;
+      position: absolute;
+      transform: rotate(135deg);
+      right: 22px;
+      top: 50%;
+      width: 0;
+    }
+    > a::after {
+      margin-top: -1px;
+      transform: rotate(45deg);
     }
     > ul {
       margin-top: -3px;
       margin-left: 10px;
-      display: none;
-    }
-    &:hover > * {
-      display: block;
     }
   }
   .el-divider {
-    margin: 5px 0;
+    margin: 8px 0;
   }
 }

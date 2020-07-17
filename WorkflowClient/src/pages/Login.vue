@@ -43,9 +43,11 @@ export default {
           try {
             this.loading = true;
             await this.login(credentials);
-            form.resetFields();
             await this.$router.push('/tasks');
+            form.resetFields();
+            this.loading = false;
           } catch (error) {
+            this.loading = false;
             console.error(error);
             this.$message({
               showClose: true,
@@ -53,7 +55,6 @@ export default {
               type: 'error'
             });
           }
-          this.loading = false;
         } else {
           this.$message({
             showClose: true,
