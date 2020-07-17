@@ -1,4 +1,4 @@
-import authentication from '~/api/auth.api';
+import auth from '~/api/auth.api';
 
 export default {
   namespaced: true,
@@ -16,7 +16,7 @@ export default {
   },
   actions: {
     async login({ commit }, credentials) {
-      const response = await authentication.login(
+      const response = await auth.login(
         credentials.login,
         credentials.password,
         credentials.rememberMe
@@ -28,21 +28,19 @@ export default {
       commit('setToken', token);
     },
     async logout({ commit }) {
-      await authentication.logout();
+      await auth.logout();
       commit('setToken', null);
       commit('setUser', null);
       localStorage.removeItem('access_token');
     },
-    async fetchMe({ commit }) {
-      const response = await authentication.getMe();
+    async fetchMe({ dispatch, commit }) {
+      const response = await auth.getMe();
+      if (!response) return;
       const user = response.data;
       commit('setUser', user);
     },
     async updatePassword({ commit }, { currentPassword, newPassword }) {
-      const response = await authentication.changePassword(
-        currentPassword,
-        newPassword
-      );
+      const response = await auth.changePassword(currentPassword, newPassword);
     },
     async hasRole({ commit }, role) {
       console.log(role);

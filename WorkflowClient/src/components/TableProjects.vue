@@ -15,7 +15,7 @@
       el-table-column(type="selection" width="38")
       el-table-column(prop="name" label="Проект" sortable="custom")
       el-table-column(prop="ownerFio" label="Руководитель" width="250" sortable="custom")
-      el-table-column(prop="creationDate" label="Добавлено" width="170" :formatter="dateFormatter" sortable="custom")
+      el-table-column(prop="creationDate" label="Добавлено" width="180" :formatter="dateFormatter" sortable="custom")
       infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
         div(slot="no-more")
         div(slot="no-results")

@@ -18,14 +18,21 @@
         transition(name="fade")
           el-col(v-if="descriptionVisible || form.description" :span="24")
             el-form-item(prop="description")
-              el-input(v-model="form.description" :autosize="{ minRows: 2 }" type="textarea" placeholder="Описание" )
+              el-input(v-model="form.description" :autosize="{ minRows: 2 }" type="textarea" placeholder="Описание")
         transition(name="fade")
-          el-col(v-if="tagsVisible || (form.tags && form.tags.length)" :span="24")
-            el-form-item(prop="tags")
-              el-select(
-                v-model="form.tags"
-                placeholder="Теги"
-                multiple filterable allow-create default-first-option)
+          el-col(v-if="checklistVisible || form.childGoalIds" :span="24")
+            el-form-item
+              el-card.checklist(shadow="never" :body-style="{ padding: '0px 10px' }")
+                el-input(
+                  v-model="checklistNewItem"
+                  placeholder="Новый пункт"
+                  @keyup.enter.native="addToChecklist")
+                  el-button(slot="prefix" type="text" size="mini" @click="addToChecklist")
+                    feather(type="plus" size="18")
+                el-checkbox(
+                  v-for="(checklistItem, index) in checklist"
+                  :key="index"
+                  v-model="checklist[index].checked") {{ checklistItem.title }}
         transition(name="fade")
           el-col(v-if="priorityVisible || form.priority" :span="8")
             el-form-item(prop="priority")
@@ -71,11 +78,11 @@
     template(slot="footer")
       div.extra
         el-tooltip(content="Описание" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-          el-button(v-if="!form.description" type="text" title="Теги" @click="descriptionVisible = !descriptionVisible" circle)
+          el-button(v-if="!form.description" type="text" @click="descriptionVisible = !descriptionVisible" circle)
             feather(type="align-left")
-        el-tooltip(content="Теги" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-          el-button(v-if="!(form.tags && form.tags.length)" type="text" title="Теги" @click="tagsVisible = !tagsVisible" circle)
-            feather(type="tag")
+        //el-tooltip(content="Чек-лист" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(v-if="!form.childGoalIds" type="text" @click="checklistVisible = !checklistVisible" circle)
+            feather(type="check-square")
         el-tooltip(content="Приоритет" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
           el-button(v-if="!form.priority" type="text" @click="priorityVisible = !priorityVisible" circle)
             feather(type="zap")
@@ -119,10 +126,10 @@ export default {
         ownerFio: null,
         performerId: null,
         performerFio: null,
-        observerIds: [],
-        childGoalIds: [],
-        tags: []
+        observerIds: []
       },
+      checklistNewItem: '',
+      checklist: [],
       rules: {
         title: [{ required: true, message: '!', trigger: 'blur' }],
         performerId: [{ required: true, message: '!', trigger: 'blur' }],
@@ -135,7 +142,7 @@ export default {
       ],
       attachmentList: [],
       descriptionVisible: null,
-      tagsVisible: null,
+      checklistVisible: null,
       priorityVisible: null,
       performerVisible: null,
       expectedCompletedDateVisible: null,
@@ -152,6 +159,7 @@ export default {
   async mounted() {
     this.loading = true;
     if (this.isEdit) {
+      await this.loadChecklist();
       await this.fetchAttachments(this.form.id);
       this.attachmentList = this.attachments.map(attachment => {
         return {
@@ -172,6 +180,8 @@ export default {
       fetchItem: 'tasks/fetchTask',
       createItem: 'tasks/createTask',
       updateItem: 'tasks/updateTask',
+      fetchChildTasks: 'tasks/fetchChildTasks',
+      addChildTasks: 'tasks/addChildTasks',
       fetchAttachments: 'tasks/fetchAttachments',
       addAttachments: 'tasks/addAttachments',
       removeAttachments: 'tasks/removeAttachments',
@@ -180,10 +190,37 @@ export default {
     async submit() {
       if (this.isFormValid) {
         await this.sendForm();
+        await this.saveChecklist();
         this.$refs.upload?.submit();
         this.$emit('submit');
         this.exit();
       }
+    },
+    async loadChecklist() {
+      if (!this.form.childGoalIds) return;
+      const childTasks = await this.fetchChildTasks(this.form.id);
+      this.checklist = childTasks.map(task => {
+        task.checked = task.state === 'Succeed';
+        return task;
+      });
+    },
+    async addToChecklist() {
+      if (!this.checklistNewItem) return;
+      this.checklist.unshift({
+        title: this.checklistNewItem,
+        projectId: this.form.projectId,
+        creationDate: new Date(),
+        state: 'New',
+        parentGoalId: this.form.id,
+        checked: false
+      });
+      this.checklistNewItem = '';
+    },
+    async saveChecklist() {
+      if (!this.checklist.length) return;
+      const parentId = this.isEdit ? this.form.id : this.task.id;
+      const tasks = this.checklist.filter(item => !item.id);
+      await this.addChildTasks({ parentId, tasks });
     },
     async uploadAttachment(request) {
       this.loading = true;
@@ -204,3 +241,28 @@ export default {
   }
 };
 </script>
+
+<style lang="scss">
+.checklist {
+  .el-input__inner,
+  .el-input__inner:hover,
+  .el-input__inner:focus {
+    background-color: transparent;
+  }
+  .el-input__prefix {
+    left: 0;
+  }
+  .el-input--prefix .el-input__inner {
+    padding-left: 25px;
+  }
+  .el-input .el-button {
+    height: 100%;
+    padding: 0;
+  }
+  .el-checkbox {
+    margin-left: 2px;
+    font-weight: 400;
+    width: 100%;
+  }
+}
+</style>

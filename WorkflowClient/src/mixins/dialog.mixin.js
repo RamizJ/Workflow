@@ -46,10 +46,10 @@ export default {
       });
     },
     teamList() {
-      return this.teams.map(project => {
+      return this.teams.map(team => {
         return {
-          value: project.name,
-          id: project.id
+          value: team.name,
+          id: team.id
         };
       });
     },

@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
+using Workflow.Share.Extensions;
 using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
@@ -297,105 +301,33 @@ namespace Workflow.Services
         {
             if (sortFields == null) return query;
 
-            IOrderedQueryable<Project> orderedQuery = null;
-            foreach (var field in sortFields)
+            foreach (var field in sortFields.Where(sf => sf != null))
             {
-                if (field == null)
-                    continue;
+                var isAcending = field.SortType == SortType.Ascending;
 
                 if (field.Is(nameof(VmProject.Name)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(s => s.Name)
-                            : query.OrderByDescending(s => s.Name);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(s => s.Name)
-                            : orderedQuery.ThenByDescending(s => s.Name);
-                    }
-                }
+                    query = query.SortBy(p => p.Name, isAcending);
+
                 else if (field.Is(nameof(VmProject.GroupName)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(s => s.Group.Name)
-                            : query.OrderByDescending(s => s.Group.Name);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(s => s.Group.Name)
-                            : orderedQuery.ThenByDescending(s => s.Group.Name);
-                    }
-                }
+                    query = query.SortBy(p => p.Group.Name, isAcending);
+
                 else if (field.Is(nameof(VmProject.CreationDate)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(s => s.CreationDate)
-                            : query.OrderByDescending(s => s.CreationDate);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(s => s.CreationDate)
-                            : orderedQuery.ThenByDescending(s => s.CreationDate);
-                    }
-                }
+                    query = query.SortBy(p => p.CreationDate, isAcending);
+
                 else if (field.Is(nameof(VmProject.ExpectedCompletedDate)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(s => s.ExpectedCompletedDate)
-                            : query.OrderByDescending(s => s.ExpectedCompletedDate);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(s => s.ExpectedCompletedDate)
-                            : orderedQuery.ThenByDescending(s => s.ExpectedCompletedDate);
-                    }
-                }
+                    query = query.SortBy(p => p.ExpectedCompletedDate, isAcending);
+
                 else if (field.Is(nameof(VmProject.IsRemoved)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(s => s.IsRemoved)
-                            : query.OrderByDescending(s => s.IsRemoved);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(s => s.IsRemoved)
-                            : orderedQuery.ThenByDescending(s => s.IsRemoved);
-                    }
-                }
+                    query = query.SortBy(p => p.IsRemoved, isAcending);
+
                 else if (field.Is(nameof(VmProject.OwnerFio)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(s => s.Owner.LastName).ThenBy(s => s.Owner.FirstName).ThenBy(s => s.Owner.MiddleName)
-                            : query.OrderByDescending(s => s.Owner.LastName).ThenBy(s => s.Owner.FirstName).ThenBy(s => s.Owner.MiddleName);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(s => s.Owner.LastName).ThenBy(s => s.Owner.FirstName).ThenBy(s => s.Owner.MiddleName)
-                            : orderedQuery.ThenByDescending(s => s.Owner.LastName).ThenBy(s => s.Owner.FirstName).ThenBy(s => s.Owner.MiddleName);
-                    }
-                }
+                    query = query
+                        .SortBy(p => p.Owner.LastName, isAcending)
+                        .SortBy(p => p.Owner.FirstName, isAcending)
+                        .SortBy(p => p.Owner.MiddleName, isAcending);
             }
 
-            return orderedQuery ?? query;
+            return query;
         }
 
         private async Task<Project> CreateProject(ApplicationUser user, VmProject project)
