@@ -20,17 +20,18 @@
 
     vue-context(ref="contextMenu")
       template(slot-scope="child")
-        li(v-if="isEditVisible" @click.prevent="onItemDoubleClick(child.data.row)") Открыть
-        li(v-if="isEditVisible" @click.prevent="onItemEdit($event, child.data.row)") Изменить
+        li
+          a(v-if="isEditVisible" @click.prevent="onItemDoubleClick(child.data.row)") Открыть
+        li
+          a(v-if="isEditVisible" @click.prevent="onItemEdit($event, child.data.row)") Изменить
         el-divider(v-if="isEditVisible")
-        li(@click.prevent="onItemCreate") Новый проект
+        li
+          a(@click.prevent="onItemCreate") Новый проект
         el-divider
-        li(
-          v-if="isDeleteVisible"
-          @click.prevent="onItemDelete($event, child.data.row)") Переместить в корзину
-        li(
-          v-if="isRestoreVisible"
-          @click.prevent="onItemRestore($event, child.data.row)") Восстановить
+        li
+          a(v-if="isDeleteVisible" @click.prevent="onItemDelete($event, child.data.row)") Переместить в корзину
+        li
+          a(v-if="isRestoreVisible" @click.prevent="onItemRestore($event, child.data.row)") Восстановить
 
     project-dialog(v-if="dialogVisible" :data="dialogData" @close="dialogVisible = false" @submit="refresh")
 

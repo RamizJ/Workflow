@@ -22,6 +22,35 @@
 
     vue-context(ref="contextMenu")
       template(slot-scope="child")
+        li
+          a(v-if="isEditVisible" @click.prevent="onItemEdit($event, child.data.row)") Изменить
+        el-divider(v-if="isEditVisible")
+        li
+          a(@click.prevent="onItemCreate") Новая задача
+        el-divider
+        li.v-context__sub
+          a(v-if="isStatusVisible") Изменить статус
+          ul.v-context
+            li
+              a(@click.prevent="onItemStatusChange($event, child.data.row, 'Succeed')") Выполнено
+            li
+              a(@click.prevent="onItemStatusChange($event, child.data.row, 'Delay')") Отложено
+            li
+              a(@click.prevent="onItemStatusChange($event, child.data.row, 'Rejected')") Отклонено
+            el-divider
+            li
+              a(@click.prevent="onItemStatusChange($event, child.data.row, 'Perform')") Выполняется
+            li
+              a(@click.prevent="onItemStatusChange($event, child.data.row, 'Testing')") Проверяется
+        li
+          a(v-if="isDeleteVisible" @click.prevent="onItemDelete($event, child.data.row)") Переместить в корзину
+        li
+          a(v-if="isRestoreVisible" @click.prevent="onItemRestore($event, child.data.row)") {{ isMultipleSelected ? 'Восстановить выделенное' : 'Восстановить' }}
+
+
+
+    //vue-context(ref="contextMenu")
+      template(slot-scope="child")
         li(v-if="isEditVisible" @click.prevent="onItemEdit($event, child.data.row)") Изменить
         el-divider(v-if="isEditVisible")
         li(@click.prevent="onItemCreate") Новая задача
