@@ -21,7 +21,11 @@ export default {
   actions: {
     async fetchTasks({ commit }, params) {
       const response = await tasksAPI.getPage(params);
-      const tasks = response.data;
+      const tasks = response.data.map(task => {
+        if (task.expectedCompletedDate)
+          task.expectedCompletedDate = `${task.expectedCompletedDate}Z`;
+        return task;
+      });
       commit('setTasks', tasks);
       return tasks;
     },

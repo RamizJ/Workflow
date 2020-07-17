@@ -52,10 +52,11 @@
           el-col(v-if="expectedCompletedDateVisible || form.expectedCompletedDate" :span="8")
             el-form-item(prop="expectedCompletedDate")
               el-date-picker(
+                type="datetime"
                 v-model="form.expectedCompletedDate"
                 prefix-icon="el-icon-arrow-down"
-                suffix-icon="el-icon-arrow-down"
-                format="dd.MM.yyyy"
+                format="dd.MM.yyyy HH:mm"
+                default-time="12:00:00"
                 placeholder="Крайний срок")
         transition(name="fade")
           el-col(v-if="attachmentsVisible || attachmentList.length" :span="24")
