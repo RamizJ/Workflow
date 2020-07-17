@@ -34,7 +34,6 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
 import listMixin from '~/mixins/list.mixin';
 import TeamDialog from '~/components/TeamDialog';
 
@@ -42,17 +41,21 @@ export default {
   name: 'TeamList',
   components: { TeamDialog },
   mixins: [listMixin],
-  computed: {
-    ...mapGetters({ items: 'teams/getTeams' })
-  },
-  methods: {
-    ...mapActions({
-      fetchItems: 'teams/fetchTeams',
-      deleteItem: 'teams/deleteTeam',
-      deleteItems: 'teams/deleteTeams',
-      restoreItem: 'teams/restoreTeam',
-      restoreItems: 'teams/restoreTeams'
-    })
+  data() {
+    return {
+      getters: {
+        items: 'teams/getTeams'
+      },
+      actions: {
+        fetchItems: this.$route.params.projectId
+          ? 'projects/fetchProjectTeams'
+          : 'teams/fetchTeams',
+        deleteItem: 'teams/deleteTeam',
+        deleteItems: 'teams/deleteTeams',
+        restoreItem: 'teams/restoreTeam',
+        restoreItems: 'teams/restoreTeams'
+      }
+    };
   }
 };
 </script>

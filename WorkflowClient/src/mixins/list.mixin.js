@@ -177,17 +177,16 @@ export default {
     async load($state) {
       const firstLoad = !this.tableData.length;
       if (firstLoad) this.loading = true;
-      await this.fetch(this.query);
-      if (this.items.length) $state.loaded();
+      const items = await this.fetch(this.query);
+      if (items.length) $state.loaded();
       else $state.complete();
-      this.tableData = firstLoad
-        ? this.items
-        : this.tableData.concat(this.items);
+      this.tableData = firstLoad ? items : this.tableData.concat(items);
       if (firstLoad) this.loading = false;
     },
     async fetch(params) {
-      await this.fetchItems(params);
+      const items = await this.$store.dispatch(this.actions.fetchItems, params);
       this.query.pageNumber++;
+      return items;
     },
     onFilterChange(value) {
       console.log(value);
@@ -237,14 +236,20 @@ export default {
     },
     async onItemDelete(event, row) {
       if (this.isMultipleSelected)
-        await this.deleteItems(this.table.selection.map(item => item.id));
-      else await this.deleteItem(row.id);
+        await this.$store.dispatch(
+          this.actions.deleteItems,
+          this.table.selection.map(item => item.id)
+        );
+      else await this.$store.dispatch(this.actions.deleteItem, row.id);
       await this.refresh();
     },
     async onItemRestore(event, row) {
       if (this.isMultipleSelected)
-        await this.restoreItems(this.table.selection.map(item => item.id));
-      else await this.restoreItem(row.id);
+        await this.$store.dispatch(
+          this.actions.restoreItems,
+          this.table.selection.map(item => item.id)
+        );
+      else await this.$store.dispatch(this.actions.restoreItem, row.id);
       await this.refresh();
     },
     async onItemStatusChange(event, row, status) {
@@ -253,11 +258,11 @@ export default {
           item.state = status;
           return item;
         });
-        await this.updateItems(items);
+        await this.$store.dispatch(this.actions.updateItems, items);
       } else {
         const item = row;
         item.state = status;
-        await this.updateItem(item);
+        await this.$store.dispatch(this.actions.updateItem, item);
       }
       await this.refresh();
     },

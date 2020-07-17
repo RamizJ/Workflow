@@ -21,6 +21,7 @@ export default {
       const response = await usersAPI.getPage(params);
       const users = response.data;
       commit('setUsers', users);
+      return users;
     },
     async fetchUser({ commit }, id) {
       const response = await usersAPI.get(id);

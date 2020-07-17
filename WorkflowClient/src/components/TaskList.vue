@@ -46,7 +46,6 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
 import listMixin from '~/mixins/list.mixin';
 import TaskDialog from '~/components/TaskDialog';
 
@@ -54,19 +53,21 @@ export default {
   name: 'TaskList',
   components: { TaskDialog },
   mixins: [listMixin],
-  computed: {
-    ...mapGetters({ items: 'tasks/getTasks' })
-  },
-  methods: {
-    ...mapActions({
-      fetchItems: 'tasks/fetchTasks',
-      deleteItem: 'tasks/deleteTask',
-      deleteItems: 'tasks/deleteTasks',
-      restoreItem: 'tasks/restoreTask',
-      restoreItems: 'tasks/restoreTasks',
-      updateItem: 'tasks/updateTask',
-      updateItems: 'tasks/updateTasks'
-    })
+  data() {
+    return {
+      getters: {
+        items: 'tasks/getTasks'
+      },
+      actions: {
+        fetchItems: 'tasks/fetchTasks',
+        deleteItem: 'tasks/deleteTask',
+        deleteItems: 'tasks/deleteTasks',
+        restoreItem: 'tasks/restoreTask',
+        restoreItems: 'tasks/restoreTasks',
+        updateItem: 'tasks/updateTask',
+        updateItems: 'tasks/updateTasks'
+      }
+    };
   }
 };
 </script>

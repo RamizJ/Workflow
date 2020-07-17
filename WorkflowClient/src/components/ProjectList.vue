@@ -45,17 +45,21 @@ export default {
   name: 'ProjectList',
   components: { ProjectDialog },
   mixins: [listMixin],
-  computed: {
-    ...mapGetters({ items: 'projects/getProjects' })
+  data() {
+    return {
+      getters: {
+        items: 'projects/getProjects'
+      },
+      actions: {
+        fetchItems: 'projects/fetchProjects',
+        deleteItem: 'projects/deleteProject',
+        deleteItems: 'projects/deleteProjects',
+        restoreItem: 'projects/restoreProject',
+        restoreItems: 'projects/restoreProjects'
+      }
+    };
   },
   methods: {
-    ...mapActions({
-      fetchItems: 'projects/fetchProjects',
-      deleteItem: 'projects/deleteProject',
-      deleteItems: 'projects/deleteProjects',
-      restoreItem: 'projects/restoreProject',
-      restoreItems: 'projects/restoreProjects'
-    }),
     onItemDoubleClick(row, column, event) {
       if (!row.isRemoved) this.$router.push(`/projects/${row.id}`);
     }

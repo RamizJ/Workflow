@@ -32,6 +32,7 @@ export default {
         return team;
       });
       commit('setTeams', teams);
+      return teams;
     },
     async fetchTeam({ commit }, id) {
       const response = await teamsAPI.get(id);

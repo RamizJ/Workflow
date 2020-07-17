@@ -40,7 +40,6 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
 import listMixin from '~/mixins/list.mixin';
 import UserDialog from '~/components/UserDialog';
 
@@ -48,17 +47,19 @@ export default {
   name: 'UserList',
   components: { UserDialog },
   mixins: [listMixin],
-  computed: {
-    ...mapGetters({ items: 'users/getUsers' })
-  },
-  methods: {
-    ...mapActions({
-      fetchItems: 'users/fetchUsers',
-      deleteItem: 'users/deleteUser',
-      deleteItems: 'users/deleteUsers',
-      restoreItem: 'users/restoreUser',
-      restoreItems: 'users/restoreUsers'
-    })
+  data() {
+    return {
+      getters: {
+        items: 'users/getUsers'
+      },
+      actions: {
+        fetchItems: 'users/fetchUsers',
+        deleteItem: 'users/deleteUser',
+        deleteItems: 'users/deleteUsers',
+        restoreItem: 'users/restoreUser',
+        restoreItems: 'users/restoreUsers'
+      }
+    };
   }
 };
 </script>

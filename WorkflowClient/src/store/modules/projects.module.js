@@ -54,6 +54,7 @@ export default {
         return project;
       });
       commit('setProjects', projects);
+      return projects;
     },
     async fetchProject({ commit, dispatch, state }, id) {
       const response = await projectsAPI.get(id);
@@ -70,6 +71,7 @@ export default {
       const response = await projectsAPI.getTeamsPage(params);
       const projectTeams = response.data;
       commit('setProjectTeams', projectTeams);
+      return response.data;
     },
     async createProject({ commit }, project) {
       let newProject = {
@@ -81,9 +83,11 @@ export default {
       commit('setProject', createdProject);
     },
     async updateProject({ commit }, project) {
+      const teamIds = project.teamIds;
+      delete project.teamIds;
       let newProject = {
-        project: project,
-        teamIds: project.teamIds
+        project,
+        teamIds
       };
       const response = await projectsAPI.update(newProject);
       const updatedProject = response.data;

@@ -23,6 +23,7 @@ export default {
       const response = await tasksAPI.getPage(params);
       const tasks = response.data;
       commit('setTasks', tasks);
+      return tasks;
     },
     async searchTasks({ commit }, params) {
       const response = await tasksAPI.getPage(params);
@@ -33,6 +34,7 @@ export default {
       const response = await tasksAPI.get(id);
       const task = response.data;
       commit('setTask', task);
+      return task;
     },
     async fetchChildTasks({ commit }, id) {
       const response = await tasksAPI.getChildTasks(id);

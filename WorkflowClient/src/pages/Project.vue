@@ -33,8 +33,8 @@
         project-overview(v-if="activeTab === 'overview'" :data="projectItem")
       el-tab-pane(name="tasks" label="Задачи")
         project-tasks(v-if="activeTab === 'tasks'" ref="projectTasks")
-      el-tab-pane(name="team" label="Команда")
-        project-team(v-if="activeTab === 'team'")
+      el-tab-pane(name="team" label="Команды")
+        project-teams(v-if="activeTab === 'team'")
 
     project-dialog(v-if="dialogProjectVisible" :data="projectItem" @close="dialogProjectVisible = false")
     task-dialog(v-if="dialogTaskVisible" @close="dialogTaskVisible = false")
@@ -49,7 +49,7 @@ import BaseHeader from '~/components/BaseHeader';
 import BaseSearch from '~/components/BaseSearch';
 import ProjectOverview from '~/components/ProjectOverview';
 import ProjectTasks from '~/components/ProjectTasks';
-import ProjectTeam from '~/components/ProjectTeam';
+import ProjectTeams from '@/components/ProjectTeams';
 import ProjectDialog from '~/components/ProjectDialog';
 import TaskDialog from '~/components/TaskDialog';
 import TeamDialog from '~/components/TeamDialog';
@@ -61,7 +61,7 @@ export default {
     BaseHeader,
     BaseSearch,
     ProjectOverview,
-    ProjectTeam,
+    ProjectTeams,
     ProjectTasks,
     ProjectDialog,
     TaskDialog,
