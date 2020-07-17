@@ -8,6 +8,7 @@
     el-tabs(ref="tabs" v-model="activeTab" @tab-click="onTabClick")
       el-tab-pane(v-for="(tab, index) in tabs" :key="index" :label="tab.label" :name="tab.value")
         base-toolbar(
+          v-if="activeTab === tab.value"
           :sort-fields="sortFields"
           @search="onSearch"
           @order="onOrderChange"
