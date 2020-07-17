@@ -58,6 +58,21 @@
             <param name="ids">Идентификаторы задач</param>
             <returns>Коллекция задач</returns>
         </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.GetTotalProjectGoalsCount(System.Int32)">
+            <summary>
+            Получение кол-ва задач проекта
+            </summary>
+            <param name="projectId">Идентификатор проекта</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.GetProjectGoalsByStateCount(System.Int32,Workflow.DAL.Models.GoalState)">
+            <summary>
+            Получение кол-ва задач проекта по состоянию задачи
+            </summary>
+            <param name="projectId">Идентификатор проекта</param>
+            <param name="goalState">Состояние задачи</param>
+            <returns></returns>
+        </member>
         <member name="M:WorkflowService.Controllers.GoalsController.Create(Workflow.VM.ViewModels.VmGoal)">
             <summary>
             Создание задачи
@@ -159,9 +174,31 @@
         </member>
         <member name="M:WorkflowService.Controllers.GoalsController.DownloadAttachmentFile(System.Int32)">
             <summary>
-            
+            Загрузка файла вложения
             </summary>
-            <param name="attachmentId"></param>
+            <param name="attachmentId">Идентификатор вложения</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.GetChildGoals(System.Int32)">
+            <summary>
+            Получение дочерних задач
+            </summary>
+            <param name="goalId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.GetParentGoal(System.Int32)">
+            <summary>
+            Получение родительской задачи
+            </summary>
+            <param name="goalId">Идентификатор задачи</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.AddChildGoals(System.Int32,System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Добавление дочерних задач
+            </summary>
+            <param name="parentGoalId">Родительская задача</param>
+            <param name="childGoalIds">Идентификаторы дочерних задач</param>
             <returns></returns>
         </member>
         <member name="T:WorkflowService.Controllers.ProjectsController">
@@ -201,7 +238,7 @@
         </member>
         <member name="M:WorkflowService.Controllers.ProjectsController.GetRange(System.Int32[])">
             <summary>
-            Получение проектов по идентификаторам
+            Получение 
             </summary>
             <param name="ids">Идентификаторы проектов</param>
             <returns>Коллекция проектов</returns>

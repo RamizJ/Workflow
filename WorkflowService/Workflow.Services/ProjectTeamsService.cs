@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
+using Workflow.Share.Extensions;
 using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
@@ -140,57 +141,24 @@ namespace Workflow.Services
         {
             if (sortFields == null) return query;
 
-            IOrderedQueryable<ProjectTeam> orderedQuery = null;
             foreach (var field in sortFields.Where(sf => sf != null))
             {
+                var isAcending = field.SortType == SortType.Ascending;
+
                 if (field.Is(nameof(VmTeam.Name)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(pt => pt.Team.Name)
-                            : query.OrderByDescending(pt => pt.Team.Name);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(pt => pt.Team.Name)
-                            : orderedQuery.ThenByDescending(pt => pt.Team.Name);
-                    }
-                }
+                    query = query.SortBy(pt => pt.Team.Name, isAcending);
+
                 else if (field.Is(nameof(VmTeam.Description)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(pt => pt.Team.Description)
-                            : query.OrderByDescending(pt => pt.Team.Description);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(pt => pt.Team.Description)
-                            : orderedQuery.ThenByDescending(pt => pt.Team.Description);
-                    }
-                }
-                else if (field.Is(nameof(VmTeam.GroupName)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(pt => pt.Team.Group.Name)
-                            : query.OrderByDescending(pt => pt.Team.Group.Name);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(tu => tu.Team.Group.Name)
-                            : orderedQuery.ThenByDescending(tu => tu.Team.Group.Name);
-                    }
-                }
+                    query = query.SortBy(pt => pt.Team.Description, isAcending);
+
+                else if (field.Is(nameof(VmTeam.GroupName))) 
+                    query = query.SortBy(pt => pt.Team.Group.Name, isAcending);
+
+                else if (field.Is(nameof(VmTeam.IsRemoved)))
+                    query = query.SortBy(pt => pt.Team.IsRemoved, isAcending);
             }
 
-            return orderedQuery ?? query;
+            return query;
         }
     }
 }

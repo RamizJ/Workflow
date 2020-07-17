@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
+using Workflow.Share.Extensions;
 using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
@@ -278,24 +279,25 @@ namespace Workflow.Services
 
                 if (field.SameAs(nameof(VmGoal.Title)))
                 {
-                    var queries = strValues.Select(sv => query.Where(p =>
-                        p.Title.ToLower().Contains(sv))).ToArray();
+                    var queries = strValues.Select(sv => query.Where(g =>
+                        g.Title.ToLower().Contains(sv))).ToArray();
 
+                    
                     if (queries.Any())
                         query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
                 else if (field.SameAs(nameof(VmGoal.Description)))
                 {
-                    var queries = strValues.Select(sv => query.Where(p =>
-                        p.Description.ToLower().Contains(sv))).ToArray();
+                    var queries = strValues.Select(sv => query.Where(g =>
+                        g.Description.ToLower().Contains(sv))).ToArray();
 
                     if (queries.Any())
                         query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
                 else if (field.SameAs(nameof(VmGoal.ProjectName)))
                 {
-                    var queries = strValues.Select(sv => query.Where(p =>
-                        p.Project.Name.ToLower().Contains(sv))).ToArray();
+                    var queries = strValues.Select(sv => query.Where(g =>
+                        g.Project.Name.ToLower().Contains(sv))).ToArray();
 
                     if (queries.Any())
                         query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
@@ -368,181 +370,51 @@ namespace Workflow.Services
         {
             if (sortFields == null) return query;
 
-            IOrderedQueryable<Goal> orderedQuery = null;
-            foreach (var field in sortFields)
+            foreach (var field in sortFields.Where(sf => sf != null))
             {
-                if (field == null)
-                    continue;
+                var isAcending = field.SortType == SortType.Ascending;
 
                 if (field.Is(nameof(VmGoal.Title)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(goal => goal.Title)
-                            : query.OrderByDescending(goal => goal.Title);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(s => s.Title)
-                            : orderedQuery.ThenByDescending(s => s.Title);
-                    }
-                }
-                else if (field.Is(nameof(VmGoal.Description)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(goal => goal.Description)
-                            : query.OrderByDescending(goal => goal.Description);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(s => s.Description)
-                            : orderedQuery.ThenByDescending(s => s.Description);
-                    }
-                }
-                if (field.Is(nameof(VmGoal.ProjectName)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(goal => goal.Project.Name)
-                            : query.OrderByDescending(goal => goal.Project.Name);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(s => s.Project.Name)
-                            : orderedQuery.ThenByDescending(s => s.Project.Name);
-                    }
-                }
-                if(field.Is(nameof(VmGoal.CreationDate)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(goal => goal.CreationDate)
-                            : query.OrderByDescending(goal => goal.CreationDate);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(s => s.CreationDate)
-                            : orderedQuery.ThenByDescending(s => s.CreationDate);
-                    }
-                }
-                if(field.Is(nameof(VmGoal.ExpectedCompletedDate)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(goal => goal.ExpectedCompletedDate)
-                            : query.OrderByDescending(goal => goal.ExpectedCompletedDate);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(s => s.ExpectedCompletedDate)
-                            : orderedQuery.ThenByDescending(s => s.ExpectedCompletedDate);
-                    }
-                }
+                    query = query.SortBy(g => g.Title, isAcending);
+
+                else if (field.Is(nameof(VmGoal.Description))) 
+                    query = query.SortBy(g => g.Description, isAcending);
+                
+                if (field.Is(nameof(VmGoal.ProjectName))) 
+                    query = query.SortBy(g => g.Project.Name, isAcending);
+                
+                if(field.Is(nameof(VmGoal.CreationDate))) 
+                    query = query.SortBy(g => g.CreationDate, isAcending);
+
+                if (field.Is(nameof(VmGoal.ExpectedCompletedDate)))
+                    query = query.SortBy(g => g.ExpectedCompletedDate, isAcending);
+
                 else if (field.Is(nameof(VmGoal.GoalNumber)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(goal => goal.GoalNumber)
-                            : query.OrderByDescending(goal => goal.GoalNumber);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(goal => goal.GoalNumber)
-                            : orderedQuery.ThenByDescending(goal => goal.GoalNumber);
-                    }
-                }
+                    query = query.SortBy(g => g.GoalNumber, isAcending);
+
                 else if (field.Is(nameof(VmGoal.State)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(goal => goal.State)
-                            : query.OrderByDescending(goal => goal.State);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(goal => goal.State)
-                            : orderedQuery.ThenByDescending(goal => goal.State);
-                    }
-                }
+                    query = query.SortBy(g => g.State, isAcending);
+
                 else if (field.Is(nameof(VmGoal.Priority)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(goal => goal.Priority)
-                            : query.OrderByDescending(goal => goal.Priority);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(goal => goal.Priority)
-                            : orderedQuery.ThenByDescending(goal => goal.Priority);
-                    }
-                }
+                    query = query.SortBy(g => g.Priority, isAcending);
+
                 else if (field.Is(nameof(VmGoal.OwnerFio)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(s => s.Owner.LastName)
-                                .ThenBy(s => s.Owner.FirstName)
-                                .ThenBy(s => s.Owner.MiddleName)
-                            : query.OrderByDescending(s => s.Owner.LastName)
-                                .ThenBy(s => s.Owner.FirstName)
-                                .ThenBy(s => s.Owner.MiddleName);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(s => s.Owner.LastName)
-                                .ThenBy(s => s.Owner.FirstName)
-                                .ThenBy(s => s.Owner.MiddleName)
-                            : orderedQuery.ThenByDescending(s => s.Owner.LastName)
-                                .ThenBy(s => s.Owner.FirstName)
-                                .ThenBy(s => s.Owner.MiddleName);
-                    }
-                }
+                    query = query
+                        .SortBy(p => p.Owner.LastName, isAcending)
+                        .SortBy(p => p.Owner.FirstName, isAcending)
+                        .SortBy(p => p.Owner.MiddleName, isAcending);
+
                 else if (field.Is(nameof(VmGoal.PerformerFio)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(s => s.Performer.LastName)
-                                .ThenBy(s => s.Performer.FirstName)
-                                .ThenBy(s => s.Performer.MiddleName)
-                            : query.OrderByDescending(s => s.Performer.LastName)
-                                .ThenBy(s => s.Performer.FirstName)
-                                .ThenBy(s => s.Performer.MiddleName);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(s => s.Performer.LastName)
-                                .ThenBy(s => s.Performer.FirstName)
-                                .ThenBy(s => s.Performer.MiddleName)
-                            : orderedQuery.ThenByDescending(s => s.Performer.LastName)
-                                .ThenBy(s => s.Performer.FirstName)
-                                .ThenBy(s => s.Performer.MiddleName);
-                    }
-                }
+                    query = query
+                        .SortBy(p => p.Performer.LastName, isAcending)
+                        .SortBy(p => p.Performer.FirstName, isAcending)
+                        .SortBy(p => p.Performer.MiddleName, isAcending);
+
+                else if (field.Is(nameof(VmGoal.IsRemoved)))
+                    query = query.SortBy(g => g.IsRemoved, isAcending);
             }
 
-            return orderedQuery ?? query;
+            return query;
         }
 
         private async Task<Goal> CreateGoal(ApplicationUser currentUser, VmGoal goal,

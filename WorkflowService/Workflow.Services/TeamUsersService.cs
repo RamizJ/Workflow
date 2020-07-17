@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
+using Workflow.Share.Extensions;
 using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
@@ -98,7 +99,7 @@ namespace Workflow.Services
 
             foreach (var field in filterFields.Where(ff => ff != null))
             {
-                var strValues = field.Values?.Select(v => v.ToString().ToLower()).ToList()
+                var strValues = field.Values?.Select(v => v.ToString()?.ToLower()).ToList()
                                 ?? new List<string>();
 
                 if (field.SameAs(nameof(VmUser.Email)))
@@ -163,105 +164,30 @@ namespace Workflow.Services
         {
             if (sortFields == null) return query;
 
-            IOrderedQueryable<TeamUser> orderedQuery = null;
-            foreach (var field in sortFields)
+            foreach (var field in sortFields.Where(sf => sf != null))
             {
-                if (field == null)
-                    continue;
+                var isAcending = field.SortType == SortType.Ascending;
 
                 if (field.Is(nameof(VmUser.Email)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(tu => tu.User.Email)
-                            : query.OrderByDescending(tu => tu.User.Email);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(tu => tu.User.Email)
-                            : orderedQuery.ThenByDescending(tu => tu.User.Email);
-                    }
-                }
+                    query = query.SortBy(tu => tu.User.Email, isAcending);
+
                 else if (field.Is(nameof(VmUser.Phone)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(tu => tu.User.PhoneNumber)
-                            : query.OrderByDescending(tu => tu.User.PhoneNumber);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(tu => tu.User.PhoneNumber)
-                            : orderedQuery.ThenByDescending(tu => tu.User.PhoneNumber);
-                    }
-                }
+                    query = query.SortBy(tu => tu.User.PhoneNumber, isAcending);
+
                 else if (field.Is(nameof(VmUser.Position)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(tu => tu.User.Position.Name)
-                            : query.OrderByDescending(tu => tu.User.Position.Name);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(tu => tu.User.Position.Name)
-                            : orderedQuery.ThenByDescending(tu => tu.User.Position.Name);
-                    }
-                }
+                    query = query.SortBy(tu => tu.User.Position.Name + tu.User.PositionCustom, isAcending);
+
                 else if (field.Is(nameof(VmUser.LastName)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(tu => tu.User.LastName)
-                            : query.OrderByDescending(u => u.User.LastName);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(u => u.User.LastName)
-                            : orderedQuery.ThenByDescending(u => u.User.LastName);
-                    }
-                }
+                    query = query.SortBy(tu => tu.User.LastName, isAcending);
+
                 else if (field.Is(nameof(VmUser.FirstName)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(u => u.User.FirstName)
-                            : query.OrderByDescending(u => u.User.FirstName);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(u => u.User.FirstName)
-                            : orderedQuery.ThenByDescending(u => u.User.FirstName);
-                    }
-                }
+                    query = query.SortBy(tu => tu.User.FirstName, isAcending);
+
                 else if (field.Is(nameof(VmUser.MiddleName)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(u => u.User.MiddleName)
-                            : query.OrderByDescending(u => u.User.MiddleName);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(u => u.User.MiddleName)
-                            : orderedQuery.ThenByDescending(u => u.User.MiddleName);
-                    }
-                }
+                    query = query.SortBy(tu => tu.User.MiddleName, isAcending);
             }
 
-            return orderedQuery ?? query;
+            return query;
         }
 
 
