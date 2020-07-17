@@ -16,66 +16,71 @@ const authInterceptor = config => {
 };
 
 const errorResponseHandler = error => {
-  const url = error.config.url;
-  if (error.response) {
-    const data = error.response?.data;
-    const statusCode = error.response?.status;
-    switch (statusCode) {
-      case 400:
-        Message({
-          message: `Синтаксическая ошибка в отправляемых данных`,
-          type: 'error',
-          duration: 5000
-        });
-        console.error(`Синтаксическая ошибка в запросе к «${url}»`);
-        break;
-      case 401:
-        Message({
-          message: `Неверные учётные данные`,
-          type: 'error',
-          duration: 5000
-        });
-        console.error(
-          `Для выполнения запроса к «${url}» требуется аутентификация`
-        );
-        break;
-      case 403:
-        Message({
-          message: `Попытка доступа к запрещённному содержимому`,
-          type: 'error',
-          duration: 5000
-        });
-        console.error(`Доступ к «${url}» запрещён`);
-        break;
-      case 404:
-        Message({
-          message: `Запрашиваемый ресурс не найден «${url}»`,
-          type: 'error',
-          duration: 5000
-        });
-        break;
-      case 405:
-        Message({
-          message: `API метод неактивен «${url}»`,
-          type: 'error',
-          duration: 5000
-        });
-        break;
-      default:
-        Message({
-          message: `Неизвестная ошибка (${statusCode})`,
-          type: 'error',
-          duration: 5000
-        });
-        break;
+  const isDebugMode = localStorage.debugMode === 'true';
+  if (!isDebugMode)
+    Message({
+      message: `Ошибка отправки запроса`,
+      type: 'error',
+      duration: 5000
+    });
+  else {
+    const url = error.config.url;
+    if (error.response) {
+      const data = error.response?.data;
+      const statusCode = error.response?.status;
+      switch (statusCode) {
+        case 400:
+          Message({
+            message: `Синтаксическая ошибка в запросе к «${url}»`,
+            type: 'error',
+            duration: 5000
+          });
+          break;
+        case 401:
+          Message({
+            message: `Для выполнения запроса к «${url}» требуется аутентификация`,
+            type: 'error',
+            duration: 5000
+          });
+          break;
+        case 403:
+          Message({
+            message: `Доступ к «${url}» запрещён`,
+            type: 'error',
+            duration: 5000
+          });
+          break;
+        case 404:
+          Message({
+            message: `Запрашиваемый ресурс «${url}» не найден`,
+            type: 'error',
+            duration: 5000
+          });
+          break;
+        case 405:
+          Message({
+            message: `API метод по адресу «${url}» неактивен`,
+            type: 'error',
+            duration: 5000
+          });
+          break;
+        default:
+          Message({
+            message: `Неизвестная ошибка (${statusCode})`,
+            type: 'error',
+            duration: 5000
+          });
+          break;
+      }
+      console.error(data);
+    } else {
+      Message({
+        message: `Неизвестная ошибка при запросе «${url}»`,
+        type: 'error',
+        duration: 5000
+      });
+      console.error(error);
     }
-  } else {
-    // Message({
-    //   message: `Неизвестная ошибка при запросе «${url}»`,
-    //   type: 'error',
-    //   duration: 5000
-    // });
-    console.error(`Неизвестная ошибка при запросе «${url}»`);
   }
 };
 

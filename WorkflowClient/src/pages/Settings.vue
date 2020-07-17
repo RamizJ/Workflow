@@ -17,6 +17,12 @@
             v-model="confirmDialogClose"
             label="Подтверждать закрытие диалоговых окон"
             @change="switchConfirmDialogClose")
+        div.section
+          h2 Отладка (для разработчиков)
+          el-checkbox(
+            v-model="debugMode"
+            label="Включить режим отладки"
+            @change="switchDebugMode")
 
       el-tab-pane(label="Аккаунт" name="account")
         el-form(:model="form" :rules="rules" ref="form")
@@ -123,12 +129,12 @@ export default {
       },
       activeTab: 'profile',
       appearance: localStorage.getItem('theme') || 'light',
-      confirmDialogClose: localStorage.confirmDialogClose === 'true'
+      confirmDialogClose: localStorage.confirmDialogClose === 'true',
+      debugMode: localStorage.debugMode === 'true'
     };
   },
   mounted() {
     this.form = { ...this.me };
-    this.loadSettingsFromStorage();
   },
   computed: {
     ...mapGetters({ me: 'auth/me' })
@@ -167,11 +173,11 @@ export default {
       document.documentElement.setAttribute('theme', appearance);
       this.appearance = appearance;
     },
-    loadSettingsFromStorage() {
-      this.confirmDialogClose = localStorage.confirmDialogClose === 'true';
-    },
     switchConfirmDialogClose(value) {
       localStorage.confirmDialogClose = value;
+    },
+    switchDebugMode(value) {
+      localStorage.debugMode = value;
     }
   }
 };

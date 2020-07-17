@@ -33,7 +33,8 @@ export default {
       commit('setUser', null);
       localStorage.removeItem('access_token');
     },
-    async fetchMe({ dispatch, commit }) {
+    async fetchMe({ state, commit }) {
+      if (!state.token) return;
       const response = await auth.getMe();
       if (!response) return;
       const user = response.data;
