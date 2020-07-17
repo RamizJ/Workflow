@@ -97,11 +97,12 @@ a {
   border-radius: 6px;
   .el-button {
     font-size: 13px;
-    padding: 0;
+    padding: 11px 0;
     border: none;
-    transition: 0s;
     color: var(--text);
     font-weight: 400;
+    width: 100%;
+    text-align: left;
   }
 }
 .el-select-dropdown__item.selected {

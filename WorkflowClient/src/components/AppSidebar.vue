@@ -143,7 +143,7 @@ export default {
     overflow: unset;
   }
   &:focus {
-    animation: push 0.6s;
+    //animation: push 0.5s;
   }
   span {
     overflow: hidden;

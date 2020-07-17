@@ -32,13 +32,13 @@
       el-tab-pane(name="overview" label="Обзор")
         project-overview(v-if="activeTab === 'overview'" :data="projectItem")
       el-tab-pane(name="tasks" label="Задачи")
-        project-tasks(v-if="activeTab === 'tasks'")
+        project-tasks(v-if="activeTab === 'tasks'" ref="projectTasks")
       el-tab-pane(name="team" label="Команда")
         project-team(v-if="activeTab === 'team'")
 
-    dialog-project(v-if="dialogProjectVisible" :data="projectItem" @close="dialogProjectVisible = false")
-    dialog-task(v-if="dialogTaskVisible" @close="dialogTaskVisible = false")
-    dialog-team(v-if="dialogTeamVisible" @close="dialogTeamVisible = false")
+    project-dialog(v-if="dialogProjectVisible" :data="projectItem" @close="dialogProjectVisible = false")
+    task-dialog(v-if="dialogTaskVisible" @close="dialogTaskVisible = false")
+    team-dialog(v-if="dialogTeamVisible" @close="dialogTeamVisible = false")
 
 </template>
 
@@ -47,12 +47,12 @@ import { mapActions, mapGetters } from 'vuex';
 import Page from '~/components/Page';
 import BaseHeader from '~/components/BaseHeader';
 import BaseSearch from '~/components/BaseSearch';
-import DialogProject from '~/components/ProjectDialog';
-import DialogTask from '~/components/TaskDialog';
-import DialogTeam from '~/components/TeamDialog';
 import ProjectOverview from '~/components/ProjectOverview';
 import ProjectTasks from '~/components/ProjectTasks';
 import ProjectTeam from '~/components/ProjectTeam';
+import ProjectDialog from '~/components/ProjectDialog';
+import TaskDialog from '~/components/TaskDialog';
+import TeamDialog from '~/components/TeamDialog';
 
 export default {
   name: 'Project',
@@ -63,9 +63,9 @@ export default {
     ProjectOverview,
     ProjectTeam,
     ProjectTasks,
-    DialogProject,
-    DialogTask,
-    DialogTeam
+    ProjectDialog,
+    TaskDialog,
+    TeamDialog
   },
   data() {
     return {
@@ -121,13 +121,15 @@ export default {
         this.$router.push({ query });
     },
     setTab() {
-      const query = { ...this.$route.query };
+      const query = {};
       query.tab = this.activeTab;
       if (JSON.stringify(query) !== JSON.stringify(this.$route.query))
         this.$router.push({ query });
     },
     async onTaskCreate(e) {
-      this.dialogTaskVisible = true;
+      if (this.activeTab === 'tasks')
+        this.$refs.projectTasks.$refs.items.onItemCreate();
+      else this.dialogTaskVisible = true;
     },
     async onTeamCreate(e) {
       this.dialogTeamVisible = true;

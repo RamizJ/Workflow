@@ -6,10 +6,10 @@
     el-tabs(ref="tabs" v-model="activeTab")
       el-tab-pane(label="Профиль" name="profile")
         div.section
-          h2 Тема сайта
-          el-tooltip(content="Светлая" placement="top")
+          h2 Оформление
+          el-tooltip(content="Светлое" placement="top")
             el-button.theme-preview.light(type="text" @click="switchTheme('light')") А
-          el-tooltip(content="Тёмная" placement="top")
+          el-tooltip(content="Тёмное" placement="top")
             el-button.theme-preview.dark(type="text" @click="switchTheme('dark')") А
         div.section
           h2 Диалоговые окна

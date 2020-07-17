@@ -36,7 +36,7 @@
             li(@click.prevent="onItemStatusChange($event, child.data.row, 'Testing')") Проверяется
         li(
           v-if="isDeleteVisible"
-          @click.prevent="onItemDelete($event, child.data.row)") {{ isMultipleSelected ? 'Удалить выделенное' : 'Переместить в корзину' }}
+          @click.prevent="onItemDelete($event, child.data.row)") Переместить в корзину
         li(
           v-if="isRestoreVisible"
           @click.prevent="onItemRestore($event, child.data.row)") {{ isMultipleSelected ? 'Восстановить выделенное' : 'Восстановить' }}

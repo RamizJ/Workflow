@@ -5,7 +5,7 @@
       el-row(:gutter="20")
         el-col(:span="$route.params.projectId ? 15 : 24")
           el-form-item(prop="title")
-            el-input(ref="title" v-model="form.title" placeholder="Новая задача")
+            el-input(ref="title" v-model="form.title" placeholder="Новая задача" @keyup.enter.native="submit")
         el-col(v-if="!$route.params.projectId" :span="12")
           el-form-item(prop="projectId")
             el-select(
