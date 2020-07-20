@@ -14,7 +14,7 @@
           @order="onOrderChange"
           @sort="onSortChange"
           @view="onViewChange")
-        user-list(
+        user-table(
           v-if="activeTab === tab.value && view === 'list'"
           ref="items"
           :search="search"
@@ -27,7 +27,7 @@
 import Page from '~/components/Page';
 import BaseHeader from '~/components/BaseHeader';
 import BaseToolbar from '~/components/BaseToolbar';
-import UserList from '~/components/UserList';
+import UserTable from '@/components/UserTable';
 import pageMixin from '~/mixins/page.mixin';
 
 export default {
@@ -35,7 +35,7 @@ export default {
     Page,
     BaseHeader,
     BaseToolbar,
-    UserList
+    UserTable
   },
   mixins: [pageMixin],
   data() {

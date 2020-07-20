@@ -1,22 +1,10 @@
 <template lang="pug">
-  div.table-container
-    el-table(
-      :data="tableData"
-      ref="table"
-      height="100%"
-      v-loading="loading"
-      @select="onItemSelect"
-      @row-click="onItemSingleClick"
-      @row-contextmenu="onItemRightClick"
-      @row-dblclick="onItemDoubleClick"
-      highlight-current-row border)
-      el-table-column(type="selection" width="38")
-      el-table-column(prop="title" label="Задача")
-      el-table-column(v-if="!$route.params.projectId" prop="projectName" label="Проект" width="150")
-      el-table-column(prop="state" label="Статус" width="120" :formatter="stateFormatter")
-      el-table-column(prop="priority" label="Приоритет" width="120" :formatter="priorityFormatter")
-      el-table-column(prop="creationDate" label="Добавлено" width="180" :formatter="dateFormatter")
-      infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
+  div.list
+    div.list__header(:class="state.toLowerCase()") {{ title }}
+    div.list__items
+      draggable(v-model="tableData" v-bind="dragOptions")
+        task-list-item(v-for="item in tableData" :key="item.id" :item="item" @contextmenu.native="onItemRightClick(item, null, $event)")
+      infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load")
         div(slot="no-more")
         div(slot="no-results")
 
@@ -41,46 +29,26 @@
             li
               a(@click.prevent="onItemStatusChange($event, child.data.row, 'Perform')") Выполняется
             li
-              a(@click.prevent="onItemStatusChange($event, child.data.row, 'Testing')") Проверяется
-        li
-          a(v-if="isDeleteVisible" @click.prevent="onItemDelete($event, child.data.row)") Переместить в корзину
-        li
-          a(v-if="isRestoreVisible" @click.prevent="onItemRestore($event, child.data.row)") {{ isMultipleSelected ? 'Восстановить выделенное' : 'Восстановить' }}
-
-
-
-    //vue-context(ref="contextMenu")
-      template(slot-scope="child")
-        li(v-if="isEditVisible" @click.prevent="onItemEdit($event, child.data.row)") Изменить
-        el-divider(v-if="isEditVisible")
-        li(@click.prevent="onItemCreate") Новая задача
-        el-divider
-        li.v-context__sub(v-if="isStatusVisible") Изменить статус
-          ul.v-context
-            li(@click.prevent="onItemStatusChange($event, child.data.row, 'Succeed')") Выполнено
-            li(@click.prevent="onItemStatusChange($event, child.data.row, 'Delay')") Отложено
-            li(@click.prevent="onItemStatusChange($event, child.data.row, 'Rejected')") Отклонено
-            el-divider
-            li(@click.prevent="onItemStatusChange($event, child.data.row, 'Perform')") Выполняется
-            li(@click.prevent="onItemStatusChange($event, child.data.row, 'Testing')") Проверяется
-        li(
-          v-if="isDeleteVisible"
-          @click.prevent="onItemDelete($event, child.data.row)") Переместить в корзину
-        li(
-          v-if="isRestoreVisible"
-          @click.prevent="onItemRestore($event, child.data.row)") {{ isMultipleSelected ? 'Восстановить выделенное' : 'Восстановить' }}
-
-    task-dialog(v-if="dialogVisible" :data="dialogData" @close="dialogVisible = false" @submit="refresh")
+                a(@click.prevent="onItemStatusChange($event, child.data.row, 'Testing')") Проверяется
+          li
+            a(v-if="isDeleteVisible" @click.prevent="onItemDelete($event, child.data.row)") Переместить в корзину
+          li
+            a(v-if="isRestoreVisible" @click.prevent="onItemRestore($event, child.data.row)") {{ isMultipleSelected ? 'Восстановить выделенное' : 'Восстановить' }}
 
 </template>
 
 <script>
-import listMixin from '~/mixins/list.mixin';
-import TaskDialog from '~/components/TaskDialog';
+import Draggable from 'vuedraggable';
+import TaskListItem from '@/components/TaskListItem';
+import listMixin from '@/mixins/list.mixin';
 
 export default {
   name: 'TaskList',
-  components: { TaskDialog },
+  props: ['state'],
+  components: {
+    Draggable,
+    TaskListItem
+  },
   mixins: [listMixin],
   data() {
     return {
@@ -97,6 +65,86 @@ export default {
         updateItems: 'tasks/updateTasks'
       }
     };
-  }
+  },
+  computed: {
+    dragOptions() {
+      return {
+        animation: '200',
+        ghostClass: 'ghost',
+        group: 'kanban-board-list-items',
+        disabled: false
+      };
+    },
+    title() {
+      switch (this.state) {
+        case 'New':
+          return 'Новое';
+        case 'Perform':
+          return 'Выполняется';
+        case 'Testing':
+          return 'Тестируется';
+        case 'Succeed':
+          return 'Выполнено';
+        case 'Delay':
+          return 'Отложено';
+        case 'Rejected':
+          return 'Отклонено';
+        default:
+          return 'Все';
+      }
+    }
+  },
+  mounted() {
+    if (this.state) {
+      this.query.filterFields[0] = {
+        fieldName: 'state',
+        values: [this.state]
+      };
+    }
+  },
+  methods: {}
 };
 </script>
+
+<style lang="scss" scoped>
+.list {
+  min-width: 260px;
+  max-width: 260px;
+  margin-right: 20px;
+  position: relative;
+  width: 100%;
+  flex: 0 0 25%;
+  &__header {
+    border-bottom: 2px solid transparent;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 0;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    &.new {
+      border-bottom-color: rgba(33, 150, 243, 0.5);
+    }
+    &.perform {
+      border-bottom-color: rgb(241, 222, 51);
+    }
+    &.delay {
+      border-bottom-color: lightgrey;
+    }
+    &.testing {
+      border-bottom-color: #ff6d37;
+    }
+    &.succeed {
+      border-bottom-color: #00cf3a;
+    }
+    &.rejected {
+      border-bottom-color: #ca0000;
+    }
+  }
+  &__items {
+    min-height: 300px;
+    overflow: scroll;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+}
+</style>

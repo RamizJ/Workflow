@@ -7,10 +7,12 @@
       @sort="onSortChange"
       @view="onViewChange")
     task-list(
+      v-if="view === 'list'"
       ref="items"
       :search="search"
       :order="order"
       :sort="sort")
+    task-board(v-if="view === 'board'")
 
 </template>
 
@@ -18,7 +20,8 @@
 import Page from '~/components/Page';
 import BaseHeader from '~/components/BaseHeader';
 import BaseToolbar from '~/components/BaseToolbar';
-import TaskList from '~/components/TaskList';
+import TaskList from '@/components/TaskTable';
+import TaskBoard from '@/components/TaskBoard';
 import pageMixin from '~/mixins/page.mixin';
 
 export default {
@@ -26,7 +29,8 @@ export default {
     Page,
     BaseHeader,
     BaseToolbar,
-    TaskList
+    TaskList,
+    TaskBoard
   },
   mixins: [pageMixin],
   data() {
