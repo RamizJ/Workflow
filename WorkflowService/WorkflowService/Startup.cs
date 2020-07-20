@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -54,6 +53,16 @@ namespace WorkflowService
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<DataContext>()
                 .AddDefaultTokenProviders();
+
+            var origins = Configuration.GetSection(OTHER_ORIGINS)
+                .AsEnumerable().Select(x => x.Value).Where(x => x != null)
+                .ToArray();
+            services.AddCors(options => options
+                .AddDefaultPolicy(builder => builder
+                    .WithOrigins(origins)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials()));
 
             services.AddAuthentication(options =>
             {
@@ -124,7 +133,6 @@ namespace WorkflowService
                 setup.IncludeXmlComments(filePath);
             });
             services.AddSwaggerGenNewtonsoftSupport();
-            services.AddCors();
             services.AddSignalR(options =>
             {
                 options.EnableDetailedErrors = true;
@@ -157,6 +165,8 @@ namespace WorkflowService
             app.UseStaticFiles();
             app.UseRouting();
 
+            app.UseCors();
+
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
@@ -164,13 +174,6 @@ namespace WorkflowService
             });
 
             SetupRewriter(app);
-            var origins = Configuration.GetSection(OTHER_ORIGINS)
-                .AsEnumerable().Select(x => x.Value).Where(x => x != null)
-                .ToArray();
-            app.UseCors(builder => builder.WithOrigins(origins)
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials());
 
             app.UseAuthentication();
             app.UseAuthorization();

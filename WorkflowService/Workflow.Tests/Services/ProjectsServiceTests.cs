@@ -10,7 +10,6 @@ using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
 using Workflow.Services.Abstract;
-using Workflow.Share.Extensions;
 using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
