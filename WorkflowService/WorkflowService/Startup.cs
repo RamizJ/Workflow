@@ -58,19 +58,11 @@ namespace WorkflowService
                 .AsEnumerable().Select(x => x.Value).Where(x => x != null)
                 .ToArray();
             services.AddCors(options => options
-                .AddDefaultPolicy(builder =>
-                {
-                    var allowAnyOrigins = Configuration.GetValue<bool>(ALLOW_ANY_ORIGINS);
-                    if (allowAnyOrigins)
-                        builder.AllowAnyOrigin();
-                    else
-                        builder.WithOrigins(origins);
-
-                    builder
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials();
-                }));
+                .AddDefaultPolicy(builder => builder
+                    .WithOrigins(origins)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials()));
 
             services.AddAuthentication(options =>
             {
@@ -206,5 +198,8 @@ namespace WorkflowService
                     "/", false);
             app.UseRewriter(options);
         }
+
+
+        private const string ALLOW_ORIGINS_POLICY = "AllowOrigins";
     }
 }
