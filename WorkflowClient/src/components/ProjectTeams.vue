@@ -16,7 +16,7 @@
 
 <script>
 import BaseToolbar from '@/components/BaseToolbar';
-import TeamList from '@/components/TeamList';
+import TeamList from '@/components/TeamTable';
 import pageMixin from '~/mixins/page.mixin';
 
 export default {

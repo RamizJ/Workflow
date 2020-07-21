@@ -3,15 +3,15 @@
 .v-context {
   &, & ul {
     background: var(--dropdown-background);
-    padding: 10px 0;
+    padding: 6px 0;
     border: none;
     border-radius: 7px;
     box-shadow: var(--dropdown-shadow);
     overflow-y: unset;
     > li a {
-      padding: 10px 15px;
-      margin: 0 10px;
-      font-size: 14px;
+      padding: 8px 13px;
+      margin: 0 6px;
+      font-size: 13px;
       cursor: pointer;
       border-radius: 6px;
       transition: background-color 0.05s;
@@ -48,6 +48,6 @@
     }
   }
   .el-divider {
-    margin: 8px 0;
+    margin: 5px 0;
   }
 }

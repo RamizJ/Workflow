@@ -17,9 +17,9 @@
           el-option(v-for="option in sortFields" :key="option.value" :value="option.value", :label="option.label")
     div.toolbar-right
       div.toolbar__view
-        el-button(type="text" size="mini" :class="view === 'board' ? 'active' : ''" @click="onViewChange('board')" disabled)
+        el-button(type="text" size="mini" :class="view === 'board' ? 'active' : ''" @click="onViewChange('board')")
           feather(type="columns" size="20")
-        el-button(type="text" size="mini" :class="view === 'grid' ? 'active' : ''" @click="onViewChange('grid')" disabled)
+        el-button(type="text" size="mini" :class="view === 'grid' ? 'active' : ''" @click="onViewChange('grid')")
           feather(type="grid" size="20")
         el-button(type="text" size="mini" :class="view === 'list' ? 'active' : ''" @click="onViewChange('list')")
           feather(type="menu" size="20")

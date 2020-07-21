@@ -383,3 +383,13 @@ a {
   background-color: var(--input-background);
   border-color: var(--input-border);
 }
+
+.el-progress-bar__outer {
+  background-color: var(--background);
+}
+.el-progress__text {
+  margin-left: 15px;
+  font-weight: 500;
+  font-size: 12.5px !important;
+  color: var(--text-placeholder);
+}

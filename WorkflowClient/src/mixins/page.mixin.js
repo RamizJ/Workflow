@@ -1,10 +1,10 @@
 export default {
   data() {
     return {
-      search: '',
-      order: '',
-      sort: '',
-      view: 'list',
+      search: this.$route.query.q || '',
+      order: this.$route.query.order || '',
+      sort: this.$route.query.sort || '',
+      view: this.$route.query.view || 'list',
       activeTab: 'active',
       tabs: [
         { value: 'active', label: 'Активные' },
@@ -22,9 +22,10 @@ export default {
       this.$refs.items[0].onItemCreate();
     },
     onTabClick() {
-      this.onSearch('');
-      this.onOrderChange('');
-      this.onSortChange('');
+      this.onSearch(undefined);
+      this.onOrderChange(undefined);
+      this.onSortChange(undefined);
+      this.onViewChange('list');
       this.updateUrl('tab', this.activeTab);
     },
     onSearch(value) {
@@ -45,7 +46,7 @@ export default {
     },
     updateUrl(queryLabel, queryValue) {
       const query = { ...this.$route.query };
-      if (query[queryLabel] && query[queryLabel] !== queryValue) {
+      if (query[queryLabel] !== queryValue) {
         query[queryLabel] = queryValue || undefined;
         this.$router.push({ query });
       }

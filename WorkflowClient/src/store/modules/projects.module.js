@@ -39,6 +39,7 @@ export default {
       const page = state.sidebarProjectsPage;
       if (page === 0) commit('setSidebarProjects', []);
       commit('setSidebarProjectsPage', page + 1);
+
       const response = await projectsAPI.getPage({
         pageNumber: page,
         pageSize: params?.pageSize || 20
@@ -47,6 +48,7 @@ export default {
         project.teamIds = [];
         return project;
       });
+
       commit('appendSidebarProjects', projects);
       return projects;
     },
@@ -57,9 +59,10 @@ export default {
         return project;
       });
       commit('setProjects', projects);
+      if (!projects.length) return projects;
 
       const sidebarProjects = state.sidebarProjects;
-      const reloadSidebarProjects =
+      const isEqual =
         params.pageNumber === 0 &&
         projects.length === sidebarProjects.length &&
         projects.sort().every(function(value, index) {
@@ -68,8 +71,10 @@ export default {
             JSON.stringify(sidebarProjects.sort()[index])
           );
         });
-      if (reloadSidebarProjects)
-        await dispatch('fetchSidebarProjects', { reload: true });
+      if (!isEqual)
+        await dispatch('fetchSidebarProjects', {
+          reload: true
+        });
 
       return projects;
     },

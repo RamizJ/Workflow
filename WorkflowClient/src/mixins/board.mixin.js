@@ -10,7 +10,7 @@ export default {
   data() {
     return {
       loading: true,
-      tableData: [],
+      data: [],
       query: {
         projectId: this.$route.params.projectId || null,
         filter: '',
@@ -169,19 +169,21 @@ export default {
       });
     },
     refresh() {
-      this.tableData = [];
+      this.data = [];
       this.query.pageNumber = 0;
       this.loader.stateChanger.reset();
       this.dialogVisible = false;
     },
     async load($state) {
-      const firstLoad = !this.tableData.length;
+      const firstLoad = !this.data.length;
       if (firstLoad) this.loading = true;
       const items = await this.fetch(this.query);
       if (items.length) $state.loaded();
       else $state.complete();
-      this.tableData = firstLoad ? items : this.tableData.concat(items);
+      this.data = firstLoad ? items : this.data.concat(items);
       if (firstLoad) this.loading = false;
+      console.log('load');
+      this.updateLists();
     },
     async fetch(params) {
       const items = await this.$store.dispatch(this.actions.fetchItems, params);
@@ -216,58 +218,33 @@ export default {
     onItemDoubleClick(row, column, event) {
       if (!row.isRemoved) this.onItemEdit(event, row);
     },
-    onItemRightClick(row, column, event) {
-      if (!this.isMultipleSelected) {
-        this.table.clearSelection();
-        this.table.toggleRowSelection(row);
-      }
-      this.table.setCurrentRow(row);
-      this.selectedRow = row;
-      this.contextMenu.open(event, { row, column });
+    onItemRightClick(event, item) {
+      this.contextMenu.open(event, { item });
       event.preventDefault();
     },
     onItemCreate() {
       this.dialogData = null;
       this.dialogVisible = true;
     },
-    onItemEdit(event, row) {
-      this.dialogData = row;
+    onItemEdit(item) {
+      this.dialogData = item;
       this.dialogVisible = true;
     },
-    async onItemDelete(event, row) {
-      if (this.isMultipleSelected)
-        await this.$store.dispatch(
-          this.actions.deleteItems,
-          this.table.selection.map(item => item.id)
-        );
-      else await this.$store.dispatch(this.actions.deleteItem, row.id);
+    async onItemDelete(item) {
+      await this.$store.dispatch(this.actions.deleteItem, item.id);
       await this.refresh();
     },
-    async onItemRestore(event, row) {
-      if (this.isMultipleSelected)
-        await this.$store.dispatch(
-          this.actions.restoreItems,
-          this.table.selection.map(item => item.id)
-        );
-      else await this.$store.dispatch(this.actions.restoreItem, row.id);
+    async onItemRestore(item) {
+      await this.$store.dispatch(this.actions.restoreItem, item.id);
       await this.refresh();
     },
-    async onItemStatusChange(event, row, status) {
-      if (this.isMultipleSelected) {
-        const items = this.table.selection.map(item => {
-          item.state = status;
-          return item;
-        });
-        await this.$store.dispatch(this.actions.updateItems, items);
-      } else {
-        const item = row;
-        item.state = status;
-        await this.$store.dispatch(this.actions.updateItem, item);
-      }
+    async onItemStatusChange(item, status) {
+      item.state = status;
+      await this.$store.dispatch(this.actions.updateItem, item);
       await this.refresh();
     },
     dateFormatter(row, column, cellValue, index) {
-      const dateRaw = new Date(`${cellValue}Z`);
+      const dateRaw = new Date(cellValue);
       const dateRu = dateRaw.toLocaleString();
       return dateRu;
     },
