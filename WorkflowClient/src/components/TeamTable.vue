@@ -34,13 +34,13 @@
 </template>
 
 <script>
-import listMixin from '~/mixins/list.mixin';
+import tableMixin from '~/mixins/table.mixin';
 import TeamDialog from '~/components/TeamDialog';
 
 export default {
   name: 'TeamList',
   components: { TeamDialog },
-  mixins: [listMixin],
+  mixins: [tableMixin],
   data() {
     return {
       getters: {

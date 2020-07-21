@@ -127,9 +127,10 @@ export default {
         this.$router.push({ query });
     },
     async onTaskCreate(e) {
-      if (this.activeTab === 'tasks')
-        this.$refs.projectTasks.$refs.items.onItemCreate();
-      else this.dialogTaskVisible = true;
+      // if (this.activeTab === 'tasks')
+      //   this.$refs.projectTasks.$refs.items.onItemCreate();
+      // else this.dialogTaskVisible = true;
+      this.dialogTaskVisible = true;
     },
     async onTeamCreate(e) {
       this.dialogTeamVisible = true;

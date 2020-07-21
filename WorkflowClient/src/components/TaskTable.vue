@@ -47,41 +47,18 @@
         li
           a(v-if="isRestoreVisible" @click.prevent="onItemRestore($event, child.data.row)") {{ isMultipleSelected ? 'Восстановить выделенное' : 'Восстановить' }}
 
-
-
-    //vue-context(ref="contextMenu")
-      template(slot-scope="child")
-        li(v-if="isEditVisible" @click.prevent="onItemEdit($event, child.data.row)") Изменить
-        el-divider(v-if="isEditVisible")
-        li(@click.prevent="onItemCreate") Новая задача
-        el-divider
-        li.v-context__sub(v-if="isStatusVisible") Изменить статус
-          ul.v-context
-            li(@click.prevent="onItemStatusChange($event, child.data.row, 'Succeed')") Выполнено
-            li(@click.prevent="onItemStatusChange($event, child.data.row, 'Delay')") Отложено
-            li(@click.prevent="onItemStatusChange($event, child.data.row, 'Rejected')") Отклонено
-            el-divider
-            li(@click.prevent="onItemStatusChange($event, child.data.row, 'Perform')") Выполняется
-            li(@click.prevent="onItemStatusChange($event, child.data.row, 'Testing')") Проверяется
-        li(
-          v-if="isDeleteVisible"
-          @click.prevent="onItemDelete($event, child.data.row)") Переместить в корзину
-        li(
-          v-if="isRestoreVisible"
-          @click.prevent="onItemRestore($event, child.data.row)") {{ isMultipleSelected ? 'Восстановить выделенное' : 'Восстановить' }}
-
     task-dialog(v-if="dialogVisible" :data="dialogData" @close="dialogVisible = false" @submit="refresh")
 
 </template>
 
 <script>
-import listMixin from '~/mixins/list.mixin';
+import tableMixin from '~/mixins/table.mixin';
 import TaskDialog from '~/components/TaskDialog';
 
 export default {
-  name: 'TaskList',
+  name: 'TaskTable',
   components: { TaskDialog },
-  mixins: [listMixin],
+  mixins: [tableMixin],
   data() {
     return {
       getters: {
