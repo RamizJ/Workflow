@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
+using Workflow.Share.Extensions;
 using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
@@ -281,75 +282,26 @@ namespace Workflow.Services
         {
             if (sortFields == null) return query;
 
-            IOrderedQueryable<Team> orderedQuery = null;
             foreach (var field in sortFields)
             {
-                if (field == null)
-                    continue;
+                if (field == null) continue;
+
+                var isAcending = field.SortType == SortType.Ascending;
 
                 if (field.Is(nameof(VmTeam.Name)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(t => t.Name)
-                            : query.OrderByDescending(t => t.Name);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(s => s.Name)
-                            : orderedQuery.ThenByDescending(s => s.Name);
-                    }
-                }
+                    query = query.SortBy(t => t.Name, isAcending);
+
                 else if (field.Is(nameof(VmTeam.Description)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(t => t.Description)
-                            : query.OrderByDescending(t => t.Description);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(s => s.Description)
-                            : orderedQuery.ThenByDescending(s => s.Description);
-                    }
-                }
+                    query = query.SortBy(t => t.Description, isAcending);
+
                 else if (field.Is(nameof(VmTeam.GroupName)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(s => s.Group.Name)
-                            : query.OrderByDescending(s => s.Group.Name);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(s => s.Group.Name)
-                            : orderedQuery.ThenByDescending(s => s.Group.Name);
-                    }
-                }
-                else if (field.Is(nameof(VmTeam.IsRemoved)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(s => s.IsRemoved)
-                            : query.OrderByDescending(s => s.IsRemoved);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(s => s.IsRemoved)
-                            : orderedQuery.ThenByDescending(s => s.IsRemoved);
-                    }
-                }
+                    query = query.SortBy(t => t.Group.Name, isAcending);
+
+                else if (field.Is(nameof(VmTeam.IsRemoved))) 
+                    query = query.SortBy(t => t.IsRemoved, isAcending);
             }
 
-            return orderedQuery ?? query;
+            return query;
         }
 
         private async Task<Team> CreateTeam(ApplicationUser currentUser, VmTeam team, 

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Workflow.DAL;
 using Workflow.DAL.Models;
@@ -54,6 +54,24 @@ namespace WorkflowService
                 .AddEntityFrameworkStores<DataContext>()
                 .AddDefaultTokenProviders();
 
+            var origins = Configuration.GetSection(OTHER_ORIGINS)
+                .AsEnumerable().Select(x => x.Value).Where(x => x != null)
+                .ToArray();
+            services.AddCors(options => options
+                .AddDefaultPolicy(builder =>
+                {
+                    var allowAnyOrigins = Configuration.GetValue<bool>(ALLOW_ANY_ORIGINS);
+                    if (allowAnyOrigins)
+                        builder.AllowAnyOrigin();
+                    else
+                        builder.WithOrigins(origins);
+
+                    builder
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                }));
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -88,7 +106,8 @@ namespace WorkflowService
 
             services.AddControllers().AddNewtonsoftJson(options =>
             {
-                options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
                 options.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
 
@@ -122,7 +141,6 @@ namespace WorkflowService
                 setup.IncludeXmlComments(filePath);
             });
             services.AddSwaggerGenNewtonsoftSupport();
-            services.AddCors();
             services.AddSignalR(options =>
             {
                 options.EnableDetailedErrors = true;
@@ -155,6 +173,8 @@ namespace WorkflowService
             app.UseStaticFiles();
             app.UseRouting();
 
+            app.UseCors();
+
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
@@ -162,13 +182,6 @@ namespace WorkflowService
             });
 
             SetupRewriter(app);
-            var origins = Configuration.GetSection(OTHER_ORIGINS)
-                .AsEnumerable().Select(x => x.Value).Where(x => x != null)
-                .ToArray();
-            app.UseCors(builder => builder.WithOrigins(origins)
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials());
 
             app.UseAuthentication();
             app.UseAuthorization();

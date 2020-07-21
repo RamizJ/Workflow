@@ -160,6 +160,31 @@ namespace Workflow.Tests.Services
             }
         }
 
+        [TestCase(0, 5, SortType.Descending, new[] { 9, 8, 7 })]
+        public async Task GetPageWithMultiSortingTest(int pageNumber, int pageSize,
+            SortType sortType, int[] expectedIds)
+        {
+            //Arrange
+            var sortField1 = new FieldSort(nameof(VmProject.Name), sortType);
+            var sortField2 = new FieldSort(nameof(VmProject.GroupName), sortType);
+            var pageOptions = new PageOptions
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                SortFields = new[] { sortField1, sortField2 }
+            };
+
+            //Act
+            var resultScopes = (await _service.GetPage(_currentUser, pageOptions)).ToArray();
+
+            //Assert
+            Assert.LessOrEqual(expectedIds.Length, resultScopes.Length);
+            for (var i = 0; i < expectedIds.Length; i++)
+            {
+                Assert.AreEqual(expectedIds[i], resultScopes[i].Id);
+            }
+        }
+
 
         [TestCase(null)]
         [TestCase(new int[0])]

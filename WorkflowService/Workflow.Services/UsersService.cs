@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
+using Workflow.Share.Extensions;
 using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
@@ -295,120 +296,35 @@ namespace Workflow.Services
         {
             if (sortFields == null) return query;
 
-            IOrderedQueryable<ApplicationUser> orderedQuery = null;
             foreach (var field in sortFields)
             {
-                if (field == null)
-                    continue;
+                if (field == null) continue;
+
+                var isAcending = field.SortType == SortType.Ascending;
 
                 if (field.Is(nameof(VmUser.Email)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(u => u.Email)
-                            : query.OrderByDescending(u => u.Email);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(u => u.Email)
-                            : orderedQuery.ThenByDescending(u => u.Email);
-                    }
-                }
+                    query = query.SortBy(u => u.Email, isAcending);
+
                 else if (field.Is(nameof(VmUser.Phone)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(u => u.PhoneNumber)
-                            : query.OrderByDescending(u => u.PhoneNumber);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(u => u.PhoneNumber)
-                            : orderedQuery.ThenByDescending(u => u.PhoneNumber);
-                    }
-                }
+                    query = query.SortBy(u => u.PhoneNumber, isAcending);
+
                 else if (field.Is(nameof(VmUser.Position)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(u => u.Position.Name)
-                            : query.OrderByDescending(u => u.Position.Name);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(u => u.Position.Name)
-                            : orderedQuery.ThenByDescending(u => u.Position.Name);
-                    }
-                }
+                    query = query.SortBy(u => u.Position.Name + u.PositionCustom, isAcending);
+
                 else if (field.Is(nameof(VmUser.LastName)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(u => u.LastName)
-                            : query.OrderByDescending(u => u.LastName);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(u => u.LastName)
-                            : orderedQuery.ThenByDescending(u => u.LastName);
-                    }
-                }
+                    query = query.SortBy(u => u.LastName, isAcending);
+
                 else if (field.Is(nameof(VmUser.FirstName)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(u => u.FirstName)
-                            : query.OrderByDescending(u => u.FirstName);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(u => u.FirstName)
-                            : orderedQuery.ThenByDescending(u => u.FirstName);
-                    }
-                }
+                    query = query.SortBy(u => u.FirstName, isAcending);
+
                 else if (field.Is(nameof(VmUser.MiddleName)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(u => u.MiddleName)
-                            : query.OrderByDescending(u => u.MiddleName);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(u => u.MiddleName)
-                            : orderedQuery.ThenByDescending(u => u.MiddleName);
-                    }
-                }
-                else if (field.Is(nameof(VmUser.IsRemoved)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(u => u.IsRemoved)
-                            : query.OrderByDescending(u => u.IsRemoved);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(u => u.IsRemoved)
-                            : orderedQuery.ThenByDescending(u => u.IsRemoved);
-                    }
-                }
+                    query = query.SortBy(u => u.MiddleName, isAcending);
+
+                else if (field.Is(nameof(VmUser.IsRemoved))) 
+                    query = query.SortBy(u => u.IsRemoved, isAcending);
             }
 
-            return orderedQuery ?? query;
+            return query;
         }
 
         private async Task<IEnumerable<VmUser>> RemoveRestore(IEnumerable<string> userIds, bool isRemoved)

@@ -124,22 +124,20 @@ namespace Workflow.Tests.Services
             Assert.AreEqual(expectedCount, result.Length);
         }
 
-        [TestCase(0, 5, null, "Title", new object[] { "Goal1" }, false, 5)]
-        [TestCase(0, 5, null, "Description", new object[] { "Description1" }, false, 1)]
-        [TestCase(0, 5, null, "Title", new object[] { "Goal2" }, true, 4)]
-        [TestCase(0, 5, null, "State", new object[] { GoalState.Perform }, true, 4)]
-        [TestCase(0, 5, null, "Priority", new object[] { GoalPriority.High }, true, 4)]
+        [TestCase(0, 5, 1, "Title", new object[] { "Goal1" }, false, 5)]
+        [TestCase(0, 5, 1, "Description", new object[] { "Description1" }, false, 1)]
+        [TestCase(0, 5, 10, "Title", new object[] { "Goal2" }, true, 4)]
+        [TestCase(0, 5, 10, "State", new object[] { GoalState.Perform }, true, 4)]
+        [TestCase(0, 5, 10, "Priority", new object[] { GoalPriority.High }, true, 4)]
         public async Task GetPageFilterFieldsTest(int pageNumber, int pageSize,
-            string filter, string fieldName, object[] values, bool withRemoved, int expectedCount)
+            int projectId, string fieldName, object[] values, bool withRemoved, int expectedCount)
         {
             //Arrange
-            var projectId = _testData.Projects.First().Id;
             var filterField = new FieldFilter(fieldName, values);
             var pageOptions = new PageOptions
             {
                 PageNumber = pageNumber,
                 PageSize = pageSize,
-                Filter = filter,
                 FilterFields = new[] { filterField },
                 WithRemoved = withRemoved
             };
