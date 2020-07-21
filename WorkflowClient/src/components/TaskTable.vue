@@ -52,13 +52,13 @@
 </template>
 
 <script>
-import listMixin from '~/mixins/list.mixin';
+import tableMixin from '~/mixins/table.mixin';
 import TaskDialog from '~/components/TaskDialog';
 
 export default {
   name: 'TaskTable',
   components: { TaskDialog },
-  mixins: [listMixin],
+  mixins: [tableMixin],
   data() {
     return {
       getters: {

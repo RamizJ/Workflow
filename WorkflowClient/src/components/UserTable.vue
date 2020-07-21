@@ -40,13 +40,13 @@
 </template>
 
 <script>
-import listMixin from '~/mixins/list.mixin';
+import tableMixin from '~/mixins/table.mixin';
 import UserDialog from '~/components/UserDialog';
 
 export default {
   name: 'UserList',
   components: { UserDialog },
-  mixins: [listMixin],
+  mixins: [tableMixin],
   data() {
     return {
       getters: {

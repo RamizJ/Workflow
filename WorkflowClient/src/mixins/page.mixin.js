@@ -22,10 +22,10 @@ export default {
       this.$refs.items[0].onItemCreate();
     },
     onTabClick() {
-      this.onSearch('');
-      this.onOrderChange('');
-      this.onSortChange('');
-      this.onViewChange('');
+      this.onSearch(undefined);
+      this.onOrderChange(undefined);
+      this.onSortChange(undefined);
+      this.onViewChange('list');
       this.updateUrl('tab', this.activeTab);
     },
     onSearch(value) {

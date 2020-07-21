@@ -38,14 +38,13 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import listMixin from '~/mixins/list.mixin';
+import tableMixin from '~/mixins/table.mixin';
 import ProjectDialog from '~/components/ProjectDialog';
 
 export default {
   name: 'ProjectList',
   components: { ProjectDialog },
-  mixins: [listMixin],
+  mixins: [tableMixin],
   data() {
     return {
       getters: {
