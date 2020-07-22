@@ -75,6 +75,7 @@ export default {
         pageNumber: 0,
         pageSize: 10
       });
+      this.form.teamIds = [];
       this.form.teamIds = this.projectTeams.map(team => team.id);
     }
     this.loading = false;
