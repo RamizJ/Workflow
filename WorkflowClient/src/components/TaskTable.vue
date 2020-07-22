@@ -32,6 +32,8 @@
           a(v-if="isStatusVisible") Изменить статус
           ul.v-context
             li
+              a(@click.prevent="onItemStatusChange($event, child.data.row, 'New')") Новое
+            li
               a(@click.prevent="onItemStatusChange($event, child.data.row, 'Succeed')") Выполнено
             li
               a(@click.prevent="onItemStatusChange($event, child.data.row, 'Delay')") Отложено
