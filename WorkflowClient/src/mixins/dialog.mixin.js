@@ -22,9 +22,9 @@ export default {
       users: 'users/getUsers',
       me: 'auth/me'
     }),
-    isFormValid() {
+    async isFormValid() {
       let formValid = false;
-      this.$refs.form.validate(valid => {
+      await this.$refs.form.validate(valid => {
         if (valid) formValid = true;
         else {
           formValid = false;
