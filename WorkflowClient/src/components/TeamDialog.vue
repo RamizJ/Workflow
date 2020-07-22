@@ -95,12 +95,12 @@ export default {
         pageNumber: 0,
         pageSize: 10
       });
+      this.form.userIds = [];
       for (let user of this.teamUsers) {
-        this.form.userIds = [];
         this.form.userIds.push(user.id);
       }
+      this.form.projectIds = [];
       for (let project of this.teamProjects) {
-        this.form.projectIds = [];
         this.form.projectIds.push(project.id);
       }
       this.loading = false;

@@ -41,7 +41,7 @@ export default {
   data() {
     return {
       sortFields: [
-        { value: 'title', label: 'По названию' },
+        { value: 'name', label: 'По названию' },
         { value: 'state', label: 'По руководителю' },
         { value: 'creationDate', label: 'По дате создания' }
       ]
