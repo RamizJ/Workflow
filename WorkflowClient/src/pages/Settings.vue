@@ -75,18 +75,24 @@
           div.section
             el-button(type="primary" @click="updateAccount") Сохранить
             el-button(@click="exit") Выйти
+
+      el-tab-pane(label="Обновления" name="updates")
+        changelog
+
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import Page from '~/components/Page';
 import PageHeader from '~/components/BaseHeader';
+import Changelog from '@/components/Changelog';
 
 export default {
   name: 'Settings',
   components: {
     Page,
-    PageHeader
+    PageHeader,
+    Changelog
   },
   data() {
     return {
@@ -189,8 +195,13 @@ export default {
   h2 {
     font-size: 14px;
     font-weight: 500;
-    margin-top: 15px;
+    margin-top: 10px;
     margin-bottom: 15px;
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-top: 15px;
   }
 }
 .theme-preview {

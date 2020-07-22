@@ -1,0 +1,65 @@
+<template lang="pug">
+  div.changelog
+    div.section
+      h2 Текущая версия
+      h1 {{ $store.getters.appVersion }}
+    div.section
+      h2 История версий
+      el-timeline
+        el-timeline-item(v-for="(version, index) in changelog" :key="index" :timestamp="version.date")
+          div.version {{ version.number}}
+          p {{ version.content }}
+</template>
+
+<script>
+export default {
+  name: 'Changelog',
+  data() {
+    return {
+      changelog: [
+        {
+          number: '0.1.5',
+          content:
+            'Возможность сменить статус задачи на Новое, новые поля сортировки для проектов и пользователей, исправления ошибок',
+          date: '22.07.2020'
+        },
+        {
+          number: '0.1.4',
+          content:
+            'Добавлено отображение задач в виде доски на странице проекта',
+          date: '21.07.2020'
+        }
+      ]
+    };
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.section {
+  margin-bottom: 30px;
+  h2 {
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 10px;
+    margin-bottom: 15px;
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-top: 15px;
+  }
+}
+.el-timeline {
+  padding: 10px 2px;
+}
+.version {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+p {
+  color: var(--text) !important;
+  font-size: 13px;
+}
+</style>
