@@ -41,11 +41,11 @@ export default {
   data() {
     return {
       sortFields: [
-        { value: 'creationDate', label: 'По дате создания' },
         { value: 'title', label: 'По названию' },
-        { value: 'state', label: 'По статусу' },
         { value: 'projectName', label: 'По проекту' },
-        { value: 'priority', label: 'По приоритету' }
+        { value: 'state', label: 'По статусу' },
+        { value: 'priority', label: 'По приоритету' },
+        { value: 'creationDate', label: 'По дате создания' }
       ]
     };
   }

@@ -40,7 +40,15 @@ export default {
   mixins: [pageMixin],
   data() {
     return {
-      sortFields: [{ value: 'firstName', label: 'По имени' }]
+      sortFields: [
+        { value: 'lastName', label: 'По фамилии' },
+        { value: 'firstName', label: 'По имени' },
+        { value: 'middleName', label: 'По отчеству' },
+        { value: 'userName', label: 'По логину' },
+        { value: 'email', label: 'По почте' },
+        { value: 'phone', label: 'По номеру телефона' },
+        { value: 'position', label: 'По должности' }
+      ]
     };
   }
 };

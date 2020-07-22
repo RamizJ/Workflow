@@ -15,7 +15,7 @@
       el-table-column(v-if="!$route.params.projectId" prop="projectName" label="Проект" width="150")
       el-table-column(prop="state" label="Статус" width="120" :formatter="stateFormatter")
       el-table-column(prop="priority" label="Приоритет" width="120" :formatter="priorityFormatter")
-      el-table-column(prop="creationDate" label="Добавлено" width="180" :formatter="dateFormatter")
+      el-table-column(prop="creationDate" label="Дата создания" width="180" :formatter="dateFormatter")
       infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
         div(slot="no-more")
         div(slot="no-results")
