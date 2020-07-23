@@ -153,14 +153,24 @@ export default {
       fetchMe: 'auth/fetchMe'
     }),
     async updateAccount() {
+      if (JSON.stringify(this.form) === JSON.stringify(this.me)) {
+        this.$message.warning('Внесите правки для сохранения изменений');
+        return;
+      }
       try {
-        if (this.form.newPassword)
+        if (this.form.newPassword) {
+          if (!this.form.currentPassword)
+            this.$message.warning(
+              'Введите текущий пароль для сохранения настроек'
+            );
           await this.updatePassword({
             currentPassword: this.form.currentPassword,
             newPassword: this.form.newPassword
           });
+        }
         await this.updateUser(this.form);
         await this.fetchMe();
+        this.$message.success('Данные профиля успешно обновлены');
       } catch (e) {
         this.$message.error('Не удалось обновить данные профиля');
         console.error(e);

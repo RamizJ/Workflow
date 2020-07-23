@@ -22,21 +22,6 @@ export default {
       users: 'users/getUsers',
       me: 'auth/me'
     }),
-    async isFormValid() {
-      let formValid = false;
-      await this.$refs.form.validate(valid => {
-        if (valid) formValid = true;
-        else {
-          formValid = false;
-          this.$message({
-            showClose: true,
-            message: 'Форма заполнена некорректно',
-            type: 'error'
-          });
-        }
-      });
-      return formValid;
-    },
     projectList() {
       return this.projects.map(project => {
         return {
@@ -101,11 +86,19 @@ export default {
       this.loading = false;
     },
     async submit(event) {
-      if (this.isFormValid) {
-        await this.sendForm();
-        this.$emit('submit');
-        this.exit();
-      }
+      await this.$refs.form.validate(async valid => {
+        if (valid) {
+          await this.sendForm();
+          this.$emit('submit');
+          this.exit();
+        } else {
+          this.$message({
+            showClose: true,
+            message: 'Форма заполнена некорректно',
+            type: 'error'
+          });
+        }
+      });
     },
     exit() {
       this.$refs.form?.resetFields();

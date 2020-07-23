@@ -133,13 +133,13 @@ export default {
     }),
     async validateLogin(rule, value, callback) {
       const loginAlreadyExist = await this.isLoginExist(value);
-      if (loginAlreadyExist && this.item.userName !== value)
+      if (loginAlreadyExist && this.data?.userName !== value)
         callback(new Error('занято'));
       else callback();
     },
     async validateEmail(rule, value, callback) {
       const emailAlreadyExist = await this.isEmailExist(value);
-      if (emailAlreadyExist && this.item.email !== value)
+      if (emailAlreadyExist && this.data?.email !== value)
         callback(new Error('занято'));
       else callback();
     },

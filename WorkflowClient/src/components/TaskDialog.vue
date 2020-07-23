@@ -52,8 +52,9 @@
           el-col(v-if="expectedCompletedDateVisible || form.expectedCompletedDate" :span="8")
             el-form-item(prop="expectedCompletedDate")
               el-date-picker(
-                type="datetime"
                 v-model="form.expectedCompletedDate"
+                :picker-options="{ disabledDate: validateDate }"
+                type="datetime"
                 prefix-icon="el-icon-arrow-down"
                 format="dd.MM.yyyy HH:mm"
                 default-time="12:00:00"
@@ -221,6 +222,11 @@ export default {
       const parentId = this.isEdit ? this.form.id : this.task.id;
       const tasks = this.checklist.filter(item => !item.id);
       await this.addChildTasks({ parentId, tasks });
+    },
+    validateDate(date) {
+      const currentDate = new Date();
+      currentDate.setDate(currentDate.getDate() - 1);
+      return date < currentDate;
     },
     async uploadAttachment(request) {
       this.loading = true;

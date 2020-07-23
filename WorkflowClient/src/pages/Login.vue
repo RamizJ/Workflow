@@ -3,7 +3,7 @@
     el-form(:model="form" :rules="rules" ref="form" @keyup.enter.native="submit")
       h1.title Вход
       el-form-item(prop="login")
-        el-input(v-model="form.login" placeholder="Логин" autofocus)
+        el-input(v-model="form.login" placeholder="Почта" autofocus)
       el-form-item(prop="password")
         el-input(v-model="form.password" type="password" autocomplete="off" placeholder="Пароль")
       el-form-item
