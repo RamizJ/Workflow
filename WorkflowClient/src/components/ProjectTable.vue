@@ -13,7 +13,7 @@
       el-table-column(type="selection" width="38")
       el-table-column(prop="name" label="Проект")
       el-table-column(prop="ownerFio" label="Руководитель" width="250")
-      el-table-column(prop="creationDate" label="Добавлено" width="180" :formatter="dateFormatter")
+      el-table-column(prop="creationDate" label="Дата создания" width="180" :formatter="dateFormatter")
       infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
         div(slot="no-more")
         div(slot="no-results")

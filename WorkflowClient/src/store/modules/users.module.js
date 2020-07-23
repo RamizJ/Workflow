@@ -16,7 +16,7 @@ export default {
     }
   },
   actions: {
-    async fetchUsers({ commit }, params) {
+    async fetchUsers({ rootState, commit }, params) {
       const response = await usersAPI.getPage(params);
       const users = response.data;
       commit('setUsers', users);
