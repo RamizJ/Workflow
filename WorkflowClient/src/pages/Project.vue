@@ -32,9 +32,9 @@
       el-tab-pane(name="overview" label="Обзор")
         project-overview(v-if="activeTab === 'overview'" :data="projectItem")
       el-tab-pane(name="tasks" label="Задачи")
-        project-tasks(v-if="activeTab === 'tasks'" ref="projectTasks")
+        project-tasks(ref="projectTasks" v-if="activeTab === 'tasks'")
       el-tab-pane(name="team" label="Команды")
-        project-teams(v-if="activeTab === 'team'")
+        project-teams(ref="projectTeams" v-if="activeTab === 'team'")
 
     project-dialog(v-if="dialogProjectVisible" :data="projectItem" @close="dialogProjectVisible = false")
     task-dialog(v-if="dialogTaskVisible" @close="dialogTaskVisible = false")
@@ -127,13 +127,14 @@ export default {
         this.$router.push({ query });
     },
     async onTaskCreate(e) {
-      // if (this.activeTab === 'tasks')
-      //   this.$refs.projectTasks.$refs.items.onItemCreate();
-      // else this.dialogTaskVisible = true;
-      this.dialogTaskVisible = true;
+      if (this.$refs.projectTasks)
+        this.$refs.projectTasks.$refs.items.onItemCreate();
+      else this.dialogTaskVisible = true;
     },
     async onTeamCreate(e) {
-      this.dialogTeamVisible = true;
+      if (this.$refs.projectTeams)
+        this.$refs.projectTeams.$refs.items.onItemCreate();
+      else this.dialogTeamVisible = true;
     },
     async onProjectEdit(e) {
       this.dialogProjectVisible = true;

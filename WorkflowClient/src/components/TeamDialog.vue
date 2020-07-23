@@ -77,8 +77,11 @@ export default {
     })
   },
   async mounted() {
-    if (this.$route.params.projectId)
-      this.form.projectIds.push(parseInt(this.$route.params.projectId));
+    if (this.$route.params.projectId) {
+      if (this.form.projectIds?.length)
+        this.form.projectIds.push(parseInt(this.$route.params.projectId));
+      else this.form.projectIds = [parseInt(this.$route.params.projectId)];
+    }
 
     await this.searchUsers();
     await this.searchProjects();

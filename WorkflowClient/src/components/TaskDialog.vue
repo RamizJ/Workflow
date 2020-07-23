@@ -189,13 +189,21 @@ export default {
       downloadAttachment: 'tasks/downloadAttachment'
     }),
     async submit() {
-      if (this.isFormValid) {
-        await this.sendForm();
-        await this.saveChecklist();
-        this.$refs.upload?.submit();
-        this.$emit('submit');
-        this.exit();
-      }
+      await this.$refs.form.validate(async valid => {
+        if (valid) {
+          await this.sendForm();
+          await this.saveChecklist();
+          this.$refs.upload?.submit();
+          this.$emit('submit');
+          this.exit();
+        } else {
+          this.$message({
+            showClose: true,
+            message: 'Форма заполнена некорректно',
+            type: 'error'
+          });
+        }
+      });
     },
     async loadChecklist() {
       if (!this.form.childGoalIds) return;

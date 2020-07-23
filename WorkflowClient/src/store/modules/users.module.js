@@ -18,9 +18,7 @@ export default {
   actions: {
     async fetchUsers({ rootState, commit }, params) {
       const response = await usersAPI.getPage(params);
-      const users = response.data.filter(
-        user => user.id !== rootState.auth.user.id
-      );
+      const users = response.data;
       commit('setUsers', users);
       return users;
     },
