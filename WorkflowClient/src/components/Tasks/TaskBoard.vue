@@ -53,7 +53,7 @@
 
 <script>
 import Draggable from 'vuedraggable';
-import TaskDialog from '@/components/TaskDialog';
+import TaskDialog from '@/components/Tasks/TaskDialog';
 import boardMixin from '@/mixins/board.mixin';
 
 export default {
@@ -164,6 +164,7 @@ export default {
   width: 100%;
   flex: 0 0 25%;
   &__header {
+    cursor: grab;
     border-bottom: 2px solid transparent;
     font-size: 14px;
     font-weight: 500;
