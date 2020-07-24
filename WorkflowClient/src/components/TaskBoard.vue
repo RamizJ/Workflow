@@ -5,8 +5,11 @@
         div.list__header(v-if="list.name" :class="list.name.toLowerCase()") {{ list.label }}
         div.list__items
           draggable(v-model="lists[index].items" v-bind="itemsDragOptions" @change="onItemMove($event, list.name)")
-            div.item(v-for="item in list.items" :key="item.id" :item="item" @contextmenu="onItemRightClick($event, item)")
-              div.item__header {{ item.title }}
+            div.item(
+              v-for="item in list.items"
+              :key="item.id"
+              @contextmenu="onItemRightClick($event, item)")
+              a.item__header(@click="onItemDoubleClick($event, item)") {{ item.title }}
               div.item__footer
                 div.item__performer {{ item.performerFio }}
                 div.item__date {{ new Date(item.creationDate).toLocaleDateString() }}
@@ -194,15 +197,20 @@ export default {
   }
 }
 .item {
-  cursor: pointer;
+  cursor: grab;
   margin: 10px 0;
   padding: 12px 15px;
   border: 1px solid var(--card-border);
   background-color: var(--card-background);
   border-radius: 8px;
   &__header {
+    cursor: pointer;
+    color: var(--text);
     font-size: 12.5px;
     line-height: normal;
+    &:hover {
+      text-decoration: underline;
+    }
   }
   &__footer {
     margin-top: 8px;

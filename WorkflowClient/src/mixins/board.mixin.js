@@ -182,7 +182,6 @@ export default {
       else $state.complete();
       this.data = firstLoad ? items : this.data.concat(items);
       if (firstLoad) this.loading = false;
-      console.log('load');
       this.updateLists();
     },
     async fetch(params) {
@@ -215,8 +214,8 @@ export default {
       this.table.toggleRowSelection(row);
       this.selectedRow = row;
     },
-    onItemDoubleClick(row, column, event) {
-      if (!row.isRemoved) this.onItemEdit(event, row);
+    onItemDoubleClick(event, item) {
+      this.onItemEdit(item);
     },
     onItemRightClick(event, item) {
       this.contextMenu.open(event, { item });
