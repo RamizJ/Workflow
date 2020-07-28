@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using VueCliMiddleware;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
@@ -58,19 +59,11 @@ namespace WorkflowService
                 .AsEnumerable().Select(x => x.Value).Where(x => x != null)
                 .ToArray();
             services.AddCors(options => options
-                .AddDefaultPolicy(builder =>
-                {
-                    var allowAnyOrigins = Configuration.GetValue<bool>(ALLOW_ANY_ORIGINS);
-                    if (allowAnyOrigins)
-                        builder.AllowAnyOrigin();
-                    else
-                        builder.WithOrigins(origins);
-
-                    builder
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials();
-                }));
+                .AddDefaultPolicy(builder => builder
+                    .WithOrigins(origins)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials()));
 
             services.AddAuthentication(options =>
             {
@@ -109,6 +102,11 @@ namespace WorkflowService
                 options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                 options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
                 options.SerializerSettings.Converters.Add(new StringEnumConverter());
+            });
+
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "wwwroot";
             });
 
             services.AddSwaggerGen(setup =>
@@ -171,8 +169,11 @@ namespace WorkflowService
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
-            app.UseRouting();
+            if (!env.IsDevelopment()) 
+                app.UseSpaStaticFiles();
 
+            app.UseRouting();
+            
             app.UseCors();
 
             app.UseSwagger();
@@ -181,7 +182,7 @@ namespace WorkflowService
                 options.SwaggerEndpoint("./v1/swagger.json", "Workflow API V1");
             });
 
-            SetupRewriter(app);
+            //SetupRewriter(app);
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -190,21 +191,8 @@ namespace WorkflowService
             {
                 endpoints.MapControllers();
             });
-        }
 
-        private void SetupRewriter(IApplicationBuilder app)
-        {
-            string api = "(^(?!(api/)))";
-            string js = "(^(?!(js/)))";
-            string css = "(^(?!(css/)))";
-            string img = "(^(?!(img/)))";
-            string fonts = "(^(?!(fonts/)))";
-            string manual = "(^(?!(UserManualADS\\.docx)))";
-
-            var options = new RewriteOptions()
-                .AddRewrite($"{api}{js}{css}{img}{fonts}{manual}",
-                    "/", false);
-            app.UseRewriter(options);
+            app.UseSpa(spa => { });
         }
     }
 }

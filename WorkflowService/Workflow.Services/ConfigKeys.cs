@@ -25,11 +25,6 @@ namespace Workflow.Services
         /// <summary>
         /// 
         /// </summary>
-        public const string ALLOW_ANY_ORIGINS = "AllowAnyOrigins";
-
-        /// <summary>
-        /// 
-        /// </summary>
         public const string OTHER_ORIGINS = "OtherOrigins";
 
         /// <summary>
