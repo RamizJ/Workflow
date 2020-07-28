@@ -48,8 +48,8 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import BaseDialog from '~/components/BaseDialog';
-import dialogMixin from '~/mixins/dialog.mixin';
+import BaseDialog from '@/components/BaseDialog';
+import dialogMixin from '@/mixins/dialog.mixin';
 
 export default {
   components: { BaseDialog },
@@ -77,8 +77,11 @@ export default {
     })
   },
   async mounted() {
-    if (this.$route.params.projectId)
-      this.form.projectIds.push(parseInt(this.$route.params.projectId));
+    if (this.$route.params.projectId) {
+      if (this.form.projectIds?.length)
+        this.form.projectIds.push(parseInt(this.$route.params.projectId));
+      else this.form.projectIds = [parseInt(this.$route.params.projectId)];
+    }
 
     await this.searchUsers();
     await this.searchProjects();
@@ -95,9 +98,11 @@ export default {
         pageNumber: 0,
         pageSize: 10
       });
+      this.form.userIds = [];
       for (let user of this.teamUsers) {
         this.form.userIds.push(user.id);
       }
+      this.form.projectIds = [];
       for (let project of this.teamProjects) {
         this.form.projectIds.push(project.id);
       }

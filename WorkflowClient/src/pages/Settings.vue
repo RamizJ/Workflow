@@ -75,18 +75,24 @@
           div.section
             el-button(type="primary" @click="updateAccount") Сохранить
             el-button(@click="exit") Выйти
+
+      el-tab-pane(label="Обновления" name="updates")
+        changelog
+
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import Page from '~/components/Page';
-import PageHeader from '~/components/BaseHeader';
+import Page from '@/components/Page';
+import PageHeader from '@/components/BaseHeader';
+import Changelog from '@/components/Changelog';
 
 export default {
   name: 'Settings',
   components: {
     Page,
-    PageHeader
+    PageHeader,
+    Changelog
   },
   data() {
     return {
@@ -147,14 +153,24 @@ export default {
       fetchMe: 'auth/fetchMe'
     }),
     async updateAccount() {
+      if (JSON.stringify(this.form) === JSON.stringify(this.me)) {
+        this.$message.warning('Внесите правки для сохранения изменений');
+        return;
+      }
       try {
-        if (this.form.newPassword)
+        if (this.form.newPassword) {
+          if (!this.form.currentPassword)
+            this.$message.warning(
+              'Введите текущий пароль для сохранения настроек'
+            );
           await this.updatePassword({
             currentPassword: this.form.currentPassword,
             newPassword: this.form.newPassword
           });
+        }
         await this.updateUser(this.form);
         await this.fetchMe();
+        this.$message.success('Данные профиля успешно обновлены');
       } catch (e) {
         this.$message.error('Не удалось обновить данные профиля');
         console.error(e);
@@ -189,8 +205,13 @@ export default {
   h2 {
     font-size: 14px;
     font-weight: 500;
-    margin-top: 15px;
+    margin-top: 10px;
     margin-bottom: 15px;
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-top: 15px;
   }
 }
 .theme-preview {

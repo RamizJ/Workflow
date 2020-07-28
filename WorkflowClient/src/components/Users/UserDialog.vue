@@ -30,11 +30,7 @@
         transition(name="fade")
           el-col(v-if="positionVisible || form.position" :span="8")
             el-form-item(prop="positionId")
-              el-select(
-                v-model="form.positionId"
-                placeholder="Должность"
-                filterable default-first-option)
-                el-option(v-for="item in positions" :key="item.value" :label="item.label" :value="item.value")
+              el-input(v-model="form.position" placeholder="Должность")
         transition(name="fade")
           el-col(v-if="teamsVisible || (form.teamIds && form.teamIds.length)" :span="24")
             el-form-item(prop="teams")
@@ -51,10 +47,10 @@
                 el-option(v-for="item in roles" :key="item.value" :label="item.label" :value="item.value")
     template(slot="footer")
       div.extra
-        el-tooltip(content="Команды" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+        //el-tooltip(content="Команды" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
           el-button(v-if="!(form.teamIds && form.teamIds.length)" type="text" @click="teamsVisible = !teamsVisible" circle)
             feather(type="users")
-        el-tooltip(v-if="!(form.roles && form.roles.length)" content="Права" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+        //el-tooltip(v-if="!(form.roles && form.roles.length)" content="Права" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
           el-button(type="text" @click="rolesVisible = !rolesVisible" circle)
             feather(type="shield")
         el-tooltip(v-if="!form.position" content="Должность" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
@@ -71,8 +67,8 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import BaseDialog from '~/components/BaseDialog';
-import dialogMixin from '~/mixins/dialog.mixin';
+import BaseDialog from '@/components/BaseDialog';
+import dialogMixin from '@/mixins/dialog.mixin';
 
 export default {
   components: { BaseDialog },
@@ -115,8 +111,7 @@ export default {
           { required: true, message: '!', trigger: 'blur' },
           { type: 'email', message: 'не почта', trigger: 'blur' },
           { validator: this.validateEmail, trigger: 'blur' }
-        ],
-        phone: [{ required: true, message: '!', trigger: 'blur' }]
+        ]
       },
       teamsVisible: null,
       rolesVisible: null,
@@ -138,13 +133,14 @@ export default {
     }),
     async validateLogin(rule, value, callback) {
       const loginAlreadyExist = await this.isLoginExist(value);
-      if (loginAlreadyExist && this.item.userName !== value)
+      if (loginAlreadyExist && this.data?.userName !== value)
         callback(new Error('занято'));
       else callback();
     },
     async validateEmail(rule, value, callback) {
       const emailAlreadyExist = await this.isEmailExist(value);
-      if (emailAlreadyExist) callback(new Error('занято'));
+      if (emailAlreadyExist && this.data?.email !== value)
+        callback(new Error('занято'));
       else callback();
     },
     validatePassword(rule, value, callback) {

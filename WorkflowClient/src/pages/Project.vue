@@ -32,9 +32,9 @@
       el-tab-pane(name="overview" label="Обзор")
         project-overview(v-if="activeTab === 'overview'" :data="projectItem")
       el-tab-pane(name="tasks" label="Задачи")
-        project-tasks(v-if="activeTab === 'tasks'" ref="projectTasks")
+        project-tasks(ref="projectTasks" v-if="activeTab === 'tasks'")
       el-tab-pane(name="team" label="Команды")
-        project-teams(v-if="activeTab === 'team'")
+        project-teams(ref="projectTeams" v-if="activeTab === 'team'")
 
     project-dialog(v-if="dialogProjectVisible" :data="projectItem" @close="dialogProjectVisible = false")
     task-dialog(v-if="dialogTaskVisible" @close="dialogTaskVisible = false")
@@ -44,15 +44,15 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import Page from '~/components/Page';
-import BaseHeader from '~/components/BaseHeader';
-import BaseSearch from '~/components/BaseSearch';
-import ProjectOverview from '~/components/ProjectOverview';
-import ProjectTasks from '~/components/ProjectTasks';
-import ProjectTeams from '@/components/ProjectTeams';
-import ProjectDialog from '~/components/ProjectDialog';
-import TaskDialog from '~/components/TaskDialog';
-import TeamDialog from '~/components/TeamDialog';
+import Page from '@/components/Page';
+import BaseHeader from '@/components/BaseHeader';
+import BaseSearch from '@/components/BaseSearch';
+import ProjectOverview from '@/components/Projects/ProjectOverview';
+import ProjectTasks from '@/components/Projects/ProjectTasks';
+import ProjectTeams from '@/components/Projects/ProjectTeams';
+import ProjectDialog from '@/components/Projects/ProjectDialog';
+import TaskDialog from '@/components/Tasks/TaskDialog';
+import TeamDialog from '@/components/Teams/TeamDialog';
 
 export default {
   name: 'Project',
@@ -127,13 +127,14 @@ export default {
         this.$router.push({ query });
     },
     async onTaskCreate(e) {
-      // if (this.activeTab === 'tasks')
-      //   this.$refs.projectTasks.$refs.items.onItemCreate();
-      // else this.dialogTaskVisible = true;
-      this.dialogTaskVisible = true;
+      if (this.$refs.projectTasks)
+        this.$refs.projectTasks.$refs.items.onItemCreate();
+      else this.dialogTaskVisible = true;
     },
     async onTeamCreate(e) {
-      this.dialogTeamVisible = true;
+      if (this.$refs.projectTeams)
+        this.$refs.projectTeams.$refs.items.onItemCreate();
+      else this.dialogTeamVisible = true;
     },
     async onProjectEdit(e) {
       this.dialogProjectVisible = true;

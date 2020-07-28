@@ -36,8 +36,8 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import BaseDialog from '~/components/BaseDialog';
-import dialogMixin from '~/mixins/dialog.mixin';
+import BaseDialog from '@/components/BaseDialog';
+import dialogMixin from '@/mixins/dialog.mixin';
 
 export default {
   components: { BaseDialog },
@@ -75,6 +75,7 @@ export default {
         pageNumber: 0,
         pageSize: 10
       });
+      this.form.teamIds = [];
       this.form.teamIds = this.projectTeams.map(team => team.id);
     }
     this.loading = false;

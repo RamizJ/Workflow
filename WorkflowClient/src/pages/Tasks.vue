@@ -7,9 +7,8 @@
 
     el-tabs(ref="tabs" v-model="activeTab" @tab-click="onTabClick")
       el-tab-pane(v-for="(tab, index) in tabs" :key="index" :label="tab.label" :name="tab.value")
-        base-toolbar(
+        task-toolbar(
           v-if="activeTab === tab.value"
-          :sort-fields="sortFields"
           @search="onSearch"
           @order="onOrderChange"
           @sort="onSortChange"
@@ -20,34 +19,26 @@
           :search="search"
           :order="order"
           :sort="sort")
+        task-board(v-if="view === 'board'")
 
 </template>
 
 <script>
-import Page from '~/components/Page';
-import BaseHeader from '~/components/BaseHeader';
-import BaseToolbar from '~/components/BaseToolbar';
-import TaskTable from '@/components/TaskTable';
-import pageMixin from '~/mixins/page.mixin';
+import Page from '@/components/Page';
+import BaseHeader from '@/components/BaseHeader';
+import TaskToolbar from '@/components/Tasks/TaskToolbar';
+import TaskTable from '@/components/Tasks/TaskTable';
+import TaskBoard from '@/components/Tasks/TaskBoard';
+import pageMixin from '@/mixins/page.mixin';
 
 export default {
   components: {
     Page,
     BaseHeader,
-    BaseToolbar,
-    TaskTable
+    TaskToolbar,
+    TaskTable,
+    TaskBoard
   },
-  mixins: [pageMixin],
-  data() {
-    return {
-      sortFields: [
-        { value: 'creationDate', label: 'По дате создания' },
-        { value: 'title', label: 'По названию' },
-        { value: 'state', label: 'По статусу' },
-        { value: 'projectName', label: 'По проекту' },
-        { value: 'priority', label: 'По приоритету' }
-      ]
-    };
-  }
+  mixins: [pageMixin]
 };
 </script>

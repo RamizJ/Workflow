@@ -34,8 +34,8 @@
 </template>
 
 <script>
-import tableMixin from '~/mixins/table.mixin';
-import TeamDialog from '~/components/TeamDialog';
+import tableMixin from '@/mixins/table.mixin';
+import TeamDialog from '@/components/Teams/TeamDialog';
 
 export default {
   name: 'TeamList',

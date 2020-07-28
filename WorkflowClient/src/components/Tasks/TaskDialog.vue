@@ -52,8 +52,9 @@
           el-col(v-if="expectedCompletedDateVisible || form.expectedCompletedDate" :span="8")
             el-form-item(prop="expectedCompletedDate")
               el-date-picker(
-                type="datetime"
                 v-model="form.expectedCompletedDate"
+                :picker-options="{ disabledDate: validateDate }"
+                type="datetime"
                 prefix-icon="el-icon-arrow-down"
                 format="dd.MM.yyyy HH:mm"
                 default-time="12:00:00"
@@ -103,8 +104,8 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import BaseDialog from '~/components/BaseDialog';
-import dialogMixin from '~/mixins/dialog.mixin';
+import BaseDialog from '@/components/BaseDialog';
+import dialogMixin from '@/mixins/dialog.mixin';
 
 export default {
   components: { BaseDialog },
@@ -188,13 +189,21 @@ export default {
       downloadAttachment: 'tasks/downloadAttachment'
     }),
     async submit() {
-      if (this.isFormValid) {
-        await this.sendForm();
-        await this.saveChecklist();
-        this.$refs.upload?.submit();
-        this.$emit('submit');
-        this.exit();
-      }
+      await this.$refs.form.validate(async valid => {
+        if (valid) {
+          await this.sendForm();
+          await this.saveChecklist();
+          this.$refs.upload?.submit();
+          this.$emit('submit');
+          this.exit();
+        } else {
+          this.$message({
+            showClose: true,
+            message: 'Форма заполнена некорректно',
+            type: 'error'
+          });
+        }
+      });
     },
     async loadChecklist() {
       if (!this.form.childGoalIds) return;
@@ -221,6 +230,11 @@ export default {
       const parentId = this.isEdit ? this.form.id : this.task.id;
       const tasks = this.checklist.filter(item => !item.id);
       await this.addChildTasks({ parentId, tasks });
+    },
+    validateDate(date) {
+      const currentDate = new Date();
+      currentDate.setDate(currentDate.getDate() - 1);
+      return date < currentDate;
     },
     async uploadAttachment(request) {
       this.loading = true;

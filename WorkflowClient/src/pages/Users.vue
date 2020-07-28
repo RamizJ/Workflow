@@ -7,9 +7,8 @@
 
     el-tabs(ref="tabs" v-model="activeTab" @tab-click="onTabClick")
       el-tab-pane(v-for="(tab, index) in tabs" :key="index" :label="tab.label" :name="tab.value")
-        base-toolbar(
+        user-toolbar(
           v-if="activeTab === tab.value"
-          :sort-fields="sortFields"
           @search="onSearch"
           @order="onOrderChange"
           @sort="onSortChange"
@@ -24,24 +23,19 @@
 </template>
 
 <script>
-import Page from '~/components/Page';
-import BaseHeader from '~/components/BaseHeader';
-import BaseToolbar from '~/components/BaseToolbar';
-import UserTable from '@/components/UserTable';
-import pageMixin from '~/mixins/page.mixin';
+import Page from '@/components/Page';
+import BaseHeader from '@/components/BaseHeader';
+import UserToolbar from '@/components/Users/UserToolbar';
+import UserTable from '@/components/Users/UserTable';
+import pageMixin from '@/mixins/page.mixin';
 
 export default {
   components: {
     Page,
     BaseHeader,
-    BaseToolbar,
+    UserToolbar,
     UserTable
   },
-  mixins: [pageMixin],
-  data() {
-    return {
-      sortFields: [{ value: 'firstName', label: 'По имени' }]
-    };
-  }
+  mixins: [pageMixin]
 };
 </script>
