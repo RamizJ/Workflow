@@ -1,7 +1,6 @@
 <template lang="pug">
   div.project-teams
-    base-toolbar(
-      :sort-fields="sortFields"
+    team-toolbar(
       @search="onSearch"
       @order="onOrderChange"
       @sort="onSortChange"
@@ -15,19 +14,14 @@
 </template>
 
 <script>
-import BaseToolbar from '@/components/BaseToolbar';
-import TeamList from '@/components/TeamTable';
-import pageMixin from '~/mixins/page.mixin';
+import TeamToolbar from '@/components/Teams/TeamToolbar';
+import TeamList from '@/components/Teams/TeamTable';
+import pageMixin from '@/mixins/page.mixin';
 
 export default {
   name: 'ProjectTeams',
-  components: { TeamList, BaseToolbar },
-  mixins: [pageMixin],
-  data() {
-    return {
-      sortFields: [{ value: 'name', label: 'По названию' }]
-    };
-  }
+  components: { TeamList, TeamToolbar },
+  mixins: [pageMixin]
 };
 </script>
 

@@ -1,7 +1,6 @@
 <template lang="pug">
   div.project-tasks
-    base-toolbar(
-      :sort-fields="sortFields"
+    task-toolbar(
       @search="onSearch"
       @order="onOrderChange"
       @sort="onSortChange"
@@ -17,18 +16,18 @@
 </template>
 
 <script>
-import Page from '~/components/Page';
-import BaseHeader from '~/components/BaseHeader';
-import BaseToolbar from '~/components/BaseToolbar';
-import TaskTable from '@/components/TaskTable';
-import TaskBoard from '@/components/TaskBoard';
-import pageMixin from '~/mixins/page.mixin';
+import Page from '@/components/Page';
+import BaseHeader from '@/components/BaseHeader';
+import TaskToolbar from '@/components/Tasks/TaskToolbar';
+import TaskTable from '@/components/Tasks/TaskTable';
+import TaskBoard from '@/components/Tasks/TaskBoard';
+import pageMixin from '@/mixins/page.mixin';
 
 export default {
   components: {
     Page,
     BaseHeader,
-    BaseToolbar,
+    TaskToolbar,
     TaskTable,
     TaskBoard
   },

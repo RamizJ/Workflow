@@ -38,8 +38,8 @@
 </template>
 
 <script>
-import tableMixin from '~/mixins/table.mixin';
-import ProjectDialog from '~/components/ProjectDialog';
+import tableMixin from '@/mixins/table.mixin';
+import ProjectDialog from '@/components/Projects/ProjectDialog';
 
 export default {
   name: 'ProjectList',

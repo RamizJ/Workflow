@@ -54,8 +54,8 @@
 </template>
 
 <script>
-import tableMixin from '~/mixins/table.mixin';
-import TaskDialog from '~/components/TaskDialog';
+import tableMixin from '@/mixins/table.mixin';
+import TaskDialog from '@/components/Tasks/TaskDialog';
 
 export default {
   name: 'TaskTable',
