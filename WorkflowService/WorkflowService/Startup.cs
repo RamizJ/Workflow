@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using VueCliMiddleware;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
@@ -103,6 +104,11 @@ namespace WorkflowService
                 options.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
 
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "wwwroot";
+            });
+
             services.AddSwaggerGen(setup =>
             {
                 setup.SwaggerDoc("v1", new OpenApiInfo {Title = "Workflow API", Version = "v1"});
@@ -163,8 +169,11 @@ namespace WorkflowService
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
-            app.UseRouting();
+            if (!env.IsDevelopment()) 
+                app.UseSpaStaticFiles();
 
+            app.UseRouting();
+            
             app.UseCors();
 
             app.UseSwagger();
@@ -173,7 +182,7 @@ namespace WorkflowService
                 options.SwaggerEndpoint("./v1/swagger.json", "Workflow API V1");
             });
 
-            SetupRewriter(app);
+            //SetupRewriter(app);
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -182,24 +191,8 @@ namespace WorkflowService
             {
                 endpoints.MapControllers();
             });
+
+            app.UseSpa(spa => { });
         }
-
-        private void SetupRewriter(IApplicationBuilder app)
-        {
-            string api = "(^(?!(api/)))";
-            string js = "(^(?!(js/)))";
-            string css = "(^(?!(css/)))";
-            string img = "(^(?!(img/)))";
-            string fonts = "(^(?!(fonts/)))";
-            string manual = "(^(?!(UserManualADS\\.docx)))";
-
-            var options = new RewriteOptions()
-                .AddRewrite($"{api}{js}{css}{img}{fonts}{manual}",
-                    "/", false);
-            app.UseRewriter(options);
-        }
-
-
-        private const string ALLOW_ORIGINS_POLICY = "AllowOrigins";
     }
 }
