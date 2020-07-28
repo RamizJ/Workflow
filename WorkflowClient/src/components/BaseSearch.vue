@@ -6,7 +6,7 @@
     @change="onChange")
     el-button(slot="prefix" type="text" size="mini" @click="onChange")
       feather(type="search" size="16")
-    el-popover(v-if="filters" slot="suffix" placement="bottom" transition="fade" trigger="click")
+    el-popover(v-if="filters" slot="suffix" popper-class="filters-panel" placement="bottom" transition="fade" trigger="click")
       el-button(
         slot="reference"
         type="text"
@@ -37,5 +37,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss"></style>

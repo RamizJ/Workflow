@@ -83,8 +83,8 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import Page from '~/components/Page';
-import PageHeader from '~/components/BaseHeader';
+import Page from '@/components/Page';
+import PageHeader from '@/components/BaseHeader';
 import Changelog from '@/components/Changelog';
 
 export default {

@@ -91,7 +91,11 @@ export default {
     },
     async fetchProjectTeams({ commit }, params) {
       const response = await projectsAPI.getTeamsPage(params);
-      const projectTeams = response.data;
+      const projectTeams = response.data.map(team => {
+        team.userIds = [];
+        team.projectIds = [];
+        return team;
+      });
       commit('setProjectTeams', projectTeams);
       return response.data;
     },
