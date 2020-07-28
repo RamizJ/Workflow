@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +14,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using VueCliMiddleware;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
@@ -181,8 +179,6 @@ namespace WorkflowService
             {
                 options.SwaggerEndpoint("./v1/swagger.json", "Workflow API V1");
             });
-
-            //SetupRewriter(app);
 
             app.UseAuthentication();
             app.UseAuthorization();
