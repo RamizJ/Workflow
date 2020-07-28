@@ -2,6 +2,7 @@
   div.project-teams
     team-toolbar(
       @search="onSearch"
+      @filters="onFiltersChange"
       @order="onOrderChange"
       @sort="onSortChange"
       @view="onViewChange")
@@ -9,6 +10,7 @@
       v-if="view === 'list'"
       ref="items"
       :search="search"
+      :filters="filters"
       :order="order"
       :sort="sort")
 </template>
@@ -21,7 +23,11 @@ import pageMixin from '@/mixins/page.mixin';
 export default {
   name: 'ProjectTeams',
   components: { TeamList, TeamToolbar },
-  mixins: [pageMixin]
+  mixins: [pageMixin],
+  created() {
+    this.onSortChange('name');
+    this.onOrderChange('Ascending');
+  }
 };
 </script>
 

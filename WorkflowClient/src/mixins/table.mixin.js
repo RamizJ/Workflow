@@ -47,6 +47,17 @@ export default {
       this.query.filter = value;
       this.refresh();
     },
+    filters: {
+      deep: true,
+      handler(value) {
+        this.query.filterFields = value;
+        this.query.withRemoved = !!value.find(
+          filter =>
+            filter.fieldName === 'isRemoved' && filter.values[0] === true
+        );
+        this.refresh();
+      }
+    },
     order(value) {
       this.query.sortFields[0].sortType = value;
       this.refresh();
@@ -54,13 +65,6 @@ export default {
     sort(value) {
       this.query.sortFields[0].fieldName = value;
       this.refresh();
-    },
-    filters: {
-      deep: true,
-      handler(value) {
-        this.query.filterFields = value;
-        this.refresh();
-      }
     }
   },
   computed: {

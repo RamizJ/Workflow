@@ -27,7 +27,7 @@ export default {
 .filters-panel {
   background-color: var(--dropdown-background);
   padding: 28px;
-  width: 650px;
+  //width: 650px;
   .label {
     color: var(--text);
     font-size: 14px;

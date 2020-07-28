@@ -2,35 +2,22 @@ export default {
   data() {
     return {
       search: this.$route.query.q || '',
+      filters: [],
       order: this.$route.query.order || '',
       sort: this.$route.query.sort || '',
-      view: this.$route.query.view || 'list',
-      activeTab: 'active',
-      tabs: [
-        { value: 'active', label: 'Активные' },
-        { value: 'deleted', label: 'Удаленные' }
-      ]
+      view: this.$route.query.view || 'list'
     };
-  },
-  mounted() {
-    const currentTab = this.$route.query.tab || this.activeTab;
-    this.updateUrl('tab', currentTab || this.activeTab);
-    this.activeTab = currentTab || this.activeTab;
   },
   methods: {
     onCreate() {
-      this.$refs.items[0].onItemCreate();
-    },
-    onTabClick() {
-      this.onSearch(undefined);
-      this.onOrderChange(undefined);
-      this.onSortChange(undefined);
-      this.onViewChange('list');
-      this.updateUrl('tab', this.activeTab);
+      this.$refs.items.onItemCreate();
     },
     onSearch(value) {
       this.search = value;
       this.updateUrl('q', value);
+    },
+    onFiltersChange(value) {
+      this.filters = value;
     },
     onOrderChange(value) {
       this.order = value;

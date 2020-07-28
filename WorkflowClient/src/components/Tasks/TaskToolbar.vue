@@ -4,60 +4,64 @@
       div.filter
         div.label Поиск
         el-input(v-model="q" size="medium" placeholder="Искать..." @change="onSearch")
-          el-button(slot="prefix" type="text" size="mini" @click="onChange")
+          el-button(slot="prefix" type="text" size="mini" @click="onSearch")
             feather(type="search" size="16")
       div.filter
         div.label Статус
         el-select(
-          v-model="sort"
+          v-model="filters.statuses"
           size="medium"
           placeholder="Любой"
-          @change="onSortChange")
-          el-option(v-for="option in sortFields" :key="option.value" :value="option.value", :label="option.label")
+          @change="onFiltersChange"
+          multiple collapse-tags)
+          el-option(v-for="option in statuses" :key="option.value" :value="option.value", :label="option.label")
       div.filter
         div.label Приоритет
         el-select(
-          v-model="sort"
+          v-model="filters.priorities"
           size="medium"
           placeholder="Любой"
-          @change="onSortChange")
-          el-option(v-for="option in sortFields" :key="option.value" :value="option.value", :label="option.label")
+          @change="onFiltersChange"
+          multiple collapse-tags)
+          el-option(v-for="option in priorities" :key="option.value" :value="option.value", :label="option.label")
       div.filter
         div.label Проект
         el-select(
-          v-model="sort"
+          v-model="filters.projects"
           size="medium"
           placeholder="Любой"
-          @change="onSortChange")
-          el-option(v-for="option in sortFields" :key="option.value" :value="option.value", :label="option.label")
+          :remote-method="searchProjects"
+          @focus="onProjectsFocus"
+          @change="onFiltersChange"
+          multiple collapse-tags filterable remote clearable default-first-option)
+          el-option(v-for="item in projectList" :key="item.id" :label="item.value" :value="item.id")
     toolbar-filters-extra
       el-row(:gutter="20")
-        el-col(:span="8")
-          div.label Ответственный
-          el-select(
-            v-model="sort"
-            size="medium"
-            placeholder="Любой"
-            @change="onSortChange")
-            el-option(v-for="option in sortFields" :key="option.value" :value="option.value", :label="option.label")
-        el-col(:span="16")
-          div.label Крайний срок
-          el-date-picker(
-            v-model="filters.deadlineRange"
-            size="medium"
-            type="daterange"
-            format="dd.MM.yyyy"
-            range-separator=""
-            start-placeholder="От"
-            end-placeholder="До")
+        el-col(:span="24")
+          div.filter
+            div.label Ответственный
+            el-select(
+              v-model="filters.performers"
+              placeholder="Любой"
+              :remote-method="searchUsers"
+              @focus="onUsersFocus"
+              @change="onFiltersChange"
+              multiple collapse-tags filterable remote clearable default-first-option)
+              el-option(v-for="item in userList" :key="item.id" :label="item.value" :value="item.id")
+          //div.filter
+            div.label Крайний срок
+            el-date-picker(
+              v-model="filters.deadlineRange"
+              size="medium"
+              type="daterange"
+              format="dd.MM.yyyy"
+              range-separator=""
+              start-placeholder="От"
+              end-placeholder="До")
       el-row(:gutter="20")
-        el-col(:span="8")
-          el-checkbox(v-model="filters.withAttachments") Только с вложениями
-        el-col(v-if="!filters.showOnlyDeleted" :span="8")
-          el-checkbox(v-model="filters.hideDeleted") Скрыть удалённые
-        el-col(v-if="!filters.hideDeleted" :span="8")
-          el-checkbox(v-model="filters.showOnlyDeleted") Только удалённые
-    toolbar-view(:sort-fields="sortFields" @order="onOrderChange" @sort="onSortChange" @view="onViewChange")
+        el-col(:span="24")
+          el-checkbox(v-model="filters.showOnlyDeleted" @change="onFiltersChange") Только удалённые
+    toolbar-view(:sort-fields="sortFields" @order="onOrderChange" @sort="onSortChange" @view="onViewChange" board list)
 </template>
 
 <script>
@@ -79,11 +83,11 @@ export default {
   data() {
     return {
       sortFields: [
+        { value: 'creationDate', label: 'По дате создания' },
         { value: 'title', label: 'По названию' },
         { value: 'projectName', label: 'По проекту' },
         { value: 'state', label: 'По статусу' },
-        { value: 'priority', label: 'По приоритету' },
-        { value: 'creationDate', label: 'По дате создания' }
+        { value: 'priority', label: 'По приоритету' }
       ]
     };
   }
