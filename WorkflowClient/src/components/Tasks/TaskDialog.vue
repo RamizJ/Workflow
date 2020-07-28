@@ -250,7 +250,7 @@ export default {
       await this.downloadAttachment(file);
     },
     async removeAttachment(file) {
-      await this.removeAttachments([file.id]);
+      if (file.id) await this.removeAttachments([file.id]);
     }
   }
 };
