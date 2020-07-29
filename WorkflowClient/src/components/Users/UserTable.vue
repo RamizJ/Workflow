@@ -50,10 +50,14 @@ export default {
   data() {
     return {
       getters: {
-        items: 'users/getUsers'
+        items: this.$route.params.teamId
+          ? 'teams/getTeamUsers'
+          : 'users/getUsers'
       },
       actions: {
-        fetchItems: 'users/fetchUsers',
+        fetchItems: this.$route.params.teamId
+          ? 'teams/fetchTeamUsers'
+          : 'users/fetchUsers',
         deleteItem: 'users/deleteUser',
         deleteItems: 'users/deleteUsers',
         restoreItem: 'users/restoreUser',

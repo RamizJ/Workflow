@@ -4,15 +4,24 @@
       div.filter
         div.label Поиск
         el-input(v-model="q" size="medium" placeholder="Искать..." @change="onSearch")
-          el-button(slot="prefix" type="text" size="mini" @click="onChange")
+          el-button(slot="prefix" type="text" size="mini" @click="onSearch")
             feather(type="search" size="16")
+      div.filter
+        div.label Руководитель
+        el-select(
+          v-model="filters.owners"
+          size="medium"
+          placeholder="Любой"
+          :remote-method="searchUsers"
+          @focus="onUsersFocus"
+          @change="onFiltersChange"
+          multiple collapse-tags filterable remote clearable default-first-option)
+          el-option(v-for="item in userList" :key="item.id" :label="item.value" :value="item.id")
     toolbar-filters-extra
       el-row(:gutter="20")
-        el-col(v-if="!filters.showOnlyDeleted" :span="8")
-          el-checkbox(v-model="filters.hideDeleted") Скрыть удалённые
-        el-col(v-if="!filters.hideDeleted" :span="8")
-          el-checkbox(v-model="filters.showOnlyDeleted") Только удалённые
-    toolbar-view(:sort-fields="sortFields" @order="onOrderChange" @sort="onSortChange" @view="onViewChange")
+        el-col(:span="24")
+          el-checkbox(v-model="filters.showOnlyDeleted" @change="onFiltersChange") Только удалённые
+    toolbar-view(:sort-fields="sortFields" @order="onOrderChange" @sort="onSortChange" @view="onViewChange" list)
 </template>
 
 <script>
@@ -34,9 +43,9 @@ export default {
   data() {
     return {
       sortFields: [
+        { value: 'creationDate', label: 'По дате создания' },
         { value: 'name', label: 'По названию' },
-        { value: 'state', label: 'По руководителю' },
-        { value: 'creationDate', label: 'По дате создания' }
+        { value: 'state', label: 'По руководителю' }
       ]
     };
   }

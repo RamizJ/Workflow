@@ -13,6 +13,7 @@ export default {
       tableData: [],
       query: {
         projectId: this.$route.params.projectId || null,
+        teamId: this.$route.params.teamId || null,
         filter: '',
         pageNumber: 0,
         pageSize: 20,
@@ -47,6 +48,17 @@ export default {
       this.query.filter = value;
       this.refresh();
     },
+    filters: {
+      deep: true,
+      handler(value) {
+        this.query.filterFields = value;
+        this.query.withRemoved = !!value.find(
+          filter =>
+            filter.fieldName === 'isRemoved' && filter.values[0] === true
+        );
+        this.refresh();
+      }
+    },
     order(value) {
       this.query.sortFields[0].sortType = value;
       this.refresh();
@@ -54,13 +66,6 @@ export default {
     sort(value) {
       this.query.sortFields[0].fieldName = value;
       this.refresh();
-    },
-    filters: {
-      deep: true,
-      handler(value) {
-        this.query.filterFields = value;
-        this.refresh();
-      }
     }
   },
   computed: {
@@ -121,16 +126,6 @@ export default {
           id: user.id
         };
       });
-    }
-  },
-  mounted() {
-    if (this.$route.query.tab === 'deleted') {
-      this.query.filterFields.push({
-        fieldName: 'isRemoved',
-        values: [true]
-      });
-      this.query.withRemoved = true;
-      this.refresh();
     }
   },
   methods: {

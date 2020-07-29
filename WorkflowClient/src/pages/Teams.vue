@@ -5,20 +5,19 @@
       template(slot="action")
         el-button(type="text" size="mini" @click="onCreate") Создать
 
-    el-tabs(ref="tabs" v-model="activeTab" @tab-click="onTabClick")
-      el-tab-pane(v-for="(tab, index) in tabs" :key="index" :label="tab.label" :name="tab.value")
-        team-toolbar(
-          v-if="activeTab === tab.value"
-          @search="onSearch"
-          @order="onOrderChange"
-          @sort="onSortChange"
-          @view="onViewChange")
-        team-table(
-          v-if="activeTab === tab.value && view === 'list'"
-          ref="items"
-          :search="search"
-          :order="order"
-          :sort="sort")
+    team-toolbar(
+      @search="onSearch"
+      @filters="onFiltersChange"
+      @order="onOrderChange"
+      @sort="onSortChange"
+      @view="onViewChange")
+    team-table(
+      v-if="view === 'list'"
+      ref="items"
+      :search="search"
+      :filters="filters"
+      :order="order"
+      :sort="sort")
 
 </template>
 
@@ -36,6 +35,10 @@ export default {
     TeamToolbar,
     TeamTable
   },
-  mixins: [pageMixin]
+  mixins: [pageMixin],
+  created() {
+    if (!this.$route.query.sort) this.onSortChange('name');
+    if (!this.$route.query.order) this.onOrderChange('Ascending');
+  }
 };
 </script>

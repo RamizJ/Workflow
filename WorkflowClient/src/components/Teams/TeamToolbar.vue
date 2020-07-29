@@ -4,15 +4,13 @@
       div.filter
         div.label Поиск
         el-input(v-model="q" size="medium" placeholder="Искать..." @change="onSearch")
-          el-button(slot="prefix" type="text" size="mini" @click="onChange")
+          el-button(slot="prefix" type="text" size="mini" @click="onSearch")
             feather(type="search" size="16")
     toolbar-filters-extra
       el-row(:gutter="20")
-        el-col(v-if="!filters.showOnlyDeleted" :span="8")
-          el-checkbox(v-model="filters.hideDeleted") Скрыть удалённые
-        el-col(v-if="!filters.hideDeleted" :span="8")
-          el-checkbox(v-model="filters.showOnlyDeleted") Только удалённые
-    toolbar-view(:sort-fields="sortFields" @order="onOrderChange" @sort="onSortChange" @view="onViewChange")
+        el-col(:span="24")
+          el-checkbox(v-model="filters.showOnlyDeleted" @change="onFiltersChange") Только удалённые
+    toolbar-view(:sort-fields="sortFields" @order="onOrderChange" @sort="onSortChange" @view="onViewChange" list)
 </template>
 
 <script>

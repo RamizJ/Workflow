@@ -44,6 +44,7 @@ export default {
       const response = await teamsAPI.getUsersPage(params);
       const teamUsers = response.data;
       commit('setTeamUsers', teamUsers);
+      return teamUsers;
     },
     async fetchTeamProjects({ commit }, params) {
       const response = await teamsAPI.getProjectsPage(params);
