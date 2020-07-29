@@ -21,7 +21,7 @@
 
     el-tabs(v-if="teamItem.id" ref="tabs" v-model="activeTab" @tab-click="setTab")
       el-tab-pane(name="members" label="Участники")
-        team-users(v-if="activeTab === 'members'")
+        team-users(v-if="activeTab === 'members'" ref="teamUsers")
       el-tab-pane(name="projects" label="Проекты")
 
     team-dialog(v-if="dialogTeamVisible" :data="teamItem" @close="dialogTeamVisible = false")
@@ -33,16 +33,18 @@
 import { mapActions, mapGetters } from 'vuex';
 import Page from '@/components/Page';
 import BaseHeader from '@/components/BaseHeader';
-import UserDialog from '@/components/Users/UserDialog';
 import TeamUsers from '@/components/Teams/TeamUsers';
+import UserDialog from '@/components/Users/UserDialog';
+import TeamDialog from '@/components/Teams/TeamDialog';
 
 export default {
   name: 'Team',
   components: {
+    Page,
+    BaseHeader,
     TeamUsers,
     UserDialog,
-    Page,
-    BaseHeader
+    TeamDialog
   },
   data() {
     return {
@@ -95,9 +97,8 @@ export default {
         this.$router.push({ query });
     },
     async onUserCreate(e) {
-      if (this.$refs.projectTasks)
-        this.$refs.projectTasks.$refs.items.onItemCreate();
-      else this.dialogTaskVisible = true;
+      if (this.$refs.teamUsers) this.$refs.teamUsers.$refs.items.onItemCreate();
+      else this.dialogUserVisible = true;
     },
     async onTeamEdit(e) {
       this.dialogTeamVisible = true;
