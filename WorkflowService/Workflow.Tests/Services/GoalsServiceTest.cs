@@ -78,9 +78,9 @@ namespace Workflow.Tests.Services
             Assert.IsNull(goal);
         }
 
-        [TestCase(0, 12, 9)]
+        [TestCase(0, 12, 6)]
         [TestCase(0, 5, 5)]
-        [TestCase(1, 5, 4)]
+        [TestCase(1, 5, 1)]
         [TestCase(2, 5, 0)]
         public async Task GetPageTest(int pageNumber, int pageSize, int expectedCount)
         {
@@ -166,14 +166,13 @@ namespace Workflow.Tests.Services
             }
         }
 
-        [TestCase(0, 5, "", "Title", SortType.Ascending, new[] { 1, 2, 3 })]
-        [TestCase(0, 5, "", "Title", SortType.Descending, new[] { 9, 8, 7 })]
-        [TestCase(0, 5, "Goal2", "Title", SortType.Descending, new[] { 9, 8, 7 })]
-        public async Task GetPageWithSortingTest(int pageNumber, int pageSize,
+        [TestCase(0, 5, 1, "", "Title", SortType.Ascending, new[] { 1, 2, 3 })]
+        [TestCase(0, 5, 10, "", "Title", SortType.Descending, new[] { 9, 8, 7 })]
+        [TestCase(0, 5, 10, "Goal2", "Title", SortType.Descending, new[] { 9, 8, 7 })]
+        public async Task GetPageWithSortingTest(int pageNumber, int pageSize, int projectId,
             string filter, string fieldName, SortType sortType, int[] expectedIds)
         {
             //Arrange
-            var projectId = _testData.Projects.First().Id;
             var sortField = new FieldSort(fieldName, sortType);
             var pageOptions = new PageOptions
             {
@@ -200,7 +199,7 @@ namespace Workflow.Tests.Services
         public async Task CreateTest(int id)
         {
             //Arrange
-            var vmTeam = new VmGoal
+            var vmGoal = new VmGoal
             {
                 Id = id,
                 Title = "Goal3",
@@ -209,12 +208,12 @@ namespace Workflow.Tests.Services
             };
 
             //Act
-            var result = await _service.Create(_currentUser, vmTeam);
+            var result = await _service.Create(_currentUser, vmGoal);
 
             //Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(_testData.Projects.Count + 1, result.Id);
-            Assert.AreEqual(vmTeam.Title, result.Title);
+            Assert.AreEqual(vmGoal.Title, result.Title);
         }
 
         [TestCase(null)]
@@ -409,6 +408,26 @@ namespace Workflow.Tests.Services
             Assert.AreEqual(1, goals.Length);
             Assert.AreEqual(ids[0], goals[0].Id);
             Assert.IsFalse(goals[0].IsRemoved);
+        }
+
+        [Test]
+        public async Task CreationTimeTest()
+        {
+            //Arrange
+            var vmGoal = new VmGoal
+            {
+                Title = "NewGoal",
+                ProjectId = _testData.Projects.First().Id,
+                CreationDate = DateTime.MinValue,
+                IsRemoved = false
+            };
+
+            //Act
+            var result = await _service.Create(_currentUser, vmGoal);
+            var delta = Math.Abs((DateTime.Now - result.CreationDate).TotalSeconds);
+
+            //Assert
+            Assert.AreEqual(0, delta, 10);
         }
 
 

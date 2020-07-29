@@ -428,6 +428,7 @@ namespace Workflow.Services
 
             var model = _vmConverter.ToModel(goal);
             model.Id = 0;
+            model.CreationDate = DateTime.Now;
             model.OwnerId = currentUser.Id;
 
             createAction?.Invoke(model);
