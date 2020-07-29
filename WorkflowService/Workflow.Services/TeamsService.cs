@@ -324,6 +324,7 @@ namespace Workflow.Services
             return model;
         }
 
+
         private async Task UpdateTeams(ApplicationUser currentUser, 
             ICollection<VmTeam> teams, Action<Team> updateAction = null)
         {
