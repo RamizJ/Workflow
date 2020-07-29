@@ -34,6 +34,12 @@ export const routes = [
     meta: { layout: LayoutDefault }
   },
   {
+    path: '/teams/:teamId',
+    name: 'Team',
+    component: () => import('~/pages/Team.vue'),
+    meta: { layout: LayoutDefault }
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('~/pages/Login.vue'),

@@ -2,8 +2,8 @@
   div.toolbar-view
     div.toolbar-view__sort
       el-button(type="text" size="mini" @click="onOrderChange")
-        //feather(:class="order" type="bar-chart" size="16")
-        feather(:class="order" type="code" size="13")
+        feather(:class="order" type="bar-chart" size="15")
+        //feather(:class="order" type="code" size="13")
       el-select(
         v-model="sort"
         size="small"
@@ -67,7 +67,7 @@ export default {
   align-items: flex-start;
   .Ascending {
     transform: rotate(90deg);
-    margin-top: 0px;
+    margin-top: 1px;
     margin-right: -5px;
   }
   .Descending {

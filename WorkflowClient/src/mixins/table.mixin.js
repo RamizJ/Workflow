@@ -13,6 +13,7 @@ export default {
       tableData: [],
       query: {
         projectId: this.$route.params.projectId || null,
+        teamId: this.$route.params.teamId || null,
         filter: '',
         pageNumber: 0,
         pageSize: 20,
@@ -125,16 +126,6 @@ export default {
           id: user.id
         };
       });
-    }
-  },
-  mounted() {
-    if (this.$route.query.tab === 'deleted') {
-      this.query.filterFields.push({
-        fieldName: 'isRemoved',
-        values: [true]
-      });
-      this.query.withRemoved = true;
-      this.refresh();
     }
   },
   methods: {

@@ -30,6 +30,7 @@
           v-model="filters.projects"
           size="medium"
           placeholder="Любой"
+          suffix-icon="el-icon-search"
           :remote-method="searchProjects"
           @focus="onProjectsFocus"
           @change="onFiltersChange"

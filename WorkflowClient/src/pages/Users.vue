@@ -37,8 +37,8 @@ export default {
   },
   mixins: [pageMixin],
   created() {
-    this.onSortChange('lastName');
-    this.onOrderChange('Ascending');
+    if (!this.$route.query.sort) this.onSortChange('lastName');
+    if (!this.$route.query.order) this.onOrderChange('Ascending');
   }
 };
 </script>

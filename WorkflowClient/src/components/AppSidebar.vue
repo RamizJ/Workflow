@@ -87,7 +87,8 @@ export default {
       fetchSidebarProjects: 'projects/fetchSidebarProjects'
     }),
     async load($state) {
-      const projects = await this.fetchSidebarProjects();
+      const params = !this.projects.length ? { reload: true } : {};
+      const projects = await this.fetchSidebarProjects(params);
       if (projects.length) $state.loaded();
       else $state.complete();
     },
