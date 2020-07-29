@@ -53,7 +53,8 @@ export default {
     progressPercentage() {
       const total = parseInt(this.totalTasksCount);
       const completed = parseInt(this.completedTasksCount);
-      return Math.round((completed * 100) / total);
+      const result = Math.round((completed * 100) / total);
+      return result || 0;
     }
   },
   async mounted() {

@@ -19,6 +19,8 @@
     vue-context(ref="contextMenu")
       template(slot-scope="child")
         li
+          a(v-if="isEditVisible" @click.prevent="onItemDoubleClick(child.data.row)") Открыть
+        li
           a(v-if="isEditVisible" @click.prevent="onItemEdit($event, child.data.row)") Изменить
         el-divider(v-if="isEditVisible")
         li
@@ -56,6 +58,11 @@ export default {
         restoreItems: 'teams/restoreTeams'
       }
     };
+  },
+  methods: {
+    onItemDoubleClick(row, column, event) {
+      if (!row.isRemoved) this.$router.push(`/teams/${row.id}`);
+    }
   }
 };
 </script>

@@ -2,8 +2,8 @@
   div.toolbar-view
     div.toolbar-view__sort
       el-button(type="text" size="mini" @click="onOrderChange")
-        //feather(:class="order" type="bar-chart" size="16")
-        feather(:class="order" type="code" size="13")
+        feather(:class="order" type="bar-chart" size="15")
+        //feather(:class="order" type="code" size="13")
       el-select(
         v-model="sort"
         size="small"
@@ -11,11 +11,11 @@
         @change="onSortChange")
         el-option(v-for="option in sortFields" :key="option.value" :value="option.value", :label="option.label")
     div.toolbar-view__display
-      el-button(type="text" size="mini" :class="view === 'board' ? 'active' : ''" @click="onViewChange('board')")
+      el-button(v-if="board" type="text" size="mini" :class="view === 'board' ? 'active' : ''" @click="onViewChange('board')")
         feather(type="columns" size="18")
-      //el-button(type="text" size="mini" :class="view === 'grid' ? 'active' : ''" @click="onViewChange('grid')")
+      el-button(v-if="grid" type="text" size="mini" :class="view === 'grid' ? 'active' : ''" @click="onViewChange('grid')")
         feather(type="grid" size="18")
-      el-button(type="text" size="mini" :class="view === 'list' ? 'active' : ''" @click="onViewChange('list')")
+      el-button(v-if="list" type="text" size="mini" :class="view === 'list' ? 'active' : ''" @click="onViewChange('list')")
         feather(type="menu" size="18")
 </template>
 
@@ -23,7 +23,10 @@
 export default {
   name: 'ToolbarView',
   props: {
-    sortFields: Array
+    sortFields: Array,
+    board: Boolean,
+    grid: Boolean,
+    list: Boolean
   },
   data() {
     return {
@@ -64,7 +67,7 @@ export default {
   align-items: flex-start;
   .Ascending {
     transform: rotate(90deg);
-    margin-top: 0px;
+    margin-top: 1px;
     margin-right: -5px;
   }
   .Descending {
