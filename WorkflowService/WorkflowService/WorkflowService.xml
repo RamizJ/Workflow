@@ -33,7 +33,7 @@
             API-методы работы с задачами
             </summary>
         </member>
-        <member name="M:WorkflowService.Controllers.GoalsController.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},Workflow.Services.Abstract.IGoalsService,Workflow.Services.Abstract.IGoalAttachmentsService,WorkflowService.Services.IFormFilesService,Workflow.Services.Abstract.ICurrentUserService)">
+        <member name="M:WorkflowService.Controllers.GoalsController.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},Workflow.Services.Abstract.IGoalsService,Workflow.Services.Abstract.IGoalAttachmentsService,WorkflowService.Services.IFormFilesService)">
             <summary>
             Конструктор
             </summary>

@@ -34,6 +34,7 @@ namespace Workflow.Tests.Services
             _dataContext = _serviceProvider.GetService<DataContext>();
             _userManager = _serviceProvider.GetService<UserManager<ApplicationUser>>();
             _service = new GoalsService(_dataContext, _userManager);
+            _usersService = new UsersService(_dataContext, _userManager);
             _currentUser = _testData.Users.First();
             _vmConverter = new VmGoalConverter();
         }
@@ -78,9 +79,9 @@ namespace Workflow.Tests.Services
             Assert.IsNull(goal);
         }
 
-        [TestCase(0, 12, 9)]
+        [TestCase(0, 12, 6)]
         [TestCase(0, 5, 5)]
-        [TestCase(1, 5, 4)]
+        [TestCase(1, 5, 1)]
         [TestCase(2, 5, 0)]
         public async Task GetPageTest(int pageNumber, int pageSize, int expectedCount)
         {
@@ -149,6 +150,34 @@ namespace Workflow.Tests.Services
             Assert.AreEqual(expectedCount, resultScopes.Length);
         }
 
+        [Test]
+        public async Task GetPageForNewUserTest()
+        {
+            //Arrange
+            var vmUser = new VmUser
+            {
+                LastName = "New",
+                FirstName = "New",
+                Email = "New@New",
+                UserName = "New"
+            };
+            var vmNewUser = await _usersService.Create(vmUser, "new12345!");
+            var newUser = new VmUserConverter().ToModel(vmNewUser);
+
+            var pageOptions = new PageOptions
+            {
+                PageNumber = 0,
+                PageSize = 10,
+            };
+            
+
+            //Act
+            var goals = (await _service.GetPage(newUser, null, pageOptions)).ToArray();
+
+            //Assert
+            Assert.AreEqual(0, goals.Length);
+        }
+
         [TestCase(new[] { 1, 2, 3 })]
         [TestCase(new[] { 9, 10 })]
         public async Task GetRangeTest(int[] ids)
@@ -166,14 +195,13 @@ namespace Workflow.Tests.Services
             }
         }
 
-        [TestCase(0, 5, "", "Title", SortType.Ascending, new[] { 1, 2, 3 })]
-        [TestCase(0, 5, "", "Title", SortType.Descending, new[] { 9, 8, 7 })]
-        [TestCase(0, 5, "Goal2", "Title", SortType.Descending, new[] { 9, 8, 7 })]
-        public async Task GetPageWithSortingTest(int pageNumber, int pageSize,
+        [TestCase(0, 5, 1, "", "Title", SortType.Ascending, new[] { 1, 2, 3 })]
+        [TestCase(0, 5, 10, "", "Title", SortType.Descending, new[] { 9, 8, 7 })]
+        [TestCase(0, 5, 10, "Goal2", "Title", SortType.Descending, new[] { 9, 8, 7 })]
+        public async Task GetPageWithSortingTest(int pageNumber, int pageSize, int projectId,
             string filter, string fieldName, SortType sortType, int[] expectedIds)
         {
             //Arrange
-            var projectId = _testData.Projects.First().Id;
             var sortField = new FieldSort(fieldName, sortType);
             var pageOptions = new PageOptions
             {
@@ -200,7 +228,7 @@ namespace Workflow.Tests.Services
         public async Task CreateTest(int id)
         {
             //Arrange
-            var vmTeam = new VmGoal
+            var vmGoal = new VmGoal
             {
                 Id = id,
                 Title = "Goal3",
@@ -209,12 +237,12 @@ namespace Workflow.Tests.Services
             };
 
             //Act
-            var result = await _service.Create(_currentUser, vmTeam);
+            var result = await _service.Create(_currentUser, vmGoal);
 
             //Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(_testData.Projects.Count + 1, result.Id);
-            Assert.AreEqual(vmTeam.Title, result.Title);
+            Assert.AreEqual(vmGoal.Title, result.Title);
         }
 
         [TestCase(null)]
@@ -411,12 +439,33 @@ namespace Workflow.Tests.Services
             Assert.IsFalse(goals[0].IsRemoved);
         }
 
+        [Test]
+        public async Task CreationTimeTest()
+        {
+            //Arrange
+            var vmGoal = new VmGoal
+            {
+                Title = "NewGoal",
+                ProjectId = _testData.Projects.First().Id,
+                CreationDate = DateTime.MinValue,
+                IsRemoved = false
+            };
+
+            //Act
+            var result = await _service.Create(_currentUser, vmGoal);
+            var delta = Math.Abs((DateTime.Now - result.CreationDate).TotalSeconds);
+
+            //Assert
+            Assert.AreEqual(0, delta, 10);
+        }
+
 
         private SqliteConnection _dbConnection;
         private TestData _testData;
         private DataContext _dataContext;
         private ServiceProvider _serviceProvider;
         private GoalsService _service;
+        private UsersService _usersService;
         private ApplicationUser _currentUser;
         private UserManager<ApplicationUser> _userManager;
         private VmGoalConverter _vmConverter;

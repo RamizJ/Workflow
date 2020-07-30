@@ -241,6 +241,27 @@ namespace Workflow.Tests.Services
                 await _service.CreateByForm(_testData.Users.First(), new VmProjectForm(vmProject, null)));
         }
 
+        [Test]
+        public async Task CreationTimeTest()
+        {
+            //Arrange
+            var vmProject = new VmProject
+            {
+                Id = 0,
+                Name = "NewProject",
+                GroupId = null,
+                OwnerId = _testData.Users.First().Id,
+                IsRemoved = false,
+            };
+
+            //Act
+            var result = await _service.Create(_currentUser, vmProject);
+            var delta = Math.Abs((DateTime.Now - result.CreationDate).TotalSeconds);
+
+            //Assert
+            Assert.AreEqual(0, delta, 10);
+        }
+
         [TestCase(null)]
         [TestCase("")]
         [TestCase("  ")]

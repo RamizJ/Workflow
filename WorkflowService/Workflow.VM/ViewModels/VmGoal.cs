@@ -20,7 +20,7 @@ namespace Workflow.VM.ViewModels
 
         public DateTime CreationDate { get; set; }
         public DateTime? ExpectedCompletedDate { get; set; }
-        public TimeSpan EstimatedPerformingTime { get; set; }
+        public TimeSpan? EstimatedPerformingTime { get; set; }
 
         public GoalState State { get; set; }
         public GoalPriority Priority { get; set; }
