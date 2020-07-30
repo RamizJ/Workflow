@@ -25,14 +25,12 @@ namespace WorkflowService.Controllers
         public GoalsController(UserManager<ApplicationUser> userManager, 
             IGoalsService goalsService,
             IGoalAttachmentsService attachmentsService,
-            IFormFilesService formFilesService,
-            ICurrentUserService currentUserService)
+            IFormFilesService formFilesService)
         {
             _userManager = userManager;
             _service = goalsService;
             _attachmentsService = attachmentsService;
             _formFilesService = formFilesService;
-            _currentUserService = currentUserService;
         }
 
         /// <summary>
@@ -43,7 +41,7 @@ namespace WorkflowService.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<VmGoal>> Get(int id)
         {
-            var currentUser = await _currentUserService.Get(User);
+            var currentUser = await _userManager.GetUserAsync(User);
             return Ok(await _service.Get(currentUser, id));
         }
 
@@ -55,7 +53,7 @@ namespace WorkflowService.Controllers
         public async Task<IEnumerable<VmGoal>> GetPage([FromQuery]int? projectId, 
             [FromBody] PageOptions pageOptions)
         {
-            var currentUser = await _currentUserService.Get(User);
+            var currentUser = await _userManager.GetUserAsync(User);
             var page = await _service.GetPage(currentUser, projectId, pageOptions);
             return page;
         }
@@ -68,7 +66,7 @@ namespace WorkflowService.Controllers
         [HttpGet]
         public async Task<IEnumerable<VmGoal>> GetRange([FromQuery]int[] ids)
         {
-            var currentUser = await _currentUserService.Get(User);
+            var currentUser = await _userManager.GetUserAsync(User);
             return await _service.GetRange(currentUser, ids);
         }
 
@@ -80,7 +78,7 @@ namespace WorkflowService.Controllers
         [HttpGet("{projectId}")]
         public async Task<int> GetTotalProjectGoalsCount(int projectId)
         {
-            var currentUser = await _currentUserService.Get(User);
+            var currentUser = await _userManager.GetUserAsync(User);
             return await _service.GetTotalProjectGoalsCount(currentUser, projectId);
         }
 
@@ -93,7 +91,7 @@ namespace WorkflowService.Controllers
         [HttpGet("{projectId}")]
         public async Task<int> GetProjectGoalsByStateCount(int projectId, [FromQuery]GoalState goalState)
         {
-            var currentUser = await _currentUserService.Get(User);
+            var currentUser = await _userManager.GetUserAsync(User);
             return await _service.GetProjectGoalsByStateCount(currentUser, projectId, goalState);
         }
 
@@ -105,7 +103,7 @@ namespace WorkflowService.Controllers
         [HttpPost]
         public async Task<ActionResult<VmGoal>> Create([FromBody]VmGoal goal)
         {
-            var currentUser = await _currentUserService.Get(User);
+            var currentUser = await _userManager.GetUserAsync(User);
             return await _service.Create(currentUser, goal);
         }
 
@@ -117,7 +115,7 @@ namespace WorkflowService.Controllers
         [HttpPost]
         public async Task<ActionResult<VmGoal>> CreateByForm([FromBody] VmGoalForm goalForm)
         {
-            var currentUser = await _currentUserService.Get(User);
+            var currentUser = await _userManager.GetUserAsync(User);
             return await _service.CreateByForm(currentUser, goalForm);
         }
 
@@ -129,7 +127,7 @@ namespace WorkflowService.Controllers
         [HttpPut]
         public async Task<IActionResult> Update([FromBody]VmGoal goal)
         {
-            var currentUser = await _currentUserService.Get(User);
+            var currentUser = await _userManager.GetUserAsync(User);
             await _service.Update(currentUser, goal);
             return NoContent();
         }
@@ -142,7 +140,7 @@ namespace WorkflowService.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateRange([FromBody] IEnumerable<VmGoal> goals)
         {
-            var currentUser = await _currentUserService.Get(User);
+            var currentUser = await _userManager.GetUserAsync(User);
             await _service.UpdateRange(currentUser, goals);
             return NoContent();
         }
@@ -155,7 +153,7 @@ namespace WorkflowService.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateByForm([FromBody] VmGoalForm goalForm)
         {
-            var currentUser = await _currentUserService.Get(User);
+            var currentUser = await _userManager.GetUserAsync(User);
             await _service.UpdateByForm(currentUser, goalForm);
             return NoContent();
         }
@@ -168,7 +166,7 @@ namespace WorkflowService.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateByFormRange([FromBody] IEnumerable<VmGoalForm> goalForms)
         {
-            var currentUser = await _currentUserService.Get(User);
+            var currentUser = await _userManager.GetUserAsync(User);
             await _service.UpdateByFormRange(currentUser, goalForms);
             return NoContent();
         }
@@ -181,7 +179,7 @@ namespace WorkflowService.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateByFormRange([FromBody] VmGoalForm goalForm)
         {
-            var currentUser = await _currentUserService.Get(User);
+            var currentUser = await _userManager.GetUserAsync(User);
             await _service.UpdateByForm(currentUser, goalForm);
             return NoContent();
         }
@@ -194,7 +192,7 @@ namespace WorkflowService.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<VmGoal>> Delete(int id)
         {
-            var currentUser = await _currentUserService.Get(User);
+            var currentUser = await _userManager.GetUserAsync(User);
             var deletedGoal = await _service.Delete(currentUser, id);
             if (deletedGoal == null)
                 return NotFound();
@@ -210,7 +208,7 @@ namespace WorkflowService.Controllers
         [HttpPatch]
         public async Task<ActionResult<VmGoal>> DeleteRange([FromBody]IEnumerable<int> ids)
         {
-            var currentUser = await _currentUserService.Get(User);
+            var currentUser = await _userManager.GetUserAsync(User);
             var deletedGoal = await _service.DeleteRange(currentUser, ids);
             if (deletedGoal == null)
                 return NotFound();
@@ -226,7 +224,7 @@ namespace WorkflowService.Controllers
         [HttpPatch("{id}")]
         public async Task<ActionResult<VmGoal>> Restore(int id)
         {
-            var currentUser = await _currentUserService.Get(User);
+            var currentUser = await _userManager.GetUserAsync(User);
             var deletedGoal = await _service.Restore(currentUser, id);
             if (deletedGoal == null)
                 return NotFound();
@@ -242,7 +240,7 @@ namespace WorkflowService.Controllers
         [HttpPatch]
         public async Task<ActionResult<VmGoal>> RestoreRange([FromBody]IEnumerable<int> ids)
         {
-            var currentUser = await _currentUserService.Get(User);
+            var currentUser = await _userManager.GetUserAsync(User);
             var deletedGoal = await _service.RestoreRange(currentUser, ids);
             if (deletedGoal == null)
                 return NotFound();
@@ -259,7 +257,7 @@ namespace WorkflowService.Controllers
         [HttpGet("{goalId}")]
         public async Task<ActionResult<IEnumerable<VmAttachment>>> GetAttachments(int goalId)
         {
-            var currentUser = await _currentUserService.Get(User);
+            var currentUser = await _userManager.GetUserAsync(User);
             var attachments = await _attachmentsService.GetAll(currentUser, goalId);
             return Ok(attachments);
         }
@@ -288,7 +286,7 @@ namespace WorkflowService.Controllers
         [HttpPatch]
         public async Task<IActionResult> RemoveAttachments([FromBody] IEnumerable<int> attachmentIds)
         {
-            var currentUser = await _currentUserService.Get(User);
+            var currentUser = await _userManager.GetUserAsync(User);
             await _attachmentsService.Remove(currentUser, attachmentIds);
             return NoContent();
         }
@@ -354,6 +352,5 @@ namespace WorkflowService.Controllers
         private readonly IGoalsService _service;
         private readonly IGoalAttachmentsService _attachmentsService;
         private readonly IFormFilesService _formFilesService;
-        private readonly ICurrentUserService _currentUserService;
     }
 }

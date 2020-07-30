@@ -143,8 +143,6 @@ namespace WorkflowService
             });
 
             //Services
-
-            services.AddTransient<ICurrentUserService, CurrentUserService>();
             services.AddTransient<IDefaultDataInitializationService, DefaultDataInitializationService>();
             services.AddTransient<IAuthenticationService, AuthenticationService>();
             services.AddTransient<IProjectsService, ProjectsService>();

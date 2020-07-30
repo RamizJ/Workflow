@@ -34,6 +34,7 @@ namespace Workflow.Tests.Services
             _dataContext = _serviceProvider.GetService<DataContext>();
             _userManager = _serviceProvider.GetService<UserManager<ApplicationUser>>();
             _service = new GoalsService(_dataContext, _userManager);
+            _usersService = new UsersService(_dataContext, _userManager);
             _currentUser = _testData.Users.First();
             _vmConverter = new VmGoalConverter();
         }
@@ -147,6 +148,34 @@ namespace Workflow.Tests.Services
 
             //Assert
             Assert.AreEqual(expectedCount, resultScopes.Length);
+        }
+
+        [Test]
+        public async Task GetPageForNewUserTest()
+        {
+            //Arrange
+            var vmUser = new VmUser
+            {
+                LastName = "New",
+                FirstName = "New",
+                Email = "New@New",
+                UserName = "New"
+            };
+            var vmNewUser = await _usersService.Create(vmUser, "new12345!");
+            var newUser = new VmUserConverter().ToModel(vmNewUser);
+
+            var pageOptions = new PageOptions
+            {
+                PageNumber = 0,
+                PageSize = 10,
+            };
+            
+
+            //Act
+            var goals = (await _service.GetPage(newUser, null, pageOptions)).ToArray();
+
+            //Assert
+            Assert.AreEqual(0, goals.Length);
         }
 
         [TestCase(new[] { 1, 2, 3 })]
@@ -436,6 +465,7 @@ namespace Workflow.Tests.Services
         private DataContext _dataContext;
         private ServiceProvider _serviceProvider;
         private GoalsService _service;
+        private UsersService _usersService;
         private ApplicationUser _currentUser;
         private UserManager<ApplicationUser> _userManager;
         private VmGoalConverter _vmConverter;
