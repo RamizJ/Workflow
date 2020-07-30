@@ -17,70 +17,70 @@ const authInterceptor = config => {
 
 const errorResponseHandler = error => {
   const isDebugMode = localStorage.debugMode === 'true';
-  if (!isDebugMode)
+  if (error.response)
     Message({
       message: `Ошибка отправки запроса`,
       type: 'error',
       duration: 5000
     });
-  else {
-    const url = error.config.url;
-    if (error.response) {
-      const data = error.response?.data;
-      const statusCode = error.response?.status;
-      switch (statusCode) {
-        case 400:
-          Message({
-            message: `Синтаксическая ошибка в запросе к «${url}»`,
-            type: 'error',
-            duration: 5000
-          });
-          break;
-        case 401:
-          Message({
-            message: `Для выполнения запроса к «${url}» требуется аутентификация`,
-            type: 'error',
-            duration: 5000
-          });
-          break;
-        case 403:
-          Message({
-            message: `Доступ к «${url}» запрещён`,
-            type: 'error',
-            duration: 5000
-          });
-          break;
-        case 404:
-          Message({
-            message: `Запрашиваемый ресурс «${url}» не найден`,
-            type: 'error',
-            duration: 5000
-          });
-          break;
-        case 405:
-          Message({
-            message: `API метод по адресу «${url}» неактивен`,
-            type: 'error',
-            duration: 5000
-          });
-          break;
-        default:
-          Message({
-            message: `Неизвестная ошибка (${statusCode})`,
-            type: 'error',
-            duration: 5000
-          });
-          break;
-      }
-      console.error(data);
-    } else {
+  if (isDebugMode) pushErrorMessage(error);
+};
+
+const pushErrorMessage = error => {
+  const url = error.config.url;
+  const data = error.response?.data;
+  const statusCode = error.response?.status;
+
+  console.error(
+    `Ошибка ${statusCode || ''} во время выполнения запроса по адресу «${url}»`
+  );
+  if (data) console.log(data);
+
+  if (!statusCode)
+    Message({
+      message: `Неизвестная ошибка при запросе к «${url}»`,
+      type: 'error',
+      duration: 5000
+    });
+
+  switch (statusCode) {
+    case 400:
       Message({
-        message: `Неизвестная ошибка при запросе «${url}»`,
+        message: `Синтаксическая ошибка в запросе к «${url}»`,
         type: 'error',
         duration: 5000
       });
-      console.error(error);
-    }
+      break;
+    case 401:
+      Message({
+        message: `Для выполнения запроса к «${url}» требуется аутентификация`,
+        type: 'error',
+        duration: 5000
+      });
+      break;
+    case 403:
+      Message({
+        message: `Доступ к «${url}» запрещён`,
+        type: 'error',
+        duration: 5000
+      });
+      break;
+    case 404:
+      Message({
+        message: `Запрашиваемый ресурс «${url}» не найден`,
+        type: 'error',
+        duration: 5000
+      });
+      break;
+    case 405:
+      Message({
+        message: `API метод по адресу «${url}» неактивен`,
+        type: 'error',
+        duration: 5000
+      });
+      break;
+    default:
+      break;
   }
 };
 
