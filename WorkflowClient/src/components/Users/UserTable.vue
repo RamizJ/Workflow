@@ -15,7 +15,7 @@
       el-table-column(prop="firstName" label="Имя" width="150")
       el-table-column(prop="middleName" label="Отчество" width="150")
       el-table-column(prop="userName" label="Логин" width="150")
-      el-table-column(prop="email" label="Почта" sortable="custom")
+      el-table-column(prop="email" label="Почта")
       el-table-column(prop="phone" label="Телефон" width="120")
       el-table-column(prop="position" label="Должность" width="180")
       infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")

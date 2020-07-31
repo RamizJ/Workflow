@@ -36,9 +36,8 @@ export default {
     async fetchMe({ state, commit }) {
       if (!state.token) return;
       const response = await auth.getMe();
-      if (!response) return;
-      const user = response.data;
-      commit('setUser', user);
+      if (!response) return null;
+      commit('setUser', response.data);
     },
     async updatePassword({ commit }, { currentPassword, newPassword }) {
       const response = await auth.changePassword(currentPassword, newPassword);

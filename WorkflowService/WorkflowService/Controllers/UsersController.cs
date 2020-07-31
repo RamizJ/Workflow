@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
-using Workflow.VM.Common;
 using Workflow.VM.ViewModels;
+using WorkflowService.Services.Abstract;
 
 namespace WorkflowService.Controllers
 {
@@ -17,18 +16,15 @@ namespace WorkflowService.Controllers
     [ApiController, Route("api/[controller]/[action]")]
     public class UsersController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IUsersService _service;
-
         /// <summary>
         /// Конструктор 
         /// </summary>
-        /// <param name="userManager"></param>
         /// <param name="service"></param>
-        public UsersController(UserManager<ApplicationUser> userManager, IUsersService service)
+        /// <param name="currentUserService"></param>
+        public UsersController(IUsersService service, ICurrentUserService currentUserService)
         {
-            _userManager = userManager;
             _service = service;
+            _currentUserService = currentUserService;
         }
 
         /// <summary>
@@ -39,7 +35,7 @@ namespace WorkflowService.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<VmUser>> Get(string id)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             var user = await _service.Get(currentUser, id);
             return Ok(user);
         }
@@ -51,7 +47,7 @@ namespace WorkflowService.Controllers
         [HttpGet]
         public async Task<ActionResult<VmUser>> GetCurrent()
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             var user = await _service.GetCurrent(currentUser);
             return Ok(user);
         }
@@ -64,7 +60,7 @@ namespace WorkflowService.Controllers
         [HttpPost]
         public async Task<IEnumerable<VmUser>> GetPage([FromBody]PageOptions pageOptions)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             var users = await _service.GetPage(currentUser, pageOptions);
             return users;
         }
@@ -77,7 +73,7 @@ namespace WorkflowService.Controllers
         [HttpGet]
         public async Task<IEnumerable<VmUser>> GetRange([FromQuery]string[] ids)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             return await _service.GetRange(currentUser, ids);
         }
 
@@ -137,7 +133,7 @@ namespace WorkflowService.Controllers
         [HttpDelete]
         public async Task<ActionResult<VmUser>> Delete(string id)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             var result = await _service.Delete(currentUser, id);
             return Ok(result);
         }
@@ -150,7 +146,7 @@ namespace WorkflowService.Controllers
         [HttpPatch]
         public async Task<ActionResult<VmUser>> DeleteRange([FromBody] IEnumerable<string> ids)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             var users = await _service.DeleteRange(currentUser, ids);
             return Ok(users);
         }
@@ -163,7 +159,7 @@ namespace WorkflowService.Controllers
         [HttpPatch("{id}")]
         public async Task<ActionResult<VmUser>> Restore(string id)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             var user = await _service.Restore(currentUser, id);
             return Ok(user);
         }
@@ -176,7 +172,7 @@ namespace WorkflowService.Controllers
         [HttpPatch]
         public async Task<ActionResult<VmUser>> RestoreRange([FromBody] IEnumerable<string> ids)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             var users = await _service.RestoreRange(currentUser, ids);
             return Ok(users);
         }
@@ -189,7 +185,7 @@ namespace WorkflowService.Controllers
         [HttpPatch]
         public async Task<ActionResult<VmUser>> Restore(IEnumerable<string> ids)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             var user = await _service.RestoreRange(currentUser, ids);
             return Ok(user);
         }
@@ -203,7 +199,7 @@ namespace WorkflowService.Controllers
         [HttpPatch]
         public async Task<IActionResult> ChangePassword([FromQuery]string currentPassword, [FromQuery] string newPassword)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             await _service.ChangePassword(currentUser, currentPassword, newPassword);
             return NoContent();
         }
@@ -220,5 +216,10 @@ namespace WorkflowService.Controllers
             await _service.ResetPassword(id, newPassword);
             return NoContent();
         }
+
+
+
+        private readonly IUsersService _service;
+        private readonly ICurrentUserService _currentUserService;
     }
 }

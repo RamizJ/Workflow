@@ -13,7 +13,7 @@ namespace WorkflowService.Controllers
     {
         /// <summary>
         /// Constructor
-        /// </summary>ы
+        /// </summary>
         /// <param name="service"></param>
         public AuthenticationController(IAuthenticationService service)
         {
@@ -29,9 +29,6 @@ namespace WorkflowService.Controllers
         public async Task<ActionResult<VmAuthOutput>> Login(VmAuthInput input)
         {
             var output = await _service.Login(input);
-            if (output == null)
-                return Unauthorized();
-
             return Ok(output);
         }
 

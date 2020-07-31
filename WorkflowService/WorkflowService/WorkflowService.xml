@@ -12,7 +12,7 @@
         <member name="M:WorkflowService.Controllers.AuthenticationController.#ctor(Workflow.Services.Abstract.IAuthenticationService)">
             <summary>
             Constructor
-            </summary>ы
+            </summary>
             <param name="service"></param>
         </member>
         <member name="M:WorkflowService.Controllers.AuthenticationController.Login(Workflow.VM.ViewModels.VmAuthInput)">
@@ -33,7 +33,7 @@
             API-методы работы с задачами
             </summary>
         </member>
-        <member name="M:WorkflowService.Controllers.GoalsController.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},Workflow.Services.Abstract.IGoalsService,Workflow.Services.Abstract.IGoalAttachmentsService,WorkflowService.Services.IFormFilesService)">
+        <member name="M:WorkflowService.Controllers.GoalsController.#ctor(WorkflowService.Services.Abstract.ICurrentUserService,Workflow.Services.Abstract.IGoalsService,Workflow.Services.Abstract.IGoalAttachmentsService,WorkflowService.Services.Abstract.IFormFilesService)">
             <summary>
             Конструктор
             </summary>
@@ -206,11 +206,11 @@
             API-методы работы с проектами
             </summary>
         </member>
-        <member name="M:WorkflowService.Controllers.ProjectsController.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},Workflow.Services.Abstract.IProjectsService,Workflow.Services.Abstract.IProjectTeamsService)">
+        <member name="M:WorkflowService.Controllers.ProjectsController.#ctor(WorkflowService.Services.Abstract.ICurrentUserService,Workflow.Services.Abstract.IProjectsService,Workflow.Services.Abstract.IProjectTeamsService)">
             <summary>
             Конструктор
             </summary>
-            <param name="userManager"></param>
+            <param name="currentUserService"></param>
             <param name="projectsService"></param>
             <param name="projectTeamsService"></param>
         </member>
@@ -334,11 +334,11 @@
             API-методы работы с командами
             </summary>
         </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},Workflow.Services.Abstract.ITeamsService,Workflow.Services.Abstract.ITeamUsersService,Workflow.Services.Abstract.ITeamProjectsService)">
+        <member name="M:WorkflowService.Controllers.TeamsController.#ctor(WorkflowService.Services.Abstract.ICurrentUserService,Workflow.Services.Abstract.ITeamsService,Workflow.Services.Abstract.ITeamUsersService,Workflow.Services.Abstract.ITeamProjectsService)">
             <summary>
             Конструктор
             </summary>
-            <param name="userManager"></param>
+            <param name="currentUserService"></param>
             <param name="teamsService"></param>
             <param name="teamUsersService"></param>
             <param name="teamProjectsService"></param>
@@ -487,12 +487,12 @@
             API работы с пользователями системы
             </summary>
         </member>
-        <member name="M:WorkflowService.Controllers.UsersController.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser},Workflow.Services.Abstract.IUsersService)">
+        <member name="M:WorkflowService.Controllers.UsersController.#ctor(Workflow.Services.Abstract.IUsersService,WorkflowService.Services.Abstract.ICurrentUserService)">
             <summary>
             Конструктор 
             </summary>
-            <param name="userManager"></param>
             <param name="service"></param>
+            <param name="currentUserService"></param>
         </member>
         <member name="M:WorkflowService.Controllers.UsersController.Get(System.String)">
             <summary>
@@ -612,21 +612,67 @@
             <param name="host"></param>
             <returns></returns>
         </member>
+        <member name="T:WorkflowService.Filters.HttpResponseExceptionFilter">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:WorkflowService.Filters.HttpResponseExceptionFilter.Order">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Filters.HttpResponseExceptionFilter.OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext)">
+            <summary>
+            
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:WorkflowService.Filters.HttpResponseExceptionFilter.OnActionExecuted(Microsoft.AspNetCore.Mvc.Filters.ActionExecutedContext)">
+            <summary>
+            
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="T:WorkflowService.Services.Abstract.ICurrentUserService">
+            <summary>
+            Сервис работы с текущим пользователем
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.ICurrentUserService.GetCurrentUser(System.Security.Claims.ClaimsPrincipal)">
+            <summary>
+            Получение текущего пользователя
+            </summary>
+            <param name="claimsPrincipal"></param>
+            <returns></returns>
+        </member>
+        <member name="T:WorkflowService.Services.Abstract.IFormFilesService">
+            <summary>
+            Преобразование файлов во вложения
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.IFormFilesService.GetAttachments(Microsoft.AspNetCore.Http.IFormFileCollection)">
+            <summary>Преобразование файлов во вложения</summary>
+            <param name="files">Файлы</param>
+            <returns>Коллекция вложений</returns>
+        </member>
+        <member name="T:WorkflowService.Services.CurrentUserService">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.CurrentUserService.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser})">
+            <summary>
+            
+            </summary>
+            <param name="userManager"></param>
+        </member>
+        <member name="M:WorkflowService.Services.CurrentUserService.GetCurrentUser(System.Security.Claims.ClaimsPrincipal)">
+            <inheritdoc />
+        </member>
         <member name="T:WorkflowService.Services.FormFilesService">
             <inheritdoc />
         </member>
         <member name="M:WorkflowService.Services.FormFilesService.GetAttachments(Microsoft.AspNetCore.Http.IFormFileCollection)">
             <inheritdoc />
-        </member>
-        <member name="T:WorkflowService.Services.IFormFilesService">
-            <summary>
-            Преобразование файлов во вложения
-            </summary>
-        </member>
-        <member name="M:WorkflowService.Services.IFormFilesService.GetAttachments(Microsoft.AspNetCore.Http.IFormFileCollection)">
-            <summary>Преобразование файлов во вложения</summary>
-            <param name="files">Файлы</param>
-            <returns>Коллекция вложений</returns>
         </member>
     </members>
 </doc>

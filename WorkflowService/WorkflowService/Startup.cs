@@ -18,7 +18,9 @@ using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
 using Workflow.Services.Abstract;
+using WorkflowService.Filters;
 using WorkflowService.Services;
+using WorkflowService.Services.Abstract;
 using static Workflow.Services.ConfigKeys;
 
 #pragma warning disable 1591    //Disable xml documentation for this file
@@ -53,16 +55,6 @@ namespace WorkflowService
                 .AddEntityFrameworkStores<DataContext>()
                 .AddDefaultTokenProviders();
 
-            var origins = Configuration.GetSection(OTHER_ORIGINS)
-                .AsEnumerable().Select(x => x.Value).Where(x => x != null)
-                .ToArray();
-            services.AddCors(options => options
-                .AddDefaultPolicy(builder => builder
-                    .WithOrigins(origins)
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .AllowCredentials()));
-
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -95,12 +87,22 @@ namespace WorkflowService
             });
             services.AddAuthorization();
 
-            services.AddControllers().AddNewtonsoftJson(options =>
+            if (Configuration.GetValue<bool>(IS_API_TEST_MODE))
             {
-                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-                options.SerializerSettings.Converters.Add(new StringEnumConverter());
-            });
+                services.AddCors(options => options
+                    .AddDefaultPolicy(builder => builder
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()));
+            }
+
+            services.AddControllers(options => options.Filters.Add(new HttpResponseExceptionFilter()))
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                });
 
             services.AddSpaStaticFiles(configuration =>
             {
@@ -143,6 +145,7 @@ namespace WorkflowService
             });
 
             //Services
+            services.AddTransient<ICurrentUserService, CurrentUserService>();
             services.AddTransient<IDefaultDataInitializationService, DefaultDataInitializationService>();
             services.AddTransient<IAuthenticationService, AuthenticationService>();
             services.AddTransient<IProjectsService, ProjectsService>();
@@ -169,8 +172,9 @@ namespace WorkflowService
                 app.UseSpaStaticFiles();
 
             app.UseRouting();
-            
-            app.UseCors();
+
+            if(Configuration.GetValue<bool>(IS_API_TEST_MODE))
+                app.UseCors();
 
             app.UseSwagger();
             app.UseSwaggerUI(options =>

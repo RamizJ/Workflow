@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
-using Workflow.VM.Common;
 using Workflow.VM.ViewModels;
+using WorkflowService.Services.Abstract;
 
 namespace WorkflowService.Controllers
 {
@@ -19,15 +17,15 @@ namespace WorkflowService.Controllers
         /// <summary>
         /// Конструктор
         /// </summary>
-        /// <param name="userManager"></param>
+        /// <param name="currentUserService"></param>
         /// <param name="teamsService"></param>
         /// <param name="teamUsersService"></param>
         /// <param name="teamProjectsService"></param>
-        public TeamsController(UserManager<ApplicationUser> userManager, 
+        public TeamsController(ICurrentUserService currentUserService,
             ITeamsService teamsService, ITeamUsersService teamUsersService,
             ITeamProjectsService teamProjectsService)
         {
-            _userManager = userManager;
+            _currentUserService = currentUserService;
             _teamsService = teamsService;
             _teamUsersService = teamUsersService;
             _teamProjectsService = teamProjectsService;
@@ -41,7 +39,7 @@ namespace WorkflowService.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<VmTeam>> Get(int id)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             return Ok(await _teamsService.Get(currentUser, id));
         }
 
@@ -53,7 +51,7 @@ namespace WorkflowService.Controllers
         [HttpPost]
         public async Task<IEnumerable<VmTeam>> GetPage([FromBody] PageOptions pageOptions)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             return await _teamsService.GetPage(currentUser, pageOptions);
         }
 
@@ -68,8 +66,8 @@ namespace WorkflowService.Controllers
         public async Task<IEnumerable<VmUser>> GetUsersPage([FromQuery] int teamId,
             [FromBody]PageOptions pageOptions)
         {
-            var user = await _userManager.GetUserAsync(User);
-            return await _teamUsersService.GetPage(user, teamId, pageOptions);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
+            return await _teamUsersService.GetPage(currentUser, teamId, pageOptions);
         }
 
         /// <summary>
@@ -82,8 +80,8 @@ namespace WorkflowService.Controllers
         public async Task<IEnumerable<VmProject>> GetProjectsPage([FromQuery] int teamId, 
             [FromBody]PageOptions pageOptions)
         {
-            var user = await _userManager.GetUserAsync(User);
-            return await _teamProjectsService.GetPage(user, teamId, pageOptions);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
+            return await _teamProjectsService.GetPage(currentUser, teamId, pageOptions);
         }
 
 
@@ -96,7 +94,7 @@ namespace WorkflowService.Controllers
         [HttpGet]
         public async Task<IEnumerable<VmTeam>> GetRange([FromQuery]int[] ids)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             return await _teamsService.GetRange(currentUser, ids);
         }
 
@@ -109,7 +107,7 @@ namespace WorkflowService.Controllers
         [HttpPost]
         public async Task<ActionResult<VmTeam>> Create([FromBody]VmTeam team)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             var result = await _teamsService.Create(currentUser, team);
             return Ok(result);
         }
@@ -122,7 +120,7 @@ namespace WorkflowService.Controllers
         [HttpPost]
         public async Task<ActionResult<VmTeam>> CreateByForm([FromBody] VmTeamForm teamForm)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             var result = await _teamsService.CreateByForm(currentUser, teamForm);
             return Ok(result);
         }
@@ -135,7 +133,7 @@ namespace WorkflowService.Controllers
         [HttpPut]
         public async Task<IActionResult> Update([FromBody]VmTeam team)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             await _teamsService.Update(currentUser, team);
             return NoContent();
         }
@@ -148,7 +146,7 @@ namespace WorkflowService.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateByForm([FromBody] VmTeamForm teamForm)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             await _teamsService.UpdateByForm(currentUser, teamForm);
             return NoContent();
         }
@@ -161,7 +159,7 @@ namespace WorkflowService.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateRange([FromBody] IEnumerable<VmTeam> teams)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             await _teamsService.UpdateRange(currentUser, teams);
             return NoContent();
         }
@@ -174,7 +172,7 @@ namespace WorkflowService.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateByFormRange([FromBody] IEnumerable<VmTeamForm> teamForms)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             await _teamsService.UpdateByFormRange(currentUser, teamForms);
             return NoContent();
         }
@@ -188,7 +186,7 @@ namespace WorkflowService.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<VmTeam>> Delete(int id)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             var result = await _teamsService.Delete(currentUser, id);
             return Ok(result);
         }
@@ -201,7 +199,7 @@ namespace WorkflowService.Controllers
         [HttpPatch("{id}")]
         public async Task<ActionResult<VmTeam>> Restore(int id)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             var result = await _teamsService.Restore(currentUser, id);
             return Ok(result);
         }
@@ -214,7 +212,7 @@ namespace WorkflowService.Controllers
         [HttpPatch]
         public async Task<IActionResult> DeleteRange([FromBody] IEnumerable<int> ids)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             var teams = await _teamsService.DeleteRange(currentUser, ids);
             return Ok(teams);
         }
@@ -227,7 +225,7 @@ namespace WorkflowService.Controllers
         [HttpPatch]
         public async Task<IActionResult> RestoreRange([FromBody] IEnumerable<int> ids)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             var teams = await _teamsService.RestoreRange(currentUser, ids);
             return Ok(teams);
         }
@@ -287,7 +285,7 @@ namespace WorkflowService.Controllers
         }
 
 
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ICurrentUserService _currentUserService;
         private readonly ITeamsService _teamsService;
         private readonly ITeamUsersService _teamUsersService;
         private readonly ITeamProjectsService _teamProjectsService;

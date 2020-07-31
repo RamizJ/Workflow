@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Workflow.DAL.Models;
 
-namespace WorkflowService.Services
+namespace WorkflowService.Services.Abstract
 {
     /// <summary>
     /// Преобразование файлов во вложения
