@@ -8,10 +8,12 @@ using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
+using Workflow.Services.Exceptions;
 using Workflow.Share.Extensions;
 using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
+using static System.Net.HttpStatusCode;
 
 namespace Workflow.Services
 {
@@ -49,7 +51,8 @@ namespace Workflow.Services
                 throw new ArgumentNullException(nameof(currentUser));
 
             if (pageOptions == null)
-                throw new ArgumentNullException(nameof(currentUser));
+                throw new HttpResponseException(BadRequest,
+                    $"Parameter '{nameof(pageOptions)}' cannot be null");
 
             var query = await GetQuery(currentUser, pageOptions.WithRemoved);
             query = query.Where(x => projectId == null || x.ProjectId == projectId);
@@ -101,7 +104,8 @@ namespace Workflow.Services
         public async Task<VmGoal> CreateByForm(ApplicationUser currentUser, VmGoalForm goalForm)
         {
             if(goalForm == null)
-                throw new ArgumentNullException(nameof(goalForm));
+                throw new HttpResponseException(BadRequest,
+                    $"Parameter '{nameof(goalForm)}' cannot be null");
 
             var childGoals = await GetChildGoals(currentUser, goalForm);
             var model = await CreateGoal(currentUser, goalForm.Goal, goal =>
@@ -124,7 +128,8 @@ namespace Workflow.Services
         public async Task UpdateByForm(ApplicationUser currentUser, VmGoalForm goalForm)
         {
             if(goalForm == null)
-                throw new ArgumentNullException(nameof(goalForm));
+                throw new HttpResponseException(BadRequest,
+                    $"Parameter '{nameof(goalForm)}' cannot be null");
 
             var childGoals = await GetChildGoals(currentUser, goalForm);
             await UpdateGoals(currentUser, new[] { goalForm.Goal }, goal =>
@@ -147,7 +152,8 @@ namespace Workflow.Services
         public async Task UpdateByFormRange(ApplicationUser currentUser, IEnumerable<VmGoalForm> goalForms)
         {
             if (goalForms == null)
-                throw new ArgumentNullException(nameof(goalForms));
+                throw new HttpResponseException(BadRequest, 
+                    $"Parameter '{nameof(goalForms)}' cannot be null");
 
             var forms = goalForms.ToArray();
             var goals = forms.Select(f => f.Goal).ToArray();
@@ -421,10 +427,11 @@ namespace Workflow.Services
             Action<Goal> createAction = null)
         {
             if (goal == null)
-                throw new ArgumentNullException(nameof(goal));
+                throw new HttpResponseException(BadRequest,
+                    $"Parameter '{nameof(goal)}' cannot be null");
 
             if (string.IsNullOrWhiteSpace(goal.Title))
-                throw new InvalidOperationException("Goal title cannot be empty");
+                throw new HttpResponseException(BadRequest, "Goal title cannot be empty");
 
             var model = _vmConverter.ToModel(goal);
             model.Id = 0;
@@ -442,7 +449,7 @@ namespace Workflow.Services
             ICollection<VmGoal> goals, Action<Goal> updateAction = null)
         {
             if (goals == null)
-                throw new ArgumentNullException(nameof(goals));
+                throw new HttpResponseException(BadRequest, $"Parameter '{nameof(goals)}' cannot be null");
 
             var goalIds = goals
                 .Where(g => !string.IsNullOrWhiteSpace(g.Title))
@@ -456,7 +463,8 @@ namespace Workflow.Services
             foreach (var model in models)
             {
                 if (string.IsNullOrWhiteSpace(model.Title))
-                    throw new InvalidOperationException("Cannot update goal. The title cannot be empty");
+                    throw new HttpResponseException(BadRequest, 
+                        "Cannot update goal. The title cannot be empty");
 
                 var goal = goals.First(t => t.Id == model.Id);
                 model.Title = goal.Title;
