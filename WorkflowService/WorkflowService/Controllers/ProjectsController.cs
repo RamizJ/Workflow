@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
 using Workflow.VM.ViewModels;
+using WorkflowService.Services.Abstract;
 
 namespace WorkflowService.Controllers
 {
@@ -19,14 +18,14 @@ namespace WorkflowService.Controllers
         /// <summary>
         /// Конструктор
         /// </summary>
-        /// <param name="userManager"></param>
+        /// <param name="currentUserService"></param>
         /// <param name="projectsService"></param>
         /// <param name="projectTeamsService"></param>
-        public ProjectsController(UserManager<ApplicationUser> userManager, 
+        public ProjectsController(ICurrentUserService currentUserService, 
             IProjectsService projectsService,
             IProjectTeamsService projectTeamsService)
         {
-            _userManager = userManager;
+            _currentUserService = currentUserService;
             _projectsService = projectsService;
             _projectTeamsService = projectTeamsService;
         }
@@ -40,7 +39,7 @@ namespace WorkflowService.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<VmProject>> Get(int id)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             return Ok(await _projectsService.Get(currentUser, id));
         }
 
@@ -52,7 +51,7 @@ namespace WorkflowService.Controllers
         [HttpPost]
         public async Task<IEnumerable<VmProject>> GetPage([FromBody] PageOptions pageOptions)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             return await _projectsService.GetPage(currentUser, pageOptions);
         }
 
@@ -66,7 +65,7 @@ namespace WorkflowService.Controllers
         public async Task<IEnumerable<VmTeam>> GetTeamsPage([FromQuery]int projectId, 
             [FromBody]PageOptions pageOptions)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             return await _projectTeamsService.GetPage(currentUser, projectId, pageOptions);
         }
 
@@ -78,7 +77,7 @@ namespace WorkflowService.Controllers
         [HttpGet]
         public async Task<IEnumerable<VmProject>> GetRange(int[] ids)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             return await _projectsService.GetRange(currentUser, ids);
         }
 
@@ -90,7 +89,7 @@ namespace WorkflowService.Controllers
         [HttpPost]
         public async Task<ActionResult<VmProject>> Create([FromBody] VmProject project)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             var result = await _projectsService.Create(currentUser, project);
             return Ok(result);
         }
@@ -103,7 +102,7 @@ namespace WorkflowService.Controllers
         [HttpPost]
         public async Task<ActionResult<VmProject>> CreateByForm([FromBody] VmProjectForm projectForm)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             var result = await _projectsService.CreateByForm(currentUser, projectForm);
             return Ok(result);
         }
@@ -116,7 +115,7 @@ namespace WorkflowService.Controllers
         [HttpPut]
         public async Task<IActionResult> Update([FromBody]VmProject project)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             await _projectsService.Update(currentUser, project);
             return NoContent();
         }
@@ -129,7 +128,7 @@ namespace WorkflowService.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateByForm([FromBody] VmProjectForm projectForm)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             await _projectsService.UpdateByForm(currentUser, projectForm);
             return NoContent();
         }
@@ -142,7 +141,7 @@ namespace WorkflowService.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateRange([FromBody] IEnumerable<VmProject> projects)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             await _projectsService.UpdateRange(currentUser, projects);
             return NoContent();
         }
@@ -155,7 +154,7 @@ namespace WorkflowService.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateRange([FromBody] IEnumerable<VmProjectForm> projectForms)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             await _projectsService.UpdateByFormRange(currentUser, projectForms);
             return NoContent();
         }
@@ -168,7 +167,7 @@ namespace WorkflowService.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<VmProject>> Delete(int id)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             var result = await _projectsService.Delete(currentUser, id);
             return Ok(result);
         }
@@ -181,7 +180,7 @@ namespace WorkflowService.Controllers
         [HttpPatch]
         public async Task<IActionResult> DeleteRange([FromBody]IEnumerable<int> ids)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             var projects = await _projectsService.DeleteRange(currentUser, ids);
             return Ok(projects);
         }
@@ -194,7 +193,7 @@ namespace WorkflowService.Controllers
         [HttpPatch("{id}")]
         public async Task<ActionResult<VmProject>> Restore(int id)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             var result = await _projectsService.Restore(currentUser, id);
             return Ok(result);
         }
@@ -207,7 +206,7 @@ namespace WorkflowService.Controllers
         [HttpPatch]
         public async Task<IActionResult> RestoreRange([FromBody] IEnumerable<int> ids)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUser = await _currentUserService.GetCurrentUser(User);
             var projects = await _projectsService.RestoreRange(currentUser, ids);
             return Ok(projects);
         }
@@ -241,7 +240,7 @@ namespace WorkflowService.Controllers
         }
 
 
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ICurrentUserService _currentUserService;
         private readonly IProjectsService _projectsService;
         private readonly IProjectTeamsService _projectTeamsService;
     }

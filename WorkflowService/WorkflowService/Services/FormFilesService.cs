@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Workflow.DAL.Models;
+using WorkflowService.Services.Abstract;
 
 namespace WorkflowService.Services
 {

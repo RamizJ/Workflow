@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
+using Workflow.Services.Exceptions;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
@@ -40,9 +42,11 @@ namespace Workflow.Services
             if (string.IsNullOrWhiteSpace(authInput.UserName) || string.IsNullOrWhiteSpace(authInput.Password))
                 throw new ArgumentException("Username and password cannot be empty", nameof(authInput));
 
-            var user = await _userManager.FindByEmailAsync(authInput.UserName);
+            var user = await _userManager.FindByNameAsync(authInput.UserName) ??
+                       await _userManager.FindByEmailAsync(authInput.UserName);
+
             if (user == null || !await _userManager.CheckPasswordAsync(user, authInput.Password))
-                return null;
+                throw new HttpResponseException(HttpStatusCode.Unauthorized);
 
             var roleNames = await _userManager.GetRolesAsync(user);
             var signinKey = new SymmetricSecurityKey(
