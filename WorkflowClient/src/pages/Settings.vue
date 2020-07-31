@@ -18,10 +18,10 @@
             label="Подтверждать закрытие диалоговых окон"
             @change="switchConfirmDialogClose")
         div.section
-          h2 Отладка (для разработчиков)
+          h2 Отладка
           el-checkbox(
             v-model="debugMode"
-            label="Включить режим отладки"
+            label="Отображать детали ошибок"
             @change="switchDebugMode")
 
       el-tab-pane(label="Аккаунт" name="account")

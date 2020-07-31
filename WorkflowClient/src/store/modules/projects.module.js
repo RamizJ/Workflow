@@ -32,13 +32,17 @@ export default {
   },
   actions: {
     async fetchSidebarProjects({ state, commit }, params) {
-      state.sidebarProjectsPage = params?.reload
-        ? 0
-        : state.sidebarProjectsPage;
-      state.sidebarProjects = params?.reload ? [] : state.sidebarProjects;
-      const page = state.sidebarProjectsPage;
-      if (page === 0) commit('setSidebarProjects', []);
-      commit('setSidebarProjectsPage', page + 1);
+      let page = state.sidebarProjectsPage;
+
+      if (
+        !state.sidebarProjects.length ||
+        params?.reload ||
+        state.sidebarProjectsPage === 0
+      ) {
+        commit('setSidebarProjects', []);
+        commit('setSidebarProjectsPage', 0);
+        page = 0;
+      }
 
       const response = await projectsAPI.getPage({
         pageNumber: page,
@@ -49,6 +53,12 @@ export default {
         return project;
       });
 
+      const isExists = state.sidebarProjects.find(project =>
+        projects.includes(project.id)
+      );
+      if (isExists) return;
+
+      commit('setSidebarProjectsPage', page + 1);
       commit('appendSidebarProjects', projects);
       return projects;
     },
@@ -61,20 +71,17 @@ export default {
       commit('setProjects', projects);
       if (!projects.length) return projects;
 
-      const sidebarProjects = state.sidebarProjects;
-      const isEqual =
-        params.pageNumber === 0 &&
-        projects.length === sidebarProjects.length &&
-        projects.sort().every(function(value, index) {
-          return (
-            JSON.stringify(value) ===
-            JSON.stringify(sidebarProjects.sort()[index])
-          );
-        });
-      if (!isEqual)
-        await dispatch('fetchSidebarProjects', {
-          reload: true
-        });
+      if (
+        !params.filterFields?.length &&
+        !params.filter &&
+        params.pageNumber === 0
+      ) {
+        commit(
+          'setSidebarProjects',
+          [...projects].sort((a, b) => a.id - b.id)
+        );
+        commit('setSidebarProjectsPage', 1);
+      }
 
       return projects;
     },
