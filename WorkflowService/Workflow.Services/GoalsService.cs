@@ -467,6 +467,7 @@ namespace Workflow.Services
                         "Cannot update goal. The title cannot be empty");
 
                 var goal = goals.First(t => t.Id == model.Id);
+                model.ProjectId = goal.ProjectId;
                 model.Title = goal.Title;
                 model.Description = goal.Description;
                 model.State = goal.State;
