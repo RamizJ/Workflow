@@ -26,14 +26,13 @@ namespace WorkflowService.Filters
         /// <param name="context"></param>
         public void OnActionExecuted(ActionExecutedContext context)
         {
-            if (context.Exception is HttpResponseException exception)
+            if (!(context.Exception is HttpResponseException exception)) return;
+
+            context.Result = new ObjectResult(exception.Value)
             {
-                context.Result = new ObjectResult(exception.Value)
-                {
-                    StatusCode = (int)exception.Status
-                };
-                context.ExceptionHandled = true;
-            }
+                StatusCode = (int)exception.Status
+            };
+            context.ExceptionHandled = true;
         }
     }
 }

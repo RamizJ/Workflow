@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
+using Workflow.Services.Exceptions;
 using Workflow.Share.Extensions;
 using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
@@ -32,7 +34,8 @@ namespace Workflow.Services
                 throw new ArgumentNullException(nameof(currentUser));
 
             if (pageOptions == null)
-                throw new ArgumentNullException(nameof(pageOptions));
+                throw new HttpResponseException(HttpStatusCode.BadRequest,
+                    $"Parameter '{nameof(pageOptions)}' cannot be null");
 
             var query = GetQuery(teamId, pageOptions.WithRemoved);
             query = Filter(pageOptions.Filter, query);

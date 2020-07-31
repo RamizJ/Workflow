@@ -24,6 +24,7 @@ namespace Workflow.Services.Exceptions
         /// <param name="statusCode"></param>
         /// <param name="value"></param>
         public HttpResponseException(HttpStatusCode statusCode, object value = null)
+            : base(value?.ToString())
         {
             Status = statusCode;
             Value = value;

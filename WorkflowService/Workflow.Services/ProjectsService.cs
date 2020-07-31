@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
+using Workflow.Services.Exceptions;
 using Workflow.Share.Extensions;
 using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
+using static System.Net.HttpStatusCode;
 
 namespace Workflow.Services
 {
@@ -52,7 +51,8 @@ namespace Workflow.Services
                 throw new ArgumentNullException(nameof(currentUser));
 
             if(pageOptions == null)
-                throw new ArgumentNullException(nameof(PageOptions));
+                throw new HttpResponseException(BadRequest,
+                    $"Parameter '{nameof(pageOptions)}' cannot be null");
 
             var query = await GetQuery(currentUser, pageOptions.WithRemoved);
             query = Filter(pageOptions.Filter, query);
@@ -333,10 +333,12 @@ namespace Workflow.Services
         private async Task<Project> CreateProject(ApplicationUser user, VmProject project)
         {
             if (project == null)
-                throw new ArgumentNullException(nameof(VmProjectForm.Project));
+                throw new HttpResponseException(BadRequest,
+                    $"Parameter '{nameof(project)}' cannot be null");
 
             if (string.IsNullOrWhiteSpace(project.Name))
-                throw new InvalidOperationException("Cannot create project. The name cannot be empty");
+                throw new HttpResponseException(BadRequest, 
+                    "Cannot create project. The name cannot be empty");
 
             var model = _vmConverter.ToModel(project);
             model.Id = 0;
@@ -364,7 +366,8 @@ namespace Workflow.Services
             {
                 var project = projects.First(p => p.Id == model.Id);
                 if (string.IsNullOrWhiteSpace(project.Name))
-                    throw new InvalidOperationException("Cannot update project. The name cannot be empty");
+                    throw new HttpResponseException(BadRequest, 
+                        "Cannot update project. The name cannot be empty");
 
                 model.Name = project.Name;
                 model.Description = project.Description;

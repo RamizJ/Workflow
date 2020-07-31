@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.Services.Abstract;
+using Workflow.Services.Exceptions;
 
 namespace Workflow.Services
 {
@@ -26,7 +28,8 @@ namespace Workflow.Services
         {
             var fileData = await _dataContext.FileData.FirstOrDefaultAsync(a => a.Id == fileDataId);
             if(fileData == null)
-                throw new InvalidOperationException($"File with id='{fileDataId}' not found");
+                throw new HttpResponseException(HttpStatusCode.BadRequest, 
+                    $"File with id='{fileDataId}' not found");
 
             await stream.WriteAsync(fileData.Data);
         }

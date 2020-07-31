@@ -8,8 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
+using Workflow.Services.Exceptions;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
+using static System.Net.HttpStatusCode;
 
 namespace Workflow.Services
 {
@@ -53,7 +55,8 @@ namespace Workflow.Services
             var goal = await query.FirstOrDefaultAsync(g => g.Id == goalId);
 
             if (goal == null)
-                throw new InvalidOperationException("Cannot add attachments to goal. Goal for current user not found");
+                throw new HttpResponseException(BadRequest, 
+                    "Cannot add attachments to goal. Goal for current user not found");
 
             foreach (var attachment in attachments) 
                 attachment.CreationDate = DateTime.Now;
@@ -85,7 +88,8 @@ namespace Workflow.Services
                 .FirstOrDefaultAsync(a => a.Id == attachmentId);
 
             if(attachment == null)
-                throw new InvalidOperationException($"Attachment with id='{attachmentId}' not found");
+                throw new HttpResponseException(BadRequest, 
+                    $"Attachment with id='{attachmentId}' not found");
 
             await _fileService.Download(stream, attachment.FileDataId);
             return attachment;
