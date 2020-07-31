@@ -68,7 +68,7 @@ namespace Workflow.Services
             query = Filter(pageOptions.Filter, query);
             query = FilterByFields(pageOptions.FilterFields, query);
             query = SortByFields(pageOptions.SortFields, query);
-
+            
             return await query
                 .Skip(pageOptions.PageNumber * pageOptions.PageSize)
                 .Take(pageOptions.PageSize)
@@ -308,11 +308,17 @@ namespace Workflow.Services
                 if (field.Is(nameof(VmUser.Email)))
                     query = query.SortBy(u => u.Email, isAcending);
 
+                else if (field.Is(nameof(VmUser.UserName)))
+                    query = query.SortBy(u => u.UserName, isAcending);
+
                 else if (field.Is(nameof(VmUser.Phone)))
                     query = query.SortBy(u => u.PhoneNumber, isAcending);
 
                 else if (field.Is(nameof(VmUser.Position)))
-                    query = query.SortBy(u => u.Position.Name + u.PositionCustom, isAcending);
+                {
+                    query = query.SortBy(u => u.Position.Name, isAcending);
+                    query = query.SortBy(u => u.PositionCustom, isAcending);
+                }
 
                 else if (field.Is(nameof(VmUser.LastName)))
                     query = query.SortBy(u => u.LastName, isAcending);
