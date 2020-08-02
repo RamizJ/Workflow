@@ -1,4 +1,5 @@
 import { mapActions, mapGetters } from 'vuex';
+import moment from 'moment';
 
 export default {
   props: {
@@ -262,9 +263,8 @@ export default {
       await this.refresh();
     },
     dateFormatter(row, column, cellValue, index) {
-      const dateRaw = new Date(cellValue);
-      const dateRu = dateRaw.toLocaleString();
-      return dateRu;
+      const dateUtc = moment.utc(cellValue);
+      return dateUtc.format('DD.MM.YYYY HH:mm');
     },
     priorityFormatter(row, column, cellValue, index) {
       return this.priorities.find(priority => priority.value === cellValue)
