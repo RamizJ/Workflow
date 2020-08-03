@@ -1,10 +1,11 @@
 <template lang="pug">
   div.table-container
     el-table(
-      :data="tableData"
       ref="table"
       height="100%"
       v-loading="loading"
+      :data="tableData"
+      :row-class-name="onSetIndex"
       @select="onItemSelect"
       @row-click="onItemSingleClick"
       @row-contextmenu="onItemRightClick"

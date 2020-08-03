@@ -18,6 +18,13 @@ export default {
     return {
       changelog: [
         {
+          number: '0.3.2',
+          content: `
+            Выделение нескольких элементов таблицы через Shift
+          `,
+          date: '03.08.2020'
+        },
+        {
           number: '0.3.1',
           content: `
             Улучшена подгрузка проектов в боковом меню,
