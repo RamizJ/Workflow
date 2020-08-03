@@ -26,28 +26,27 @@
           el-option(v-for="option in priorities" :key="option.value" :value="option.value", :label="option.label")
       div.filter
         div.label Проект
-        el-select(
+        el-select.remote(
           v-model="filters.projects"
           size="medium"
           placeholder="Любой"
-          suffix-icon="el-icon-search"
           :remote-method="searchProjects"
           @focus="onProjectsFocus"
           @change="onFiltersChange"
-          multiple collapse-tags filterable remote clearable default-first-option)
+          multiple collapse-tags filterable remote default-first-option)
           el-option(v-for="item in projectList" :key="item.id" :label="item.value" :value="item.id")
     toolbar-filters-extra
       el-row(:gutter="20")
         el-col(:span="24")
           div.filter
             div.label Ответственный
-            el-select(
+            el-select.remote(
               v-model="filters.performers"
               placeholder="Любой"
               :remote-method="searchUsers"
               @focus="onUsersFocus"
               @change="onFiltersChange"
-              multiple collapse-tags filterable remote clearable default-first-option)
+              multiple collapse-tags filterable remote default-first-option)
               el-option(v-for="item in userList" :key="item.id" :label="item.value" :value="item.id")
           //div.filter
             div.label Крайний срок

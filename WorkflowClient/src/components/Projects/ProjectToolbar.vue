@@ -8,7 +8,7 @@
             feather(type="search" size="16")
       div.filter
         div.label Руководитель
-        el-select(
+        el-select.remote(
           v-model="filters.owners"
           size="medium"
           placeholder="Любой"
