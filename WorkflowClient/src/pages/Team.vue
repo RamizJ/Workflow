@@ -23,6 +23,7 @@
       el-tab-pane(name="members" label="Участники")
         team-users(v-if="activeTab === 'members'" ref="teamUsers")
       el-tab-pane(name="projects" label="Проекты")
+        team-projects(v-if="activeTab === 'projects'" ref="teamProjects")
 
     team-dialog(v-if="dialogTeamVisible" :data="teamItem" @close="dialogTeamVisible = false")
     user-dialog(v-if="dialogUserVisible" @close="dialogUserVisible = false")
@@ -36,6 +37,7 @@ import BaseHeader from '@/components/BaseHeader';
 import TeamUsers from '@/components/Teams/TeamUsers';
 import UserDialog from '@/components/Users/UserDialog';
 import TeamDialog from '@/components/Teams/TeamDialog';
+import TeamProjects from '@/components/Teams/TeamProjects';
 
 export default {
   name: 'Team',
@@ -43,8 +45,9 @@ export default {
     Page,
     BaseHeader,
     TeamUsers,
-    UserDialog,
-    TeamDialog
+    TeamProjects,
+    TeamDialog,
+    UserDialog
   },
   data() {
     return {

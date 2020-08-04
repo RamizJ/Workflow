@@ -50,6 +50,7 @@ export default {
       const response = await teamsAPI.getProjectsPage(params);
       const teamProjects = response.data;
       commit('setTeamProjects', teamProjects);
+      return teamProjects;
     },
     async createTeam({ commit }, team) {
       let newTeam = {

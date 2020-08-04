@@ -49,10 +49,14 @@ export default {
   data() {
     return {
       getters: {
-        items: 'projects/getProjects'
+        items: this.$route.params.teamId
+          ? 'teams/getTeamProjects'
+          : 'projects/getProjects'
       },
       actions: {
-        fetchItems: 'projects/fetchProjects',
+        fetchItems: this.$route.params.teamId
+          ? 'teams/fetchTeamProjects'
+          : 'projects/fetchProjects',
         deleteItem: 'projects/deleteProject',
         deleteItems: 'projects/deleteProjects',
         restoreItem: 'projects/restoreProject',
