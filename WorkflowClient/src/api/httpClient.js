@@ -17,6 +17,10 @@ const authInterceptor = config => {
 
 const errorResponseHandler = error => {
   const isDebugMode = localStorage.debugMode === 'true';
+
+  // If error when fetch current user, then unauthorized > return
+  if (error.config.url.includes('GetCurrent')) return;
+
   if (error.response)
     Message({
       message: `Ошибка отправки запроса`,

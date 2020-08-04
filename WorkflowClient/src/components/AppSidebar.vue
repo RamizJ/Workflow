@@ -17,6 +17,8 @@
           el-button(type="text" @click="exit")
             feather(type="log-out")
 
+
+
       //el-menu-item(index="/" disabled)
         feather(type="activity")
         span Обзор
@@ -62,6 +64,9 @@
           infinite-loading(ref="loader" @infinite="load" spinner="waveDots")
             div(slot="no-more")
             div(slot="no-results")
+
+      div.logo
+        img(src="@/assets/logo.svg")
 
 </template>
 
@@ -115,7 +120,7 @@ export default {
   height: 100%;
   position: relative;
   background-color: transparent;
-  padding: 20px 10px;
+  padding: 15px 10px;
   transition: border-color 0.25s;
 }
 .el-menu:not(.el-menu--collapse) {
@@ -135,6 +140,7 @@ export default {
   border-radius: 10px;
   display: flex;
   align-items: center;
+  z-index: 1;
   transition: background-color 0.25s, color 0.25s;
   i {
     height: 14px;
@@ -177,6 +183,20 @@ export default {
   height: 15px;
 }
 
+.logo {
+  width: 100%;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  padding: 30px 10px;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  img {
+    opacity: 0.8;
+    height: 50px;
+  }
+}
 .profile {
   display: flex;
   align-items: center;

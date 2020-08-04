@@ -24,7 +24,7 @@
           @change="onFiltersChange"
           multiple collapse-tags)
           el-option(v-for="option in priorities" :key="option.value" :value="option.value", :label="option.label")
-      div.filter
+      div.filter(v-if="!$route.params.projectId")
         div.label Проект
         el-select.remote(
           v-model="filters.projects"
