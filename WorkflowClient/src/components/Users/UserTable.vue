@@ -31,6 +31,8 @@
         li
           a(@click.prevent="onItemCreate") Новый пользователь
         el-divider
+        //li
+          a(v-if="isDeleteVisible" @click.prevent="onItemDelete($event, child.data.row)") Убрать из команды
         li
           a(v-if="isDeleteVisible" @click.prevent="onItemDelete($event, child.data.row)") Переместить в корзину
         li

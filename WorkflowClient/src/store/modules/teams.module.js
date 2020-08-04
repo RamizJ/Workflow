@@ -62,6 +62,12 @@ export default {
       const createdTeam = response.data;
       commit('setTeam', createdTeam);
     },
+    async addUser({ commit }, { teamId, userId }) {
+      await teamsAPI.addUser(teamId, userId);
+    },
+    async removeUser({ commit }, { teamId, userId }) {
+      await teamsAPI.removeUser(teamId, userId);
+    },
     async updateTeam({ commit }, team) {
       const response = await teamsAPI.update(team);
       const updatedTeam = response.data;

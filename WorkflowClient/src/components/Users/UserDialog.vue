@@ -85,20 +85,9 @@ export default {
         phone: '',
         positionId: null,
         position: '',
-        teamIds: [],
+        teamIds: this.$route.params.teamId ? [this.$route.params.teamId] : [],
         roles: []
       },
-      roles: [
-        { value: 0, label: 'Управление проектами' },
-        { value: 1, label: 'Управление пользователями' },
-        { value: 2, label: 'Управление областями' }
-      ],
-      positions: [
-        { value: 0, label: 'Начальник' },
-        { value: 1, label: 'Уборщик' },
-        { value: 2, label: 'Оператор' },
-        { value: 3, label: 'Разработчик' }
-      ],
       rules: {
         lastName: [{ required: true, message: '!', trigger: 'blur' }],
         firstName: [{ required: true, message: '!', trigger: 'blur' }],
