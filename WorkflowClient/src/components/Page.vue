@@ -13,15 +13,16 @@ export default {
 <style lang="scss" scoped>
 .page {
   width: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
 }
 .page-content {
   display: flex;
   position: relative;
-  overflow: auto;
+  overflow: hidden;
   padding: 0 30px 20px;
-  height: 100%;
+  height: 100vh;
   width: 100%;
   flex-direction: column;
 }

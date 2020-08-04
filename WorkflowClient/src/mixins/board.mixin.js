@@ -1,4 +1,5 @@
 import { mapActions, mapGetters } from 'vuex';
+import moment from 'moment';
 
 export default {
   props: {
@@ -47,20 +48,26 @@ export default {
       this.query.filter = value;
       this.refresh();
     },
-    order(value) {
-      this.query.sortFields[0].sortType = value;
-      this.refresh();
-    },
-    sort(value) {
-      this.query.sortFields[0].fieldName = value;
-      this.refresh();
-    },
     filters: {
       deep: true,
       handler(value) {
         this.query.filterFields = value;
+        this.query.withRemoved = !!value.find(
+          filter =>
+            filter.fieldName === 'isRemoved' && filter.values[0] === true
+        );
         this.refresh();
       }
+    },
+    order(value) {
+      console.log(value);
+      this.query.sortFields[0].sortType = value;
+      this.refresh();
+    },
+    sort(value) {
+      console.log(value);
+      this.query.sortFields[0].fieldName = value;
+      this.refresh();
     }
   },
   computed: {
@@ -123,16 +130,6 @@ export default {
       });
     }
   },
-  mounted() {
-    if (this.$route.query.tab === 'deleted') {
-      this.query.filterFields.push({
-        fieldName: 'isRemoved',
-        values: [true]
-      });
-      this.query.withRemoved = true;
-      this.refresh();
-    }
-  },
   methods: {
     ...mapActions({
       fetchItems: '',
@@ -173,6 +170,8 @@ export default {
       this.query.pageNumber = 0;
       this.loader.stateChanger.reset();
       this.dialogVisible = false;
+      console.log(this.loader);
+      console.log('refresh');
     },
     async load($state) {
       const firstLoad = !this.data.length;
@@ -182,6 +181,7 @@ export default {
       else $state.complete();
       this.data = firstLoad ? items : this.data.concat(items);
       if (firstLoad) this.loading = false;
+      console.log('load');
       this.updateLists();
     },
     async fetch(params) {
@@ -242,10 +242,16 @@ export default {
       await this.$store.dispatch(this.actions.updateItem, item);
       await this.refresh();
     },
-    dateFormatter(row, column, cellValue, index) {
-      const dateRaw = new Date(cellValue);
-      const dateRu = dateRaw.toLocaleString();
-      return dateRu;
+    dateFormatter(value) {
+      const dateUtc = moment.utc(value);
+      return dateUtc.format('DD.MM.YYYY HH:mm');
+    },
+    fioFormatter(value) {
+      if (!value) return value;
+      const fioArray = value.split(' ');
+      const lastName = fioArray[0];
+      const initials = `${fioArray[1][0]}. ${fioArray[2][0]}.`;
+      return `${lastName} ${initials}`;
     },
     priorityFormatter(row, column, cellValue, index) {
       return this.priorities.find(priority => priority.value === cellValue)

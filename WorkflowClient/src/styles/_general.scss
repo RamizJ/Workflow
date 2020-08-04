@@ -222,7 +222,7 @@ a {
   flex: 1;
   height: 100%;
   .el-table {
-    overflow: auto;
+    overflow: hidden;
     position: unset !important;
   }
 }
@@ -352,6 +352,7 @@ a {
   width: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   flex: 1;
 }
 .el-tab-pane {
@@ -359,9 +360,11 @@ a {
   display: flex;
   flex-direction: column;
 }
-.el-tabs__content,
-.el-tab-pane {
+.el-tabs__content {
   height: 100%;
+}
+.el-tab-pane {
+  //height: 100%;
 }
 .el-tabs__item {
   color: var(--text);

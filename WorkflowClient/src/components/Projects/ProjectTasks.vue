@@ -13,7 +13,13 @@
       :filters="filters"
       :order="order"
       :sort="sort")
-    task-board(v-if="view === 'board'")
+    task-board(
+      v-if="view === 'board'"
+      ref="items"
+      :search="search"
+      :filters="filters"
+      :order="order"
+      :sort="sort")
 
 </template>
 

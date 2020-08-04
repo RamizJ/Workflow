@@ -50,9 +50,6 @@ export default {
     document.onkeyup = this.onKeyUp;
   },
   watch: {
-    setShift: function(val) {
-      this.isShift = val;
-    },
     search(value) {
       this.query.filter = value;
       this.refresh();
