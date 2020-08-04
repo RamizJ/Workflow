@@ -6,7 +6,7 @@
         el-input(v-model="q" size="medium" placeholder="Искать..." @change="onSearch")
           el-button(slot="prefix" type="text" size="mini" @click="onSearch")
             feather(type="search" size="16")
-      div.filter
+      div.filter(v-if="$route.query.view !== 'board'")
         div.label Статус
         el-select(
           v-model="filters.statuses"

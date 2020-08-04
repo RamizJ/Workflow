@@ -166,6 +166,7 @@ export default {
       });
     },
     refresh() {
+      this.lists = [];
       this.data = [];
       this.query.pageNumber = 0;
       this.loader.stateChanger.reset();
