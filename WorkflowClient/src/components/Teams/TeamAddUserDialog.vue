@@ -11,7 +11,7 @@
               placeholder="Найти участника..."
               :remote-method="searchUsers"
               filterable remote clearable default-first-option)
-              el-option(v-for="item in userList" :key="item.id" :label="item.value" :value="item.id")
+              el-option(v-for="item in usersToAdd" :key="item.id" :label="item.value" :value="item.id")
     template(slot="footer")
       div.extra
       div.send
@@ -39,10 +39,30 @@ export default {
     ...mapGetters({
       teamUsers: 'teams/getTeamUsers',
       teamProjects: 'teams/getTeamProjects'
-    })
+    }),
+    usersToAdd() {
+      const allUsers = this.userList;
+      const existingUsers = this.existingUsers;
+      return allUsers.filter(user => {
+        return !existingUsers.find(existingUser => existingUser.id === user.id);
+      });
+    },
+    existingUsers() {
+      return this.teamUsers.map(user => {
+        return {
+          value: `${user.lastName} ${user.firstName}`,
+          id: user.id
+        };
+      });
+    }
   },
   async mounted() {
     await this.searchUsers();
+    await this.fetchTeamUsers({
+      teamId: this.$route.params.teamId,
+      pageNumber: 0,
+      pageSize: 100
+    });
     this.$refs.input.focus();
   },
   methods: {
@@ -54,10 +74,16 @@ export default {
       fetchTeamUsers: 'teams/fetchTeamUsers',
       fetchTeamProjects: 'teams/fetchTeamProjects'
     }),
-    submit() {
+    async submit() {
       const teamId = this.$route.params.teamId;
-      const userId = this.form.userId;
-      this.addUser({ teamId, userId });
+      const userId = this.form.userId.trim();
+      if (userId) {
+        this.loading = true;
+        await this.addUser({ teamId, userId });
+        this.$emit('submit');
+        this.loading = false;
+      }
+      this.exit();
     }
   }
 };

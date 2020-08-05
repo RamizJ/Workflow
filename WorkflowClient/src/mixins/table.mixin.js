@@ -269,7 +269,7 @@ export default {
           this.table.selection.map(item => item.id)
         );
       else await this.$store.dispatch(this.actions.deleteItem, row.id);
-      await this.refresh();
+      this.refresh();
     },
     async onItemRestore(event, row) {
       if (this.isMultipleSelected)
@@ -278,7 +278,7 @@ export default {
           this.table.selection.map(item => item.id)
         );
       else await this.$store.dispatch(this.actions.restoreItem, row.id);
-      await this.refresh();
+      this.refresh();
     },
     async onItemStatusChange(event, row, status) {
       if (this.isMultipleSelected) {

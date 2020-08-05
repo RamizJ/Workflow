@@ -13,7 +13,7 @@ export default {
   delete: teamId => httpClient.delete(`/api/Teams/Delete/${teamId}`),
   deleteRange: teamIds => httpClient.patch(`/api/Teams/DeleteRange`, teamIds),
   addUser: (teamId, userId) =>
-    httpClient.patch(`/api/Teams/AddUser/${teamId}`, userId),
+    httpClient.patch(`/api/Teams/AddUser/${teamId}`, JSON.stringify(userId)),
   removeUser: (teamId, userId) =>
     httpClient.patch(`/api/Teams/RemoveUser/${teamId}/${userId}`),
   addProject: teamId => httpClient.patch(`/api/Teams/AddProject/${teamId}`),

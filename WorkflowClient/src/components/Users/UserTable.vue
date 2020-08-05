@@ -31,8 +31,8 @@
         li
           a(@click.prevent="onItemCreate") Новый пользователь
         el-divider
-        //li
-          a(v-if="isDeleteVisible" @click.prevent="onItemDelete($event, child.data.row)") Убрать из команды
+        li
+          a(v-if="isRemoveFromTeamVisible" @click.prevent="onItemRemoveFromTeam($event, child.data.row)") Убрать из команды
         li
           a(v-if="isDeleteVisible" @click.prevent="onItemDelete($event, child.data.row)") Переместить в корзину
         li
@@ -64,9 +64,26 @@ export default {
         deleteItem: 'users/deleteUser',
         deleteItems: 'users/deleteUsers',
         restoreItem: 'users/restoreUser',
-        restoreItems: 'users/restoreUsers'
+        restoreItems: 'users/restoreUsers',
+        removeFromTeam: 'teams/removeUser'
       }
     };
+  },
+  computed: {
+    isRemoveFromTeamVisible() {
+      return !!this.$route.params.teamId;
+    }
+  },
+  methods: {
+    async onItemRemoveFromTeam(event, row) {
+      const teamId = this.$route.params.teamId;
+      const userId = row.id;
+      await this.$store.dispatch(this.actions.removeFromTeam, {
+        teamId,
+        userId
+      });
+      this.refresh();
+    }
   }
 };
 </script>

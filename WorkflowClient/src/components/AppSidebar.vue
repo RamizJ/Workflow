@@ -194,7 +194,7 @@ export default {
   z-index: 0;
   img {
     opacity: 0.8;
-    height: 50px;
+    height: 80px;
   }
 }
 .profile {
