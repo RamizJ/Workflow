@@ -20,6 +20,10 @@ export default {
       state.sidebarProjectsPage = page;
     },
     appendSidebarProjects(state, projects) {
+      const isAlreadyInSidebar = state.sidebarProjects.find(sidebarProject => {
+        return !!projects.find(project => project.id === sidebarProject.id);
+      });
+      if (isAlreadyInSidebar) return;
       if (!state.sidebarProjects.length) state.sidebarProjects = projects;
       else state.sidebarProjects = [...state.sidebarProjects, ...projects];
     },
