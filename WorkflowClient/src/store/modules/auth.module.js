@@ -36,8 +36,10 @@ export default {
     async fetchMe({ state, commit }) {
       if (!state.token) return;
       const response = await auth.getMe();
-      if (!response) return null;
-      commit('setUser', response.data);
+      if (!response || response.status === 401) {
+        commit('setToken', null);
+        commit('setUser', null);
+      } else commit('setUser', response.data);
     },
     async updatePassword({ commit }, { currentPassword, newPassword }) {
       const response = await auth.changePassword(currentPassword, newPassword);

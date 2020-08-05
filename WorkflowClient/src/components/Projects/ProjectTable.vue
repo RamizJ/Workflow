@@ -1,10 +1,11 @@
 <template lang="pug">
   div.table-container
     el-table(
-      :data="tableData"
       ref="table"
       height="100%"
       v-loading="loading"
+      :data="tableData"
+      :row-class-name="onSetIndex"
       @select="onItemSelect"
       @row-click="onItemSingleClick"
       @row-contextmenu="onItemRightClick"
@@ -48,10 +49,14 @@ export default {
   data() {
     return {
       getters: {
-        items: 'projects/getProjects'
+        items: this.$route.params.teamId
+          ? 'teams/getTeamProjects'
+          : 'projects/getProjects'
       },
       actions: {
-        fetchItems: 'projects/fetchProjects',
+        fetchItems: this.$route.params.teamId
+          ? 'teams/fetchTeamProjects'
+          : 'projects/fetchProjects',
         deleteItem: 'projects/deleteProject',
         deleteItems: 'projects/deleteProjects',
         restoreItem: 'projects/restoreProject',

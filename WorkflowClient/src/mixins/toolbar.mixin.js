@@ -89,6 +89,15 @@ export default {
       });
     }
   },
+  mounted() {
+    document.querySelectorAll('.el-select.remote').forEach(element => {
+      const arrow = element.children[1].children[1];
+      arrow.addEventListener('click', function() {
+        this.click();
+        element.click();
+      });
+    });
+  },
   methods: {
     ...mapActions({
       fetchProjects: 'projects/fetchProjects',

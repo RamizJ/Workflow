@@ -1,4 +1,5 @@
 import { mapActions, mapGetters } from 'vuex';
+import moment from 'moment';
 
 export default {
   props: {
@@ -47,6 +48,17 @@ export default {
       this.query.filter = value;
       this.refresh();
     },
+    filters: {
+      deep: true,
+      handler(value) {
+        this.query.filterFields = value;
+        this.query.withRemoved = !!value.find(
+          filter =>
+            filter.fieldName === 'isRemoved' && filter.values[0] === true
+        );
+        this.refresh();
+      }
+    },
     order(value) {
       this.query.sortFields[0].sortType = value;
       this.refresh();
@@ -54,13 +66,6 @@ export default {
     sort(value) {
       this.query.sortFields[0].fieldName = value;
       this.refresh();
-    },
-    filters: {
-      deep: true,
-      handler(value) {
-        this.query.filterFields = value;
-        this.refresh();
-      }
     }
   },
   computed: {
@@ -123,16 +128,6 @@ export default {
       });
     }
   },
-  mounted() {
-    if (this.$route.query.tab === 'deleted') {
-      this.query.filterFields.push({
-        fieldName: 'isRemoved',
-        values: [true]
-      });
-      this.query.withRemoved = true;
-      this.refresh();
-    }
-  },
   methods: {
     ...mapActions({
       fetchItems: '',
@@ -169,6 +164,7 @@ export default {
       });
     },
     refresh() {
+      this.lists = [];
       this.data = [];
       this.query.pageNumber = 0;
       this.loader.stateChanger.reset();
@@ -189,9 +185,7 @@ export default {
       this.query.pageNumber++;
       return items;
     },
-    onFilterChange(value) {
-      console.log(value);
-    },
+    onFilterChange(value) {},
     onOrderChange() {
       this.query.sortFields[0].sortType =
         this.query.sortFields[0].sortType === 'Ascending'
@@ -242,10 +236,17 @@ export default {
       await this.$store.dispatch(this.actions.updateItem, item);
       await this.refresh();
     },
-    dateFormatter(row, column, cellValue, index) {
-      const dateRaw = new Date(cellValue);
-      const dateRu = dateRaw.toLocaleString();
-      return dateRu;
+    dateFormatter(value) {
+      const dateUtc = moment.utc(value);
+      return dateUtc.format('DD.MM.YYYY HH:mm');
+    },
+    fioFormatter(value) {
+      if (!value) return value;
+      const fioArray = value.split(' ');
+      const lastName = fioArray[0];
+      const firstNameInitial = fioArray[1][0] ? `${fioArray[1][0]}.` : '';
+      const middleNameInitial = fioArray[2][0] ? `${fioArray[2][0]}.` : '';
+      return `${lastName} ${firstNameInitial} ${middleNameInitial}`;
     },
     priorityFormatter(row, column, cellValue, index) {
       return this.priorities.find(priority => priority.value === cellValue)

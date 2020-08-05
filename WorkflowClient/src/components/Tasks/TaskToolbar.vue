@@ -6,7 +6,7 @@
         el-input(v-model="q" size="medium" placeholder="Искать..." @change="onSearch")
           el-button(slot="prefix" type="text" size="mini" @click="onSearch")
             feather(type="search" size="16")
-      div.filter
+      div.filter(v-if="$route.query.view !== 'board'")
         div.label Статус
         el-select(
           v-model="filters.statuses"
@@ -24,30 +24,29 @@
           @change="onFiltersChange"
           multiple collapse-tags)
           el-option(v-for="option in priorities" :key="option.value" :value="option.value", :label="option.label")
-      div.filter
+      div.filter(v-if="!$route.params.projectId")
         div.label Проект
-        el-select(
+        el-select.remote(
           v-model="filters.projects"
           size="medium"
           placeholder="Любой"
-          suffix-icon="el-icon-search"
           :remote-method="searchProjects"
           @focus="onProjectsFocus"
           @change="onFiltersChange"
-          multiple collapse-tags filterable remote clearable default-first-option)
+          multiple collapse-tags filterable remote default-first-option)
           el-option(v-for="item in projectList" :key="item.id" :label="item.value" :value="item.id")
     toolbar-filters-extra
       el-row(:gutter="20")
         el-col(:span="24")
           div.filter
             div.label Ответственный
-            el-select(
+            el-select.remote(
               v-model="filters.performers"
               placeholder="Любой"
               :remote-method="searchUsers"
               @focus="onUsersFocus"
               @change="onFiltersChange"
-              multiple collapse-tags filterable remote clearable default-first-option)
+              multiple collapse-tags filterable remote default-first-option)
               el-option(v-for="item in userList" :key="item.id" :label="item.value" :value="item.id")
           //div.filter
             div.label Крайний срок

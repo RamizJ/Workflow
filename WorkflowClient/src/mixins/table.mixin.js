@@ -41,8 +41,13 @@ export default {
       ],
       dialogVisible: false,
       dialogData: null,
-      selectedRow: null
+      selectedRow: null,
+      isShift: false
     };
+  },
+  created() {
+    document.onkeydown = this.onKeyDown;
+    document.onkeyup = this.onKeyUp;
   },
   watch: {
     search(value) {
@@ -143,6 +148,15 @@ export default {
       fetchTeams: 'teams/fetchTeams',
       fetchUsers: 'users/fetchUsers'
     }),
+    onKeyDown() {
+      const key = window.event.keyCode;
+      if (key === 16) {
+        this.isShift = true;
+      }
+    },
+    onKeyUp() {
+      this.isShift = false;
+    },
     async searchProjects(query) {
       await this.fetchProjects({
         filter: query,
@@ -204,9 +218,27 @@ export default {
     onItemSelect(selection, row) {
       this.selectedRow = row;
     },
+    onSetIndex({ row, rowIndex }) {
+      row.index = rowIndex;
+    },
     onItemSingleClick(row, column, event) {
       this.table.clearSelection();
-      this.table.toggleRowSelection(row);
+      if (this.isShift) {
+        const beginIndex =
+          this.selectedRow.index < row.index
+            ? this.selectedRow.index
+            : row.index;
+        const endIndex =
+          this.selectedRow.index > row.index
+            ? this.selectedRow.index
+            : row.index;
+        this.tableData.some(item => {
+          if (item.index <= endIndex && item.index >= beginIndex)
+            this.table.toggleRowSelection(item);
+        });
+      } else {
+        this.table.toggleRowSelection(row);
+      }
       this.selectedRow = row;
     },
     onItemDoubleClick(row, column, event) {
@@ -237,7 +269,7 @@ export default {
           this.table.selection.map(item => item.id)
         );
       else await this.$store.dispatch(this.actions.deleteItem, row.id);
-      await this.refresh();
+      this.refresh();
     },
     async onItemRestore(event, row) {
       if (this.isMultipleSelected)
@@ -246,7 +278,7 @@ export default {
           this.table.selection.map(item => item.id)
         );
       else await this.$store.dispatch(this.actions.restoreItem, row.id);
-      await this.refresh();
+      this.refresh();
     },
     async onItemStatusChange(event, row, status) {
       if (this.isMultipleSelected) {

@@ -57,3 +57,14 @@ export default {
   }
 }
 </style>
+
+<style lang="scss">
+.toolbar-filters-extra {
+  .el-select .el-input__icon::before {
+    content: '\e6e1' !important;
+  }
+  .el-select .is-focus .el-input__icon {
+    transform: rotateZ(0) !important;
+  }
+}
+</style>

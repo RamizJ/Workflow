@@ -6,13 +6,13 @@
         el-input(v-model="q" size="medium" placeholder="Искать..." @change="onSearch")
           el-button(slot="prefix" type="text" size="mini" @click="onSearch")
             feather(type="search" size="16")
-      div.filter
+      //div.filter
         div.label Руководитель
-        el-select(
+        el-select.remote(
           v-model="filters.owners"
           size="medium"
           placeholder="Любой"
-          :remote-method="searchUsers"
+          //:remote-method="searchUsers"
           @focus="onUsersFocus"
           @change="onFiltersChange"
           multiple collapse-tags filterable remote clearable default-first-option)
