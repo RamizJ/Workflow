@@ -122,11 +122,13 @@ export default {
     }),
     async validateLogin(rule, value, callback) {
       const loginAlreadyExist = await this.isLoginExist(value);
-      if (loginAlreadyExist && this.data?.userName !== value)
-        callback(new Error('занято'));
-      let pattern = /[\u0400-\u04FF]/;
-      if (pattern.test(value)) callback(new Error('!'));
-      else callback();
+      const loginPattern = /^[a-zA-Z0-9-]+$/;
+      if (!loginPattern.test(value)) callback(new Error('!'));
+      else {
+        if (loginAlreadyExist && this.data?.userName !== value)
+          callback(new Error('занято'));
+        else callback();
+      }
     },
     async validateEmail(rule, value, callback) {
       const emailAlreadyExist = await this.isEmailExist(value);
