@@ -126,7 +126,6 @@ export default {
         await this.onItemStatusChange(event.added.element, listName);
     },
     updateLists() {
-      console.log('updateLists');
       this.lists = [];
       this.boardLists.forEach(list => {
         this.lists.push({

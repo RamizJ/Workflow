@@ -60,12 +60,10 @@ export default {
       }
     },
     order(value) {
-      console.log(value);
       this.query.sortFields[0].sortType = value;
       this.refresh();
     },
     sort(value) {
-      console.log(value);
       this.query.sortFields[0].fieldName = value;
       this.refresh();
     }
@@ -171,8 +169,6 @@ export default {
       this.query.pageNumber = 0;
       this.loader.stateChanger.reset();
       this.dialogVisible = false;
-      console.log(this.loader);
-      console.log('refresh');
     },
     async load($state) {
       const firstLoad = !this.data.length;
@@ -182,7 +178,6 @@ export default {
       else $state.complete();
       this.data = firstLoad ? items : this.data.concat(items);
       if (firstLoad) this.loading = false;
-      console.log('load');
       this.updateLists();
     },
     async fetch(params) {
@@ -190,9 +185,7 @@ export default {
       this.query.pageNumber++;
       return items;
     },
-    onFilterChange(value) {
-      console.log(value);
-    },
+    onFilterChange(value) {},
     onOrderChange() {
       this.query.sortFields[0].sortType =
         this.query.sortFields[0].sortType === 'Ascending'
@@ -251,8 +244,9 @@ export default {
       if (!value) return value;
       const fioArray = value.split(' ');
       const lastName = fioArray[0];
-      const initials = `${fioArray[1][0]}. ${fioArray[2][0]}.`;
-      return `${lastName} ${initials}`;
+      const firstNameInitial = fioArray[1][0] ? `${fioArray[1][0]}.` : '';
+      const middleNameInitial = fioArray[2][0] ? `${fioArray[2][0]}.` : '';
+      return `${lastName} ${firstNameInitial} ${middleNameInitial}`;
     },
     priorityFormatter(row, column, cellValue, index) {
       return this.priorities.find(priority => priority.value === cellValue)
