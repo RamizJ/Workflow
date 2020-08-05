@@ -1,6 +1,6 @@
 {
   "name": "workflow",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "private": true,
   "scripts": {
     "debug": "vue-cli-service serve --mode debug",

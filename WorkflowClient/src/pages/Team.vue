@@ -26,7 +26,7 @@
         team-projects(v-if="activeTab === 'projects'" ref="teamProjects")
 
     team-dialog(v-if="dialogTeamVisible" :data="teamItem" @close="dialogTeamVisible = false")
-    team-add-user-dialog(v-if="dialogAddUserVisible" @close="dialogAddUserVisible = false")
+    team-add-user-dialog(v-if="dialogAddUserVisible" @close="dialogAddUserVisible = false" @submit="onUserAdded")
     user-dialog(v-if="dialogUserVisible" @close="dialogUserVisible = false")
 
 </template>
@@ -105,6 +105,9 @@ export default {
     },
     async onUserAdd(e) {
       this.dialogAddUserVisible = true;
+    },
+    onUserAdded() {
+      this.$refs.teamUsers?.$refs.items.refresh();
     },
     async onUserCreate(e) {
       if (this.$refs.teamUsers) this.$refs.teamUsers.$refs.items.onItemCreate();
