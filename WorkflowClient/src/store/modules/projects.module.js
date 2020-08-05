@@ -53,10 +53,10 @@ export default {
         return project;
       });
 
-      const isExists = state.sidebarProjects.find(project =>
-        projects.includes(project.id)
-      );
-      if (isExists) return;
+      const isAlreadyInSidebar = state.sidebarProjects.find(sidebarProject => {
+        return !!projects.find(project => project.id === sidebarProject.id);
+      });
+      if (isAlreadyInSidebar) return [];
 
       commit('setSidebarProjectsPage', page + 1);
       commit('appendSidebarProjects', projects);
@@ -76,10 +76,8 @@ export default {
         !params.filter &&
         params.pageNumber === 0
       ) {
-        commit(
-          'setSidebarProjects',
-          [...projects].sort((a, b) => a.id - b.id)
-        );
+        const sidebarProjects = [...projects].sort((a, b) => a.id - b.id);
+        commit('setSidebarProjects', sidebarProjects);
         commit('setSidebarProjectsPage', 1);
       }
 
