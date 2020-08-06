@@ -78,10 +78,19 @@ export default {
     async onItemRemoveFromTeam(event, row) {
       const teamId = this.$route.params.teamId;
       const userId = row.id;
-      await this.$store.dispatch(this.actions.removeFromTeam, {
-        teamId,
-        userId
-      });
+      if (this.isMultipleSelected) {
+        const userIds = this.table.selection.map(item => item.id);
+        for (let id of userIds) {
+          await this.$store.dispatch(this.actions.removeFromTeam, {
+            teamId,
+            userId: id
+          });
+        }
+      } else
+        await this.$store.dispatch(this.actions.removeFromTeam, {
+          teamId,
+          userId
+        });
       this.refresh();
     }
   }
