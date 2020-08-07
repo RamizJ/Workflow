@@ -4,7 +4,7 @@ import qs from 'qs';
 export default {
   get: projectId => httpClient.get(`/api/Projects/Get/${projectId}`),
   create: project => httpClient.post(`/api/Projects/CreateByForm`, project),
-  update: project => httpClient.post(`/api/Projects/UpdateByForm`, project),
+  update: project => httpClient.put(`/api/Projects/UpdateByForm`, project),
   delete: projectId => httpClient.delete(`/api/Projects/Delete/${projectId}`),
   deleteRange: projectIds =>
     httpClient.patch(`/api/Projects/DeleteRange`, projectIds),
