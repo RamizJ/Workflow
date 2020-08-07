@@ -250,8 +250,8 @@ namespace WorkflowService.Controllers
         /// <param name="teamId">Идентификатор команды</param>
         /// <param name="userId">Идентификатор пользователя</param>
         /// <returns>Удаленный пользователь</returns>
-        [HttpPatch("{teamId}/{userId}")]
-        public async Task<IActionResult> RemoveUser(int teamId, string userId)
+        [HttpPatch("{teamId}")]
+        public async Task<IActionResult> RemoveUser(int teamId, [FromBody] string userId)
         {
             await _teamUsersService.Remove(teamId, userId);
             return NoContent();
