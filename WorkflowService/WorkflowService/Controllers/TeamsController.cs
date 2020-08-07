@@ -245,6 +245,19 @@ namespace WorkflowService.Controllers
         }
 
         /// <summary>
+        /// Добавление пользователей в команду
+        /// </summary>
+        /// <param name="teamId"></param>
+        /// <param name="userIds">Идентификаторы добавляемых пользователей</param>
+        /// <returns></returns>
+        [HttpPatch("{teamId}")]
+        public async Task<IActionResult> AddUsers(int teamId, [FromBody] IEnumerable<string> userIds)
+        {
+            await _teamUsersService.AddRange(teamId, userIds);
+            return NoContent();
+        }
+
+        /// <summary>
         /// Удаление пользователя из команды
         /// </summary>
         /// <param name="teamId">Идентификатор команды</param>

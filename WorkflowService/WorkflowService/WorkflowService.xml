@@ -458,6 +458,14 @@
             <param name="userId">Идентификатор добавляемого пользователя</param>
             <returns></returns>
         </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.AddUsers(System.Int32,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Добавление пользователей в команду
+            </summary>
+            <param name="teamId"></param>
+            <param name="userIds">Идентификаторы добавляемых пользователей</param>
+            <returns></returns>
+        </member>
         <member name="M:WorkflowService.Controllers.TeamsController.RemoveUser(System.Int32,System.String)">
             <summary>
             Удаление пользователя из команды

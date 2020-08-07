@@ -30,6 +30,14 @@ namespace Workflow.Services.Abstract
         Task Add(int teamId, string userId);
 
         /// <summary>
+        /// Добавление пользователей в команду
+        /// </summary>
+        /// <param name="teamId"></param>
+        /// <param name="userIds"></param>
+        /// <returns></returns>
+        Task AddRange(int teamId, IEnumerable<string> userIds);
+
+        /// <summary>
         /// Удаление пользователя из команды
         /// </summary>
         /// <param name="teamId">Идентификатор команды</param>
