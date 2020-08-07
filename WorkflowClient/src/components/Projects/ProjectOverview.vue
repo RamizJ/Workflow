@@ -75,6 +75,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.el-row {
+  margin-right: 0 !important;
+}
 .card {
   &__title {
     font-size: 15px;

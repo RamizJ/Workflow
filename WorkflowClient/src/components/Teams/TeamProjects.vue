@@ -1,20 +1,13 @@
 <template lang="pug">
-  div.project-tasks
-    task-toolbar(
+  div.team-projects
+    project-toolbar(
       @search="onSearch"
       @filters="onFiltersChange"
       @order="onOrderChange"
       @sort="onSortChange"
       @view="onViewChange")
-    task-table(
+    project-table(
       v-if="view === 'list'"
-      ref="items"
-      :search="search"
-      :filters="filters"
-      :order="order"
-      :sort="sort")
-    task-board(
-      v-if="view === 'board'"
       ref="items"
       :search="search"
       :filters="filters"
@@ -24,20 +17,14 @@
 </template>
 
 <script>
-import Page from '@/components/Page';
-import BaseHeader from '@/components/BaseHeader';
-import TaskToolbar from '@/components/Tasks/TaskToolbar';
-import TaskTable from '@/components/Tasks/TaskTable';
-import TaskBoard from '@/components/Tasks/TaskBoard';
+import ProjectToolbar from '@/components/Projects/ProjectToolbar';
+import ProjectTable from '@/components/Projects/ProjectTable';
 import pageMixin from '@/mixins/page.mixin';
 
 export default {
   components: {
-    Page,
-    BaseHeader,
-    TaskToolbar,
-    TaskTable,
-    TaskBoard
+    ProjectToolbar,
+    ProjectTable
   },
   mixins: [pageMixin],
   created() {
@@ -48,7 +35,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.project-tasks {
+.team-projects {
   height: 100%;
   display: flex;
   flex-direction: column;

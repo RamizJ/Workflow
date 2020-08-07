@@ -85,20 +85,9 @@ export default {
         phone: '',
         positionId: null,
         position: '',
-        teamIds: [],
+        teamIds: this.$route.params.teamId ? [this.$route.params.teamId] : [],
         roles: []
       },
-      roles: [
-        { value: 0, label: 'Управление проектами' },
-        { value: 1, label: 'Управление пользователями' },
-        { value: 2, label: 'Управление областями' }
-      ],
-      positions: [
-        { value: 0, label: 'Начальник' },
-        { value: 1, label: 'Уборщик' },
-        { value: 2, label: 'Оператор' },
-        { value: 3, label: 'Разработчик' }
-      ],
       rules: {
         lastName: [{ required: true, message: '!', trigger: 'blur' }],
         firstName: [{ required: true, message: '!', trigger: 'blur' }],
@@ -132,10 +121,17 @@ export default {
       isEmailExist: 'users/isEmailExist'
     }),
     async validateLogin(rule, value, callback) {
-      const loginAlreadyExist = await this.isLoginExist(value);
-      if (loginAlreadyExist && this.data?.userName !== value)
-        callback(new Error('занято'));
-      else callback();
+      const loginPattern = /^[a-zA-Z0-9_-]+$/;
+      const isLoginChanged = this.data?.userName !== value;
+      const isLoginValid = loginPattern.test(value);
+
+      if (!isLoginValid) callback(new Error('!'));
+
+      if (isLoginChanged && isLoginValid) {
+        const isLoginAlreadyExist = await this.isLoginExist(value);
+        if (isLoginAlreadyExist) callback(new Error('занято'));
+        else callback();
+      }
     },
     async validateEmail(rule, value, callback) {
       const emailAlreadyExist = await this.isEmailExist(value);

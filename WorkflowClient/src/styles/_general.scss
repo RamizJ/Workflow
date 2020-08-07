@@ -82,22 +82,22 @@ a {
 }
 .el-select-dropdown__list,
 .el-dropdown-menu {
-  padding: 10px 0;
+  padding: 6px 0;
   border-radius: 7px;
   border: none;
 }
 .el-select-dropdown__item,
 .el-dropdown-menu__item {
-  height: 35px;
-  line-height: 35px;
-  font-size: 14px;
+  height: 33px;
+  line-height: 33px;
+  font-size: 13px;
   padding: 0 15px;
-  margin: 0 10px;
+  margin: 0 6px;
   color: var(--text);
   border-radius: 6px;
   .el-button {
     font-size: 13px;
-    padding: 11px 0;
+    padding: 10px 0;
     border: none;
     color: var(--text);
     font-weight: 400;
@@ -222,7 +222,7 @@ a {
   flex: 1;
   height: 100%;
   .el-table {
-    overflow: auto;
+    overflow: hidden;
     position: unset !important;
   }
 }
@@ -352,15 +352,16 @@ a {
   width: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   flex: 1;
 }
 .el-tab-pane {
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: auto;
 }
-.el-tabs__content,
-.el-tab-pane {
+.el-tabs__content {
   height: 100%;
 }
 .el-tabs__item {

@@ -11,8 +11,8 @@
               @contextmenu="onItemRightClick($event, item)")
               a.item__header(@click="onItemDoubleClick($event, item)") {{ item.title }}
               div.item__footer
-                div.item__performer {{ item.performerFio }}
-                div.item__date {{ new Date(item.creationDate).toLocaleDateString() }}
+                div.item__performer {{ fioFormatter(item.performerFio) }}
+                div.item__date {{ dateFormatter(item.creationDate) }}
 
     infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load")
       div(slot="no-more")
@@ -142,8 +142,7 @@ export default {
 <style lang="scss" scoped>
 .board {
   height: 100%;
-  overflow-x: scroll;
-  overflow-y: hidden;
+  overflow: auto;
   -webkit-overflow-scrolling: touch;
   &::-webkit-scrollbar {
     display: none;

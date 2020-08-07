@@ -50,6 +50,7 @@ export default {
       const response = await teamsAPI.getProjectsPage(params);
       const teamProjects = response.data;
       commit('setTeamProjects', teamProjects);
+      return teamProjects;
     },
     async createTeam({ commit }, team) {
       let newTeam = {
@@ -60,6 +61,12 @@ export default {
       const response = await teamsAPI.create(newTeam);
       const createdTeam = response.data;
       commit('setTeam', createdTeam);
+    },
+    async addUser({ commit }, { teamId, userId }) {
+      await teamsAPI.addUser(teamId, userId);
+    },
+    async removeUser({ commit }, { teamId, userId }) {
+      await teamsAPI.removeUser(teamId, userId);
     },
     async updateTeam({ commit }, team) {
       const response = await teamsAPI.update(team);

@@ -12,7 +12,7 @@
             feather(type="chevron-down" size="22")
           el-dropdown-menu(slot="dropdown")
             el-dropdown-item
-              el-button(type="text" size="mini" @click="onUserCreate") Добавить участника
+              el-button(type="text" size="mini" @click="onUserAdd") Добавить участника
             el-divider
             el-dropdown-item
               el-button(type="text" size="mini" @click="onTeamEdit") Редактировать
@@ -23,8 +23,10 @@
       el-tab-pane(name="members" label="Участники")
         team-users(v-if="activeTab === 'members'" ref="teamUsers")
       el-tab-pane(name="projects" label="Проекты")
+        team-projects(v-if="activeTab === 'projects'" ref="teamProjects")
 
     team-dialog(v-if="dialogTeamVisible" :data="teamItem" @close="dialogTeamVisible = false")
+    team-add-user-dialog(v-if="dialogAddUserVisible" @close="dialogAddUserVisible = false" @submit="onUserAdded")
     user-dialog(v-if="dialogUserVisible" @close="dialogUserVisible = false")
 
 </template>
@@ -36,15 +38,19 @@ import BaseHeader from '@/components/BaseHeader';
 import TeamUsers from '@/components/Teams/TeamUsers';
 import UserDialog from '@/components/Users/UserDialog';
 import TeamDialog from '@/components/Teams/TeamDialog';
+import TeamProjects from '@/components/Teams/TeamProjects';
+import TeamAddUserDialog from '@/components/Teams/TeamAddUserDialog';
 
 export default {
   name: 'Team',
   components: {
+    TeamAddUserDialog,
     Page,
     BaseHeader,
     TeamUsers,
-    UserDialog,
-    TeamDialog
+    TeamProjects,
+    TeamDialog,
+    UserDialog
   },
   data() {
     return {
@@ -62,7 +68,8 @@ export default {
         { value: 'projects', label: 'Проекты' }
       ],
       dialogTeamVisible: false,
-      dialogUserVisible: false
+      dialogUserVisible: false,
+      dialogAddUserVisible: false
     };
   },
   computed: {
@@ -95,6 +102,12 @@ export default {
       query.tab = this.activeTab;
       if (JSON.stringify(query) !== JSON.stringify(this.$route.query))
         this.$router.push({ query });
+    },
+    async onUserAdd(e) {
+      this.dialogAddUserVisible = true;
+    },
+    onUserAdded() {
+      this.$refs.teamUsers?.$refs.items.refresh();
     },
     async onUserCreate(e) {
       if (this.$refs.teamUsers) this.$refs.teamUsers.$refs.items.onItemCreate();
