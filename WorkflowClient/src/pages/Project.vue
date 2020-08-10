@@ -30,7 +30,7 @@
 
     el-tabs(v-if="projectItem.id" ref="tabs" v-model="activeTab" @tab-click="setTab")
       el-tab-pane(name="overview" label="Обзор")
-        project-overview(v-if="activeTab === 'overview'" :data="projectItem")
+        project-overview(v-if="activeTab === 'overview'" :data="projectItem" @description="onDescriptionChange")
       el-tab-pane(name="tasks" label="Задачи")
         project-tasks(ref="projectTasks" v-if="activeTab === 'tasks'")
       el-tab-pane(name="team" label="Команды")
@@ -141,6 +141,10 @@ export default {
     },
     async onProjectUpdate(e) {
       await this.updateProject(this.projectItem);
+    },
+    async onDescriptionChange(value) {
+      this.projectItem.description = value;
+      await this.onProjectUpdate();
     },
     async onProjectDelete() {
       await this.deleteProject(this.projectItem.id);
