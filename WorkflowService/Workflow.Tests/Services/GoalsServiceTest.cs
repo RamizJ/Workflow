@@ -459,6 +459,33 @@ namespace Workflow.Tests.Services
             Assert.AreEqual(0, delta, 10);
         }
 
+        [Test]
+        public async Task IsChildsExists()
+        {
+            //Arrange
+            var serviceProvider = ContextHelper.Initialize(_dbConnection, false);
+            var context = serviceProvider.GetService<DataContext>();
+
+            var firstGoal = _testData.Goals.First();
+            var lastGoal = _testData.Goals.Last();
+
+            lastGoal.ParentGoalId = firstGoal.Id;
+
+            context.Update(lastGoal);
+            await context.SaveChangesAsync();
+
+            //Act
+            var page = await _service.GetPage(_currentUser, null, new PageOptions
+            {
+                PageNumber = 0,
+                PageSize = int.MaxValue
+            });
+            var firstPageGoal = page.First();
+
+            //Assert
+            Assert.IsTrue(firstPageGoal.IsChildsExist);
+        }
+
 
         private SqliteConnection _dbConnection;
         private TestData _testData;
