@@ -1,4 +1,5 @@
-﻿using Workflow.DAL.Models;
+﻿using Microsoft.EntityFrameworkCore.Internal;
+using Workflow.DAL.Models;
 using Workflow.VM.ViewModelConverters.Absract;
 using Workflow.VM.ViewModels;
 
@@ -52,6 +53,7 @@ namespace Workflow.VM.ViewModelConverters
                 Priority = model.Priority,
                 ExpectedCompletedDate = model.ExpectedCompletedDate,
                 EstimatedPerformingTime = model.EstimatedPerformingTime,
+                IsChildsExist = model.ChildGoals.Any(),
                 IsRemoved = model.IsRemoved
             };
         }
