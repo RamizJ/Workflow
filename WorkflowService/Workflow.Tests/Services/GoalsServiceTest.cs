@@ -326,34 +326,25 @@ namespace Workflow.Tests.Services
             //Arrange
             string updatedName = "UpdatedName";
             string updatedDescription = "UpdatedDescription";
-            var vmGoals = _testData.Goals.Take(1).Select(t =>
-            {
-                t.Title = updatedName;
-                t.Description = updatedDescription;
-                return _vmConverter.ToViewModel(t);
-            }).ToArray();
+            var vmGoal = _vmConverter.ToViewModel(_testData.Goals.First());
+            vmGoal.Title = updatedName;
+            vmGoal.Description = updatedDescription;
             var observerIds = _testData.Users.Skip(4).Take(6).Select(u => u.Id).ToList();
-            var childGoalIds = _testData.Goals.Skip(6).Take(4).Select(g => g.Id).ToList();
-
-            var vmGoalForms = vmGoals
-                .Select(vm => new VmGoalForm(vm, observerIds, childGoalIds));
+            var childGoalIds = _testData.Goals.Skip(5).Take(5).Select(g => g.Id).ToList();
+            var vmGoalForm = new VmGoalForm(vmGoal, observerIds, childGoalIds);
 
             //Act
-            await _service.UpdateByFormRange(_currentUser, vmGoalForms);
-            var goals = await _dataContext.Goals
+            await _service.UpdateByFormRange(_currentUser, new[] {vmGoalForm});
+            var goal = _dataContext.Goals
                 .Include(g => g.ChildGoals)
                 .Include(g => g.Observers)
-                .Where(g => vmGoals.Select(vm => vm.Id).Any(vmId => vmId == g.Id))
-                .ToArrayAsync();
+                .First(g => g.Id == vmGoal.Id);
 
             //Assert
-            foreach (var goal in goals)
-            {
-                Assert.AreEqual(updatedName, goal.Title);
-                Assert.AreEqual(updatedDescription, goal.Description);
-                Assert.AreEqual(observerIds.Count, goal.Observers.Count);
-                Assert.AreEqual(childGoalIds.Count, goal.ChildGoals.Count);
-            }
+            Assert.AreEqual(updatedName, goal.Title);
+            Assert.AreEqual(updatedDescription, goal.Description);
+            Assert.AreEqual(observerIds.Count, goal.Observers.Count);
+            Assert.AreEqual(8, goal.ChildGoals.Count);
         }
 
         [Test]
@@ -492,18 +483,15 @@ namespace Workflow.Tests.Services
         {
             //Arrange
             var parentGoal = _testData.Goals.First();
-            var childGoals = _testData.Goals.Skip(1).Take(2);
+            var childGoal = _testData.Goals.ElementAt(1);
 
             //Act
-            await _service.AddChildGoals(_currentUser, parentGoal.Id, childGoals.Select(x => x.Id));
-            var resultChildGoals = _dataContext.Goals
-                .Where(x => x.ParentGoalId == parentGoal.Id)
-                .ToArray();
+            await _service.AddChildGoals(_currentUser, parentGoal.Id, new []{ childGoal.Id });
+            var resultChildGoal = _dataContext.Goals
+                .First(x => x.Id == childGoal.Id);
 
             //Assert
-            Assert.AreEqual(2, resultChildGoals.Length);
-            Assert.AreEqual(parentGoal.Id, resultChildGoals[0].ParentGoalId);
-            Assert.AreEqual(parentGoal.Id, resultChildGoals[1].ParentGoalId);
+            Assert.AreEqual(parentGoal.Id, resultChildGoal.ParentGoalId);
         }
 
         [TestCase(1, 3)]
