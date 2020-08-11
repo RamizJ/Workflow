@@ -9,7 +9,8 @@
               v-model="project.description"
               :autosize="{ minRows: 2 }"
               type="textarea"
-              placeholder="Подробно опишите ваш проект...")
+              placeholder="Подробно опишите ваш проект..."
+              @change="$emit('description', project.description)")
       el-col(:span="6")
         el-card.card(shadow="never")
           div.card__title Задач выполнено
