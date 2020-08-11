@@ -9,6 +9,7 @@ using NUnit.Framework;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
+using Workflow.Services.Exceptions;
 using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
@@ -260,7 +261,7 @@ namespace Workflow.Tests.Services
             };
 
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Create(_currentUser, vmGoal));
+            Assert.ThrowsAsync<HttpResponseException>(async () => await _service.Create(_currentUser, vmGoal));
         }
 
 
@@ -313,7 +314,7 @@ namespace Workflow.Tests.Services
             //Assert
             Assert.AreEqual(title, goal.Title);
             Assert.AreEqual(description, goal.Description);
-            Assert.AreEqual(1, goal.ProjectId);
+            Assert.AreEqual(projectId, goal.ProjectId);
             Assert.AreEqual(priority, goal.Priority);
             Assert.AreEqual(state, goal.State);
             Assert.IsFalse(goal.IsRemoved);
@@ -484,6 +485,51 @@ namespace Workflow.Tests.Services
 
             //Assert
             Assert.IsTrue(firstPageGoal.IsChildsExist);
+        }
+
+        [Test]
+        public async Task AddChildGoalTest()
+        {
+            //Arrange
+            var parentGoal = _testData.Goals.First();
+            var childGoals = _testData.Goals.Skip(1).Take(2);
+
+            //Act
+            await _service.AddChildGoals(_currentUser, parentGoal.Id, childGoals.Select(x => x.Id));
+            var resultChildGoals = _dataContext.Goals
+                .Where(x => x.ParentGoalId == parentGoal.Id)
+                .ToArray();
+
+            //Assert
+            Assert.AreEqual(2, resultChildGoals.Length);
+            Assert.AreEqual(parentGoal.Id, resultChildGoals[0].ParentGoalId);
+            Assert.AreEqual(parentGoal.Id, resultChildGoals[1].ParentGoalId);
+        }
+
+        [TestCase(1, 3)]
+        [TestCase(2, 5)]
+        public async Task GetChildGoalTest(int parentGoalId, int expectedChildsCount)
+        {
+            //Arrange
+
+            //Act
+            var childGoals = await _service.GetChildGoals(_currentUser, parentGoalId, true);
+
+            //Assert
+            Assert.AreEqual(expectedChildsCount, childGoals.Count());
+        }
+
+        [TestCase(4, 1)]
+        [TestCase(6, 2)]
+        public async Task GetParentGoalTest(int goalId, int expectedParentId)
+        {
+            //Arrange
+
+            //Act
+            var parentGoal = await _service.GetParentGoal(_currentUser, goalId);
+
+            //Assert
+            Assert.AreEqual(expectedParentId, parentGoal?.Id);
         }
 
 

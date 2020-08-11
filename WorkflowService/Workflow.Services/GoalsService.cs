@@ -200,7 +200,11 @@ namespace Workflow.Services
         {
             var query = await GetQuery(currentUser, true, true);
             var goal = query.FirstOrDefault(g => g.Id == goalId);
-            return _vmConverter.ToViewModel(goal?.ParentGoal);
+
+            if(goal == null)
+                throw new HttpResponseException(NotFound, "The goal don't have parent");
+
+            return _vmConverter.ToViewModel(goal.ParentGoal);
         }
 
         /// <inheritdoc />
@@ -211,10 +215,13 @@ namespace Workflow.Services
             var childGoals = await query.Where(g => childGoalIds.Any(cId => cId == g.Id))
                 .ToArrayAsync();
 
-            foreach (var childGoal in childGoals) 
+            foreach (var childGoal in childGoals)
+            {
                 childGoal.ParentGoalId = parentGoalId;
+                _dataContext.Entry(childGoal).State = EntityState.Modified;
+            }
 
-            await _dataContext.BulkUpdateAsync(childGoals);
+            await _dataContext.SaveChangesAsync();
         }
 
         /// <inheritdoc />
@@ -232,6 +239,7 @@ namespace Workflow.Services
                 .Include(x => x.Observers)
                 .Include(x => x.Performer)
                 .Include(x => x.Project)
+                .Include(x => x.ParentGoal)
                 .Include(x => x.ChildGoals)
                 .Where(x => isAdmin
                             || x.Project.OwnerId == currentUser.Id

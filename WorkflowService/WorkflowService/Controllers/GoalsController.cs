@@ -308,13 +308,13 @@ namespace WorkflowService.Controllers
         /// <summary>
         /// Получение дочерних задач
         /// </summary>
-        /// <param name="goalId"></param>
-        /// <returns></returns>
+        /// <param name="parentGoalId">Идентификатор родительской задачи</param>
+        /// <returns>Коллекция дочерних задач</returns>
         [HttpGet("{goalId}")]
-        public async Task<ActionResult<IEnumerable<VmGoal>>> GetChildGoals(int goalId)
+        public async Task<ActionResult<IEnumerable<VmGoal>>> GetChildGoals(int parentGoalId)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
-            var childGoals = _service.GetChildGoals(currentUser, goalId, true);
+            var childGoals = _service.GetChildGoals(currentUser, parentGoalId, true);
             return Ok(childGoals);
         }
 
@@ -322,7 +322,7 @@ namespace WorkflowService.Controllers
         /// Получение родительской задачи
         /// </summary>
         /// <param name="goalId">Идентификатор задачи</param>
-        /// <returns></returns>
+        /// <returns>Родительская задача</returns>
         [HttpGet("{goalId}")]
         public async Task<ActionResult<VmGoal>> GetParentGoal(int goalId)
         {

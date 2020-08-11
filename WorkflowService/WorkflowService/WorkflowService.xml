@@ -183,15 +183,15 @@
             <summary>
             Получение дочерних задач
             </summary>
-            <param name="goalId"></param>
-            <returns></returns>
+            <param name="parentGoalId">Идентификатор родительской задачи</param>
+            <returns>Коллекция дочерних задач</returns>
         </member>
         <member name="M:WorkflowService.Controllers.GoalsController.GetParentGoal(System.Int32)">
             <summary>
             Получение родительской задачи
             </summary>
             <param name="goalId">Идентификатор задачи</param>
-            <returns></returns>
+            <returns>Родительская задача</returns>
         </member>
         <member name="M:WorkflowService.Controllers.GoalsController.AddChildGoals(System.Int32,System.Collections.Generic.IEnumerable{System.Int32})">
             <summary>
