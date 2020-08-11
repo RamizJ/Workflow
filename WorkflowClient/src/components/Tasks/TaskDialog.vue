@@ -81,8 +81,8 @@
         el-tooltip(content="Описание" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
           el-button(v-if="!form.description" type="text" @click="descriptionVisible = !descriptionVisible" circle)
             feather(type="align-left")
-        //el-tooltip(content="Чек-лист" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-          el-button(v-if="!form.childGoalIds" type="text" @click="checklistVisible = !checklistVisible" circle)
+        el-tooltip(content="Чек-лист" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(v-if="!form.isChildsExist" type="text" @click="checklistVisible = !checklistVisible" circle)
             feather(type="check-square")
         el-tooltip(content="Приоритет" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
           el-button(v-if="!form.priority" type="text" @click="priorityVisible = !priorityVisible" circle)
@@ -127,7 +127,8 @@ export default {
         ownerFio: null,
         performerId: null,
         performerFio: null,
-        observerIds: []
+        observerIds: [],
+        isChildsExist: false
       },
       checklistNewItem: '',
       checklist: [],
@@ -206,7 +207,7 @@ export default {
       });
     },
     async loadChecklist() {
-      if (!this.form.childGoalIds) return;
+      if (!this.form.isChildsExist) return;
       const childTasks = await this.fetchChildTasks(this.form.id);
       this.checklist = childTasks.map(task => {
         task.checked = task.state === 'Succeed';
@@ -227,6 +228,7 @@ export default {
     },
     async saveChecklist() {
       if (!this.checklist.length) return;
+      this.form.isChildsExist = true;
       const parentId = this.isEdit ? this.form.id : this.task.id;
       const tasks = this.checklist.filter(item => !item.id);
       await this.addChildTasks({ parentId, tasks });

@@ -21,7 +21,7 @@ export default {
   actions: {
     async fetchTasks({ commit }, params) {
       const response = await tasksAPI.getPage(params);
-      const tasks = response.data;
+      const tasks = response.data.filter(task => !task.parentGoalId);
       commit('setTasks', tasks);
       return tasks;
     },
