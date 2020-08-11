@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Internal;
-using Workflow.DAL.Models;
+﻿using Workflow.DAL.Models;
 using Workflow.VM.ViewModelConverters.Absract;
 using Workflow.VM.ViewModels;
 
@@ -42,6 +41,7 @@ namespace Workflow.VM.ViewModelConverters
                 Id = model.Id,
                 ParentGoalId = model.ParentGoalId,
                 OwnerId = model.OwnerId,
+                CreationDate = model.CreationDate,
                 Title = model.Title,
                 Description = model.Description,
                 GoalNumber = model.GoalNumber,
@@ -54,7 +54,7 @@ namespace Workflow.VM.ViewModelConverters
                 ExpectedCompletedDate = model.ExpectedCompletedDate,
                 EstimatedPerformingTime = model.EstimatedPerformingTime,
                 IsChildsExist = model.ChildGoals.Any(),
-                IsRemoved = model.IsRemoved
+                IsRemoved = model.IsRemoved,
             };
         }
     }
