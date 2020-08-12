@@ -37,7 +37,6 @@ export default {
         { value: 'middleName', label: 'По отчеству' },
         { value: 'userName', label: 'По логину' },
         { value: 'email', label: 'По почте' },
-        { value: 'phone', label: 'По номеру телефона' },
         { value: 'position', label: 'По должности' }
       ]
     };
