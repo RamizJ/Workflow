@@ -1,4 +1,5 @@
-﻿using Workflow.DAL.Models;
+﻿using System.Linq;
+using Workflow.DAL.Models;
 using Workflow.VM.ViewModelConverters.Absract;
 using Workflow.VM.ViewModels;
 
@@ -40,7 +41,6 @@ namespace Workflow.VM.ViewModelConverters
             {
                 Id = model.Id,
                 ParentGoalId = model.ParentGoalId,
-                //ChildGoals = model.ChildGoals?.Select(x => x.Id).ToList(),
                 OwnerId = model.OwnerId,
                 CreationDate = model.CreationDate,
                 Title = model.Title,
@@ -48,14 +48,14 @@ namespace Workflow.VM.ViewModelConverters
                 GoalNumber = model.GoalNumber,
                 PerformerId = model.PerformerId,
                 PerformerFio = model.Performer?.Fio,
-                //Observers = model.Observers?.Select(x => x.ObserverId).ToList(),
                 ProjectId = model.ProjectId,
                 ProjectName = model.Project?.Name,
                 State = model.State,
                 Priority = model.Priority,
                 ExpectedCompletedDate = model.ExpectedCompletedDate,
                 EstimatedPerformingTime = model.EstimatedPerformingTime,
-                IsRemoved = model.IsRemoved
+                IsChildsExist = model.ChildGoals.Any(),
+                IsRemoved = model.IsRemoved,
             };
         }
     }
