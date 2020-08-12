@@ -35,10 +35,13 @@
                   @keyup.enter.native="addToChecklist")
                   el-button(slot="prefix" type="text" size="mini" @click="addToChecklist")
                     feather(type="plus" size="18")
-                el-checkbox(
+                div.checklist__item(
                   v-for="(checklistItem, index) in checklist"
                   :key="index"
-                  v-model="checklist[index].checked") {{ checklistItem.title }}
+                  :class="checklist[index].checked ? 'completed' : 'new'")
+                  el-checkbox(v-model="checklist[index].checked")
+                  el-input(v-model="checklist[index].title" @keyup.delete.native="onChecklistItemDelete(index)")
+
         transition(name="fade")
           el-col(v-if="performerVisible || form.performerId" :span="7")
             el-form-item(prop="performerId")
@@ -184,6 +187,7 @@ export default {
       createItem: 'tasks/createTask',
       updateItem: 'tasks/updateTask',
       updateTasks: 'tasks/updateTasks',
+      deleteTasks: 'tasks/deleteTasks',
       fetchChildTasks: 'tasks/fetchChildTasks',
       addChildTasks: 'tasks/addChildTasks',
       fetchAttachments: 'tasks/fetchAttachments',
@@ -234,6 +238,12 @@ export default {
       });
       this.checklistNewItem = '';
     },
+    onChecklistItemDelete(itemIndex) {
+      if (this.checklist[itemIndex].title === null)
+        this.checklist.splice(itemIndex, 1)
+      if (this.checklist[itemIndex] && this.checklist[itemIndex].title === '')
+        this.checklist[itemIndex].title = null;
+    },
     async saveChecklist() {
       if (!this.checklist.length) return;
       this.loading = true;
@@ -251,10 +261,23 @@ export default {
       if (tasksToCreate.length)
         await this.addChildTasks({ parentId, tasks: tasksToCreate });
 
+      const removedItems = this.getRemovedChecklistItems(previousChecklist, currentChecklist);
+      console.log(removedItems)
+      await this.deleteTasks(removedItems.map(item => item.id));
+
       const changedItems = this.getChangedChecklistItems(previousChecklist, currentChecklist);
       await this.updateTasks(changedItems);
 
       this.loading = false;
+    },
+    getRemovedChecklistItems(previousChecklist, currentChecklist) {
+      let removedItems = [];
+      for (let previousItem of previousChecklist) {
+        const existingItem = currentChecklist.find(currentItem => currentItem.id === previousItem.id)
+        if (!existingItem)
+          removedItems.push(previousItem);
+      }
+      return removedItems;
     },
     getChangedChecklistItems(previousChecklist, currentChecklist) {
       let changedItems = [];
@@ -262,7 +285,7 @@ export default {
         const changedItem = currentChecklist.find(currentItem =>
           currentItem.id &&
           (currentItem.id === previousItem.id) &&
-          (currentItem.checked !== previousItem.checked)
+          ((currentItem.checked !== previousItem.checked) || (currentItem.title !== previousItem.title))
         )
         if (changedItem)
           changedItems.push(changedItem);
@@ -296,6 +319,18 @@ export default {
 
 <style lang="scss">
 .checklist {
+  &__item {
+    display: flex;
+    .el-input__inner {
+      padding-left: 9px;
+    }
+    &.completed .el-input__inner {
+      text-decoration: line-through;
+    }
+    &:last-child {
+      margin-bottom: 2px;
+    }
+  }
   .el-input__inner,
   .el-input__inner:hover,
   .el-input__inner:focus {
@@ -315,7 +350,7 @@ export default {
     color: var(--text);
     margin-left: 2px;
     font-weight: 400;
-    width: 100%;
+    width: 14px;
   }
 }
 </style>
