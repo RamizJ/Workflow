@@ -26,7 +26,7 @@
             el-form-item(prop="description")
               el-input(v-model="form.description" :autosize="{ minRows: 2 }" type="textarea" placeholder="Описание")
         transition(name="fade")
-          el-col(v-if="checklistVisible || form.childGoalIds" :span="24")
+          el-col(v-if="checklistVisible || form.isChildsExist" :span="24")
             el-form-item
               el-card.checklist(shadow="never" :body-style="{ padding: '0px 10px' }")
                 el-input(
@@ -142,6 +142,7 @@ export default {
         { value: 'Normal', label: 'Средний приоритет' },
         { value: 'Low', label: 'Низкий приоритет' }
       ],
+      childTasks: [],
       attachmentList: [],
       descriptionVisible: null,
       checklistVisible: null,
@@ -182,6 +183,7 @@ export default {
       fetchItem: 'tasks/fetchTask',
       createItem: 'tasks/createTask',
       updateItem: 'tasks/updateTask',
+      updateTasks: 'tasks/updateTasks',
       fetchChildTasks: 'tasks/fetchChildTasks',
       addChildTasks: 'tasks/addChildTasks',
       fetchAttachments: 'tasks/fetchAttachments',
@@ -208,11 +210,17 @@ export default {
     },
     async loadChecklist() {
       if (!this.form.isChildsExist) return;
+      this.loading = true;
       const childTasks = await this.fetchChildTasks(this.form.id);
+      this.childTasks = Array.from(childTasks.map(task => {
+        task.checked = task.state === 'Succeed';
+        return { ...task };
+      }));
       this.checklist = childTasks.map(task => {
         task.checked = task.state === 'Succeed';
         return task;
       });
+      this.loading = false;
     },
     async addToChecklist() {
       if (!this.checklistNewItem) return;
@@ -228,10 +236,38 @@ export default {
     },
     async saveChecklist() {
       if (!this.checklist.length) return;
+      this.loading = true;
+
+      const previousChecklist = this.childTasks;
+      const currentChecklist = this.checklist.map(item => {
+        item.state = item.checked ? 'Succeed' : 'New';
+        return item;
+      });
+
       this.form.isChildsExist = true;
+
       const parentId = this.isEdit ? this.form.id : this.task.id;
-      const tasks = this.checklist.filter(item => !item.id);
-      await this.addChildTasks({ parentId, tasks });
+      const tasksToCreate = currentChecklist.filter(item => !item.id)
+      if (tasksToCreate.length)
+        await this.addChildTasks({ parentId, tasks: tasksToCreate });
+
+      const changedItems = this.getChangedChecklistItems(previousChecklist, currentChecklist);
+      await this.updateTasks(changedItems);
+
+      this.loading = false;
+    },
+    getChangedChecklistItems(previousChecklist, currentChecklist) {
+      let changedItems = [];
+      for (let previousItem of previousChecklist) {
+        const changedItem = currentChecklist.find(currentItem =>
+          currentItem.id &&
+          (currentItem.id === previousItem.id) &&
+          (currentItem.checked !== previousItem.checked)
+        )
+        if (changedItem)
+          changedItems.push(changedItem);
+      }
+      return changedItems;
     },
     validateDate(date) {
       const currentDate = new Date();
@@ -276,6 +312,7 @@ export default {
     padding: 0;
   }
   .el-checkbox {
+    color: var(--text);
     margin-left: 2px;
     font-weight: 400;
     width: 100%;

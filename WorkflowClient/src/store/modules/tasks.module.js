@@ -59,6 +59,7 @@ export default {
       commit('setTask', response.data);
     },
     async updateTasks({ commit }, tasks) {
+      if (!tasks.length) return;
       const response = await tasksAPI.updateRange(tasks);
       commit('setTasks', response.data);
     },
