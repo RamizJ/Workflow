@@ -81,13 +81,11 @@ export default {
       projectItem: {
         name: '',
         description: '',
-        tags: [],
         ownerId: null,
         ownerFio: null,
-        teamId: null,
-        teamName: null,
         groupId: null,
-        groupName: null
+        groupName: null,
+        teamIds: []
       },
       dialogProjectVisible: false,
       dialogTaskVisible: false,
@@ -144,7 +142,8 @@ export default {
     },
     async onDescriptionChange(value) {
       this.projectItem.description = value;
-      await this.onProjectUpdate();
+      this.projectItem.teamIds = this.project.teamIds;
+      await this.updateProject(this.projectItem);
     },
     async onProjectDelete() {
       await this.deleteProject(this.projectItem.id);

@@ -125,8 +125,7 @@ export default {
         teamIds
       };
       const response = await projectsAPI.update(newProject);
-      const updatedProject = response.data;
-      commit('setProject', updatedProject);
+      return response.data;
     },
     async updateProjectTeams({ commit }, { projectId, teamIds }) {
       for (let teamId in teamIds) {
