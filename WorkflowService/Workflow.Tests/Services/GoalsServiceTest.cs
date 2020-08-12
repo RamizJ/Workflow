@@ -9,6 +9,7 @@ using NUnit.Framework;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
+using Workflow.Services.Exceptions;
 using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
@@ -260,7 +261,7 @@ namespace Workflow.Tests.Services
             };
 
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Create(_currentUser, vmGoal));
+            Assert.ThrowsAsync<HttpResponseException>(async () => await _service.Create(_currentUser, vmGoal));
         }
 
 
@@ -313,7 +314,7 @@ namespace Workflow.Tests.Services
             //Assert
             Assert.AreEqual(title, goal.Title);
             Assert.AreEqual(description, goal.Description);
-            Assert.AreEqual(1, goal.ProjectId);
+            Assert.AreEqual(projectId, goal.ProjectId);
             Assert.AreEqual(priority, goal.Priority);
             Assert.AreEqual(state, goal.State);
             Assert.IsFalse(goal.IsRemoved);
@@ -325,34 +326,25 @@ namespace Workflow.Tests.Services
             //Arrange
             string updatedName = "UpdatedName";
             string updatedDescription = "UpdatedDescription";
-            var vmGoals = _testData.Goals.Take(1).Select(t =>
-            {
-                t.Title = updatedName;
-                t.Description = updatedDescription;
-                return _vmConverter.ToViewModel(t);
-            }).ToArray();
+            var vmGoal = _vmConverter.ToViewModel(_testData.Goals.First());
+            vmGoal.Title = updatedName;
+            vmGoal.Description = updatedDescription;
             var observerIds = _testData.Users.Skip(4).Take(6).Select(u => u.Id).ToList();
-            var childGoalIds = _testData.Goals.Skip(6).Take(4).Select(g => g.Id).ToList();
-
-            var vmGoalForms = vmGoals
-                .Select(vm => new VmGoalForm(vm, observerIds, childGoalIds));
+            var childGoalIds = _testData.Goals.Skip(5).Take(5).Select(g => g.Id).ToList();
+            var vmGoalForm = new VmGoalForm(vmGoal, observerIds, childGoalIds);
 
             //Act
-            await _service.UpdateByFormRange(_currentUser, vmGoalForms);
-            var goals = await _dataContext.Goals
+            await _service.UpdateByFormRange(_currentUser, new[] {vmGoalForm});
+            var goal = _dataContext.Goals
                 .Include(g => g.ChildGoals)
                 .Include(g => g.Observers)
-                .Where(g => vmGoals.Select(vm => vm.Id).Any(vmId => vmId == g.Id))
-                .ToArrayAsync();
+                .First(g => g.Id == vmGoal.Id);
 
             //Assert
-            foreach (var goal in goals)
-            {
-                Assert.AreEqual(updatedName, goal.Title);
-                Assert.AreEqual(updatedDescription, goal.Description);
-                Assert.AreEqual(observerIds.Count, goal.Observers.Count);
-                Assert.AreEqual(childGoalIds.Count, goal.ChildGoals.Count);
-            }
+            Assert.AreEqual(updatedName, goal.Title);
+            Assert.AreEqual(updatedDescription, goal.Description);
+            Assert.AreEqual(observerIds.Count, goal.Observers.Count);
+            Assert.AreEqual(8, goal.ChildGoals.Count);
         }
 
         [Test]
@@ -457,6 +449,75 @@ namespace Workflow.Tests.Services
 
             //Assert
             Assert.AreEqual(0, delta, 10);
+        }
+
+        [Test]
+        public async Task IsChildsExists()
+        {
+            //Arrange
+            var serviceProvider = ContextHelper.Initialize(_dbConnection, false);
+            var context = serviceProvider.GetService<DataContext>();
+
+            var firstGoal = _testData.Goals.First();
+            var lastGoal = _testData.Goals.Last();
+
+            lastGoal.ParentGoalId = firstGoal.Id;
+
+            context.Update(lastGoal);
+            await context.SaveChangesAsync();
+
+            //Act
+            var page = await _service.GetPage(_currentUser, null, new PageOptions
+            {
+                PageNumber = 0,
+                PageSize = int.MaxValue
+            });
+            var firstPageGoal = page.First();
+
+            //Assert
+            Assert.IsTrue(firstPageGoal.IsChildsExist);
+        }
+
+        [Test]
+        public async Task AddChildGoalTest()
+        {
+            //Arrange
+            var parentGoal = _testData.Goals.First();
+            var childGoal = _testData.Goals.ElementAt(1);
+
+            //Act
+            await _service.AddChildGoals(_currentUser, parentGoal.Id, new []{ childGoal.Id });
+            var resultChildGoal = _dataContext.Goals
+                .First(x => x.Id == childGoal.Id);
+
+            //Assert
+            Assert.AreEqual(parentGoal.Id, resultChildGoal.ParentGoalId);
+        }
+
+        [TestCase(1, 3)]
+        [TestCase(2, 5)]
+        public async Task GetChildGoalTest(int parentGoalId, int expectedChildsCount)
+        {
+            //Arrange
+
+            //Act
+            var childGoals = await _service.GetChildGoals(_currentUser, parentGoalId, true);
+
+            //Assert
+            Assert.AreEqual(expectedChildsCount, childGoals.Count());
+        }
+
+        [TestCase(4, 1)]
+        [TestCase(6, 2)]
+        public async Task GetParentGoalTest(int goalId, int expectedParentId)
+        {
+            //Arrange
+
+            //Act
+            var parentGoal = await _service.GetParentGoal(_currentUser, goalId);
+
+            //Assert
+            Assert.AreEqual(expectedParentId, parentGoal?.Id);
         }
 
 

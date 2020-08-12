@@ -105,6 +105,9 @@ namespace Workflow.Tests
                 .With(x => x.Priority = GoalPriority.High)
                 .TheFirst(9).With(x => x.IsRemoved = false)
                 .TheNext(1).With(x => x.IsRemoved = true)
+                .TheFirst(2).With(x => x.ParentGoalId = null)
+                .TheNext(3).With(x => x.ParentGoalId = 1)
+                .TheNext(5).With(x => x.ParentGoalId = 2)
                 .Build().ToList();
 
             foreach (var user in Users)

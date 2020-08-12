@@ -308,13 +308,13 @@ namespace WorkflowService.Controllers
         /// <summary>
         /// Получение дочерних задач
         /// </summary>
-        /// <param name="goalId"></param>
-        /// <returns></returns>
-        [HttpGet("{goalId}")]
-        public async Task<ActionResult<IEnumerable<VmGoal>>> GetChildGoals(int goalId)
+        /// <param name="parentGoalId">Идентификатор родительской задачи</param>
+        /// <returns>Коллекция дочерних задач</returns>
+        [HttpGet("{parentGoalId}")]
+        public async Task<ActionResult<IEnumerable<VmGoal>>> GetChildGoals(int parentGoalId)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
-            var childGoals = _service.GetChildGoals(currentUser, goalId, true);
+            var childGoals = await _service.GetChildGoals(currentUser, parentGoalId, true);
             return Ok(childGoals);
         }
 
@@ -322,12 +322,12 @@ namespace WorkflowService.Controllers
         /// Получение родительской задачи
         /// </summary>
         /// <param name="goalId">Идентификатор задачи</param>
-        /// <returns></returns>
+        /// <returns>Родительская задача</returns>
         [HttpGet("{goalId}")]
         public async Task<ActionResult<VmGoal>> GetParentGoal(int goalId)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
-            var parentGoal = _service.GetParentGoal(currentUser, goalId);
+            var parentGoal = await _service.GetParentGoal(currentUser, goalId);
             return Ok(parentGoal);
         }
 
@@ -338,12 +338,12 @@ namespace WorkflowService.Controllers
         /// <param name="childGoalIds">Идентификаторы дочерних задач</param>
         /// <returns></returns>
         [HttpPatch("{parentGoalId}")]
-        public async Task<ActionResult<VmGoal>> AddChildGoals(int parentGoalId, 
+        public async Task<IActionResult> AddChildGoals(int parentGoalId, 
             [FromBody] IEnumerable<int> childGoalIds)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
-            var parentGoal = _service.AddChildGoals(currentUser, parentGoalId, childGoalIds);
-            return Ok(parentGoal);
+            await _service.AddChildGoals(currentUser, parentGoalId, childGoalIds);
+            return NoContent();
         }
 
 

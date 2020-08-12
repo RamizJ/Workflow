@@ -31,6 +31,8 @@ namespace Workflow.VM.ViewModels
         public string PerformerFio { get; set; }
 
         public bool IsRemoved { get; set; }
+
+        public bool IsChildsExist { get; set; }
     }
 
     public class VmGoalForm

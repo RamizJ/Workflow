@@ -57,6 +57,14 @@ namespace Workflow.Services
         }
 
         /// <inheritdoc />
+        public async Task AddRange(int teamId, IEnumerable<string> userIds)
+        {
+            await _dataContext.TeamUsers.AddRangeAsync(
+                userIds.Select(uId => new TeamUser(teamId, uId)));
+            await _dataContext.SaveChangesAsync();
+        }
+
+        /// <inheritdoc />
         public async Task Remove(int teamId, string userId)
         {
             _dataContext.TeamUsers.Remove(new TeamUser(teamId, userId));
