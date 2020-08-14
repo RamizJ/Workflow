@@ -26,7 +26,7 @@
             el-form-item(prop="description")
               el-input(v-model="form.description" :autosize="{ minRows: 2 }" type="textarea" placeholder="Описание")
         transition(name="fade")
-          el-col(v-if="checklistVisible || form.isChildsExist" :span="24")
+          el-col(v-if="checklistVisible || checklist.length" :span="24")
             el-form-item
               el-card.checklist(shadow="never" :body-style="{ padding: '0px 10px' }")
                 el-input(
@@ -85,7 +85,7 @@
           el-button(v-if="!form.description" type="text" @click="descriptionVisible = !descriptionVisible" circle)
             feather(type="align-left")
         el-tooltip(content="Чек-лист" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-          el-button(v-if="!form.isChildsExist" type="text" @click="checklistVisible = !checklistVisible" circle)
+          el-button(v-if="!checklist.length" type="text" @click="checklistVisible = !checklistVisible" circle)
             feather(type="check-square")
         el-tooltip(content="Приоритет" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
           el-button(v-if="!form.priority" type="text" @click="priorityVisible = !priorityVisible" circle)
@@ -262,7 +262,6 @@ export default {
         await this.addChildTasks({ parentId, tasks: tasksToCreate });
 
       const removedItems = this.getRemovedChecklistItems(previousChecklist, currentChecklist);
-      console.log(removedItems)
       await this.deleteTasks(removedItems.map(item => item.id));
 
       const changedItems = this.getChangedChecklistItems(previousChecklist, currentChecklist);
