@@ -128,11 +128,20 @@ export default {
       return response.data;
     },
     async updateProjectTeams({ commit }, { projectId, teamIds }) {
-      for (let teamId in teamIds) {
+      for (let teamId of teamIds) {
         await projectsAPI.addTeam(projectId, teamId);
       }
-      // const response = await projectsAPI.addTeam(projectId, teamIds);
-      // const projectTeams = response.data;
+    },
+    async addTeam({ commit }, { projectId, teamId }) {
+      await projectsAPI.addTeam(teamId, projectId);
+    },
+    async removeProjectTeam({ commit }, { projectId, teamId }) {
+      await projectsAPI.removeTeam(teamId, projectId);
+    },
+    async removeProjectTeams({ commit }, { projectId, teamIds }) {
+      for (let teamId of teamIds) {
+        await projectsAPI.removeTeam(teamId, projectId);
+      }
     },
     async deleteProject({ commit }, id) {
       const response = await projectsAPI.delete(id);
