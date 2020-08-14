@@ -7,7 +7,7 @@
           el-form-item
             el-select(
               ref="input"
-              v-model="form.userId"
+              v-model="form.teamId"
               placeholder="Найти команду..."
               :remote-method="searchTeams"
               filterable remote clearable default-first-option)
@@ -76,7 +76,7 @@
       }),
       async submit() {
         const projectId = this.$route.params.projectId;
-        const teamId = this.form.teamId.trim();
+        const teamId = this.form.teamId;
         if (teamId) {
           this.loading = true;
           await this.addTeam({ projectId, teamId });

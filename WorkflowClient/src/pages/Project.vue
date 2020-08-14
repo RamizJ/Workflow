@@ -123,9 +123,7 @@ export default {
       else this.dialogTaskVisible = true;
     },
     async onTeamAdd(e) {
-      if (this.$refs.projectTeams)
-        this.$refs.projectTeams.$refs.items.onItemCreate();
-      else this.dialogTeamVisible = true;
+      this.dialogTeamVisible = true;
     },
     async onProjectEdit(e) {
       this.dialogProjectVisible = true;
