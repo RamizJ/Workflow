@@ -79,8 +79,8 @@ export default {
       });
     },
     async sendForm() {
-      const payload = { ...this.form };
       this.loading = true;
+      const payload = { ...this.form };
       if (this.isEdit) await this.updateItem(payload);
       else await this.createItem(payload);
       this.loading = false;

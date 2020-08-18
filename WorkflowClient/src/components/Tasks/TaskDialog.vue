@@ -26,7 +26,7 @@
             el-form-item(prop="description")
               el-input(v-model="form.description" :autosize="{ minRows: 2 }" type="textarea" placeholder="Описание")
         transition(name="fade")
-          el-col(v-if="checklistVisible || form.childGoalIds" :span="24")
+          el-col(v-if="checklistVisible || checklist.length" :span="24")
             el-form-item
               el-card.checklist(shadow="never" :body-style="{ padding: '0px 10px' }")
                 el-input(
@@ -35,10 +35,13 @@
                   @keyup.enter.native="addToChecklist")
                   el-button(slot="prefix" type="text" size="mini" @click="addToChecklist")
                     feather(type="plus" size="18")
-                el-checkbox(
+                div.checklist__item(
                   v-for="(checklistItem, index) in checklist"
                   :key="index"
-                  v-model="checklist[index].checked") {{ checklistItem.title }}
+                  :class="checklist[index].checked ? 'completed' : 'new'")
+                  el-checkbox(v-model="checklist[index].checked")
+                  el-input(v-model="checklist[index].title" @keyup.delete.native="onChecklistItemDelete(index)")
+
         transition(name="fade")
           el-col(v-if="performerVisible || form.performerId" :span="7")
             el-form-item(prop="performerId")
@@ -81,8 +84,8 @@
         el-tooltip(content="Описание" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
           el-button(v-if="!form.description" type="text" @click="descriptionVisible = !descriptionVisible" circle)
             feather(type="align-left")
-        //el-tooltip(content="Чек-лист" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-          el-button(v-if="!form.childGoalIds" type="text" @click="checklistVisible = !checklistVisible" circle)
+        el-tooltip(content="Чек-лист" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
+          el-button(v-if="!checklist.length" type="text" @click="checklistVisible = !checklistVisible" circle)
             feather(type="check-square")
         el-tooltip(content="Приоритет" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
           el-button(v-if="!form.priority" type="text" @click="priorityVisible = !priorityVisible" circle)
@@ -127,7 +130,8 @@ export default {
         ownerFio: null,
         performerId: null,
         performerFio: null,
-        observerIds: []
+        observerIds: [],
+        isChildsExist: false
       },
       checklistNewItem: '',
       checklist: [],
@@ -141,6 +145,7 @@ export default {
         { value: 'Normal', label: 'Средний приоритет' },
         { value: 'Low', label: 'Низкий приоритет' }
       ],
+      childTasks: [],
       attachmentList: [],
       descriptionVisible: null,
       checklistVisible: null,
@@ -181,6 +186,8 @@ export default {
       fetchItem: 'tasks/fetchTask',
       createItem: 'tasks/createTask',
       updateItem: 'tasks/updateTask',
+      updateTasks: 'tasks/updateTasks',
+      deleteTasks: 'tasks/deleteTasks',
       fetchChildTasks: 'tasks/fetchChildTasks',
       addChildTasks: 'tasks/addChildTasks',
       fetchAttachments: 'tasks/fetchAttachments',
@@ -206,12 +213,18 @@ export default {
       });
     },
     async loadChecklist() {
-      if (!this.form.childGoalIds) return;
+      if (!this.form.isChildsExist) return;
+      this.loading = true;
       const childTasks = await this.fetchChildTasks(this.form.id);
+      this.childTasks = Array.from(childTasks.map(task => {
+        task.checked = task.state === 'Succeed';
+        return { ...task };
+      }));
       this.checklist = childTasks.map(task => {
         task.checked = task.state === 'Succeed';
         return task;
       });
+      this.loading = false;
     },
     async addToChecklist() {
       if (!this.checklistNewItem) return;
@@ -225,11 +238,58 @@ export default {
       });
       this.checklistNewItem = '';
     },
+    onChecklistItemDelete(itemIndex) {
+      if (this.checklist[itemIndex].title === null)
+        this.checklist.splice(itemIndex, 1)
+      if (this.checklist[itemIndex] && this.checklist[itemIndex].title === '')
+        this.checklist[itemIndex].title = null;
+    },
     async saveChecklist() {
       if (!this.checklist.length) return;
+      this.loading = true;
+
+      const previousChecklist = this.childTasks;
+      const currentChecklist = this.checklist.map(item => {
+        item.state = item.checked ? 'Succeed' : 'New';
+        return item;
+      });
+
+      this.form.isChildsExist = true;
+
       const parentId = this.isEdit ? this.form.id : this.task.id;
-      const tasks = this.checklist.filter(item => !item.id);
-      await this.addChildTasks({ parentId, tasks });
+      const tasksToCreate = currentChecklist.filter(item => !item.id)
+      if (tasksToCreate.length)
+        await this.addChildTasks({ parentId, tasks: tasksToCreate });
+
+      const removedItems = this.getRemovedChecklistItems(previousChecklist, currentChecklist);
+      await this.deleteTasks(removedItems.map(item => item.id));
+
+      const changedItems = this.getChangedChecklistItems(previousChecklist, currentChecklist);
+      await this.updateTasks(changedItems);
+
+      this.loading = false;
+    },
+    getRemovedChecklistItems(previousChecklist, currentChecklist) {
+      let removedItems = [];
+      for (let previousItem of previousChecklist) {
+        const existingItem = currentChecklist.find(currentItem => currentItem.id === previousItem.id)
+        if (!existingItem)
+          removedItems.push(previousItem);
+      }
+      return removedItems;
+    },
+    getChangedChecklistItems(previousChecklist, currentChecklist) {
+      let changedItems = [];
+      for (let previousItem of previousChecklist) {
+        const changedItem = currentChecklist.find(currentItem =>
+          currentItem.id &&
+          (currentItem.id === previousItem.id) &&
+          ((currentItem.checked !== previousItem.checked) || (currentItem.title !== previousItem.title))
+        )
+        if (changedItem)
+          changedItems.push(changedItem);
+      }
+      return changedItems;
     },
     validateDate(date) {
       const currentDate = new Date();
@@ -258,6 +318,18 @@ export default {
 
 <style lang="scss">
 .checklist {
+  &__item {
+    display: flex;
+    .el-input__inner {
+      padding-left: 9px;
+    }
+    &.completed .el-input__inner {
+      text-decoration: line-through;
+    }
+    &:last-child {
+      margin-bottom: 2px;
+    }
+  }
   .el-input__inner,
   .el-input__inner:hover,
   .el-input__inner:focus {
@@ -274,9 +346,10 @@ export default {
     padding: 0;
   }
   .el-checkbox {
+    color: var(--text);
     margin-left: 2px;
     font-weight: 400;
-    width: 100%;
+    width: 14px;
   }
 }
 </style>

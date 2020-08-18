@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EFCore.BulkExtensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
@@ -45,7 +44,9 @@ namespace Workflow.Services
             return _vmConverter.ToViewModel(goal);
         }
 
-        public async Task<IEnumerable<VmGoal>> GetPage(ApplicationUser currentUser, int? projectId, PageOptions pageOptions)
+        /// <inheritdoc />
+        public async Task<IEnumerable<VmGoal>> GetPage(ApplicationUser currentUser, 
+            int? projectId, PageOptions pageOptions)
         {
             if (currentUser == null)
                 throw new ArgumentNullException(nameof(currentUser));
@@ -55,15 +56,16 @@ namespace Workflow.Services
                     $"Parameter '{nameof(pageOptions)}' cannot be null");
 
             var query = await GetQuery(currentUser, pageOptions.WithRemoved);
-            query = query.Where(x => projectId == null || x.ProjectId == projectId);
+            query = query.Where(x => (projectId == null || x.ProjectId == projectId)
+                                     && x.ParentGoalId == null);
             query = Filter(pageOptions.Filter, query);
             query = FilterByFields(pageOptions.FilterFields, query);
             query = SortByFields(pageOptions.SortFields, query);
+            var vmGoals = SelectViews(query);
 
-            return await query
+            return await vmGoals
                 .Skip(pageOptions.PageNumber * pageOptions.PageSize)
                 .Take(pageOptions.PageSize)
-                .Select(g => _vmConverter.ToViewModel(g))
                 .ToArrayAsync();
         }
 
@@ -74,9 +76,10 @@ namespace Workflow.Services
                 return null;
 
             var query = await GetQuery(currentUser, true);
-            return await query.Where(x => ids.Any(id => x.Id == id))
-                .Select(x => _vmConverter.ToViewModel(x))
-                .ToArrayAsync();
+            query = query.Where(x => ids.Any(id => x.Id == id));
+            var views = SelectViews(query);
+
+            return await views.ToArrayAsync();
         }
 
         /// <inheritdoc />
@@ -107,14 +110,11 @@ namespace Workflow.Services
                 throw new HttpResponseException(BadRequest,
                     $"Parameter '{nameof(goalForm)}' cannot be null");
 
-            var childGoals = await GetChildGoals(currentUser, goalForm);
             var model = await CreateGoal(currentUser, goalForm.Goal, goal =>
             {
                 goal.Observers = goalForm.ObserverIds?
                     .Select(observerId => new GoalObserver(goal.Id, observerId))
                     .ToList();
-
-                goal.ChildGoals = childGoals;
             });
             return _vmConverter.ToViewModel(model);
         }
@@ -122,7 +122,7 @@ namespace Workflow.Services
         /// <inheritdoc />
         public async Task Update(ApplicationUser currentUser, VmGoal goal)
         {
-            await UpdateGoals(currentUser, new[] {goal});
+            await UpdateGoals(new[] {goal});
         }
 
         public async Task UpdateByForm(ApplicationUser currentUser, VmGoalForm goalForm)
@@ -131,21 +131,21 @@ namespace Workflow.Services
                 throw new HttpResponseException(BadRequest,
                     $"Parameter '{nameof(goalForm)}' cannot be null");
 
-            var childGoals = await GetChildGoals(currentUser, goalForm);
-            await UpdateGoals(currentUser, new[] { goalForm.Goal }, goal =>
+            //var childGoals = await GetChildsPage(currentUser, goalForm);
+            await UpdateGoals(new[] { goalForm.Goal }, goal =>
             {
                 goal.Observers = goalForm.ObserverIds?
                     .Select(observerId => new GoalObserver(goal.Id, observerId))
                     .ToList();
 
-                goal.ChildGoals = childGoals;
+                //goal.ChildGoals = childGoals;
             });
         }
 
         /// <inheritdoc />
         public async Task UpdateRange(ApplicationUser currentUser, IEnumerable<VmGoal> goals)
         {
-            await UpdateGoals(currentUser, goals?.ToArray());
+            await UpdateGoals(goals?.ToArray());
         }
 
         /// <inheritdoc />
@@ -157,13 +157,12 @@ namespace Workflow.Services
 
             var forms = goalForms.ToArray();
             var goals = forms.Select(f => f.Goal).ToArray();
-            await UpdateGoals(currentUser, goals, async goal =>
+            await UpdateGoals(goals, goal =>
             {
                 var form = forms.First(gf => gf.Goal.Id == goal.Id);
                 goal.Observers = form.ObserverIds?
                     .Select(observerId => new GoalObserver(goal.Id, observerId))
                     .ToList();
-                goal.ChildGoals = await GetChildGoals(currentUser, form);
             });
         }
 
@@ -187,18 +186,9 @@ namespace Workflow.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<VmGoal>> GetChildGoals(ApplicationUser currentUser, 
-            int goalId, bool withRemoved)
-        {
-            var query = await GetQuery(currentUser, withRemoved, true);
-            return query.Where(g => g.ParentGoalId == goalId)
-                .Select(g => _vmConverter.ToViewModel(g));
-        }
-
-        /// <inheritdoc />
         public async Task<VmGoal> GetParentGoal(ApplicationUser currentUser, int goalId)
         {
-            var query = await GetQuery(currentUser, true, true);
+            var query = await GetQuery(currentUser, true, false, true);
             var goal = query.FirstOrDefault(g => g.Id == goalId);
 
             if(goal == null)
@@ -208,16 +198,42 @@ namespace Workflow.Services
         }
 
         /// <inheritdoc />
+        public async Task<IEnumerable<VmGoal>> GetChildsPage(ApplicationUser currentUser, 
+            int parentGoalId, PageOptions pageOptions)
+        {
+            if (currentUser == null)
+                throw new ArgumentNullException(nameof(currentUser));
+
+            if (pageOptions == null)
+                throw new HttpResponseException(BadRequest,
+                    $"Parameter '{nameof(pageOptions)}' cannot be null");
+
+            var query = await GetQuery(currentUser, pageOptions.WithRemoved);
+            query = query.Where(x => x.ParentGoalId == parentGoalId);
+            query = Filter(pageOptions.Filter, query);
+            query = FilterByFields(pageOptions.FilterFields, query);
+            query = SortByFields(pageOptions.SortFields, query);
+            var vmGoals = SelectViews(query);
+
+            return await vmGoals
+                .Skip(pageOptions.PageNumber * pageOptions.PageSize)
+                .Take(pageOptions.PageSize)
+                .ToArrayAsync();
+        }
+
+        /// <inheritdoc />
         public async Task AddChildGoals(ApplicationUser currentUser, 
             int? parentGoalId, IEnumerable<int> childGoalIds)
         {
             var query = await GetQuery(currentUser, true, true);
             var childGoals = await query.Where(g => childGoalIds.Any(cId => cId == g.Id))
                 .ToArrayAsync();
+            var parentGoal = await query.FirstOrDefaultAsync(g => g.Id == parentGoalId);
 
             foreach (var childGoal in childGoals)
             {
                 childGoal.ParentGoalId = parentGoalId;
+                childGoal.ProjectId = parentGoal.ProjectId;
                 _dataContext.Entry(childGoal).State = EntityState.Modified;
             }
 
@@ -231,7 +247,10 @@ namespace Workflow.Services
             return goals.FirstOrDefault();
         }
 
-        private async Task<IQueryable<Goal>> GetQuery(ApplicationUser currentUser, bool withRemoved, bool withChildren = false)
+        private async Task<IQueryable<Goal>> GetQuery(ApplicationUser currentUser, 
+            bool withRemoved, 
+            bool withChildren = false,
+            bool withParent = false)
         {
             bool isAdmin = await _userManager.IsInRoleAsync(currentUser, RoleNames.ADMINISTRATOR_ROLE);
             var query = _dataContext.Goals.AsNoTracking()
@@ -239,19 +258,22 @@ namespace Workflow.Services
                 .Include(x => x.Observers)
                 .Include(x => x.Performer)
                 .Include(x => x.Project)
-                .Include(x => x.ParentGoal)
-                .Include(x => x.ChildGoals)
-                .Where(x => isAdmin
-                            || x.Project.OwnerId == currentUser.Id
-                            || x.Project.ProjectTeams
-                                .SelectMany(pt => pt.Team.TeamUsers)
-                                .Any(tu => tu.UserId == currentUser.Id));
-
-            if (!withRemoved)
-                query = query.Where(x => x.IsRemoved == false);
+                .AsQueryable();
 
             if (withChildren)
                 query = query.Include(g => g.ChildGoals);
+
+            if (withParent)
+                query = query.Include(g => g.ParentGoal);
+
+            query = query.Where(x => isAdmin
+                                     || x.Project.OwnerId == currentUser.Id
+                                     || x.Project.ProjectTeams
+                                         .SelectMany(pt => pt.Team.TeamUsers)
+                                         .Any(tu => tu.UserId == currentUser.Id));
+
+            if (!withRemoved)
+                query = query.Where(x => x.IsRemoved == false);
 
             return query;
         }
@@ -432,6 +454,33 @@ namespace Workflow.Services
             return query;
         }
 
+        private IQueryable<VmGoal> SelectViews(IQueryable<Goal> query)
+        {
+            var vmGoals = query.Select(goal => new VmGoal
+            {
+                Id = goal.Id,
+                ParentGoalId = goal.ParentGoalId,
+                OwnerId = goal.OwnerId,
+                CreationDate = goal.CreationDate,
+                Title = goal.Title,
+                Description = goal.Description,
+                GoalNumber = goal.GoalNumber,
+                PerformerId = goal.PerformerId,
+                PerformerFio = goal.Performer.LastName + " " +
+                               goal.Performer.FirstName + " " +
+                               goal.Performer.MiddleName,
+                ProjectId = goal.ProjectId,
+                ProjectName = goal.Project.Name,
+                State = goal.State,
+                Priority = goal.Priority,
+                ExpectedCompletedDate = goal.ExpectedCompletedDate,
+                EstimatedPerformingTime = goal.EstimatedPerformingTime,
+                IsChildsExist = _dataContext.Goals.Any(childGoal => childGoal.ParentGoalId == goal.Id),
+                IsRemoved = goal.IsRemoved,
+            });
+            return vmGoals;
+        }
+
         private async Task<Goal> CreateGoal(ApplicationUser currentUser, VmGoal goal,
             Action<Goal> createAction = null)
         {
@@ -454,36 +503,28 @@ namespace Workflow.Services
             return model;
         }
 
-        private async Task UpdateGoals(ApplicationUser currentUser,
-            ICollection<VmGoal> goals, Action<Goal> updateAction = null)
+        private async Task UpdateGoals(ICollection<VmGoal> vmGoals, Action<Goal> updateAction = null)
         {
-            if (goals == null)
-                throw new HttpResponseException(BadRequest, $"Parameter '{nameof(goals)}' cannot be null");
+            if (vmGoals == null)
+                throw new HttpResponseException(BadRequest, $"Parameter '{nameof(vmGoals)}' cannot be null");
 
-            var goalIds = goals
-                .Where(g => !string.IsNullOrWhiteSpace(g.Title))
-                .Select(g => g.Id);
-
-            var query = await GetQuery(currentUser, true);
-            var models = await query
-                .Where(g => goalIds.Any(gId => g.Id == gId))
-                .ToArrayAsync();
-
-            foreach (var model in models)
+            foreach (var vmGoal in vmGoals)
             {
-                if (string.IsNullOrWhiteSpace(model.Title))
+                if (string.IsNullOrWhiteSpace(vmGoal.Title))
                     throw new HttpResponseException(BadRequest, 
                         "Cannot update goal. The title cannot be empty");
 
-                var goal = goals.First(t => t.Id == model.Id);
-                model.ProjectId = goal.ProjectId;
-                model.Title = goal.Title;
-                model.Description = goal.Description;
-                model.State = goal.State;
-                model.Priority = goal.Priority;
-                model.GoalNumber = goal.GoalNumber;
-                model.ParentGoalId = goal.ParentGoalId;
-                model.PerformerId = goal.PerformerId;
+                var model = new Goal
+                {
+                    Id = vmGoal.Id,
+                    ProjectId = vmGoal.ProjectId,
+                    Title = vmGoal.Title,
+                    Description = vmGoal.Description,
+                    State = vmGoal.State,
+                    Priority = vmGoal.Priority,
+                    GoalNumber = vmGoal.GoalNumber,
+                    PerformerId = vmGoal.PerformerId
+                };
 
                 updateAction?.Invoke(model);
 
@@ -511,15 +552,6 @@ namespace Workflow.Services
             return models.Select(m => _vmConverter.ToViewModel(m));
         }
 
-        private async Task<List<Goal>> GetChildGoals(ApplicationUser currentUser, VmGoalForm goalForm)
-        {
-            var childIds = goalForm.ChildGoalIds ?? new List<int>();
-            var query = await GetQuery(currentUser, true);
-            var childGoals = await query
-                .Where(g => childIds.Any(cId => g.Id == cId))
-                .ToListAsync();
-            return childGoals;
-        }
 
         private readonly DataContext _dataContext;
         private readonly UserManager<ApplicationUser> _userManager;

@@ -28,6 +28,8 @@
           a(@click.prevent="onItemCreate") Новая команда
         el-divider
         li
+          a(v-if="$route.params.projectId" @click.prevent="onItemRemoveFromProject($event, child.data.row)") Убрать из проекта
+        li
           a(v-if="isDeleteVisible" @click.prevent="onItemDelete($event, child.data.row)") Переместить в корзину
         li
           a(v-if="isRestoreVisible" @click.prevent="onItemRestore($event, child.data.row)") Восстановить
@@ -56,13 +58,25 @@ export default {
         deleteItem: 'teams/deleteTeam',
         deleteItems: 'teams/deleteTeams',
         restoreItem: 'teams/restoreTeam',
-        restoreItems: 'teams/restoreTeams'
+        restoreItems: 'teams/restoreTeams',
+        removeProjectTeam: 'projects/removeProjectTeam',
+        removeProjectTeams: 'projects/removeProjectTeams',
       }
     };
   },
   methods: {
     onItemDoubleClick(row, column, event) {
       if (!row.isRemoved) this.$router.push(`/teams/${row.id}`);
+    },
+    async onItemRemoveFromProject(event, row) {
+      const projectId = this.$route.params.projectId;
+      const teamId = row.id;
+      const teamIds = this.table.selection.map(item => item.id);
+      if (this.isMultipleSelected)
+        await this.$store.dispatch(this.actions.removeProjectTeams, { projectId, teamIds });
+      else
+        await this.$store.dispatch(this.actions.removeProjectTeam, { projectId, teamId });
+      this.refresh();
     }
   }
 };

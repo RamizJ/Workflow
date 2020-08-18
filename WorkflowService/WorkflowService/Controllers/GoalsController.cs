@@ -47,9 +47,12 @@ namespace WorkflowService.Controllers
         /// <summary>
         /// Постраничная загрузка задач с фильтрацией и сортировкой
         /// </summary>
-        /// <returns>Коллеция задач</returns>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="pageOptions">Параметры загружаемой страницы</param>
+        /// <returns></returns>
         [HttpPost]
-        public async Task<IEnumerable<VmGoal>> GetPage([FromQuery]int? projectId, 
+        public async Task<IEnumerable<VmGoal>> GetPage(
+            [FromQuery]int? projectId,
             [FromBody] PageOptions pageOptions)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
@@ -306,19 +309,6 @@ namespace WorkflowService.Controllers
         }
 
         /// <summary>
-        /// Получение дочерних задач
-        /// </summary>
-        /// <param name="parentGoalId">Идентификатор родительской задачи</param>
-        /// <returns>Коллекция дочерних задач</returns>
-        [HttpGet("{goalId}")]
-        public async Task<ActionResult<IEnumerable<VmGoal>>> GetChildGoals(int parentGoalId)
-        {
-            var currentUser = await _currentUserService.GetCurrentUser(User);
-            var childGoals = _service.GetChildGoals(currentUser, parentGoalId, true);
-            return Ok(childGoals);
-        }
-
-        /// <summary>
         /// Получение родительской задачи
         /// </summary>
         /// <param name="goalId">Идентификатор задачи</param>
@@ -327,7 +317,22 @@ namespace WorkflowService.Controllers
         public async Task<ActionResult<VmGoal>> GetParentGoal(int goalId)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
-            var parentGoal = _service.GetParentGoal(currentUser, goalId);
+            var parentGoal = await _service.GetParentGoal(currentUser, goalId);
+            return Ok(parentGoal);
+        }
+
+
+        /// <summary>
+        /// Получение дочерних задач
+        /// </summary>
+        /// <param name="parentGoalId">Идентификатор родительской задачи</param>
+        /// <param name="pageOptions"></param>
+        /// <returns>Родительская задача</returns>
+        [HttpGet("{goalId}")]
+        public async Task<ActionResult<VmGoal>> GetChildGoals(int parentGoalId, [FromBody] PageOptions pageOptions)
+        {
+            var currentUser = await _currentUserService.GetCurrentUser(User);
+            var parentGoal = await _service.GetChildsPage(currentUser, parentGoalId, pageOptions);
             return Ok(parentGoal);
         }
 
@@ -338,12 +343,12 @@ namespace WorkflowService.Controllers
         /// <param name="childGoalIds">Идентификаторы дочерних задач</param>
         /// <returns></returns>
         [HttpPatch("{parentGoalId}")]
-        public async Task<ActionResult<VmGoal>> AddChildGoals(int parentGoalId, 
+        public async Task<IActionResult> AddChildGoals(int parentGoalId, 
             [FromBody] IEnumerable<int> childGoalIds)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
-            var parentGoal = _service.AddChildGoals(currentUser, parentGoalId, childGoalIds);
-            return Ok(parentGoal);
+            await _service.AddChildGoals(currentUser, parentGoalId, childGoalIds);
+            return NoContent();
         }
 
 

@@ -18,7 +18,7 @@
       :filters="filters"
       :order="order"
       :sort="sort")
-    task-board(v-if="view === 'board'")
+    task-board(ref="items" v-if="view === 'board'")
 
 </template>
 

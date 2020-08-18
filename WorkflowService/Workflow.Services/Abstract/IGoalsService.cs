@@ -25,7 +25,9 @@ namespace Workflow.Services.Abstract
         /// <param name="projectId">Идентификатор проекта</param>
         /// <param name="pageOptions">Параметры страницы</param>
         /// <returns></returns>
-        Task<IEnumerable<VmGoal>> GetPage(ApplicationUser currentUser, int? projectId, PageOptions pageOptions);
+        Task<IEnumerable<VmGoal>> GetPage(ApplicationUser currentUser, 
+            int? projectId,
+            PageOptions pageOptions);
 
         /// <summary>
         /// 
@@ -138,17 +140,17 @@ namespace Workflow.Services.Abstract
         /// </summary>
         /// <param name="currentUser"></param>
         /// <param name="goalId"></param>
-        /// <param name="withRemoved"></param>
         /// <returns></returns>
-        Task<IEnumerable<VmGoal>> GetChildGoals(ApplicationUser currentUser, int goalId, bool withRemoved);
+        Task<VmGoal> GetParentGoal(ApplicationUser currentUser, int goalId);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="currentUser"></param>
-        /// <param name="goalId"></param>
+        /// <param name="parentGoalId"></param>
+        /// <param name="pageOptions"></param>
         /// <returns></returns>
-        Task<VmGoal> GetParentGoal(ApplicationUser currentUser, int goalId);
+        Task<IEnumerable<VmGoal>> GetChildsPage(ApplicationUser currentUser, int parentGoalId, PageOptions pageOptions);
 
         /// <summary>
         /// 
