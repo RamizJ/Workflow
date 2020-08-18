@@ -1,6 +1,7 @@
 <template lang="pug">
   el-card(shadow="never")
     el-form(:model="form" :rules="rules" ref="form" @keyup.enter.native="submit")
+      img.logo(src="@/assets/logo.svg")
       h1.title Вход
       el-form-item(prop="login")
         el-input(v-model="form.login" placeholder="Почта" autofocus)
@@ -72,13 +73,17 @@ export default {
 .el-card {
   text-align: center;
   width: 350px;
-  height: 300px;
+  //height: 300px;
   padding: 20px 28px;
-  margin-bottom: 15vh;
+  margin-bottom: 20vh;
   border-radius: 6px;
   color: var(--text);
   border-color: transparent;
   background-color: transparent;
+  .logo {
+    height: 110px;
+    margin-bottom: 40px;
+  }
   .title {
     text-align: center;
     font-size: 28px;
