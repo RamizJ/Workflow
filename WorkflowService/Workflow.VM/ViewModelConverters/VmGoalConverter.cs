@@ -57,6 +57,8 @@ namespace Workflow.VM.ViewModelConverters
                 ExpectedCompletedDate = model.ExpectedCompletedDate,
                 EstimatedPerformingTime = model.EstimatedPerformingTime,
                 IsRemoved = model.IsRemoved,
+                IsChildsExist = model.ChildGoals.Any(),
+                IsAttachmentsExist = model.Attachments.Any()
             };
         }
     }

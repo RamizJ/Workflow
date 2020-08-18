@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
@@ -116,6 +117,7 @@ namespace Workflow.Services
                     .Select(observerId => new GoalObserver(goal.Id, observerId))
                     .ToList();
             });
+
             return _vmConverter.ToViewModel(model);
         }
 
@@ -131,14 +133,11 @@ namespace Workflow.Services
                 throw new HttpResponseException(BadRequest,
                     $"Parameter '{nameof(goalForm)}' cannot be null");
 
-            //var childGoals = await GetChildsPage(currentUser, goalForm);
             await UpdateGoals(new[] { goalForm.Goal }, goal =>
             {
                 goal.Observers = goalForm.ObserverIds?
                     .Select(observerId => new GoalObserver(goal.Id, observerId))
                     .ToList();
-
-                //goal.ChildGoals = childGoals;
             });
         }
 
@@ -476,6 +475,10 @@ namespace Workflow.Services
                 ExpectedCompletedDate = goal.ExpectedCompletedDate,
                 EstimatedPerformingTime = goal.EstimatedPerformingTime,
                 IsChildsExist = _dataContext.Goals.Any(childGoal => childGoal.ParentGoalId == goal.Id),
+                IsAttachmentsExist = _dataContext.Goals
+                    .Where(g => g.Id == goal.Id)
+                    .SelectMany(g => g.Attachments)
+                    .Any(),
                 IsRemoved = goal.IsRemoved,
             });
             return vmGoals;
