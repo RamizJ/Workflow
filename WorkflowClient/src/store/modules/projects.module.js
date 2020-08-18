@@ -165,11 +165,14 @@ export default {
       }
     },
     async getTasksCount({ commit }, projectId) {
-      const response = await tasksAPI.getTasksCount(projectId);
+      const response = await projectsAPI.getTasksCount(projectId);
       return response.data;
     },
     async getTasksCountByStatus({ commit }, { projectId, status }) {
-      const response = await tasksAPI.getTasksCountByStatus(projectId, status);
+      const response = await projectsAPI.getTasksCountByStatus(
+        projectId,
+        status
+      );
       return response.data;
     }
   },
