@@ -53,7 +53,7 @@
 
 <script>
 import Draggable from 'vuedraggable';
-import TaskDialog from '@/components/Tasks/TaskDialog';
+import TaskDialog from '@/components/Task/TaskDialog';
 import boardMixin from '@/mixins/board.mixin';
 
 export default {
@@ -143,17 +143,10 @@ export default {
 .board {
   height: 100%;
   overflow: auto;
-  -webkit-overflow-scrolling: touch;
-  &::-webkit-scrollbar {
-    display: none;
-  }
   &__wrapper {
     display: flex;
     flex-wrap: nowrap;
   }
-}
-.board::-webkit-scrollbar {
-  display: none;
 }
 .list {
   min-width: 260px;
@@ -191,7 +184,7 @@ export default {
   }
   &__items {
     min-height: 300px;
-    overflow: scroll;
+    overflow: hidden;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
   }

@@ -38,13 +38,13 @@ import { mapActions, mapGetters } from 'vuex';
 import Page from '@/components/Page';
 import BaseHeader from '@/components/BaseHeader';
 import BaseSearch from '@/components/BaseSearch';
-import ProjectOverview from '@/components/Projects/ProjectOverview';
-import ProjectTasks from '@/components/Projects/ProjectTasks';
-import ProjectTeams from '@/components/Projects/ProjectTeams';
-import ProjectDialog from '@/components/Projects/ProjectDialog';
-import TaskDialog from '@/components/Tasks/TaskDialog';
-import TeamDialog from '@/components/Teams/TeamDialog';
-import ProjectAddTeamDialog from '@/components/Projects/ProjectAddTeamDialog';
+import ProjectOverview from '@/components/Project/ProjectOverview';
+import ProjectTasks from '@/components/Project/ProjectTasks';
+import ProjectTeams from '@/components/Project/ProjectTeams';
+import ProjectDialog from '@/components/Project/ProjectDialog';
+import TaskDialog from '@/components/Task/TaskDialog';
+import TeamDialog from '@/components/Team/TeamDialog';
+import ProjectAddTeamDialog from '@/components/Project/ProjectAddTeamDialog';
 
 export default {
   name: 'Project',
@@ -139,7 +139,7 @@ export default {
     async onProjectDelete() {
       await this.deleteProject(this.projectItem.id);
       await this.fetchSidebarProjects({ reload: true });
-      await this.$router.push({ name: 'Projects' });
+      await this.$router.push({ name: 'Project' });
     }
   }
 };

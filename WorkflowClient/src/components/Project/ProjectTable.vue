@@ -12,7 +12,9 @@
       @row-dblclick="onItemDoubleClick"
       highlight-current-row border)
       el-table-column(type="selection" width="38")
-      el-table-column(prop="name" label="Команда")
+      el-table-column(prop="name" label="Проект")
+      el-table-column(prop="ownerFio" label="Руководитель" width="250")
+      el-table-column(prop="creationDate" label="Дата создания" width="180" :formatter="dateFormatter")
       infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
         div(slot="no-more")
         div(slot="no-results")
@@ -25,58 +27,46 @@
           a(v-if="isEditVisible" @click.prevent="onItemEdit($event, child.data.row)") Изменить
         el-divider(v-if="isEditVisible")
         li
-          a(@click.prevent="onItemCreate") Новая команда
+          a(@click.prevent="onItemCreate") Новый проект
         el-divider
-        li
-          a(v-if="$route.params.projectId" @click.prevent="onItemRemoveFromProject($event, child.data.row)") Убрать из проекта
         li
           a(v-if="isDeleteVisible" @click.prevent="onItemDelete($event, child.data.row)") Переместить в корзину
         li
           a(v-if="isRestoreVisible" @click.prevent="onItemRestore($event, child.data.row)") Восстановить
 
-    team-dialog(v-if="dialogVisible" :data="dialogData" @close="dialogVisible = false" @submit="refresh")
+    project-dialog(v-if="dialogVisible" :data="dialogData" @close="dialogVisible = false" @submit="refresh")
 
 </template>
 
 <script>
 import tableMixin from '@/mixins/table.mixin';
-import TeamDialog from '@/components/Teams/TeamDialog';
+import ProjectDialog from '@/components/Project/ProjectDialog';
 
 export default {
-  name: 'TeamList',
-  components: { TeamDialog },
+  name: 'ProjectList',
+  components: { ProjectDialog },
   mixins: [tableMixin],
   data() {
     return {
       getters: {
-        items: 'teams/getTeams'
+        items: this.$route.params.teamId
+          ? 'teams/getTeamProjects'
+          : 'projects/getProjects'
       },
       actions: {
-        fetchItems: this.$route.params.projectId
-          ? 'projects/fetchProjectTeams'
-          : 'teams/fetchTeams',
-        deleteItem: 'teams/deleteTeam',
-        deleteItems: 'teams/deleteTeams',
-        restoreItem: 'teams/restoreTeam',
-        restoreItems: 'teams/restoreTeams',
-        removeProjectTeam: 'projects/removeProjectTeam',
-        removeProjectTeams: 'projects/removeProjectTeams',
+        fetchItems: this.$route.params.teamId
+          ? 'teams/fetchTeamProjects'
+          : 'projects/fetchProjects',
+        deleteItem: 'projects/deleteProject',
+        deleteItems: 'projects/deleteProjects',
+        restoreItem: 'projects/restoreProject',
+        restoreItems: 'projects/restoreProjects'
       }
     };
   },
   methods: {
     onItemDoubleClick(row, column, event) {
-      if (!row.isRemoved) this.$router.push(`/teams/${row.id}`);
-    },
-    async onItemRemoveFromProject(event, row) {
-      const projectId = this.$route.params.projectId;
-      const teamId = row.id;
-      const teamIds = this.table.selection.map(item => item.id);
-      if (this.isMultipleSelected)
-        await this.$store.dispatch(this.actions.removeProjectTeams, { projectId, teamIds });
-      else
-        await this.$store.dispatch(this.actions.removeProjectTeam, { projectId, teamId });
-      this.refresh();
+      if (!row.isRemoved) this.$router.push(`/projects/${row.id}`);
     }
   }
 };

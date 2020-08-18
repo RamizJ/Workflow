@@ -24,8 +24,8 @@
 <script>
 import Page from '@/components/Page';
 import BaseHeader from '@/components/BaseHeader';
-import UserToolbar from '@/components/Users/UserToolbar';
-import UserTable from '@/components/Users/UserTable';
+import UserToolbar from '@/components/User/UserToolbar';
+import UserTable from '@/components/User/UserTable';
 import pageMixin from '@/mixins/page.mixin';
 
 export default {

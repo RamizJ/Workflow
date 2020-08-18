@@ -44,7 +44,7 @@
 
 <script>
 import tableMixin from '@/mixins/table.mixin';
-import UserDialog from '@/components/Users/UserDialog';
+import UserDialog from '@/components/User/UserDialog';
 
 export default {
   name: 'UserList',
