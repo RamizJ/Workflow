@@ -49,7 +49,9 @@
             <summary>
             Постраничная загрузка задач с фильтрацией и сортировкой
             </summary>
-            <returns>Коллеция задач</returns>
+            <param name="projectId">Идентификатор проекта</param>
+            <param name="pageOptions">Параметры загружаемой страницы</param>
+            <returns></returns>
         </member>
         <member name="M:WorkflowService.Controllers.GoalsController.GetRange(System.Int32[])">
             <summary>
@@ -179,18 +181,19 @@
             <param name="attachmentId">Идентификатор вложения</param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Controllers.GoalsController.GetChildGoals(System.Int32)">
-            <summary>
-            Получение дочерних задач
-            </summary>
-            <param name="parentGoalId">Идентификатор родительской задачи</param>
-            <returns>Коллекция дочерних задач</returns>
-        </member>
         <member name="M:WorkflowService.Controllers.GoalsController.GetParentGoal(System.Int32)">
             <summary>
             Получение родительской задачи
             </summary>
             <param name="goalId">Идентификатор задачи</param>
+            <returns>Родительская задача</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.GetChildGoals(System.Int32,Workflow.VM.ViewModels.PageOptions)">
+            <summary>
+            Получение дочерних задач
+            </summary>
+            <param name="parentGoalId">Идентификатор родительской задачи</param>
+            <param name="pageOptions"></param>
             <returns>Родительская задача</returns>
         </member>
         <member name="M:WorkflowService.Controllers.GoalsController.AddChildGoals(System.Int32,System.Collections.Generic.IEnumerable{System.Int32})">
