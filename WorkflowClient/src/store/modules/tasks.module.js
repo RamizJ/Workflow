@@ -21,7 +21,7 @@ export default {
   actions: {
     async fetchTasks({ commit }, params) {
       const response = await tasksAPI.getPage(params);
-      const tasks = response.data;
+      const tasks = response.data.filter(task => !task.parentGoalId);
       commit('setTasks', tasks);
       return tasks;
     },
@@ -59,6 +59,7 @@ export default {
       commit('setTask', response.data);
     },
     async updateTasks({ commit }, tasks) {
+      if (!tasks.length) return;
       const response = await tasksAPI.updateRange(tasks);
       commit('setTasks', response.data);
     },

@@ -1,6 +1,6 @@
 <template lang="pug">
   page(v-loading="loading")
-    base-header
+    base-header(v-if="projectItem.id")
       template(slot="title")
         input.title(
           v-model="projectItem.name"
@@ -14,19 +14,10 @@
             el-dropdown-item
               el-button(type="text" size="mini" @click="onTaskCreate") Создать задачу
             el-dropdown-item
-              el-button(type="text" size="mini" @click="onTeamCreate") Создать команду
+              el-button(type="text" size="mini" @click="onTeamAdd") Добавить команду
             el-divider
             el-dropdown-item
-              el-button(type="text" size="mini" @click="onProjectEdit") Редактировать
-            el-dropdown-item
               el-button(type="text" size="mini" @click="onProjectDelete") Переместить в корзину
-      //template(slot="subtitle")
-        input.subtitle(
-          v-model="projectItem.description"
-          v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
-          @change="onProjectUpdate")
-      //template(slot="search")
-        base-search(:query.sync="searchQuery")
 
     el-tabs(v-if="projectItem.id" ref="tabs" v-model="activeTab" @tab-click="setTab")
       el-tab-pane(name="overview" label="Обзор")
@@ -37,8 +28,8 @@
         project-teams(ref="projectTeams" v-if="activeTab === 'team'")
 
     project-dialog(v-if="dialogProjectVisible" :data="projectItem" @close="dialogProjectVisible = false")
+    project-add-team-dialog(v-if="dialogTeamVisible" @close="dialogTeamVisible = false")
     task-dialog(v-if="dialogTaskVisible" @close="dialogTaskVisible = false")
-    team-dialog(v-if="dialogTeamVisible" @close="dialogTeamVisible = false")
 
 </template>
 
@@ -53,6 +44,7 @@ import ProjectTeams from '@/components/Projects/ProjectTeams';
 import ProjectDialog from '@/components/Projects/ProjectDialog';
 import TaskDialog from '@/components/Tasks/TaskDialog';
 import TeamDialog from '@/components/Teams/TeamDialog';
+import ProjectAddTeamDialog from '~/components/Projects/ProjectAddTeamDialog';
 
 export default {
   name: 'Project',
@@ -64,6 +56,7 @@ export default {
     ProjectTeams,
     ProjectTasks,
     ProjectDialog,
+    ProjectAddTeamDialog,
     TaskDialog,
     TeamDialog
   },
@@ -81,13 +74,11 @@ export default {
       projectItem: {
         name: '',
         description: '',
-        tags: [],
         ownerId: null,
         ownerFio: null,
-        teamId: null,
-        teamName: null,
         groupId: null,
-        groupName: null
+        groupName: null,
+        teamIds: []
       },
       dialogProjectVisible: false,
       dialogTaskVisible: false,
@@ -131,10 +122,8 @@ export default {
         this.$refs.projectTasks.$refs.items.onItemCreate();
       else this.dialogTaskVisible = true;
     },
-    async onTeamCreate(e) {
-      if (this.$refs.projectTeams)
-        this.$refs.projectTeams.$refs.items.onItemCreate();
-      else this.dialogTeamVisible = true;
+    async onTeamAdd(e) {
+      this.dialogTeamVisible = true;
     },
     async onProjectEdit(e) {
       this.dialogProjectVisible = true;
@@ -144,7 +133,8 @@ export default {
     },
     async onDescriptionChange(value) {
       this.projectItem.description = value;
-      await this.onProjectUpdate();
+      this.projectItem.teamIds = this.project.teamIds;
+      await this.updateProject(this.projectItem);
     },
     async onProjectDelete() {
       await this.deleteProject(this.projectItem.id);
