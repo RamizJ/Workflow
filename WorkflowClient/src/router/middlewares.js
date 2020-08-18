@@ -1,4 +1,4 @@
-import store from '~/store';
+import store from '@/store';
 
 export const authGuard = async (to, from, next) => {
   const token = store.getters['auth/token'];

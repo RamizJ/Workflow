@@ -60,6 +60,7 @@ export default {
   },
   async mounted() {
     this.project = { ...this.data };
+    // await this.$store.dispatch('projects/getTasksCount', this.project.id);
     this.totalTasksCount = await this.getTasksCount(this.project.id);
     this.completedTasksCount = await this.getTasksCountByStatus({
       projectId: this.project.id,
@@ -68,8 +69,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      getTasksCount: 'tasks/getTasksCount',
-      getTasksCountByStatus: 'tasks/getTasksCountByStatus'
+      getTasksCount: 'projects/getTasksCount',
+      getTasksCountByStatus: 'projects/getTasksCountByStatus'
     })
   }
 };

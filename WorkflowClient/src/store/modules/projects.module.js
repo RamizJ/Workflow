@@ -1,4 +1,5 @@
-import projectsAPI from '~/api/projects.api';
+import projectsAPI from '@/api/projects.api';
+import tasksAPI from '@/api/tasks.api';
 
 export default {
   namespaced: true,
@@ -48,7 +49,7 @@ export default {
         page = 0;
       }
 
-      const response = await projectsAPI.getPage({
+      const response = await projectsAPI.findAll({
         pageNumber: page,
         pageSize: params?.pageSize || 20
       });
@@ -67,7 +68,7 @@ export default {
       return projects;
     },
     async fetchProjects({ state, dispatch, commit }, params) {
-      const response = await projectsAPI.getPage(params);
+      const response = await projectsAPI.findAll(params);
       const projects = response.data.map(project => {
         project.teamIds = [];
         return project;
@@ -88,7 +89,7 @@ export default {
       return projects;
     },
     async fetchProject({ commit, dispatch, state }, id) {
-      const response = await projectsAPI.get(id);
+      const response = await projectsAPI.findOneById(id);
       const project = response.data;
       await dispatch('fetchProjectTeams', {
         projectId: id,
@@ -99,7 +100,7 @@ export default {
       commit('setProject', project);
     },
     async fetchProjectTeams({ commit }, params) {
-      const response = await projectsAPI.getTeamsPage(params);
+      const response = await projectsAPI.findTeams(params);
       const projectTeams = response.data.map(team => {
         team.userIds = [];
         team.projectIds = [];
@@ -113,7 +114,7 @@ export default {
         project: project,
         teamIds: project.teamIds
       };
-      const response = await projectsAPI.create(newProject);
+      const response = await projectsAPI.createOne(newProject);
       const createdProject = response.data;
       commit('setProject', createdProject);
     },
@@ -124,8 +125,28 @@ export default {
         project,
         teamIds
       };
-      const response = await projectsAPI.update(newProject);
+      const response = await projectsAPI.updateOne(newProject);
       return response.data;
+    },
+    async deleteProject({ commit }, id) {
+      const response = await projectsAPI.deleteOne(id);
+      const project = response.data;
+      if (!project) throw Error;
+    },
+    async deleteProjects({ commit }, ids) {
+      const response = await projectsAPI.deleteMany(ids);
+      const projects = response.data;
+      if (!projects) throw Error;
+    },
+    async restoreProject({ commit }, id) {
+      const response = await projectsAPI.restoreOne(id);
+      const project = response.data;
+      if (!project) throw Error;
+    },
+    async restoreProjects({ commit }, ids) {
+      const response = await projectsAPI.restoreMany(ids);
+      const projects = response.data;
+      if (!projects) throw Error;
     },
     async updateProjectTeams({ commit }, { projectId, teamIds }) {
       for (let teamId of teamIds) {
@@ -143,25 +164,13 @@ export default {
         await projectsAPI.removeTeam(teamId, projectId);
       }
     },
-    async deleteProject({ commit }, id) {
-      const response = await projectsAPI.delete(id);
-      const project = response.data;
-      if (!project) throw Error;
+    async getTasksCount({ commit }, projectId) {
+      const response = await tasksAPI.getTasksCount(projectId);
+      return response.data;
     },
-    async deleteProjects({ commit }, ids) {
-      const response = await projectsAPI.deleteRange(ids);
-      const projects = response.data;
-      if (!projects) throw Error;
-    },
-    async restoreProject({ commit }, id) {
-      const response = await projectsAPI.restore(id);
-      const project = response.data;
-      if (!project) throw Error;
-    },
-    async restoreProjects({ commit }, ids) {
-      const response = await projectsAPI.restoreRange(ids);
-      const projects = response.data;
-      if (!projects) throw Error;
+    async getTasksCountByStatus({ commit }, { projectId, status }) {
+      const response = await tasksAPI.getTasksCountByStatus(projectId, status);
+      return response.data;
     }
   },
   getters: {

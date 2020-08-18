@@ -252,7 +252,7 @@ export default {
       const currentChecklist = this.checklist.map(item => {
         item.state = item.checked ? 'Succeed' : 'New';
         return item;
-      });
+      }).reverse();
 
       this.form.isChildsExist = true;
 

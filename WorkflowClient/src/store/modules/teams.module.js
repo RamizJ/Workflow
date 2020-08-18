@@ -1,4 +1,4 @@
-import teamsAPI from '~/api/teams.api';
+import teamsAPI from '@/api/teams.api';
 
 export default {
   namespaced: true,
@@ -24,7 +24,7 @@ export default {
   },
   actions: {
     async fetchTeams({ commit }, params) {
-      const response = await teamsAPI.getPage(params);
+      const response = await teamsAPI.findAll(params);
       const teams = response.data.map(team => {
         team.userIds = [];
         team.projectIds = [];
@@ -34,23 +34,11 @@ export default {
       return teams;
     },
     async fetchTeam({ commit }, id) {
-      const response = await teamsAPI.get(id);
+      const response = await teamsAPI.findOneById(id);
       const team = response.data;
       team.userIds = [];
       team.projectIds = [];
       commit('setTeam', team);
-    },
-    async fetchTeamUsers({ commit }, params) {
-      const response = await teamsAPI.getUsersPage(params);
-      const teamUsers = response.data;
-      commit('setTeamUsers', teamUsers);
-      return teamUsers;
-    },
-    async fetchTeamProjects({ commit }, params) {
-      const response = await teamsAPI.getProjectsPage(params);
-      const teamProjects = response.data;
-      commit('setTeamProjects', teamProjects);
-      return teamProjects;
     },
     async createTeam({ commit }, team) {
       let newTeam = {
@@ -58,9 +46,34 @@ export default {
         userIds: team.userIds,
         projectIds: team.projectIds
       };
-      const response = await teamsAPI.create(newTeam);
+      const response = await teamsAPI.createOne(newTeam);
       const createdTeam = response.data;
       commit('setTeam', createdTeam);
+    },
+    async updateTeam({ commit }, team) {
+      const response = await teamsAPI.updateOne(team);
+      const updatedTeam = response.data;
+      commit('setTeam', updatedTeam);
+    },
+    async deleteTeam({ commit }, id) {
+      const response = await teamsAPI.deleteOne(id);
+      const team = response.data;
+      if (!team) throw Error;
+    },
+    async deleteTeams({ commit }, ids) {
+      const response = await teamsAPI.deleteMany(ids);
+      const team = response.data;
+      if (!team) throw Error;
+    },
+    async restoreTeam({ commit }, id) {
+      const response = await teamsAPI.restoreOne(id);
+      const team = response.data;
+      if (!team) throw Error;
+    },
+    async restoreTeams({ commit }, ids) {
+      const response = await teamsAPI.restoreMany(ids);
+      const teams = response.data;
+      if (!teams) throw Error;
     },
     async addUser({ commit }, { teamId, userId }) {
       await teamsAPI.addUser(teamId, userId);
@@ -68,30 +81,17 @@ export default {
     async removeUser({ commit }, { teamId, userId }) {
       await teamsAPI.removeUser(teamId, userId);
     },
-    async updateTeam({ commit }, team) {
-      const response = await teamsAPI.update(team);
-      const updatedTeam = response.data;
-      commit('setTeam', updatedTeam);
+    async fetchTeamUsers({ commit }, params) {
+      const response = await teamsAPI.findUsers(params);
+      const teamUsers = response.data;
+      commit('setTeamUsers', teamUsers);
+      return teamUsers;
     },
-    async deleteTeam({ commit }, id) {
-      const response = await teamsAPI.delete(id);
-      const team = response.data;
-      if (!team) throw Error;
-    },
-    async deleteTeams({ commit }, ids) {
-      const response = await teamsAPI.deleteRange(ids);
-      const team = response.data;
-      if (!team) throw Error;
-    },
-    async restoreTeam({ commit }, id) {
-      const response = await teamsAPI.restore(id);
-      const team = response.data;
-      if (!team) throw Error;
-    },
-    async restoreTeams({ commit }, ids) {
-      const response = await teamsAPI.restoreRange(ids);
-      const teams = response.data;
-      if (!teams) throw Error;
+    async fetchTeamProjects({ commit }, params) {
+      const response = await teamsAPI.findProjects(params);
+      const teamProjects = response.data;
+      commit('setTeamProjects', teamProjects);
+      return teamProjects;
     }
   },
   getters: {

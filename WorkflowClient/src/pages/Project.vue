@@ -44,7 +44,7 @@ import ProjectTeams from '@/components/Projects/ProjectTeams';
 import ProjectDialog from '@/components/Projects/ProjectDialog';
 import TaskDialog from '@/components/Tasks/TaskDialog';
 import TeamDialog from '@/components/Teams/TeamDialog';
-import ProjectAddTeamDialog from '~/components/Projects/ProjectAddTeamDialog';
+import ProjectAddTeamDialog from '@/components/Projects/ProjectAddTeamDialog';
 
 export default {
   name: 'Project',
