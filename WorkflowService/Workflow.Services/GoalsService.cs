@@ -87,7 +87,8 @@ namespace Workflow.Services
         public async Task<int> GetTotalProjectGoalsCount(ApplicationUser currentUser, int projectId)
         {
             var query = await GetQuery(currentUser, false);
-            return await query.CountAsync(g => g.ProjectId == projectId);
+            return await query.CountAsync(g => g.ProjectId == projectId 
+                                               && g.ParentGoalId == null);
         }
 
         public async Task<int> GetProjectGoalsByStateCount(ApplicationUser currentUser, int projectId, GoalState goalState)
