@@ -33,22 +33,21 @@ namespace Workflow.VM.ViewModels
         public bool IsRemoved { get; set; }
 
         public bool IsChildsExist { get; set; }
+        public bool IsAttachmentsExist { get; set; }
     }
 
     public class VmGoalForm
     {
         public VmGoal Goal { get; set; }
         public List<string> ObserverIds { get; set; }
-        public List<int> ChildGoalIds { get; set; }
 
         public VmGoalForm()
         { }
 
-        public VmGoalForm(VmGoal goal, List<string> observerIds, List<int> childGoalIds)
+        public VmGoalForm(VmGoal goal, List<string> observerIds)
         {
             Goal = goal;
             ObserverIds = observerIds;
-            ChildGoalIds = childGoalIds;
         }
     }
 }

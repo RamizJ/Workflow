@@ -325,21 +325,10 @@ namespace Workflow.Tests.Services
             vmGoal.Title = updatedName;
             vmGoal.Description = updatedDescription;
             var observerIds = _testData.Users.Skip(4).Take(6).Select(u => u.Id).ToList();
-            //var childGoalIds = _testData.Goals.Skip(5).Take(5).Select(g => g.Id).ToList();
-            var vmGoalForm = new VmGoalForm(vmGoal, observerIds, null);
+            var vmGoalForm = new VmGoalForm(vmGoal, observerIds);
 
             //Act
             await _service.UpdateByFormRange(_currentUser, new[] {vmGoalForm});
-            //var goal = _dataContext.Goals
-            //    .Include(g => g.ChildGoals)
-            //    .Include(g => g.Observers)
-            //    .First(g => g.Id == vmGoal.Id);
-
-            //Assert
-            //Assert.AreEqual(updatedName, goal.Title);
-            //Assert.AreEqual(updatedDescription, goal.Description);
-            //Assert.AreEqual(observerIds.Count, goal.Observers.Count);
-            //Assert.Greater(0, goal.ChildGoals.Count);
         }
 
         [Test]
