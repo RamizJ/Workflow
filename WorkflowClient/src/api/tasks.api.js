@@ -19,11 +19,9 @@ export default {
   deleteMany: ids => httpClient.patch(`/api/Goals/DeleteRange`, ids),
   restoreOne: id => httpClient.patch(`/api/Goals/Restore/${id}`),
   restoreMany: ids => httpClient.patch(`/api/Goals/RestoreRange`, ids),
-  findChildTasks: taskId =>
-    httpClient.get(`/api/Goals/GetChildGoals/${taskId}`),
-  findParentTask: taskId =>
-    httpClient.get(`/api/Goals/GetParentGoal/${taskId}`),
-  addChildTasks: (parentId, childIds) =>
+  findParent: id => httpClient.get(`/api/Goals/GetParentGoal/${id}`),
+  findChild: id => httpClient.get(`/api/Goals/GetChildGoals/${id}`),
+  addChild: (parentId, childIds) =>
     httpClient.patch(`/api/Goals/AddChildGoals/${parentId}`, childIds),
   findAttachments: taskId =>
     httpClient.get(`/api/Goals/GetAttachments/${taskId}`),
@@ -33,10 +31,10 @@ export default {
         'Content-Type': 'multipart/form-data'
       }
     }),
-  removeAttachments: attachmentIds =>
-    httpClient.patch(`/api/Goals/RemoveAttachments`, attachmentIds),
   downloadAttachment: attachmentId =>
     httpClient.get(`/api/Goals/DownloadAttachmentFile/${attachmentId}`, {
       responseType: 'blob'
-    })
+    }),
+  removeAttachments: attachmentIds =>
+    httpClient.patch(`/api/Goals/RemoveAttachments`, attachmentIds)
 };

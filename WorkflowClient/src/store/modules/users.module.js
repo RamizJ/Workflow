@@ -16,15 +16,19 @@ export default {
     }
   },
   actions: {
-    async findAll({ rootState, commit }, params) {
-      const response = await usersAPI.findAll(params);
-      const users = response.data;
-      commit('setUsers', users);
-      return users;
-    },
     async findOneById({ commit }, id) {
       const response = await usersAPI.findOneById(id);
       commit('setUser', response.data);
+      return response.data;
+    },
+    async findAll({ commit }, params) {
+      const response = await usersAPI.findAll(params);
+      commit('setUsers', response.data);
+      return response.data;
+    },
+    async findAllByIds({ commit }, ids) {
+      const response = await usersAPI.findAllByIds(ids);
+      commit('setUsers', response.data);
       return response.data;
     },
     async createOne({ commit }, payload) {
@@ -32,8 +36,13 @@ export default {
       commit('setUser', response.data);
       return response.data;
     },
-    async updateOne({ commit }, payload) {
-      const response = await usersAPI.updateOne(payload);
+    async updateOne({ commit }, user) {
+      const response = await usersAPI.updateOne(user);
+      commit('setUser', response.data);
+      return response.data;
+    },
+    async updateMany({ commit }, users) {
+      const response = await usersAPI.updateMany(users);
       commit('setUser', response.data);
       return response.data;
     },
@@ -48,6 +57,9 @@ export default {
     },
     async restoreMany({ commit }, ids) {
       await usersAPI.restoreMany(ids);
+    },
+    async resetPassword({ commit }, { userId, newPassword }) {
+      await usersAPI.resetPassword(userId, newPassword);
     },
     async isLoginExist({ commit }, login) {
       try {

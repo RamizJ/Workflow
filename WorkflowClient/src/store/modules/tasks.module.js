@@ -31,6 +31,12 @@ export default {
       commit('setTasks', tasks);
       return tasks;
     },
+    async findAllByIds({ commit }, ids) {
+      const response = await tasksAPI.findAllByIds(ids);
+      const tasks = response.data.filter(task => !task.parentGoalId);
+      commit('setTasks', tasks);
+      return tasks;
+    },
     async createOne({ commit }, task) {
       const response = await tasksAPI.createOne(task);
       commit('setTask', response.data);
@@ -45,6 +51,7 @@ export default {
       if (!tasks.length) return;
       const response = await tasksAPI.updateMany(tasks);
       commit('setTasks', response.data);
+      return response.data;
     },
     async deleteOne({ commit }, id) {
       await tasksAPI.deleteOne(id);
@@ -58,17 +65,21 @@ export default {
     async restoreMany({ commit }, ids) {
       await tasksAPI.restoreMany(ids);
     },
-    async findChildTasks({ commit }, id) {
-      const response = await tasksAPI.findChildTasks(id);
+    async findParent({ commit }, id) {
+      const response = await tasksAPI.findParent(id);
       return response.data;
     },
-    async addChildTasks({ state, dispatch, commit }, { parentId, tasks }) {
+    async findChild({ commit }, id) {
+      const response = await tasksAPI.findChild(id);
+      return response.data;
+    },
+    async addChild({ state, dispatch, commit }, { parentId, tasks }) {
       let taskIds = [];
       for (let task of tasks) {
         await dispatch('createOne', task);
         taskIds.push(state.task.id);
       }
-      const response = await tasksAPI.addChildTasks(parentId, taskIds);
+      const response = await tasksAPI.addChild(parentId, taskIds);
       return response.data;
     },
     async findAttachments({ commit }, taskId) {
@@ -79,9 +90,6 @@ export default {
     async uploadAttachments({ commit }, { taskId, files }) {
       await tasksAPI.uploadAttachments(taskId, files);
     },
-    async removeAttachments({ commit }, attachmentIds) {
-      await tasksAPI.removeAttachments(attachmentIds);
-    },
     async downloadAttachment({ commit }, file) {
       const response = await tasksAPI.downloadAttachment(file.id);
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -90,6 +98,9 @@ export default {
       link.setAttribute('download', file.name);
       document.body.appendChild(link);
       link.click();
+    },
+    async removeAttachments({ commit }, attachmentIds) {
+      await tasksAPI.removeAttachments(attachmentIds);
     }
   },
   getters: {

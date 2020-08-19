@@ -23,6 +23,14 @@ export default {
     }
   },
   actions: {
+    async findOneById({ commit }, id) {
+      const response = await teamsAPI.findOneById(id);
+      const team = response.data;
+      team.userIds = [];
+      team.projectIds = [];
+      commit('setTeam', team);
+      return team;
+    },
     async findAll({ commit }, params) {
       const response = await teamsAPI.findAll(params);
       const teams = response.data.map(team => {
@@ -33,27 +41,45 @@ export default {
       commit('setTeams', teams);
       return teams;
     },
-    async findOneById({ commit }, id) {
-      const response = await teamsAPI.findOneById(id);
-      const team = response.data;
-      team.userIds = [];
-      team.projectIds = [];
-      commit('setTeam', team);
-      return team;
+    async findAllByIds({ commit }, ids) {
+      const response = await teamsAPI.findAllByIds(ids);
+      const teams = response.data.map(team => {
+        team.userIds = [];
+        team.projectIds = [];
+        return team;
+      });
+      commit('setTeams', teams);
+      return teams;
     },
     async createOne({ commit }, team) {
-      let newTeam = {
-        team: team,
+      const response = await teamsAPI.createOne({
+        team,
         userIds: team.userIds,
         projectIds: team.projectIds
-      };
-      const response = await teamsAPI.createOne(newTeam);
+      });
       commit('setTeam', response.data);
       return response.data;
     },
     async updateOne({ commit }, team) {
-      const response = await teamsAPI.updateOne(team);
+      const response = await teamsAPI.updateOne({
+        team,
+        projectIds: team.projectIds,
+        userIds: team.userIds
+      });
       commit('setTeam', response.data);
+      return response.data;
+    },
+    async updateMany({ commit }, teams) {
+      const response = await teamsAPI.updateMany(
+        teams.map(team => {
+          return {
+            team,
+            projectIds: team.projectIds,
+            userIds: team.userIds
+          };
+        })
+      );
+      commit('setTeams', response.data);
       return response.data;
     },
     async deleteOne({ commit }, id) {
@@ -68,21 +94,30 @@ export default {
     async restoreMany({ commit }, ids) {
       await teamsAPI.restoreMany(ids);
     },
-    async addUser({ commit }, { teamId, userId }) {
-      await teamsAPI.addUser(teamId, userId);
-    },
-    async removeUser({ commit }, { teamId, userId }) {
-      await teamsAPI.removeUser(teamId, userId);
-    },
     async findUsers({ commit }, params) {
       const response = await teamsAPI.findUsers(params);
       commit('setTeamUsers', response.data);
       return response.data;
     },
+    async addUser({ commit }, { teamId, userId }) {
+      await teamsAPI.addUser(teamId, userId);
+    },
+    async addUsers({ commit }, { teamId, userIds }) {
+      await teamsAPI.addUser(teamId, userIds);
+    },
+    async removeUser({ commit }, { teamId, userId }) {
+      await teamsAPI.removeUser(teamId, userId);
+    },
     async findProjects({ commit }, params) {
       const response = await teamsAPI.findProjects(params);
       commit('setTeamProjects', response.data);
       return response.data;
+    },
+    async addProject({ commit }, { teamId, projectId }) {
+      await teamsAPI.addProject(teamId, projectId);
+    },
+    async removeProject({ commit }, { teamId, projectId }) {
+      await teamsAPI.removeProject(teamId, projectId);
     }
   },
   getters: {

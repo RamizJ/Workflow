@@ -70,7 +70,7 @@ export default {
         items: 'tasks/getTasks'
       },
       actions: {
-        fetchItems: 'tasks/findOneById',
+        fetchItems: 'tasks/findAll',
         updateItem: 'tasks/updateOne',
         updateItems: 'tasks/updateMany',
         deleteItem: 'tasks/deleteOne',
