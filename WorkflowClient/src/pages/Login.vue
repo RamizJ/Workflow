@@ -73,7 +73,6 @@ export default {
 .el-card {
   text-align: center;
   width: 350px;
-  //height: 300px;
   padding: 20px 28px;
   margin-bottom: 20vh;
   border-radius: 6px;

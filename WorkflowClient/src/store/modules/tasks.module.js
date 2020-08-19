@@ -19,77 +19,63 @@ export default {
     }
   },
   actions: {
-    async fetchTask({ commit }, id) {
+    async findOneById({ commit }, id) {
       const response = await tasksAPI.findOneById(id);
       const task = response.data;
       commit('setTask', task);
       return task;
     },
-    async fetchTasks({ commit }, params) {
+    async findAll({ commit }, params) {
       const response = await tasksAPI.findAll(params);
       const tasks = response.data.filter(task => !task.parentGoalId);
       commit('setTasks', tasks);
       return tasks;
     },
-    // async searchTasks({ commit }, params) {
-    //   const response = await tasksAPI.getPage(params);
-    //   const tasks = response.data;
-    //   return tasks;
-    // },
-
-    async fetchChildTasks({ commit }, id) {
+    async createOne({ commit }, task) {
+      const response = await tasksAPI.createOne(task);
+      commit('setTask', response.data);
+      return response.data;
+    },
+    async updateOne({ commit }, task) {
+      const response = await tasksAPI.updateOne(task);
+      commit('setTask', response.data);
+    },
+    async updateMany({ commit }, tasks) {
+      if (!tasks.length) return;
+      const response = await tasksAPI.updateMany(tasks);
+      commit('setTasks', response.data);
+    },
+    async deleteOne({ commit }, id) {
+      await tasksAPI.deleteOne(id);
+    },
+    async deleteMany({ commit }, ids) {
+      await tasksAPI.deleteMany(ids);
+    },
+    async restoreOne({ commit }, id) {
+      await tasksAPI.restoreOne(id);
+    },
+    async restoreMany({ commit }, ids) {
+      await tasksAPI.restoreMany(ids);
+    },
+    async findChildTasks({ commit }, id) {
       const response = await tasksAPI.findChildTasks(id);
-      const tasks = response.data;
-      return tasks;
+      return response.data;
     },
     async addChildTasks({ state, dispatch, commit }, { parentId, tasks }) {
       let taskIds = [];
       for (let task of tasks) {
-        await dispatch('createTask', task);
+        await dispatch('createOne', task);
         taskIds.push(state.task.id);
       }
       const response = await tasksAPI.addChildTasks(parentId, taskIds);
       return response.data;
     },
-    async createTask({ commit }, task) {
-      const response = await tasksAPI.createOne(task);
-      commit('setTask', response.data);
-    },
-    async updateTask({ commit }, task) {
-      const response = await tasksAPI.updateOne(task);
-      commit('setTask', response.data);
-    },
-    async updateTasks({ commit }, tasks) {
-      if (!tasks.length) return;
-      const response = await tasksAPI.updateMany(tasks);
-      commit('setTasks', response.data);
-    },
-    async deleteTask({ commit }, id) {
-      const response = await tasksAPI.deleteOne(id);
-      const task = response.data;
-      if (!task) throw Error;
-    },
-    async deleteTasks({ commit }, ids) {
-      const response = await tasksAPI.deleteMany(ids);
-      const tasks = response.data;
-      if (!tasks) throw Error;
-    },
-    async restoreTask({ commit }, id) {
-      const response = await tasksAPI.restoreOne(id);
-      const task = response.data;
-      if (!task) throw Error;
-    },
-    async restoreTasks({ commit }, ids) {
-      const response = await tasksAPI.restoreMany(ids);
-      const tasks = response.data;
-      if (!tasks) throw Error;
-    },
-    async fetchAttachments({ commit }, taskId) {
+    async findAttachments({ commit }, taskId) {
       const response = await tasksAPI.findAttachments(taskId);
       const attachments = response.data;
       commit('setTaskAttachments', attachments);
     },
-    async addAttachments({ commit }, { taskId, files }) {
+    async uploadAttachments({ commit }, { taskId, files }) {
       await tasksAPI.uploadAttachments(taskId, files);
     },
     async removeAttachments({ commit }, attachmentIds) {

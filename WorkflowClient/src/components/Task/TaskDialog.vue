@@ -183,15 +183,15 @@ export default {
   },
   methods: {
     ...mapActions({
-      fetchItem: 'tasks/fetchTask',
-      createItem: 'tasks/createTask',
-      updateItem: 'tasks/updateTask',
-      updateTasks: 'tasks/updateTasks',
-      deleteTasks: 'tasks/deleteTasks',
-      fetchChildTasks: 'tasks/fetchChildTasks',
+      fetchItem: 'tasks/findOneById',
+      createItem: 'tasks/createOne',
+      updateItem: 'tasks/updateOne',
+      updateTasks: 'tasks/updateMany',
+      deleteTasks: 'tasks/deleteMany',
+      fetchChildTasks: 'tasks/findChildTasks',
       addChildTasks: 'tasks/addChildTasks',
-      fetchAttachments: 'tasks/fetchAttachments',
-      addAttachments: 'tasks/addAttachments',
+      fetchAttachments: 'tasks/findAttachments',
+      addAttachments: 'tasks/uploadAttachments',
       removeAttachments: 'tasks/removeAttachments',
       downloadAttachment: 'tasks/downloadAttachment'
     }),
