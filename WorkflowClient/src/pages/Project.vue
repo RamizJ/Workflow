@@ -99,9 +99,9 @@ export default {
   },
   methods: {
     ...mapActions({
-      fetchProject: 'projects/fetchProject',
-      updateProject: 'projects/updateProject',
-      deleteProject: 'projects/deleteProject',
+      fetchProject: 'projects/findOneById',
+      updateProject: 'projects/updateOne',
+      deleteProject: 'projects/deleteOne',
       fetchSidebarProjects: 'projects/fetchSidebarProjects'
     }),
     loadTab() {

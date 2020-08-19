@@ -1,5 +1,4 @@
 import projectsAPI from '@/api/projects.api';
-import tasksAPI from '@/api/tasks.api';
 
 export default {
   namespaced: true,
@@ -67,7 +66,7 @@ export default {
       commit('appendSidebarProjects', projects);
       return projects;
     },
-    async fetchProjects({ state, dispatch, commit }, params) {
+    async findAll({ state, dispatch, commit }, params) {
       const response = await projectsAPI.findAll(params);
       const projects = response.data.map(project => {
         project.teamIds = [];
@@ -88,10 +87,10 @@ export default {
 
       return projects;
     },
-    async fetchProject({ commit, dispatch, state }, id) {
+    async findOneById({ commit, dispatch, state }, id) {
       const response = await projectsAPI.findOneById(id);
       const project = response.data;
-      await dispatch('fetchProjectTeams', {
+      await dispatch('findTeams', {
         projectId: id,
         pageNumber: 0,
         pageSize: 10
@@ -99,17 +98,8 @@ export default {
       project.teamIds = state.projectTeams.map(team => parseInt(team.id));
       commit('setProject', project);
     },
-    async fetchProjectTeams({ commit }, params) {
-      const response = await projectsAPI.findTeams(params);
-      const projectTeams = response.data.map(team => {
-        team.userIds = [];
-        team.projectIds = [];
-        return team;
-      });
-      commit('setProjectTeams', projectTeams);
-      return response.data;
-    },
-    async createProject({ commit }, project) {
+
+    async createOne({ commit }, project) {
       let newProject = {
         project: project,
         teamIds: project.teamIds
@@ -118,7 +108,7 @@ export default {
       const createdProject = response.data;
       commit('setProject', createdProject);
     },
-    async updateProject({ commit }, project) {
+    async updateOne({ commit }, project) {
       const teamIds = project.teamIds;
       delete project.teamIds;
       let newProject = {
@@ -128,27 +118,37 @@ export default {
       const response = await projectsAPI.updateOne(newProject);
       return response.data;
     },
-    async deleteProject({ commit }, id) {
+    async deleteOne({ commit }, id) {
       const response = await projectsAPI.deleteOne(id);
       const project = response.data;
       if (!project) throw Error;
     },
-    async deleteProjects({ commit }, ids) {
+    async deleteMany({ commit }, ids) {
       const response = await projectsAPI.deleteMany(ids);
       const projects = response.data;
       if (!projects) throw Error;
     },
-    async restoreProject({ commit }, id) {
+    async restoreOne({ commit }, id) {
       const response = await projectsAPI.restoreOne(id);
       const project = response.data;
       if (!project) throw Error;
     },
-    async restoreProjects({ commit }, ids) {
+    async restoreMany({ commit }, ids) {
       const response = await projectsAPI.restoreMany(ids);
       const projects = response.data;
       if (!projects) throw Error;
     },
-    async updateProjectTeams({ commit }, { projectId, teamIds }) {
+    async findTeams({ commit }, params) {
+      const response = await projectsAPI.findTeams(params);
+      const projectTeams = response.data.map(team => {
+        team.userIds = [];
+        team.projectIds = [];
+        return team;
+      });
+      commit('setProjectTeams', projectTeams);
+      return response.data;
+    },
+    async addTeams({ commit }, { projectId, teamIds }) {
       for (let teamId of teamIds) {
         await projectsAPI.addTeam(projectId, teamId);
       }
@@ -156,10 +156,10 @@ export default {
     async addTeam({ commit }, { projectId, teamId }) {
       await projectsAPI.addTeam(teamId, projectId);
     },
-    async removeProjectTeam({ commit }, { projectId, teamId }) {
+    async removeTeam({ commit }, { projectId, teamId }) {
       await projectsAPI.removeTeam(teamId, projectId);
     },
-    async removeProjectTeams({ commit }, { projectId, teamIds }) {
+    async removeTeams({ commit }, { projectId, teamIds }) {
       for (let teamId of teamIds) {
         await projectsAPI.removeTeam(teamId, projectId);
       }
