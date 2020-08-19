@@ -16,46 +16,38 @@ export default {
     }
   },
   actions: {
-    async fetchUsers({ rootState, commit }, params) {
+    async findAll({ rootState, commit }, params) {
       const response = await usersAPI.findAll(params);
       const users = response.data;
       commit('setUsers', users);
       return users;
     },
-    async fetchUser({ commit }, id) {
+    async findOneById({ commit }, id) {
       const response = await usersAPI.findOneById(id);
-      const user = response.data;
-      commit('setUser', user);
+      commit('setUser', response.data);
+      return response.data;
     },
-    async createUser({ commit }, payload) {
+    async createOne({ commit }, payload) {
       const response = await usersAPI.createOne(payload);
-      const user = response.data;
-      commit('setUser', user);
+      commit('setUser', response.data);
+      return response.data;
     },
-    async updateUser({ commit }, payload) {
+    async updateOne({ commit }, payload) {
       const response = await usersAPI.updateOne(payload);
-      const user = response.data;
-      commit('setUser', user);
+      commit('setUser', response.data);
+      return response.data;
     },
-    async deleteUser({ commit }, id) {
-      const response = await usersAPI.deleteOne(id);
-      const user = response.data;
-      if (!user) throw Error;
+    async deleteOne({ commit }, id) {
+      await usersAPI.deleteOne(id);
     },
-    async deleteUsers({ commit }, ids) {
-      const response = await usersAPI.deleteMany(ids);
-      const users = response.data;
-      if (!users) throw Error;
+    async deleteMany({ commit }, ids) {
+      await usersAPI.deleteMany(ids);
     },
-    async restoreUser({ commit }, id) {
-      const response = await usersAPI.restoreOne(id);
-      const user = response.data;
-      if (!user) throw Error;
+    async restoreOne({ commit }, id) {
+      await usersAPI.restoreOne(id);
     },
-    async restoreUsers({ commit }, ids) {
-      const response = await usersAPI.restoreMany(ids);
-      const users = response.data;
-      if (!users) throw Error;
+    async restoreMany({ commit }, ids) {
+      await usersAPI.restoreMany(ids);
     },
     async isLoginExist({ commit }, login) {
       try {

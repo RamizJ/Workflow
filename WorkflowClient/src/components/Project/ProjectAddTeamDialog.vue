@@ -68,11 +68,11 @@ export default {
   methods: {
     ...mapActions({
       addTeam: 'projects/addTeam',
-      fetchItem: 'teams/fetchTeam',
-      createItem: 'teams/createTeam',
-      updateItem: 'teams/updateTeam',
+      fetchItem: 'teams/findOneById',
+      createItem: 'teams/createOne',
+      updateItem: 'teams/updateOne',
       fetchProjectTeams: 'projects/findTeams',
-      fetchTeamProjects: 'teams/fetchTeamProjects'
+      fetchTeamProjects: 'teams/findProjects'
     }),
     async submit() {
       const projectId = this.$route.params.projectId;

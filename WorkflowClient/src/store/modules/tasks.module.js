@@ -39,6 +39,7 @@ export default {
     async updateOne({ commit }, task) {
       const response = await tasksAPI.updateOne(task);
       commit('setTask', response.data);
+      return response.data;
     },
     async updateMany({ commit }, tasks) {
       if (!tasks.length) return;

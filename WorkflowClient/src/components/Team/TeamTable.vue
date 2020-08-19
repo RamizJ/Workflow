@@ -54,11 +54,11 @@ export default {
       actions: {
         fetchItems: this.$route.params.projectId
           ? 'projects/findTeams'
-          : 'teams/fetchTeams',
-        deleteItem: 'teams/deleteTeam',
-        deleteItems: 'teams/deleteTeams',
-        restoreItem: 'teams/restoreTeam',
-        restoreItems: 'teams/restoreTeams',
+          : 'teams/findAll',
+        deleteItem: 'teams/deleteOne',
+        deleteItems: 'teams/deleteMany',
+        restoreItem: 'teams/restoreOne',
+        restoreItems: 'teams/restoreMany',
         removeProjectTeam: 'projects/removeTeam',
         removeProjectTeams: 'projects/removeTeams',
       }

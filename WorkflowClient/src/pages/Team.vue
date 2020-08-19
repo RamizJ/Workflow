@@ -86,9 +86,9 @@ export default {
   },
   methods: {
     ...mapActions({
-      fetchTeam: 'teams/fetchTeam',
-      updateTeam: 'teams/updateTeam',
-      deleteTeam: 'teams/deleteTeam'
+      fetchTeam: 'teams/findOneById',
+      updateTeam: 'teams/updateOne',
+      deleteTeam: 'teams/deleteOne'
     }),
     loadTab() {
       const query = { ...this.$route.query };
