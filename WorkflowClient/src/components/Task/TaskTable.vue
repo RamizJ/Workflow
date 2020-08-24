@@ -53,73 +53,72 @@
         li
           a(v-if="isRowEditable" @click.prevent="deleteEntity($event, child.data.row, isMultipleSelected)") Переместить в корзину
         li
-          a(v-if="!isRowEditable" @click.prevent="restoreEntity($event, child.data.row)") {{ isMultipleSelected ? 'Восстановить выделенное' : 'Восстановить' }}
+          a(v-if="!isRowEditable" @click.prevent="restoreEntity($event, child.data.row, isMultipleSelected)") Восстановить
 
     task-dialog(v-if="modalVisible" :id="modalData" @close="modalVisible = false" @submit="reloadData")
 
 </template>
 
 <script lang="ts">
-import { Component, Prop } from 'vue-property-decorator';
-import { mixins } from 'vue-class-component';
-import { StateChanger } from 'vue-infinite-loading';
+import { Component } from 'vue-property-decorator'
+import { mixins } from 'vue-class-component'
+import { StateChanger } from 'vue-infinite-loading'
 
-import TaskDialog from '@/components/Task/TaskDialog.vue';
-import TableMixin from '@/mixins/table.mixin.ts';
-import tasksModule from '@/store/modules/tasks.module';
-import Task, { Status } from '@/types/task.type';
+import tasksModule from '@/store/modules/tasks.module'
+import TableMixin from '@/mixins/table.mixin.ts'
+import TaskDialog from '@/components/Task/TaskDialog.vue'
+import Task, { Status } from '@/types/task.type'
 
 @Component({ components: { TaskDialog } })
 export default class TaskTable extends mixins(TableMixin) {
-  private loading = false;
+  private loading = false
 
   private async loadData($state: StateChanger) {
-    const isFirstLoad = !this.data.length;
-    this.loading = isFirstLoad;
-    const data = await tasksModule.findAll(this.query);
-    if (this.query.pageNumber !== undefined) this.query.pageNumber++;
-    if (data.length) $state.loaded();
-    else $state.complete();
-    this.data = isFirstLoad ? data : this.data.concat(data);
-    this.loading = false;
+    const isFirstLoad = !this.data.length
+    this.loading = isFirstLoad
+    const data = await tasksModule.findAll(this.query)
+    if (this.query.pageNumber !== undefined) this.query.pageNumber++
+    if (data.length) $state.loaded()
+    else $state.complete()
+    this.data = isFirstLoad ? data : this.data.concat(data)
+    this.loading = false
   }
 
   public createEntity() {
-    this.modalData = undefined;
-    this.modalVisible = true;
+    this.modalData = undefined
+    this.modalVisible = true
   }
 
   public editEntity(event: Event, entity: Task) {
-    this.modalData = entity.id;
-    this.modalVisible = true;
+    this.modalData = entity.id
+    this.modalVisible = true
   }
 
   private async deleteEntity(event: Event, entity: Task, multiple = false) {
-    if (multiple) await tasksModule.deleteMany(this.table.selection.map((item: Task) => item.id));
-    else await tasksModule.deleteOne(entity.id as number);
-    this.reloadData();
+    if (multiple) await tasksModule.deleteMany(this.table.selection.map((item: Task) => item.id))
+    else await tasksModule.deleteOne(entity.id as number)
+    this.reloadData()
   }
 
-  private async restoreEntity(event: Event, entity: Task) {
-    if (this.isMultipleSelected)
-      await tasksModule.restoreMany(this.table.selection.map((item: Task) => item.id));
-    else await tasksModule.restoreOne(entity.id as number);
-    this.reloadData();
+  private async restoreEntity(event: Event, entity: Task, multiple = false) {
+    if (multiple) await tasksModule.restoreMany(this.table.selection.map((item: Task) => item.id))
+    else await tasksModule.restoreOne(entity.id as number)
+    this.reloadData()
   }
 
   private async editEntityStatus(event: Event, entity: Task, status: string) {
     if (this.isMultipleSelected) {
       const items = this.table.selection.map((item: Task) => {
-        item.state = status as Status;
-        return item;
-      });
-      await tasksModule.updateMany(items);
+        item.state = status as Status
+        return item
+      })
+      await tasksModule.updateMany(items)
     } else {
-      const item = entity;
-      item.state = status as Status;
-      await tasksModule.updateOne(item);
+      const item = entity
+      item.state = status as Status
+      await tasksModule.updateOne(item)
     }
-    await this.reloadData();
+    await this.reloadData()
   }
 }
 </script>

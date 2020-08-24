@@ -4,16 +4,16 @@ import LayoutLogin from '@/layouts/LayoutLogin.vue';
 export const routes = [
   { path: '/', redirect: '/tasks' },
   {
-    path: '/',
-    name: 'Dashboard',
-    component: () => import('@/views/Dashboard.vue'),
-    meta: { layout: LayoutDefault }
-  },
-  {
     path: '/tasks',
     name: 'Tasks',
     component: () => import('@/views/Tasks.vue'),
     meta: { layout: LayoutDefault }
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/views/Login.vue'),
+    meta: { layout: LayoutLogin }
   },
   {
     path: '/projects',
@@ -40,27 +40,15 @@ export const routes = [
     meta: { layout: LayoutDefault }
   },
   {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/views/Login.vue'),
-    meta: { layout: LayoutLogin }
-  },
-  {
-    path: '/profile',
-    name: 'Profile',
-    component: () => import('@/views/Profile.vue'),
+    path: '/users',
+    name: 'Users',
+    component: () => import('@/views/Users.vue'),
     meta: { layout: LayoutDefault }
   },
   {
     path: '/settings',
     name: 'Settings',
     component: () => import('@/views/Settings.vue'),
-    meta: { layout: LayoutDefault }
-  },
-  {
-    path: '/users',
-    name: 'Users',
-    component: () => import('@/views/Users.vue'),
     meta: { layout: LayoutDefault }
   }
 ];

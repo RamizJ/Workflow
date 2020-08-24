@@ -1,11 +1,11 @@
-import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators';
+import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 
-import store from '@/store';
-import teamsAPI from '@/api/teams.api';
-import Team from '@/types/team.type';
-import Query from '@/types/query.type';
-import Project from '@/types/project.type';
-import User from '@/types/user.type';
+import store from '@/store'
+import teamsAPI from '@/api/teams.api'
+import Team from '@/types/team.type'
+import Query from '@/types/query.type'
+import Project from '@/types/project.type'
+import User from '@/types/user.type'
 
 @Module({
   dynamic: true,
@@ -14,176 +14,176 @@ import User from '@/types/user.type';
   store
 })
 class TeamsModule extends VuexModule {
-  _team: Team | null = null;
-  _teams: Team[] = [];
-  _teamUsers: User[] = [];
-  _teamProjects: Project[] = [];
+  _team: Team | null = null
+  _teams: Team[] = []
+  _teamUsers: User[] = []
+  _teamProjects: Project[] = []
 
   public get team() {
-    return this._team;
+    return this._team
   }
   public get teams() {
-    return this._teams;
+    return this._teams
   }
   public get teamUsers() {
-    return this._teamUsers;
+    return this._teamUsers
   }
   public get teamProjects() {
-    return this._teamProjects;
+    return this._teamProjects
   }
 
   @Mutation
   setTeam(team: Team) {
-    this._team = team;
+    this._team = team
   }
 
   @Mutation
   setTeams(teams: Team[]) {
-    this._teams = teams;
+    this._teams = teams
   }
 
   @Mutation
   setTeamUsers(users: User[]) {
-    this._teamUsers = users;
+    this._teamUsers = users
   }
 
   @Mutation
   setTeamProjects(projects: Project[]) {
-    this._teamProjects = projects;
+    this._teamProjects = projects
   }
 
   @Action
   async findAll(query: Query): Promise<Team[]> {
-    const response = await teamsAPI.findAll(query);
-    const results = response.data as Team[];
-    this.context.commit('setTeams', results);
-    return results;
+    const response = await teamsAPI.findAll(query)
+    const results = response.data as Team[]
+    this.context.commit('setTeams', results)
+    return results
   }
 
   @Action
   async findAllByIds(ids: number[]): Promise<Team[]> {
-    const response = await teamsAPI.findAllByIds(ids);
-    const results = response.data as Team[];
-    this.context.commit('setTeams', results);
-    return results;
+    const response = await teamsAPI.findAllByIds(ids)
+    const results = response.data as Team[]
+    this.context.commit('setTeams', results)
+    return results
   }
 
   @Action
   async findOneById(id: number): Promise<Team> {
-    const response = await teamsAPI.findOneById(id);
-    const result = response.data as Team;
-    this.context.commit('setTeam', result);
-    return result;
+    const response = await teamsAPI.findOneById(id)
+    const result = response.data as Team
+    this.context.commit('setTeam', result)
+    return result
   }
 
   @Action
   async createOne(entity: Team): Promise<Team> {
-    const response = await teamsAPI.createOne(entity);
-    const result = response.data as Team;
-    this.context.commit('setTeam', result);
-    return result;
+    const response = await teamsAPI.createOne(entity)
+    const result = response.data as Team
+    this.context.commit('setTeam', result)
+    return result
   }
 
   @Action
   async createMany(entities: Team[]): Promise<void> {
     for (const entity of entities) {
-      await this.context.dispatch('createOne', entity);
+      await this.context.dispatch('createOne', entity)
     }
   }
 
   @Action
   async updateOne(entity: Team): Promise<void> {
-    await teamsAPI.updateOne(entity);
+    await teamsAPI.updateOne(entity)
   }
 
   @Action
   async updateMany(entities: Team[]): Promise<void> {
-    await teamsAPI.updateMany(entities);
+    await teamsAPI.updateMany(entities)
   }
 
   @Action
   async deleteOne(id: number): Promise<void> {
-    await teamsAPI.deleteOne(id);
+    await teamsAPI.deleteOne(id)
   }
 
   @Action
   async deleteMany(ids: number[]): Promise<void> {
-    await teamsAPI.deleteMany(ids);
+    await teamsAPI.deleteMany(ids)
   }
 
   @Action
   async restoreOne(id: number): Promise<void> {
-    await teamsAPI.restoreOne(id);
+    await teamsAPI.restoreOne(id)
   }
 
   @Action
   async restoreMany(ids: number[]): Promise<void> {
-    await teamsAPI.restoreMany(ids);
+    await teamsAPI.restoreMany(ids)
   }
 
   @Action
   async findUsers(query: Query): Promise<User[]> {
-    const response = await teamsAPI.findUsers(query);
-    const results = response.data as User[];
-    this.context.commit('setTeamUsers', results);
-    return results;
+    const response = await teamsAPI.findUsers(query)
+    const results = response.data as User[]
+    this.context.commit('setTeamUsers', results)
+    return results
   }
 
   @Action
   async addUser({ teamId, userId }: { teamId: number; userId: string }) {
-    await teamsAPI.addUser(teamId, userId);
+    await teamsAPI.addUser(teamId, userId)
   }
 
   @Action
   async addUsers({ teamId, userIds }: { teamId: number; userIds: string[] }) {
     for (const userId of userIds) {
-      await teamsAPI.addUser(teamId, userId);
+      await teamsAPI.addUser(teamId, userId)
     }
   }
 
   @Action
   async removeUser({ teamId, userId }: { teamId: number; userId: string }) {
-    await teamsAPI.removeUser(teamId, userId);
+    await teamsAPI.removeUser(teamId, userId)
   }
 
   @Action
   async removeUsers({ teamId, userIds }: { teamId: number; userIds: string[] }) {
     for (const userId of userIds) {
-      await teamsAPI.removeUser(teamId, userId);
+      await teamsAPI.removeUser(teamId, userId)
     }
   }
 
   @Action
   async findProjects(query: Query): Promise<Project[]> {
-    const response = await teamsAPI.findProjects(query);
-    const results = response.data as Project[];
-    this.context.commit('setTeamProjects', results);
-    return results;
+    const response = await teamsAPI.findProjects(query)
+    const results = response.data as Project[]
+    this.context.commit('setTeamProjects', results)
+    return results
   }
 
   @Action
   async addProject({ teamId, projectId }: { teamId: number; projectId: number }) {
-    await teamsAPI.addProject(teamId, projectId);
+    await teamsAPI.addProject(teamId, projectId)
   }
 
   @Action
   async addProjects({ teamId, projectIds }: { teamId: number; projectIds: number[] }) {
     for (const projectId of projectIds) {
-      await teamsAPI.addProject(teamId, projectId);
+      await teamsAPI.addProject(teamId, projectId)
     }
   }
 
   @Action
   async removeProject({ teamId, projectId }: { teamId: number; projectId: number }) {
-    await teamsAPI.removeProject(teamId, projectId);
+    await teamsAPI.removeProject(teamId, projectId)
   }
 
   @Action
   async removeProjects({ teamId, projectIds }: { teamId: number; projectIds: number[] }) {
     for (const projectId of projectIds) {
-      await teamsAPI.removeProject(teamId, projectId);
+      await teamsAPI.removeProject(teamId, projectId)
     }
   }
 }
 
-export default getModule(TeamsModule);
+export default getModule(TeamsModule)

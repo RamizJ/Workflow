@@ -1,7 +1,7 @@
-import qs from 'qs';
-import httpClient from './httpClient';
-import Query from '@/types/query.type';
-import Team from '@/types/team.type';
+import qs from 'qs'
+import httpClient from './httpClient'
+import Query from '@/types/query.type'
+import Team from '@/types/team.type'
 
 export default {
   findOneById: (id: number) => httpClient.get(`/api/Teams/Get/${id}`),
@@ -28,4 +28,4 @@ export default {
     httpClient.patch(`/api/Teams/AddProject/${teamId}`, projectId),
   removeProject: (teamId: number, projectId: number) =>
     httpClient.patch(`/api/Teams/RemoveProject/${teamId}/${projectId}`)
-};
+}

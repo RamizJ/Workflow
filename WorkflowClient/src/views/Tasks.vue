@@ -22,26 +22,30 @@
 
 </template>
 
-<script>
-import Page from '@/components/Page';
-import BaseHeader from '@/components/BaseHeader';
-import TaskToolbar from '@/components/Task/TaskToolbar';
-import TaskTable from '@/components/Task/TaskTable';
-import TaskBoard from '@/components/Task/TaskBoard';
-import pageMixin from '@/mixins/page.mixin';
+<script lang="ts">
+import { Component } from 'vue-property-decorator'
+import { mixins } from 'vue-class-component'
+import { SortType } from '@/types/query.type'
+import PageMixin from '@/mixins/page.mixin'
+import Page from '@/components/Page.vue'
+import BaseHeader from '@/components/BaseHeader.vue'
+import TaskToolbar from '@/components/Task/TaskToolbar.vue'
+import TaskTable from '@/components/Task/TaskTable.vue'
+import TaskBoard from '@/components/Task/TaskBoard.vue'
 
-export default {
+@Component({
   components: {
     Page,
     BaseHeader,
     TaskToolbar,
     TaskTable,
     TaskBoard
-  },
-  mixins: [pageMixin],
-  created() {
-    if (!this.$route.query.sort) this.onSortChange('creationDate');
-    if (!this.$route.query.order) this.onOrderChange('Descending');
   }
-};
+})
+export default class Tasks extends mixins(PageMixin) {
+  private created() {
+    if (!this.$route.query.sort) this.onSortChange('creationDate')
+    if (!this.$route.query.order) this.onOrderChange(SortType.Descending)
+  }
+}
 </script>

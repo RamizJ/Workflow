@@ -1,14 +1,15 @@
 export default interface Project {
-  id: number;
-  name: string;
-  description?: string;
-  ownerId: string;
-  ownerFio: string;
-  creationDate: Date;
-  expectedCompletedDate?: Date;
-  groupId?: number;
-  groupName?: string;
-  isRemoved: boolean;
+  id?: number
+  name: string
+  description?: string
+  ownerId?: string
+  ownerFio?: string
+  creationDate?: Date
+  expectedCompletedDate?: Date
+  groupId?: number
+  groupName?: string
+  isRemoved?: boolean
 
-  index?: number;
+  index?: number
+  teamIds?: number[]
 }
