@@ -1,5 +1,5 @@
-import LayoutDefault from '@/layouts/LayoutDefault.vue';
-import LayoutLogin from '@/layouts/LayoutLogin.vue';
+import LayoutDefault from '@/layouts/LayoutDefault.vue'
+import LayoutLogin from '@/layouts/LayoutLogin.vue'
 
 export const routes = [
   { path: '/', redirect: '/tasks' },
@@ -51,4 +51,4 @@ export const routes = [
     component: () => import('@/views/Settings.vue'),
     meta: { layout: LayoutDefault }
   }
-];
+]

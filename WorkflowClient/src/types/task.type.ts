@@ -1,32 +1,32 @@
-import Attachment from '@/types/attachment.type';
+import Attachment from '@/types/attachment.type'
 
 export default interface Task {
-  id?: number;
-  goalNumber?: number;
-  title?: string;
-  description?: string;
-  projectId?: number;
-  projectName?: string;
-  parentGoalId?: number;
-  ownerId?: string;
-  ownerFio?: string;
-  performerId?: string;
-  performerFio?: string;
-  creationDate: Date;
-  expectedCompletedDate?: Date;
-  estimatedPerformingTime?: Date;
-  state: Status;
-  priority?: Priority;
-  isChildsExist?: boolean;
-  isAttachmentsExist?: boolean;
-  isRemoved?: boolean;
+  id?: number
+  goalNumber?: number
+  title?: string
+  description?: string
+  projectId?: number
+  projectName?: string
+  parentGoalId?: number
+  ownerId?: string
+  ownerFio?: string
+  performerId?: string
+  performerFio?: string
+  creationDate: Date
+  expectedCompletedDate?: Date
+  estimatedPerformingTime?: Date
+  state: Status
+  priority?: Priority
+  isChildsExist?: boolean
+  isAttachmentsExist?: boolean
+  isRemoved?: boolean
 
-  attachments?: Attachment[];
-  parent?: Task[];
-  child?: Task[];
+  attachments?: Attachment[]
+  parent?: Task[]
+  child?: Task[]
 
-  index?: number;
-  completed?: boolean;
+  index?: number
+  completed?: boolean
 }
 
 export enum Priority {

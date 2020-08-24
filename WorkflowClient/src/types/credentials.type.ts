@@ -1,5 +1,5 @@
 export default interface Credentials {
-  userName: string;
-  password: string;
-  rememberMe: boolean;
+  userName: string
+  password: string
+  rememberMe: boolean
 }

@@ -1,6 +1,6 @@
-<template lang="pug">
-  div.table-container
-    el-table(
+<template>
+  <div class="table-container">
+    <el-table
       ref="table"
       height="100%"
       v-loading="loading"
@@ -10,53 +10,97 @@
       @row-click="onRowSingleClick"
       @row-dblclick="onRowDoubleClick"
       @row-contextmenu="onRowRightClick"
-      highlight-current-row border)
-      el-table-column(type="selection" width="38")
-      el-table-column(prop="title" label="Задача")
-      el-table-column(v-if="!$route.params.projectId" prop="projectName" label="Проект" width="150")
-      el-table-column(prop="state" label="Статус" width="120" :formatter="formatStatus")
-      el-table-column(prop="priority" label="Приоритет" width="120" :formatter="formatPriority")
-      el-table-column(prop="creationDate" label="Дата создания" width="180" :formatter="formatDate")
-      infinite-loading(
+      highlight-current-row="highlight-current-row"
+      border="border"
+    >
+      <el-table-column type="selection" width="38"></el-table-column>
+      <el-table-column prop="title" label="Задача"></el-table-column>
+      <el-table-column
+        v-if="!$route.params.projectId"
+        prop="projectName"
+        label="Проект"
+        width="150"
+      ></el-table-column>
+      <el-table-column
+        prop="state"
+        label="Статус"
+        width="120"
+        :formatter="formatStatus"
+      ></el-table-column>
+      <el-table-column
+        prop="priority"
+        label="Приоритет"
+        width="120"
+        :formatter="formatPriority"
+      ></el-table-column>
+      <el-table-column
+        prop="creationDate"
+        label="Дата создания"
+        width="180"
+        :formatter="formatDate"
+      ></el-table-column>
+      <infinite-loading
         slot="append"
         ref="loader"
         spinner="waveDots"
         @infinite="loadData"
-        force-use-infinite-wrapper=".el-table__body-wrapper")
-        div(slot="no-more")
-        div(slot="no-results")
-
-    vue-context(ref="contextMenu")
-      template(slot-scope="child")
-        li
-          a(v-if="isRowEditable" @click.prevent="editEntity($event, child.data.row)") Изменить
-        el-divider(v-if="isRowEditable")
-        li
-          a(@click.prevent="createEntity") Новая задача
-        el-divider
-        li.v-context__sub
-          a(v-if="isRowEditable") Изменить статус
-          ul.v-context
-            li
-              a(@click.prevent="editEntityStatus($event, child.data.row, 'New')") Новое
-            li
-              a(@click.prevent="editEntityStatus($event, child.data.row, 'Succeed')") Выполнено
-            li
-              a(@click.prevent="editEntityStatus($event, child.data.row, 'Delay')") Отложено
-            li
-              a(@click.prevent="editEntityStatus($event, child.data.row, 'Rejected')") Отклонено
-            el-divider
-            li
-              a(@click.prevent="editEntityStatus($event, child.data.row, 'Perform')") Выполняется
-            li
-              a(@click.prevent="editEntityStatus($event, child.data.row, 'Testing')") Проверяется
-        li
-          a(v-if="isRowEditable" @click.prevent="deleteEntity($event, child.data.row, isMultipleSelected)") Переместить в корзину
-        li
-          a(v-if="!isRowEditable" @click.prevent="restoreEntity($event, child.data.row, isMultipleSelected)") Восстановить
-
-    task-dialog(v-if="modalVisible" :id="modalData" @close="modalVisible = false" @submit="reloadData")
-
+        force-use-infinite-wrapper=".el-table__body-wrapper"
+      >
+        <div slot="no-more"></div>
+        <div slot="no-results"></div>
+      </infinite-loading>
+    </el-table>
+    <vue-context ref="contextMenu">
+      <template slot-scope="child">
+        <li>
+          <a v-if="isRowEditable" @click.prevent="editEntity(child.data.row)">Изменить</a>
+        </li>
+        <el-divider v-if="isRowEditable"></el-divider>
+        <li><a @click.prevent="createEntity">Новая задача</a></li>
+        <el-divider></el-divider>
+        <li class="v-context__sub">
+          <a v-if="isRowEditable">Изменить статус</a>
+          <ul class="v-context">
+            <li><a @click.prevent="editEntityStatus(child.data.row, 'New')">Новое</a></li>
+            <li>
+              <a @click.prevent="editEntityStatus(child.data.row, 'Succeed')">Выполнено</a>
+            </li>
+            <li>
+              <a @click.prevent="editEntityStatus(child.data.row, 'Delay')">Отложено</a>
+            </li>
+            <li>
+              <a @click.prevent="editEntityStatus(child.data.row, 'Rejected')">Отклонено</a>
+            </li>
+            <el-divider></el-divider>
+            <li>
+              <a @click.prevent="editEntityStatus(child.data.row, 'Perform')">Выполняется</a>
+            </li>
+            <li>
+              <a @click.prevent="editEntityStatus(child.data.row, 'Testing')">Проверяется</a>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <a v-if="isRowEditable" @click.prevent="deleteEntity(child.data.row, isMultipleSelected)"
+            >Переместить в корзину</a
+          >
+        </li>
+        <li>
+          <a
+            v-if="!isRowEditable"
+            @click.prevent="restoreEntity(child.data.row, isMultipleSelected)"
+            >Восстановить</a
+          >
+        </li>
+      </template>
+    </vue-context>
+    <task-dialog
+      v-if="modalVisible"
+      :id="modalData"
+      @close="modalVisible = false"
+      @submit="reloadData"
+    ></task-dialog>
+  </div>
 </template>
 
 <script lang="ts">
@@ -89,24 +133,24 @@ export default class TaskTable extends mixins(TableMixin) {
     this.modalVisible = true
   }
 
-  public editEntity(event: Event, entity: Task) {
+  public editEntity(entity: Task) {
     this.modalData = entity.id
     this.modalVisible = true
   }
 
-  private async deleteEntity(event: Event, entity: Task, multiple = false) {
+  private async deleteEntity(entity: Task, multiple = false) {
     if (multiple) await tasksModule.deleteMany(this.table.selection.map((item: Task) => item.id))
     else await tasksModule.deleteOne(entity.id as number)
     this.reloadData()
   }
 
-  private async restoreEntity(event: Event, entity: Task, multiple = false) {
+  private async restoreEntity(entity: Task, multiple = false) {
     if (multiple) await tasksModule.restoreMany(this.table.selection.map((item: Task) => item.id))
     else await tasksModule.restoreOne(entity.id as number)
     this.reloadData()
   }
 
-  private async editEntityStatus(event: Event, entity: Task, status: string) {
+  private async editEntityStatus(entity: Task, status: string) {
     if (this.isMultipleSelected) {
       const items = this.table.selection.map((item: Task) => {
         item.state = status as Status
