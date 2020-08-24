@@ -6,20 +6,14 @@ import Team from '@/types/team.type';
 export default {
   findOneById: (id: number) => httpClient.get(`/api/Teams/Get/${id}`),
   findAll: (query: Query) => httpClient.post(`/api/Teams/GetPage`, query),
-  findAllByIds: (ids: number) =>
-    httpClient.get(`/api/Teams/GetRange?${qs.stringify(ids)}`),
-  createOne: (entity: Team) =>
-    httpClient.post(`/api/Teams/CreateByForm`, entity),
-  updateOne: (entity: Team) =>
-    httpClient.put(`/api/Teams/UpdateByForm`, entity),
-  updateMany: (entities: Team[]) =>
-    httpClient.put(`/api/Teams/UpdateByFormRange/${entities}`),
+  findAllByIds: (ids: number[]) => httpClient.get(`/api/Teams/GetRange?${qs.stringify(ids)}`),
+  createOne: (entity: Team) => httpClient.post(`/api/Teams/CreateByForm`, entity),
+  updateOne: (entity: Team) => httpClient.put(`/api/Teams/UpdateByForm`, entity),
+  updateMany: (entities: Team[]) => httpClient.put(`/api/Teams/UpdateByFormRange/${entities}`),
   deleteOne: (id: number) => httpClient.delete(`/api/Teams/Delete/${id}`),
-  deleteMany: (ids: number[]) =>
-    httpClient.patch(`/api/Teams/DeleteRange`, ids),
+  deleteMany: (ids: number[]) => httpClient.patch(`/api/Teams/DeleteRange`, ids),
   restoreOne: (id: number) => httpClient.patch(`/api/Teams/Restore/${id}`),
-  restoreMany: (ids: number[]) =>
-    httpClient.patch(`/api/Teams/RestoreRange`, ids),
+  restoreMany: (ids: number[]) => httpClient.patch(`/api/Teams/RestoreRange`, ids),
   findUsers: (query: Query) =>
     httpClient.post(`/api/Teams/GetUsersPage?teamId=${query.teamId}`, query),
   addUser: (teamId: number, userId: string) =>

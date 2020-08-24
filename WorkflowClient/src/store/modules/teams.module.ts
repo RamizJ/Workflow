@@ -1,9 +1,11 @@
 import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 
+import store from '@/store';
 import teamsAPI from '@/api/teams.api';
 import Team from '@/types/team.type';
 import Query from '@/types/query.type';
-import store from '@/store';
+import Project from '@/types/project.type';
+import User from '@/types/user.type';
 
 @Module({
   dynamic: true,
@@ -12,14 +14,22 @@ import store from '@/store';
   store
 })
 class TeamsModule extends VuexModule {
-  _teams: Team[] = [];
   _team: Team | null = null;
+  _teams: Team[] = [];
+  _teamUsers: User[] = [];
+  _teamProjects: Project[] = [];
 
   public get team() {
     return this._team;
   }
   public get teams() {
     return this._teams;
+  }
+  public get teamUsers() {
+    return this._teamUsers;
+  }
+  public get teamProjects() {
+    return this._teamProjects;
   }
 
   @Mutation
@@ -32,9 +42,27 @@ class TeamsModule extends VuexModule {
     this._teams = teams;
   }
 
+  @Mutation
+  setTeamUsers(users: User[]) {
+    this._teamUsers = users;
+  }
+
+  @Mutation
+  setTeamProjects(projects: Project[]) {
+    this._teamProjects = projects;
+  }
+
   @Action
   async findAll(query: Query): Promise<Team[]> {
     const response = await teamsAPI.findAll(query);
+    const results = response.data as Team[];
+    this.context.commit('setTeams', results);
+    return results;
+  }
+
+  @Action
+  async findAllByIds(ids: number[]): Promise<Team[]> {
+    const response = await teamsAPI.findAllByIds(ids);
     const results = response.data as Team[];
     this.context.commit('setTeams', results);
     return results;
@@ -47,134 +75,115 @@ class TeamsModule extends VuexModule {
     this.context.commit('setTeam', result);
     return result;
   }
+
+  @Action
+  async createOne(entity: Team): Promise<Team> {
+    const response = await teamsAPI.createOne(entity);
+    const result = response.data as Team;
+    this.context.commit('setTeam', result);
+    return result;
+  }
+
+  @Action
+  async createMany(entities: Team[]): Promise<void> {
+    for (const entity of entities) {
+      await this.context.dispatch('createOne', entity);
+    }
+  }
+
+  @Action
+  async updateOne(entity: Team): Promise<void> {
+    await teamsAPI.updateOne(entity);
+  }
+
+  @Action
+  async updateMany(entities: Team[]): Promise<void> {
+    await teamsAPI.updateMany(entities);
+  }
+
+  @Action
+  async deleteOne(id: number): Promise<void> {
+    await teamsAPI.deleteOne(id);
+  }
+
+  @Action
+  async deleteMany(ids: number[]): Promise<void> {
+    await teamsAPI.deleteMany(ids);
+  }
+
+  @Action
+  async restoreOne(id: number): Promise<void> {
+    await teamsAPI.restoreOne(id);
+  }
+
+  @Action
+  async restoreMany(ids: number[]): Promise<void> {
+    await teamsAPI.restoreMany(ids);
+  }
+
+  @Action
+  async findUsers(query: Query): Promise<User[]> {
+    const response = await teamsAPI.findUsers(query);
+    const results = response.data as User[];
+    this.context.commit('setTeamUsers', results);
+    return results;
+  }
+
+  @Action
+  async addUser({ teamId, userId }: { teamId: number; userId: string }) {
+    await teamsAPI.addUser(teamId, userId);
+  }
+
+  @Action
+  async addUsers({ teamId, userIds }: { teamId: number; userIds: string[] }) {
+    for (const userId of userIds) {
+      await teamsAPI.addUser(teamId, userId);
+    }
+  }
+
+  @Action
+  async removeUser({ teamId, userId }: { teamId: number; userId: string }) {
+    await teamsAPI.removeUser(teamId, userId);
+  }
+
+  @Action
+  async removeUsers({ teamId, userIds }: { teamId: number; userIds: string[] }) {
+    for (const userId of userIds) {
+      await teamsAPI.removeUser(teamId, userId);
+    }
+  }
+
+  @Action
+  async findProjects(query: Query): Promise<Project[]> {
+    const response = await teamsAPI.findProjects(query);
+    const results = response.data as Project[];
+    this.context.commit('setTeamProjects', results);
+    return results;
+  }
+
+  @Action
+  async addProject({ teamId, projectId }: { teamId: number; projectId: number }) {
+    await teamsAPI.addProject(teamId, projectId);
+  }
+
+  @Action
+  async addProjects({ teamId, projectIds }: { teamId: number; projectIds: number[] }) {
+    for (const projectId of projectIds) {
+      await teamsAPI.addProject(teamId, projectId);
+    }
+  }
+
+  @Action
+  async removeProject({ teamId, projectId }: { teamId: number; projectId: number }) {
+    await teamsAPI.removeProject(teamId, projectId);
+  }
+
+  @Action
+  async removeProjects({ teamId, projectIds }: { teamId: number; projectIds: number[] }) {
+    for (const projectId of projectIds) {
+      await teamsAPI.removeProject(teamId, projectId);
+    }
+  }
 }
 
 export default getModule(TeamsModule);
-
-// export default {
-//   namespaced: true,
-//   state: () => ({
-//     teams: [],
-//     team: {},
-//     teamUsers: [],
-//     teamProjects: []
-//   }),
-//   mutations: {
-//     setTeams(state, teams) {
-//       state.teams = teams;
-//     },
-//     setTeam(state, team) {
-//       state.team = team;
-//     },
-//     setTeamUsers(state, teamUsers) {
-//       state.teamUsers = teamUsers;
-//     },
-//     setTeamProjects(state, teamProjects) {
-//       state.teamProjects = teamProjects;
-//     }
-//   },
-//   actions: {
-//     async findOneById({ commit }, id) {
-//       const response = await teamsAPI.findOneById(id);
-//       const team = response.data;
-//       team.userIds = [];
-//       team.projectIds = [];
-//       commit('setTeam', team);
-//       return team;
-//     },
-//     async findAll({ commit }, params) {
-//       const response = await teamsAPI.findAll(params);
-//       const teams = response.data.map(team => {
-//         team.userIds = [];
-//         team.projectIds = [];
-//         return team;
-//       });
-//       commit('setTeams', teams);
-//       return teams;
-//     },
-//     async findAllByIds({ commit }, ids) {
-//       const response = await teamsAPI.findAllByIds(ids);
-//       const teams = response.data.map(team => {
-//         team.userIds = [];
-//         team.projectIds = [];
-//         return team;
-//       });
-//       commit('setTeams', teams);
-//       return teams;
-//     },
-//     async createOne({ commit }, team) {
-//       const response = await teamsAPI.createOne({
-//         team,
-//         userIds: team.userIds,
-//         projectIds: team.projectIds
-//       });
-//       commit('setTeam', response.data);
-//       return response.data;
-//     },
-//     async updateOne({ commit }, team) {
-//       const response = await teamsAPI.updateOne({
-//         team,
-//         projectIds: team.projectIds,
-//         userIds: team.userIds
-//       });
-//       commit('setTeam', response.data);
-//       return response.data;
-//     },
-//     async updateMany({ commit }, teams) {
-//       const response = await teamsAPI.updateMany(
-//         teams.map(team => {
-//           return {
-//             team,
-//             projectIds: team.projectIds,
-//             userIds: team.userIds
-//           };
-//         })
-//       );
-//       commit('setTeams', response.data);
-//       return response.data;
-//     },
-//     async deleteOne({ commit }, id) {
-//       await teamsAPI.deleteOne(id);
-//     },
-//     async deleteMany({ commit }, ids) {
-//       await teamsAPI.deleteMany(ids);
-//     },
-//     async restoreOne({ commit }, id) {
-//       await teamsAPI.restoreOne(id);
-//     },
-//     async restoreMany({ commit }, ids) {
-//       await teamsAPI.restoreMany(ids);
-//     },
-//     async findUsers({ commit }, params) {
-//       const response = await teamsAPI.findUsers(params);
-//       commit('setTeamUsers', response.data);
-//       return response.data;
-//     },
-//     async addUser({ commit }, { teamId, userId }) {
-//       await teamsAPI.addUser(teamId, userId);
-//     },
-//     async addUsers({ commit }, { teamId, userIds }) {
-//       await teamsAPI.addUser(teamId, userIds);
-//     },
-//     async removeUser({ commit }, { teamId, userId }) {
-//       await teamsAPI.removeUser(teamId, userId);
-//     },
-//     async findProjects({ commit }, params) {
-//       const response = await teamsAPI.findProjects(params);
-//       commit('setTeamProjects', response.data);
-//       return response.data;
-//     },
-//     async addProject({ commit }, { teamId, projectId }) {
-//       await teamsAPI.addProject(teamId, projectId);
-//     },
-//     async removeProject({ commit }, { teamId, projectId }) {
-//       await teamsAPI.removeProject(teamId, projectId);
-//     }
-//   },
-//   getters: {
-//     getTeams: state => state.teams,
-//     getTeam: state => state.team,
-//     getTeamUsers: state => state.teamUsers,
-//     getTeamProjects: state => state.teamProjects
-//   }
-// };
