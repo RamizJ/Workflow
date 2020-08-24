@@ -11,5 +11,6 @@ export default interface Project {
   isRemoved?: boolean
 
   index?: number
+  teamId?: number
   teamIds?: number[]
 }

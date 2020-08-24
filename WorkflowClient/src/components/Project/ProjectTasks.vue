@@ -1,50 +1,58 @@
-<template lang="pug">
-  div.project-tasks
-    task-toolbar(
+<template>
+  <div class="project-tasks">
+    <task-toolbar
       @search="onSearch"
       @filters="onFiltersChange"
       @order="onOrderChange"
       @sort="onSortChange"
-      @view="onViewChange")
-    task-table(
+      @view="onViewChange"
+    ></task-toolbar>
+    <task-table
       v-if="view === 'list'"
       ref="items"
       :search="search"
       :filters="filters"
       :order="order"
-      :sort="sort")
-    task-board(
+      :sort="sort"
+    ></task-table>
+    <task-board
       v-if="view === 'board'"
       ref="items"
       :search="search"
       :filters="filters"
       :order="order"
-      :sort="sort")
-
+      :sort="sort"
+    ></task-board>
+  </div>
 </template>
 
-<script>
-import Page from '@/components/Page';
-import BaseHeader from '@/components/BaseHeader';
-import TaskToolbar from '@/components/Task/TaskToolbar';
-import TaskTable from '@/components/Task/TaskTable';
-import TaskBoard from '@/components/Task/TaskBoard';
-import pageMixin from '@/mixins/page.mixin';
+<script lang="ts">
+import { Component } from 'vue-property-decorator'
+import { mixins } from 'vue-class-component'
 
-export default {
+import PageMixin from '@/mixins/page.mixin'
+import Page from '@/components/Page.vue'
+import BaseHeader from '@/components/BaseHeader.vue'
+import TaskToolbar from '@/components/Task/TaskToolbar.vue'
+import TaskTable from '@/components/Task/TaskTable.vue'
+import TaskBoard from '@/components/Task/TaskBoard.vue'
+import { SortType } from '@/types/query.type'
+
+@Component({
   components: {
     Page,
     BaseHeader,
     TaskToolbar,
     TaskTable,
     TaskBoard
-  },
-  mixins: [pageMixin],
-  created() {
-    if (!this.$route.query.sort) this.onSortChange('creationDate');
-    if (!this.$route.query.order) this.onOrderChange('Descending');
   }
-};
+})
+export default class ProjectTasks extends mixins(PageMixin) {
+  private created() {
+    if (!this.$route.query.sort) this.onSortChange('creationDate')
+    if (!this.$route.query.order) this.onOrderChange(SortType.Descending)
+  }
+}
 </script>
 
 <style lang="scss" scoped>

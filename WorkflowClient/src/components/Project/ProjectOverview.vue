@@ -1,78 +1,80 @@
-<template lang="pug">
-  div.project-overview
-    el-row(:gutter="20")
-      el-col(:span="10")
-        el-card.card(shadow="never")
-          div.card__title Описание
-          div.card__body
-            el-input(
+<template>
+  <div class="project-overview">
+    <el-row :gutter="20">
+      <el-col :span="10">
+        <el-card class="card" shadow="never">
+          <div class="card__title">Описание</div>
+          <div class="card__body">
+            <el-input
               v-model="project.description"
               :autosize="{ minRows: 2 }"
               type="textarea"
               placeholder="Подробно опишите ваш проект..."
-              @change="$emit('description', project.description)")
-      el-col(:span="6")
-        el-card.card(shadow="never")
-          div.card__title Задач выполнено
-          div.card__body
-            div.tasks-stats {{ completedTasksCount }} из {{ totalTasksCount }}
-            el-progress(:percentage="progressPercentage")
-      el-col(:span="8")
-        el-card.card(shadow="never")
-          div.card__title Информация
-          div.card__body
-            div Руководитель проекта: {{ project.ownerFio }}
-            //div Сроки проекта: 14.07.2020 – 03.08.2020
-
+              @change="$emit('description', project.description)"
+            ></el-input>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card class="card" shadow="never">
+          <div class="card__title">Задач выполнено</div>
+          <div class="card__body">
+            <div class="tasks-stats">{{ completedTasksCount }} из {{ totalTasksCount }}</div>
+            <el-progress :percentage="progressPercentage"></el-progress>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="8">
+        <el-card class="card" shadow="never">
+          <div class="card__title">Информация</div>
+          <div class="card__body">
+            <div>Руководитель проекта: {{ project.ownerFio }}</div>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </div>
 </template>
 
-<script>
-import { mapActions } from 'vuex';
+<script lang="ts">
+import { Component, Prop, Vue } from 'vue-property-decorator'
 
-export default {
-  name: 'ProjectOverview',
-  props: {
-    data: Object
-  },
-  data() {
-    return {
-      project: {
-        name: '',
-        description: '',
-        ownerId: null,
-        ownerFio: null,
-        teamId: null,
-        teamName: null,
-        groupId: null,
-        groupName: null
-      },
-      totalTasksCount: 0,
-      completedTasksCount: 0
-    };
-  },
-  computed: {
-    progressPercentage() {
-      const total = parseInt(this.totalTasksCount);
-      const completed = parseInt(this.completedTasksCount);
-      const result = Math.round((completed * 100) / total);
-      return result || 0;
-    }
-  },
-  async mounted() {
-    this.project = { ...this.data };
-    this.totalTasksCount = await this.getTasksCount(this.project.id);
-    this.completedTasksCount = await this.getTasksCountByStatus({
-      projectId: this.project.id,
-      status: 'Succeed'
-    });
-  },
-  methods: {
-    ...mapActions({
-      getTasksCount: 'projects/getTasksCount',
-      getTasksCountByStatus: 'projects/getTasksCountByStatus'
-    })
+import projectModule from '@/store/modules/projects.module'
+import Project from '@/types/project.type'
+import { Status } from '@/types/task.type'
+
+@Component
+export default class ProjectOverview extends Vue {
+  @Prop() readonly data: Project | undefined
+
+  private project: Project = {
+    name: '',
+    description: '',
+    ownerId: '',
+    ownerFio: '',
+    teamIds: []
   }
-};
+  private totalTasksCount = 0
+  private completedTasksCount = 0
+
+  private get progressPercentage(): number {
+    const total: number = this.totalTasksCount
+    const completed: number = this.completedTasksCount
+    const result = Math.round((completed * 100) / total)
+    return result || 0
+  }
+
+  private async mounted() {
+    this.project = { ...this.data } as Project
+    if (this.project.id) {
+      this.totalTasksCount = await projectModule.getTasksCount(this.project.id)
+      this.completedTasksCount = await projectModule.getTasksCountByStatus({
+        projectId: this.project.id,
+        status: Status.Succeed
+      })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
