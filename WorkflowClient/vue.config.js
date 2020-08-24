@@ -1,6 +1,10 @@
 const path = require('path');
 const webpack = require('webpack');
 
+/**
+ *  @typedef { import("@vue/cli-service").ProjectOptions } Options
+ *  @type { Options }
+ */
 module.exports = {
   publicPath: process.env.VUE_APP_BASE_URL,
   configureWebpack: {

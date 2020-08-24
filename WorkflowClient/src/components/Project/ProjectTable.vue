@@ -39,24 +39,20 @@
 </template>
 
 <script>
-import tableMixin from '@/mixins/table.mixin';
+// import tableMixin from '@/mixins/table.mixin';
 import ProjectDialog from '@/components/Project/ProjectDialog';
 
 export default {
   name: 'ProjectList',
   components: { ProjectDialog },
-  mixins: [tableMixin],
+  // mixins: [tableMixin],
   data() {
     return {
       getters: {
-        items: this.$route.params.teamId
-          ? 'teams/getTeamProjects'
-          : 'projects/getProjects'
+        items: this.$route.params.teamId ? 'teams/getTeamProjects' : 'projects/getProjects'
       },
       actions: {
-        fetchItems: this.$route.params.teamId
-          ? 'teams/findProjects'
-          : 'projects/findAll',
+        fetchItems: this.$route.params.teamId ? 'teams/findProjects' : 'projects/findAll',
         deleteItem: 'projects/deleteOne',
         deleteItems: 'projects/deleteMany',
         restoreItem: 'projects/restoreOne',

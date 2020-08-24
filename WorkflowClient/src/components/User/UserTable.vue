@@ -43,24 +43,20 @@
 </template>
 
 <script>
-import tableMixin from '@/mixins/table.mixin';
+// import tableMixin from '@/mixins/table.mixin';
 import UserDialog from '@/components/User/UserDialog';
 
 export default {
   name: 'UserList',
   components: { UserDialog },
-  mixins: [tableMixin],
+  // mixins: [tableMixin],
   data() {
     return {
       getters: {
-        items: this.$route.params.teamId
-          ? 'teams/getTeamUsers'
-          : 'users/getUsers'
+        items: this.$route.params.teamId ? 'teams/getTeamUsers' : 'users/getUsers'
       },
       actions: {
-        fetchItems: this.$route.params.teamId
-          ? 'teams/findUsers'
-          : 'users/findAll',
+        fetchItems: this.$route.params.teamId ? 'teams/findUsers' : 'users/findAll',
         deleteItem: 'users/deleteOne',
         deleteItems: 'users/deleteMany',
         restoreItem: 'users/restoreOne',
@@ -80,7 +76,7 @@ export default {
       const userId = row.id;
       if (this.isMultipleSelected) {
         const userIds = this.table.selection.map(item => item.id);
-        for (let id of userIds) {
+        for (const id of userIds) {
           await this.$store.dispatch(this.actions.removeFromTeam, {
             teamId,
             userId: id

@@ -1,6 +1,47 @@
-import { mapActions, mapGetters } from 'vuex';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
-export default {
+@Component
+export default class DialogMixin extends Vue {
+  @Prop()
+  data: any;
+
+  private visible = false;
+  private loading = false;
+  private isEdit = !!this.data;
+  private form: any;
+
+  async sendForm() {
+    this.loading = true;
+    const payload = { ...this.form };
+    // if (this.isEdit) await this.updateItem(payload);
+    // else await this.createItem(payload);
+    this.loading = false;
+  }
+
+  async submit(event: Event) {
+    // await this.$refs.form.validate(async valid => {
+    //   if (valid) {
+    //     await this.sendForm();
+    //     this.$emit('submit');
+    //     this.exit();
+    //   } else {
+    //     this.$message({
+    //       showClose: true,
+    //       message: 'Форма заполнена некорректно',
+    //       type: 'error'
+    //     });
+    //   }
+    // });
+  }
+
+  exit() {
+    // this.$refs.form?.resetFields();
+    this.visible = false;
+    this.$emit('close');
+  }
+}
+
+/*export default {
   props: {
     data: Object
   },
@@ -106,4 +147,4 @@ export default {
       this.$emit('close');
     }
   }
-};
+};*/

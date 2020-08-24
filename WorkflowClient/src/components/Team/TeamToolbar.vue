@@ -18,7 +18,7 @@ import Toolbar from '@/components/Toolbar/Toolbar';
 import ToolbarFilters from '@/components/Toolbar/ToolbarFilters';
 import ToolbarFiltersExtra from '@/components/Toolbar/ToolbarFiltersExtra';
 import ToolbarView from '@/components/Toolbar/ToolbarView';
-import toolbarMixin from '@/mixins/toolbar.mixin';
+import toolbarMixin from '@/mixins/toolbar.mixin2';
 
 export default {
   name: 'TeamToolbar',

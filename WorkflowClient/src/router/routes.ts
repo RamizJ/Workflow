@@ -6,61 +6,61 @@ export const routes = [
   {
     path: '/',
     name: 'Dashboard',
-    component: () => import('@/pages/Dashboard.vue'),
+    component: () => import('@/views/Dashboard.vue'),
     meta: { layout: LayoutDefault }
   },
   {
     path: '/tasks',
     name: 'Tasks',
-    component: () => import('@/pages/Tasks.vue'),
+    component: () => import('@/views/Tasks.vue'),
     meta: { layout: LayoutDefault }
   },
   {
     path: '/projects',
     name: 'Projects',
-    component: () => import('@/pages/Projects.vue'),
+    component: () => import('@/views/Projects.vue'),
     meta: { layout: LayoutDefault }
   },
   {
     path: '/projects/:projectId',
     name: 'Project',
-    component: () => import('@/pages/Project.vue'),
+    component: () => import('@/views/Project.vue'),
     meta: { layout: LayoutDefault }
   },
   {
     path: '/teams',
     name: 'Teams',
-    component: () => import('@/pages/Teams.vue'),
+    component: () => import('@/views/Teams.vue'),
     meta: { layout: LayoutDefault }
   },
   {
     path: '/teams/:teamId',
     name: 'Team',
-    component: () => import('@/pages/Team.vue'),
+    component: () => import('@/views/Team.vue'),
     meta: { layout: LayoutDefault }
   },
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@/pages/Login.vue'),
+    component: () => import('@/views/Login.vue'),
     meta: { layout: LayoutLogin }
   },
   {
     path: '/profile',
     name: 'Profile',
-    component: () => import('@/pages/Profile.vue'),
+    component: () => import('@/views/Profile.vue'),
     meta: { layout: LayoutDefault }
   },
   {
     path: '/settings',
     name: 'Settings',
-    component: () => import('@/pages/Settings.vue'),
+    component: () => import('@/views/Settings.vue'),
     meta: { layout: LayoutDefault }
   },
   {
     path: '/users',
     name: 'Users',
-    component: () => import('@/pages/Users.vue'),
+    component: () => import('@/views/Users.vue'),
     meta: { layout: LayoutDefault }
   }
 ];

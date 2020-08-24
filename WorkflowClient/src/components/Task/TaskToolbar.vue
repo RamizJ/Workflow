@@ -3,7 +3,7 @@
     toolbar-filters
       div.filter
         div.label Поиск
-        el-input(v-model="q" size="medium" placeholder="Искать..." @change="onSearch")
+        el-input(v-model="search" size="medium" placeholder="Искать..." @change="onSearch")
           el-button(slot="prefix" type="text" size="mini" @click="onSearch")
             feather(type="search" size="16")
       div.filter(v-if="$route.query.view !== 'board'")
@@ -34,7 +34,7 @@
           @focus="onProjectsFocus"
           @change="onFiltersChange"
           multiple collapse-tags filterable remote default-first-option)
-          el-option(v-for="item in projectList" :key="item.id" :label="item.value" :value="item.id")
+          el-option(v-for="item in projects" :key="item.id" :label="item.value" :value="item.id")
     toolbar-filters-extra
       el-row(:gutter="20")
         el-col(:span="24")
@@ -47,7 +47,7 @@
               @focus="onUsersFocus"
               @change="onFiltersChange"
               multiple collapse-tags filterable remote default-first-option)
-              el-option(v-for="item in userList" :key="item.id" :label="item.value" :value="item.id")
+              el-option(v-for="item in users" :key="item.id" :label="item.value" :value="item.id")
           //div.filter
             div.label Крайний срок
             el-date-picker(
@@ -64,32 +64,31 @@
     toolbar-view(:sort-fields="sortFields" @order="onOrderChange" @sort="onSortChange" @view="onViewChange" board list)
 </template>
 
-<script>
-import Toolbar from '@/components/Toolbar/Toolbar';
-import ToolbarFilters from '@/components/Toolbar/ToolbarFilters';
-import ToolbarFiltersExtra from '@/components/Toolbar/ToolbarFiltersExtra';
-import ToolbarView from '@/components/Toolbar/ToolbarView';
-import toolbarMixin from '@/mixins/toolbar.mixin';
+<script lang="ts">
+import { Component } from 'vue-property-decorator';
+import { mixins } from 'vue-class-component';
 
-export default {
-  name: 'TaskToolbar',
+import Toolbar from '@/components/Toolbar/Toolbar.vue';
+import ToolbarFilters from '@/components/Toolbar/ToolbarFilters.vue';
+import ToolbarFiltersExtra from '@/components/Toolbar/ToolbarFiltersExtra.vue';
+import ToolbarView from '@/components/Toolbar/ToolbarView.vue';
+import ToolbarMixin from '@/mixins/toolbar.mixin.ts';
+
+@Component({
   components: {
     Toolbar,
     ToolbarFilters,
     ToolbarFiltersExtra,
     ToolbarView
-  },
-  mixins: [toolbarMixin],
-  data() {
-    return {
-      sortFields: [
-        { value: 'creationDate', label: 'По дате создания' },
-        { value: 'title', label: 'По названию' },
-        { value: 'projectName', label: 'По проекту' },
-        { value: 'state', label: 'По статусу' },
-        { value: 'priority', label: 'По приоритету' }
-      ]
-    };
   }
-};
+})
+export default class TaskToolbar extends mixins(ToolbarMixin) {
+  private sortFields = [
+    { value: 'creationDate', label: 'По дате создания' },
+    { value: 'title', label: 'По названию' },
+    { value: 'projectName', label: 'По проекту' },
+    { value: 'state', label: 'По статусу' },
+    { value: 'priority', label: 'По приоритету' }
+  ];
+}
 </script>

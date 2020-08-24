@@ -52,9 +52,9 @@
         feather(type="settings")
         span Настройки
 
-      div.divider
+      //div.divider
 
-      el-collapse(v-model="collapseState")
+      //el-collapse(v-model="collapseState")
         el-collapse-item(title="Проекты" name="projects")
           el-menu-item(v-for="item in projects" :key="item.id" :index="`/projects/${item.id}`")
             feather(type="box")
@@ -73,35 +73,35 @@ import { mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'AppSidebar',
-  data() {
-    return {
-      collapseState: ['projects']
-    };
-  },
-  computed: {
-    ...mapGetters({
-      me: 'auth/me',
-      projects: 'projects/getSidebarProjects'
-    })
-  },
+  // data() {
+  //   return {
+  //     collapseState: ['projects']
+  //   };
+  // },
+  // computed: {
+  //   ...mapGetters({
+  //     me: 'auth/me',
+  //     projects: 'projects/getSidebarProjects'
+  //   })
+  // },
   methods: {
-    ...mapActions({
-      logout: 'auth/logout',
-      fetchSidebarProjects: 'projects/fetchSidebarProjects'
-    }),
-    async load($state) {
-      const projects = await this.fetchSidebarProjects();
-      if (projects.length) $state.loaded();
-      else $state.complete();
-    },
-    async exit() {
-      try {
-        await this.logout();
-        await this.$router.push({ name: 'Login' });
-      } catch (e) {
-        this.$message.error('Ошибка выхода из учётной записи');
-      }
-    }
+    // ...mapActions({
+    //   logout: 'auth/logout',
+    //   fetchSidebarProjects: 'projects/fetchSidebarProjects'
+    // }),
+    // async load($state) {
+    //   const projects = await this.fetchSidebarProjects();
+    //   if (projects.length) $state.loaded();
+    //   else $state.complete();
+    // },
+    // async exit() {
+    //   try {
+    //     await this.logout();
+    //     await this.$router.push({ name: 'Login' });
+    //   } catch (e) {
+    //     this.$message.error('Ошибка выхода из учётной записи');
+    //   }
+    // }
   }
 };
 </script>

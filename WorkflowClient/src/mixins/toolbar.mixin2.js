@@ -34,12 +34,18 @@ export default {
     };
   },
   computed: {
-    ...mapGetters({
-      projects: 'projects/getProjects',
-      users: 'users/getUsers'
-    }),
+    projects() {
+      return this.$store.getters['ProjectsModule/projects'];
+    },
+    users() {
+      return this.$store.getters['UsersModule/users'];
+    },
+    // ...mapGetters({
+    //   projects: 'projects/getProjects',
+    //   users: 'users/getUsers'
+    // }),
     filterFields() {
-      let filterFields = [];
+      const filterFields = [];
       if (this.filters.statuses.length)
         filterFields.push({
           fieldName: 'state',

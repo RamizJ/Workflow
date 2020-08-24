@@ -59,8 +59,7 @@ export default {
       handler(value) {
         this.query.filterFields = value;
         this.query.withRemoved = !!value.find(
-          filter =>
-            filter.fieldName === 'isRemoved' && filter.values[0] === true
+          filter => filter.fieldName === 'isRemoved' && filter.values[0] === true
         );
         this.refresh();
       }
@@ -75,12 +74,21 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({
-      items: '',
-      projects: 'projects/getProjects',
-      teams: 'teams/getTeams',
-      users: 'users/getUsers'
-    }),
+    projects() {
+      return this.$store.getters['ProjectsModule/projects'];
+    },
+    teams() {
+      return this.$store.getters['TeamsModule/teams'];
+    },
+    users() {
+      return this.$store.getters['UsersModule/users'];
+    },
+    // ...mapGetters({
+    // items: ''
+    // projects: 'projects/getProjects',
+    // teams: 'teams/getTeams',
+    // users: 'users/getUsers'
+    // }),
     isEditVisible() {
       return !this.selectedRow?.isRemoved;
     },
@@ -102,8 +110,7 @@ export default {
       else return this.$refs.loader;
     },
     contextMenu() {
-      if (Array.isArray(this.$refs.contextMenu))
-        return this.$refs.contextMenu[0];
+      if (Array.isArray(this.$refs.contextMenu)) return this.$refs.contextMenu[0];
       else return this.$refs.contextMenu;
     },
     isMultipleSelected() {
@@ -194,18 +201,21 @@ export default {
       if (firstLoad) this.loading = false;
     },
     async fetch(params) {
-      const items = await this.$store.dispatch(this.actions.fetchItems, params);
-      this.query.pageNumber++;
-      return items;
+      // const tasksModule = GetModule();
+      console.log('fetch data for table');
+      console.log(this.actions);
+      const test = await this.$store.dispatch('TasksModule/findAll', params);
+      console.log(test);
+      // const items = await this.$store.dispatch(this.actions.fetchItems, params);
+      // this.query.pageNumber++;
+      // return items;
     },
     onFilterChange(value) {
       console.log(value);
     },
     onOrderChange() {
       this.query.sortFields[0].sortType =
-        this.query.sortFields[0].sortType === 'Ascending'
-          ? 'Descending'
-          : 'Ascending';
+        this.query.sortFields[0].sortType === 'Ascending' ? 'Descending' : 'Ascending';
       this.refresh();
     },
     onSortChange(value) {
@@ -224,14 +234,8 @@ export default {
     onItemSingleClick(row, column, event) {
       this.table.clearSelection();
       if (this.isShift) {
-        const beginIndex =
-          this.selectedRow.index < row.index
-            ? this.selectedRow.index
-            : row.index;
-        const endIndex =
-          this.selectedRow.index > row.index
-            ? this.selectedRow.index
-            : row.index;
+        const beginIndex = this.selectedRow.index < row.index ? this.selectedRow.index : row.index;
+        const endIndex = this.selectedRow.index > row.index ? this.selectedRow.index : row.index;
         this.tableData.some(item => {
           if (item.index <= endIndex && item.index >= beginIndex)
             this.table.toggleRowSelection(item);
@@ -299,8 +303,7 @@ export default {
       return dateUtc.format('DD.MM.YYYY HH:mm');
     },
     priorityFormatter(row, column, cellValue, index) {
-      return this.priorities.find(priority => priority.value === cellValue)
-        .label;
+      return this.priorities.find(priority => priority.value === cellValue).label;
     },
     stateFormatter(row, column, cellValue, index) {
       return this.statuses.find(status => status.value === cellValue).label;

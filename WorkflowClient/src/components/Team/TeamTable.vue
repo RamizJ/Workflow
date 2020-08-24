@@ -39,28 +39,26 @@
 </template>
 
 <script>
-import tableMixin from '@/mixins/table.mixin';
+// import tableMixin from '@/mixins/table.mixin';
 import TeamDialog from '@/components/Team/TeamDialog';
 
 export default {
   name: 'TeamList',
   components: { TeamDialog },
-  mixins: [tableMixin],
+  // mixins: [tableMixin],
   data() {
     return {
       getters: {
         items: 'teams/getTeams'
       },
       actions: {
-        fetchItems: this.$route.params.projectId
-          ? 'projects/findTeams'
-          : 'teams/findAll',
+        fetchItems: this.$route.params.projectId ? 'projects/findTeams' : 'teams/findAll',
         deleteItem: 'teams/deleteOne',
         deleteItems: 'teams/deleteMany',
         restoreItem: 'teams/restoreOne',
         restoreItems: 'teams/restoreMany',
         removeProjectTeam: 'projects/removeTeam',
-        removeProjectTeams: 'projects/removeTeams',
+        removeProjectTeams: 'projects/removeTeams'
       }
     };
   },
@@ -74,8 +72,7 @@ export default {
       const teamIds = this.table.selection.map(item => item.id);
       if (this.isMultipleSelected)
         await this.$store.dispatch(this.actions.removeProjectTeams, { projectId, teamIds });
-      else
-        await this.$store.dispatch(this.actions.removeProjectTeam, { projectId, teamId });
+      else await this.$store.dispatch(this.actions.removeProjectTeam, { projectId, teamId });
       this.refresh();
     }
   }

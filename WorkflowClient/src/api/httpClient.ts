@@ -1,21 +1,21 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { Message } from 'element-ui';
 
 const getToken = () => localStorage.getItem('access_token');
 
-const httpClient = axios.create({
+const httpClient: AxiosInstance = axios.create({
   baseURL: process.env.VUE_APP_API_URL,
   headers: {
     'Content-Type': 'application/json'
   }
 });
 
-const authInterceptor = config => {
+const authInterceptor = (config: any) => {
   config.headers['Authorization'] = `Bearer ${getToken()}`;
   return config;
 };
 
-const errorResponseHandler = error => {
+const errorResponseHandler = (error: any) => {
   const isDebugMode = localStorage.debugMode === 'true';
 
   // If error when fetch current user, then unauthorized > return
@@ -30,7 +30,7 @@ const errorResponseHandler = error => {
   if (isDebugMode) pushErrorMessage(error);
 };
 
-const pushErrorMessage = error => {
+const pushErrorMessage = (error: any) => {
   const url = error.config.url;
   const data = error.response?.data;
   const statusCode = error.response?.status;
