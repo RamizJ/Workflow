@@ -109,6 +109,7 @@
 import { mapActions, mapGetters } from 'vuex';
 import BaseDialog from '@/components/BaseDialog';
 import dialogMixin from '@/mixins/dialog.mixin';
+import moment from 'moment';
 
 export default {
   components: { BaseDialog },
@@ -122,7 +123,7 @@ export default {
           ? parseInt(this.$route.params.projectId)
           : null,
         projectName: null,
-        creationDate: new Date(),
+        creationDate: moment.utc(moment()).format(),
         expectedCompletedDate: null,
         state: 'New',
         priority: 'Normal',
@@ -216,10 +217,12 @@ export default {
       if (!this.form.isChildsExist) return;
       this.loading = true;
       const childTasks = await this.fetchChildTasks(this.form.id);
-      this.childTasks = Array.from(childTasks.map(task => {
-        task.checked = task.state === 'Succeed';
-        return { ...task };
-      }));
+      this.childTasks = Array.from(
+        childTasks.map(task => {
+          task.checked = task.state === 'Succeed';
+          return { ...task };
+        })
+      );
       this.checklist = childTasks.map(task => {
         task.checked = task.state === 'Succeed';
         return task;
@@ -240,7 +243,7 @@ export default {
     },
     onChecklistItemDelete(itemIndex) {
       if (this.checklist[itemIndex].title === null)
-        this.checklist.splice(itemIndex, 1)
+        this.checklist.splice(itemIndex, 1);
       if (this.checklist[itemIndex] && this.checklist[itemIndex].title === '')
         this.checklist[itemIndex].title = null;
     },
@@ -249,22 +252,30 @@ export default {
       this.loading = true;
 
       const previousChecklist = this.childTasks;
-      const currentChecklist = this.checklist.map(item => {
-        item.state = item.checked ? 'Succeed' : 'New';
-        return item;
-      }).reverse();
+      const currentChecklist = this.checklist
+        .map(item => {
+          item.state = item.checked ? 'Succeed' : 'New';
+          return item;
+        })
+        .reverse();
 
       this.form.isChildsExist = true;
 
       const parentId = this.isEdit ? this.form.id : this.task.id;
-      const tasksToCreate = currentChecklist.filter(item => !item.id)
+      const tasksToCreate = currentChecklist.filter(item => !item.id);
       if (tasksToCreate.length)
         await this.addChildTasks({ parentId, tasks: tasksToCreate });
 
-      const removedItems = this.getRemovedChecklistItems(previousChecklist, currentChecklist);
+      const removedItems = this.getRemovedChecklistItems(
+        previousChecklist,
+        currentChecklist
+      );
       await this.deleteTasks(removedItems.map(item => item.id));
 
-      const changedItems = this.getChangedChecklistItems(previousChecklist, currentChecklist);
+      const changedItems = this.getChangedChecklistItems(
+        previousChecklist,
+        currentChecklist
+      );
       await this.updateTasks(changedItems);
 
       this.loading = false;
@@ -272,22 +283,24 @@ export default {
     getRemovedChecklistItems(previousChecklist, currentChecklist) {
       let removedItems = [];
       for (let previousItem of previousChecklist) {
-        const existingItem = currentChecklist.find(currentItem => currentItem.id === previousItem.id)
-        if (!existingItem)
-          removedItems.push(previousItem);
+        const existingItem = currentChecklist.find(
+          currentItem => currentItem.id === previousItem.id
+        );
+        if (!existingItem) removedItems.push(previousItem);
       }
       return removedItems;
     },
     getChangedChecklistItems(previousChecklist, currentChecklist) {
       let changedItems = [];
       for (let previousItem of previousChecklist) {
-        const changedItem = currentChecklist.find(currentItem =>
-          currentItem.id &&
-          (currentItem.id === previousItem.id) &&
-          ((currentItem.checked !== previousItem.checked) || (currentItem.title !== previousItem.title))
-        )
-        if (changedItem)
-          changedItems.push(changedItem);
+        const changedItem = currentChecklist.find(
+          currentItem =>
+            currentItem.id &&
+            currentItem.id === previousItem.id &&
+            (currentItem.checked !== previousItem.checked ||
+              currentItem.title !== previousItem.title)
+        );
+        if (changedItem) changedItems.push(changedItem);
       }
       return changedItems;
     },
