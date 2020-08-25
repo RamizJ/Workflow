@@ -29,33 +29,25 @@
   </toolbar>
 </template>
 
-<script>
-import Toolbar from '@/components/Toolbar/Toolbar'
-import ToolbarFilters from '@/components/Toolbar/ToolbarFilters'
-import ToolbarFiltersExtra from '@/components/Toolbar/ToolbarFiltersExtra'
-import ToolbarView from '@/components/Toolbar/ToolbarView'
-import toolbarMixin from '@/mixins/toolbar.mixin2'
+<script lang="ts">
+import { Component } from 'vue-property-decorator'
+import { mixins } from 'vue-class-component'
 
-export default {
-  name: 'TeamToolbar',
-  components: {
-    Toolbar,
-    ToolbarFilters,
-    ToolbarFiltersExtra,
-    ToolbarView
-  },
-  mixins: [toolbarMixin],
-  data() {
-    return {
-      sortFields: [
-        { value: 'lastName', label: 'По фамилии' },
-        { value: 'firstName', label: 'По имени' },
-        { value: 'middleName', label: 'По отчеству' },
-        { value: 'userName', label: 'По логину' },
-        { value: 'email', label: 'По почте' },
-        { value: 'position', label: 'По должности' }
-      ]
-    }
-  }
+import ToolbarMixin from '@/mixins/toolbar.mixin'
+import Toolbar from '@/components/Toolbar/Toolbar.vue'
+import ToolbarFilters from '@/components/Toolbar/ToolbarFilters.vue'
+import ToolbarFiltersExtra from '@/components/Toolbar/ToolbarFiltersExtra.vue'
+import ToolbarView from '@/components/Toolbar/ToolbarView.vue'
+
+@Component({ components: { Toolbar, ToolbarFilters, ToolbarFiltersExtra, ToolbarView } })
+export default class UserToolbar extends mixins(ToolbarMixin) {
+  private sortFields = [
+    { value: 'lastName', label: 'По фамилии' },
+    { value: 'firstName', label: 'По имени' },
+    { value: 'middleName', label: 'По отчеству' },
+    { value: 'userName', label: 'По логину' },
+    { value: 'email', label: 'По почте' },
+    { value: 'position', label: 'По должности' }
+  ]
 }
 </script>

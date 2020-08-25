@@ -12,4 +12,5 @@ export default interface User {
   roles: string[]
 
   index?: number
+  teamIds?: number[]
 }

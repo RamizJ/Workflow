@@ -6,10 +6,11 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'Page'
-}
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
+
+@Component
+export default class Page extends Vue {}
 </script>
 
 <style lang="scss" scoped>

@@ -17,10 +17,11 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'PageHeader'
-}
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
+
+@Component
+export default class BaseHeader extends Vue {}
 </script>
 
 <style lang="scss" scoped>

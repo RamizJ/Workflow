@@ -158,92 +158,87 @@
   </base-dialog>
 </template>
 
-<script>
-import { mapActions, mapGetters } from 'vuex'
-import BaseDialog from '@/components/BaseDialog'
-import dialogMixin from '@/mixins/dialog.mixin'
+<script lang="ts">
+import { Component } from 'vue-property-decorator'
+import { mixins } from 'vue-class-component'
 
-export default {
-  components: { BaseDialog },
-  mixins: [dialogMixin],
-  data() {
-    return {
-      form: {
-        lastName: '',
-        firstName: '',
-        middleName: '',
-        userName: '',
-        password: '',
-        email: '',
-        phone: '',
-        positionId: null,
-        position: '',
-        teamIds: this.$route.params.teamId ? [this.$route.params.teamId] : [],
-        roles: []
-      },
-      rules: {
-        lastName: [{ required: true, message: '!', trigger: 'blur' }],
-        firstName: [{ required: true, message: '!', trigger: 'blur' }],
-        userName: [
-          { required: true, message: '!', trigger: 'blur' },
-          { validator: this.validateLogin, trigger: 'blur' }
-        ],
-        password: [{ validator: this.validatePassword, trigger: 'blur' }],
-        email: [
-          { required: true, message: '!', trigger: 'blur' },
-          { type: 'email', message: 'не почта', trigger: 'blur' },
-          { validator: this.validateEmail, trigger: 'blur' }
-        ]
-      },
-      teamsVisible: null,
-      rolesVisible: null,
-      positionVisible: null,
-      phoneVisible: null
-    }
-  },
-  async mounted() {
-    await this.searchTeams()
-    this.$refs.title.focus()
-  },
-  methods: {
-    ...mapActions({
-      fetchItem: 'users/findOneById',
-      createItem: 'users/createOne',
-      updateItem: 'users/updateOne',
-      isLoginExist: 'users/isLoginExist',
-      isEmailExist: 'users/isEmailExist'
-    }),
-    async validateLogin(rule, value, callback) {
-      const loginPattern = /^[a-zA-Z0-9_-]+$/
-      const isLoginChanged = this.data?.userName !== value
-      const isLoginValid = loginPattern.test(value)
+import usersModule from '@/store/modules/users.module'
+import DialogMixin from '@/mixins/dialog.mixin'
+import BaseDialog from '@/components/BaseDialog.vue'
+import Query from '@/types/query.type'
+import Team from '@/types/team.type'
+import User from '@/types/user.type'
 
-      if (!isLoginValid) callback(new Error('!'))
+@Component({ components: { BaseDialog } })
+export default class UserDialog extends mixins(DialogMixin) {
+  public form: User = {
+    lastName: '',
+    firstName: '',
+    middleName: '',
+    userName: '',
+    email: '',
+    phone: '',
+    position: '',
+    teamIds: this.$route.params.teamId ? [parseInt(this.$route.params.teamId)] : [],
+    roles: []
+  }
+  private rules = {
+    name: [{ required: true, message: '!', trigger: 'blur' }],
+    lastName: [{ required: true, message: '!', trigger: 'blur' }],
+    firstName: [{ required: true, message: '!', trigger: 'blur' }],
+    userName: [
+      { required: true, message: '!', trigger: 'blur' },
+      { validator: this.validateLogin, trigger: 'blur' }
+    ],
+    password: [{ validator: this.validatePassword, trigger: 'blur' }],
+    email: [
+      { required: true, message: '!', trigger: 'blur' },
+      { type: 'email', message: 'не почта', trigger: 'blur' },
+      { validator: this.validateEmail, trigger: 'blur' }
+    ]
+  }
+  private teamsVisible = null
+  private rolesVisible = null
+  private positionVisible = null
+  private phoneVisible = null
 
-      if (isLoginChanged && isLoginValid) {
-        const isLoginAlreadyExist = await this.isLoginExist(value)
-        if (isLoginAlreadyExist) callback(new Error('занято'))
-        else callback()
-      }
-    },
-    async validateEmail(rule, value, callback) {
-      const emailAlreadyExist = await this.isEmailExist(value)
-      if (emailAlreadyExist && this.data?.email !== value) callback(new Error('занято'))
+  private async mounted() {
+    await this.searchTeams('')
+    ;(this.$refs.title as HTMLElement).focus()
+  }
+
+  private async validateLogin(rule: any, value: string, callback: any) {
+    const loginPattern = /^[a-zA-Z0-9_-]+$/
+    const isLoginChanged = this.data?.userName !== value
+    const isLoginValid = loginPattern.test(value)
+
+    if (!isLoginValid) callback(new Error('!'))
+
+    if (isLoginChanged && isLoginValid) {
+      const isLoginAlreadyExist = await usersModule.isLoginExist(value)
+      if (isLoginAlreadyExist) callback(new Error('занято'))
       else callback()
-    },
-    validatePassword(rule, value, callback) {
-      const length = value?.trim().length
-      const symbolsLeft = 6 - length
-      if (!value && this.isEdit) callback()
-      if (!value) callback(new Error('!'))
-      else if (length < 6)
-        callback(
-          new Error(`ещё ${symbolsLeft}
+    }
+  }
+
+  private async validateEmail(rule: any, value: string, callback: any) {
+    const emailAlreadyExist = await usersModule.isEmailExist(value)
+    if (emailAlreadyExist && this.data?.email !== value) callback(new Error('занято'))
+    else callback()
+  }
+
+  private validatePassword(rule: any, value: string, callback: any) {
+    const length = value?.trim().length
+    const symbolsLeft = 6 - length
+    if (!value && this.isEdit) callback()
+    if (!value) callback(new Error('!'))
+    else if (length < 6)
+      callback(
+        new Error(`ещё ${symbolsLeft}
         ${symbolsLeft > 1 ? (symbolsLeft > 4 ? 'символов' : 'символа') : 'символ'}`)
-        )
-      else if (!/[a-z]/.test(value)) callback(new Error('нужна буква'))
-      else callback()
-    }
+      )
+    else if (!/[a-z]/.test(value)) callback(new Error('нужна буква'))
+    else callback()
   }
 }
 </script>

@@ -25,24 +25,20 @@
   </el-input>
 </template>
 
-<script>
-export default {
-  name: 'BaseSearch',
-  props: {
-    query: String,
-    placeholder: { type: String, default: 'Поиск' },
-    filters: Boolean
-  },
-  data() {
-    return {
-      value: ''
-    }
-  },
-  methods: {
-    onChange() {
-      this.$emit('update:query', this.value)
-      this.$emit('change', this.value)
-    }
+<script lang="ts">
+import { Component, Prop, Vue } from 'vue-property-decorator'
+
+@Component
+export default class BaseSearch extends Vue {
+  @Prop() readonly query: string | undefined
+  @Prop({ default: 'Поиск' }) readonly placeholder!: string
+  @Prop() readonly filters: boolean | undefined
+
+  private value = ''
+
+  private onChange() {
+    this.$emit('update:query', this.value)
+    this.$emit('change', this.value)
   }
 }
 </script>

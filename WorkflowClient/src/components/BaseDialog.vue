@@ -35,37 +35,33 @@
   </el-dialog>
 </template>
 
-<script>
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
 import { MessageBox } from 'element-ui'
 
-export default {
-  name: 'BaseDialog',
-  data() {
-    return {
-      showDialog: false
-    }
-  },
-  mounted() {
+@Component
+export default class BaseDialog extends Vue {
+  private showDialog = false
+
+  private mounted() {
     this.showDialog = true
-  },
-  methods: {
-    confirmClose(done) {
-      const needConfirm = localStorage.confirmDialogClose === 'true'
-      if (needConfirm) {
-        MessageBox.confirm('Вы действительно хотите закрыть окно?', 'Предупреждение', {
-          confirmButtonText: 'Закрыть',
-          cancelButtonText: 'Отменить',
-          type: 'warning'
-        })
-          .then(() => {
-            done()
-          })
-          .catch(() => {})
-      } else done()
-    },
-    close() {
-      this.$refs.dialog.hide()
-    }
+  }
+
+  private confirmClose(done: any) {
+    const needConfirm = localStorage.confirmDialogClose === 'true'
+    if (needConfirm) {
+      MessageBox.confirm('Вы действительно хотите закрыть окно?', 'Предупреждение', {
+        confirmButtonText: 'Закрыть',
+        cancelButtonText: 'Отменить',
+        type: 'warning'
+      }).then(() => {
+        done()
+      })
+    } else done()
+  }
+
+  private close() {
+    ;(this.$refs.dialog as any).hide()
   }
 }
 </script>

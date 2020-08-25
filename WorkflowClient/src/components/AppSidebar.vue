@@ -68,42 +68,11 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapGetters } from 'vuex'
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
 
-export default {
-  name: 'AppSidebar',
-  // data() {
-  //   return {
-  //     collapseState: ['projects']
-  //   };
-  // },
-  // computed: {
-  //   ...mapGetters({
-  //     me: 'auth/me',
-  //     projects: 'projects/getSidebarProjects'
-  //   })
-  // },
-  methods: {
-    // ...mapActions({
-    //   logout: 'auth/logout',
-    //   fetchSidebarProjects: 'projects/fetchSidebarProjects'
-    // }),
-    // async load($state) {
-    //   const projects = await this.fetchSidebarProjects();
-    //   if (projects.length) $state.loaded();
-    //   else $state.complete();
-    // },
-    // async exit() {
-    //   try {
-    //     await this.logout();
-    //     await this.$router.push({ name: 'Login' });
-    //   } catch (e) {
-    //     this.$message.error('Ошибка выхода из учётной записи');
-    //   }
-    // }
-  }
-}
+@Component
+export default class AppSidebar extends Vue {}
 </script>
 
 <style lang="scss" scoped>

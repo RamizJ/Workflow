@@ -68,12 +68,11 @@
 <script lang="ts">
 import { Component } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
+import { StateChanger } from 'vue-infinite-loading'
 
 import teamsModule from '@/store/modules/teams.module'
-import TableMixin from '@/mixins/table.mixin'
-import { StateChanger } from 'vue-infinite-loading'
-import Project from '@/types/project.type'
 import projectsModule from '@/store/modules/projects.module'
+import TableMixin from '@/mixins/table.mixin'
 import Team from '@/types/team.type'
 
 @Component
@@ -96,22 +95,20 @@ export default class TeamTable extends mixins(TableMixin) {
     this.modalVisible = true
   }
 
-  public editEntity(entity: Project) {
+  public editEntity(entity: Team) {
     this.modalData = entity.id
     this.modalVisible = true
   }
 
-  private async deleteEntity(entity: Project, multiple = false) {
-    if (multiple)
-      await projectsModule.deleteMany(this.table.selection.map((item: Project) => item.id))
-    else await projectsModule.deleteOne(entity.id as number)
+  private async deleteEntity(entity: Team, multiple = false) {
+    if (multiple) await teamsModule.deleteMany(this.table.selection.map((item: Team) => item.id))
+    else await teamsModule.deleteOne(entity.id as number)
     this.reloadData()
   }
 
-  private async restoreEntity(entity: Project, multiple = false) {
-    if (multiple)
-      await projectsModule.restoreMany(this.table.selection.map((item: Project) => item.id))
-    else await projectsModule.restoreOne(entity.id as number)
+  private async restoreEntity(entity: Team, multiple = false) {
+    if (multiple) await teamsModule.restoreMany(this.table.selection.map((item: Team) => item.id))
+    else await teamsModule.restoreOne(entity.id as number)
     this.reloadData()
   }
 

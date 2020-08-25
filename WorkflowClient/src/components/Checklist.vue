@@ -25,8 +25,9 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import Task, { Status } from '@/types/task.type'
+
 import tasksModule from '@/store/modules/tasks.module'
+import Task, { Status } from '@/types/task.type'
 
 @Component
 export default class Checklist extends Vue {

@@ -4,12 +4,12 @@
       ref="table"
       height="100%"
       v-loading="loading"
-      :data="tableData"
-      :row-class-name="onSetIndex"
-      @select="onItemSelect"
-      @row-click="onItemSingleClick"
-      @row-contextmenu="onItemRightClick"
-      @row-dblclick="onItemDoubleClick"
+      :data="data"
+      :row-class-name="setIndex"
+      @select="onRowSelect"
+      @row-click="onRowSingleClick"
+      @row-contextmenu="onRowRightClick"
+      @row-dblclick="onRowDoubleClick"
       highlight-current-row="highlight-current-row"
       border="border"
     >
@@ -26,7 +26,7 @@
         ref="loader"
         spinner="waveDots"
         :distance="300"
-        @infinite="load"
+        @infinite="loadData"
         force-use-infinite-wrapper=".el-table__body-wrapper"
       >
         <div slot="no-more"></div>
@@ -36,86 +36,93 @@
     <vue-context ref="contextMenu">
       <template slot-scope="child">
         <li>
-          <a v-if="isEditVisible" @click.prevent="onItemEdit($event, child.data.row)">Изменить</a>
+          <a v-if="isRowEditable" @click.prevent="editEntity(child.data.row)">Изменить</a>
         </li>
-        <el-divider v-if="isEditVisible"></el-divider>
-        <li><a @click.prevent="onItemCreate">Новый пользователь</a></li>
+        <el-divider v-if="isRowEditable"></el-divider>
+        <li><a @click.prevent="createEntity">Новый пользователь</a></li>
         <el-divider></el-divider>
         <li>
-          <a
-            v-if="isRemoveFromTeamVisible"
-            @click.prevent="onItemRemoveFromTeam($event, child.data.row)"
+          <a v-if="this.$route.params.teamId" @click.prevent="removeEntityFromTeam(child.data.row)"
             >Убрать из команды</a
           >
         </li>
         <li>
-          <a v-if="isDeleteVisible" @click.prevent="onItemDelete($event, child.data.row)"
+          <a v-if="isRowEditable" @click.prevent="deleteEntity($event, child.data.row)"
             >Переместить в корзину</a
           >
         </li>
         <li>
-          <a v-if="isRestoreVisible" @click.prevent="onItemRestore($event, child.data.row)"
+          <a v-if="!isRowEditable" @click.prevent="restoreEntity($event, child.data.row)"
             >Восстановить</a
           >
         </li>
       </template>
     </vue-context>
     <user-dialog
-      v-if="dialogVisible"
-      :data="dialogData"
-      @close="dialogVisible = false"
-      @submit="refresh"
+      v-if="modalVisible"
+      :data="modalData"
+      @close="modalVisible = false"
+      @submit="reloadData"
     ></user-dialog>
   </div>
 </template>
 
-<script>
-// import tableMixin from '@/mixins/table.mixin';
-import UserDialog from '@/components/User/UserDialog'
+<script lang="ts">
+import { Component } from 'vue-property-decorator'
+import { mixins } from 'vue-class-component'
+import { StateChanger } from 'vue-infinite-loading'
 
-export default {
-  name: 'UserList',
-  components: { UserDialog },
-  // mixins: [tableMixin],
-  data() {
-    return {
-      getters: {
-        items: this.$route.params.teamId ? 'teams/getTeamUsers' : 'users/getUsers'
-      },
-      actions: {
-        fetchItems: this.$route.params.teamId ? 'teams/findUsers' : 'users/findAll',
-        deleteItem: 'users/deleteOne',
-        deleteItems: 'users/deleteMany',
-        restoreItem: 'users/restoreOne',
-        restoreItems: 'users/restoreMany',
-        removeFromTeam: 'teams/removeUser'
-      }
-    }
-  },
-  computed: {
-    isRemoveFromTeamVisible() {
-      return !!this.$route.params.teamId
-    }
-  },
-  methods: {
-    async onItemRemoveFromTeam(event, row) {
-      const teamId = this.$route.params.teamId
-      const userId = row.id
-      if (this.isMultipleSelected) {
-        const userIds = this.table.selection.map(item => item.id)
-        for (const id of userIds) {
-          await this.$store.dispatch(this.actions.removeFromTeam, {
-            teamId,
-            userId: id
-          })
-        }
-      } else
-        await this.$store.dispatch(this.actions.removeFromTeam, {
-          teamId,
-          userId
-        })
-      this.refresh()
-    }
+import usersModule from '@/store/modules/users.module'
+import teamsModule from '@/store/modules/teams.module'
+import TableMixin from '@/mixins/table.mixin'
+import User from '@/types/user.type'
+import Project from '@/types/project.type'
+
+@Component
+export default class UserTable extends mixins(TableMixin) {
+  private loading = false
+
+  private async loadData($state: StateChanger) {
+    const isFirstLoad = !this.data.length
+    this.loading = isFirstLoad
+    const data = await usersModule.findAll(this.query)
+    if (this.query.pageNumber !== undefined) this.query.pageNumber++
+    if (data.length) $state.loaded()
+    else $state.complete()
+    this.data = isFirstLoad ? data : this.data.concat(data)
+    this.loading = false
+  }
+
+  public createEntity() {
+    this.modalData = undefined
+    this.modalVisible = true
+  }
+
+  public editEntity(entity: Project) {
+    this.modalData = entity.id
+    this.modalVisible = true
+  }
+
+  private async deleteEntity(entity: User, multiple = false) {
+    if (multiple) await usersModule.deleteMany(this.table.selection.map((item: User) => item.id))
+    else await usersModule.deleteOne(entity.id as string)
+    this.reloadData()
+  }
+
+  private async restoreEntity(entity: User, multiple = false) {
+    if (multiple) await usersModule.restoreMany(this.table.selection.map((item: User) => item.id))
+    else await usersModule.restoreOne(entity.id as string)
+    this.reloadData()
+  }
+
+  private async removeEntityFromTeam(entity: User) {
+    const teamId = parseInt(this.$route.params.teamId)
+    const userId = entity.id!.toString()
+    if (this.isMultipleSelected) {
+      const userIds = this.table.selection.map((item: User) => item.id)
+      await teamsModule.removeUsers({ teamId, userIds })
+    } else await teamsModule.removeUser({ teamId, userId })
+    this.reloadData()
   }
 }
 </script>
