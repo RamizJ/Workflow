@@ -112,11 +112,11 @@ export default {
   },
   methods: {
     ...mapActions({
-      fetchItem: 'teams/fetchTeam',
-      createItem: 'teams/createTeam',
-      updateItem: 'teams/updateTeam',
-      fetchTeamUsers: 'teams/fetchTeamUsers',
-      fetchTeamProjects: 'teams/fetchTeamProjects'
+      fetchItem: 'teams/findOneById',
+      createItem: 'teams/createOne',
+      updateItem: 'teams/updateOne',
+      fetchTeamUsers: 'teams/findUsers',
+      fetchTeamProjects: 'teams/findProjects'
     })
   }
 };

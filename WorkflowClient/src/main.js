@@ -1,10 +1,10 @@
 import Vue from 'vue';
-import App from '~/App';
-import router from '~/router';
-import store from '~/store';
+import App from '@/App';
+import router from '@/router';
+import store from '@/store';
 
-import '~/plugins';
-import '~/styles';
+import '@/plugins';
+import '@/styles';
 
 Vue.config.productionTip = false;
 

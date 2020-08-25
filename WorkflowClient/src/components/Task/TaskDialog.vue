@@ -183,15 +183,15 @@ export default {
   },
   methods: {
     ...mapActions({
-      fetchItem: 'tasks/fetchTask',
-      createItem: 'tasks/createTask',
-      updateItem: 'tasks/updateTask',
-      updateTasks: 'tasks/updateTasks',
-      deleteTasks: 'tasks/deleteTasks',
-      fetchChildTasks: 'tasks/fetchChildTasks',
-      addChildTasks: 'tasks/addChildTasks',
-      fetchAttachments: 'tasks/fetchAttachments',
-      addAttachments: 'tasks/addAttachments',
+      fetchItem: 'tasks/findOneById',
+      createItem: 'tasks/createOne',
+      updateItem: 'tasks/updateOne',
+      updateTasks: 'tasks/updateMany',
+      deleteTasks: 'tasks/deleteMany',
+      fetchChildTasks: 'tasks/findChild',
+      addChildTasks: 'tasks/addChild',
+      fetchAttachments: 'tasks/findAttachments',
+      addAttachments: 'tasks/uploadAttachments',
       removeAttachments: 'tasks/removeAttachments',
       downloadAttachment: 'tasks/downloadAttachment'
     }),
@@ -252,7 +252,7 @@ export default {
       const currentChecklist = this.checklist.map(item => {
         item.state = item.checked ? 'Succeed' : 'New';
         return item;
-      });
+      }).reverse();
 
       this.form.isChildsExist = true;
 

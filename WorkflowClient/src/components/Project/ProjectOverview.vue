@@ -68,8 +68,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      getTasksCount: 'tasks/getTasksCount',
-      getTasksCountByStatus: 'tasks/getTasksCountByStatus'
+      getTasksCount: 'projects/getTasksCount',
+      getTasksCountByStatus: 'projects/getTasksCountByStatus'
     })
   }
 };

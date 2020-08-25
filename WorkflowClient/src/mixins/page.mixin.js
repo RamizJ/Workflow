@@ -35,7 +35,7 @@ export default {
       const query = { ...this.$route.query };
       if (query[queryLabel] !== queryValue) {
         query[queryLabel] = queryValue || undefined;
-        this.$router.push({ query });
+        this.$router.replace({ query });
       }
     }
   }

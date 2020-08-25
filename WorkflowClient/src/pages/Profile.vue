@@ -50,8 +50,8 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import Page from '~/components/Page';
-import PageHeader from '~/components/BaseHeader';
+import Page from '@/components/Page';
+import PageHeader from '@/components/BaseHeader';
 
 export default {
   name: 'Profile',

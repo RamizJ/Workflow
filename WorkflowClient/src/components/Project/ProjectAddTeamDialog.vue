@@ -1,17 +1,17 @@
 <template lang="pug">
   base-dialog(v-if="visible" @close="exit" ref="dialog")
-    h1(slot="title") Добавить участника
+    h1(slot="title") Добавить команду
     el-form(slot="body" :model="form" ref="form" v-loading="loading" @submit.native.prevent="submit")
       el-row(:gutter="20")
         el-col(:span="24")
           el-form-item
             el-select(
               ref="input"
-              v-model="form.userId"
-              placeholder="Найти участника..."
-              :remote-method="searchUsers"
+              v-model="form.teamId"
+              placeholder="Найти команду..."
+              :remote-method="searchTeams"
               filterable remote clearable default-first-option)
-              el-option(v-for="item in usersToAdd" :key="item.id" :label="item.value" :value="item.id")
+              el-option(v-for="item in teamsToAdd" :key="item.id" :label="item.value" :value="item.id")
     template(slot="footer")
       div.extra
       div.send
@@ -31,35 +31,35 @@ export default {
   data() {
     return {
       form: {
-        userId: ''
+        teamId: ''
       }
     };
   },
   computed: {
     ...mapGetters({
-      teamUsers: 'teams/getTeamUsers',
+      projectTeams: 'projects/getProjectTeams',
       teamProjects: 'teams/getTeamProjects'
     }),
-    usersToAdd() {
-      const allUsers = this.userList;
-      const existingUsers = this.existingUsers;
-      return allUsers.filter(user => {
-        return !existingUsers.find(existingUser => existingUser.id === user.id);
+    teamsToAdd() {
+      const allTeams = this.teamList;
+      const existingTeams = this.existingTeams;
+      return allTeams.filter(team => {
+        return !existingTeams.find(existingTeam => existingTeam.id === team.id);
       });
     },
-    existingUsers() {
-      return this.teamUsers.map(user => {
+    existingTeams() {
+      return this.projectTeams.map(team => {
         return {
-          value: `${user.lastName} ${user.firstName}`,
-          id: user.id
+          value: team.name,
+          id: team.id
         };
       });
     }
   },
   async mounted() {
-    await this.searchUsers();
-    await this.fetchTeamUsers({
-      teamId: this.$route.params.teamId,
+    await this.searchTeams();
+    await this.fetchProjectTeams({
+      projectId: this.$route.params.projectId,
       pageNumber: 0,
       pageSize: 100
     });
@@ -67,19 +67,19 @@ export default {
   },
   methods: {
     ...mapActions({
-      addUser: 'teams/addUser',
-      fetchItem: 'teams/fetchTeam',
-      createItem: 'teams/createTeam',
-      updateItem: 'teams/updateTeam',
-      fetchTeamUsers: 'teams/fetchTeamUsers',
-      fetchTeamProjects: 'teams/fetchTeamProjects'
+      addTeam: 'projects/addTeam',
+      fetchItem: 'teams/findOneById',
+      createItem: 'teams/createOne',
+      updateItem: 'teams/updateOne',
+      fetchProjectTeams: 'projects/findTeams',
+      fetchTeamProjects: 'teams/findProjects'
     }),
     async submit() {
-      const teamId = this.$route.params.teamId;
-      const userId = this.form.userId.trim();
-      if (userId) {
+      const projectId = this.$route.params.projectId;
+      const teamId = this.form.teamId;
+      if (teamId) {
         this.loading = true;
-        await this.addUser({ teamId, userId });
+        await this.addTeam({ projectId, teamId });
         this.$emit('submit');
         this.loading = false;
       }
