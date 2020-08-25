@@ -1,61 +1,73 @@
-<template lang="pug">
-  el-dialog(
+<template>
+  <el-dialog
     ref="dialog"
     custom-class="base-dialog"
     :visible.sync="showDialog"
     :before-close="confirmClose"
-    @closed="$emit('close')")
-    div.header(slot="title")
-      div.title
-        slot(name="title")
-      //el-tooltip.submit(content="Сохранить" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="800")
-        slot(name="submit")
-      el-tooltip.close(content="Закрыть" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="800")
-        el-button(type="text")
-          feather(type="x" @click="close")
-    div.body
-      slot(name="body")
-      div.footer
-        slot(name="footer")
+    @closed="$emit('close')"
+  >
+    <div class="header" slot="title">
+      <div class="title">
+        <slot name="title" />
+      </div>
+      <!--el-tooltip.submit(content="Сохранить" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="800")slot(name="submit")
+    -->
+      <el-tooltip
+        class="close"
+        content="Закрыть"
+        effect="dark"
+        placement="top"
+        transition="fade"
+        :visible-arrow="false"
+        :open-delay="800"
+      >
+        <el-button type="text">
+          <feather type="x" @click="close"></feather>
+        </el-button>
+      </el-tooltip>
+    </div>
+    <div class="body">
+      <slot name="body" />
+      <div class="footer">
+        <slot name="footer" />
+      </div>
+    </div>
+  </el-dialog>
 </template>
 
 <script>
-import { MessageBox } from 'element-ui';
+import { MessageBox } from 'element-ui'
 
 export default {
   name: 'BaseDialog',
   data() {
     return {
       showDialog: false
-    };
+    }
   },
   mounted() {
-    this.showDialog = true;
+    this.showDialog = true
   },
   methods: {
     confirmClose(done) {
-      const needConfirm = localStorage.confirmDialogClose === 'true';
+      const needConfirm = localStorage.confirmDialogClose === 'true'
       if (needConfirm) {
-        MessageBox.confirm(
-          'Вы действительно хотите закрыть окно?',
-          'Предупреждение',
-          {
-            confirmButtonText: 'Закрыть',
-            cancelButtonText: 'Отменить',
-            type: 'warning'
-          }
-        )
+        MessageBox.confirm('Вы действительно хотите закрыть окно?', 'Предупреждение', {
+          confirmButtonText: 'Закрыть',
+          cancelButtonText: 'Отменить',
+          type: 'warning'
+        })
           .then(() => {
-            done();
+            done()
           })
-          .catch(() => {});
-      } else done();
+          .catch(() => {})
+      } else done()
     },
     close() {
-      this.$refs.dialog.hide();
+      this.$refs.dialog.hide()
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

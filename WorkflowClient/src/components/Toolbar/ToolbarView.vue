@@ -1,22 +1,49 @@
-<template lang="pug">
-  div.toolbar-view
-    div.toolbar-view__sort
-      el-button(type="text" size="mini" @click="onOrderChange")
-        feather(:class="order" type="bar-chart" size="15")
-        //feather(:class="order" type="code" size="13")
-      el-select(
-        v-model="sort"
-        size="small"
-        placeholder="По умолчанию"
-        @change="onSortChange")
-        el-option(v-for="option in sortFields" :key="option.value" :value="option.value", :label="option.label")
-    div.toolbar-view__display
-      el-button(v-if="board" type="text" size="mini" :class="view === 'board' ? 'active' : ''" @click="onViewChange('board')")
-        feather(type="columns" size="18")
-      el-button(v-if="grid" type="text" size="mini" :class="view === 'grid' ? 'active' : ''" @click="onViewChange('grid')")
-        feather(type="grid" size="18")
-      el-button(v-if="list" type="text" size="mini" :class="view === 'list' ? 'active' : ''" @click="onViewChange('list')")
-        feather(type="menu" size="18")
+<template>
+  <div class="toolbar-view">
+    <div class="toolbar-view__sort">
+      <el-button type="text" size="mini" @click="onOrderChange">
+        <feather :class="order" type="bar-chart" size="15"></feather>
+        <!--feather(:class="order" type="code" size="13")-->
+      </el-button>
+      <el-select v-model="sort" size="small" placeholder="По умолчанию" @change="onSortChange">
+        <el-option
+          v-for="option in sortFields"
+          :key="option.value"
+          :value="option.value"
+          :label="option.label"
+        ></el-option>
+      </el-select>
+    </div>
+    <div class="toolbar-view__display">
+      <el-button
+        v-if="board"
+        type="text"
+        size="mini"
+        :class="view === 'board' ? 'active' : ''"
+        @click="onViewChange('board')"
+      >
+        <feather type="columns" size="18"></feather>
+      </el-button>
+      <el-button
+        v-if="grid"
+        type="text"
+        size="mini"
+        :class="view === 'grid' ? 'active' : ''"
+        @click="onViewChange('grid')"
+      >
+        <feather type="grid" size="18"></feather>
+      </el-button>
+      <el-button
+        v-if="list"
+        type="text"
+        size="mini"
+        :class="view === 'list' ? 'active' : ''"
+        @click="onViewChange('list')"
+      >
+        <feather type="menu" size="18"></feather>
+      </el-button>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -33,23 +60,23 @@ export default {
       order: this.$route.query.order || 'Descending',
       sort: this.$route.query.sort || '',
       view: this.$route.query.view || 'list'
-    };
+    }
   },
   methods: {
     onOrderChange() {
-      const value = this.order === 'Ascending' ? 'Descending' : 'Ascending';
-      this.order = value;
-      this.$emit('order', value);
+      const value = this.order === 'Ascending' ? 'Descending' : 'Ascending'
+      this.order = value
+      this.$emit('order', value)
     },
     onSortChange(value) {
-      this.$emit('sort', value);
+      this.$emit('sort', value)
     },
     onViewChange(value) {
-      this.view = value;
-      this.$emit('view', value);
+      this.view = value
+      this.$emit('view', value)
     }
   }
-};
+}
 </script>
 
 <style lang="scss">

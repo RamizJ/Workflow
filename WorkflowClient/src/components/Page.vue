@@ -1,13 +1,15 @@
-<template lang="pug">
-  div.page
-    div.page-content
-      slot
+<template>
+  <div class="page">
+    <div class="page-content">
+      <slot />
+    </div>
+  </div>
 </template>
 
 <script>
 export default {
   name: 'Page'
-};
+}
 </script>
 
 <style lang="scss" scoped>

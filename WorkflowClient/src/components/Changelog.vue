@@ -1,14 +1,23 @@
-<template lang="pug">
-  div.changelog
-    div.section
-      h2 Текущая версия
-      h1 {{ $store.getters.appVersion }}
-    div.section
-      h2 История версий
-      el-timeline
-        el-timeline-item(v-for="(version, index) in changelog" :key="index" :timestamp="version.date")
-          div.version {{ version.number}}
-          p {{ version.content }}
+<template>
+  <div class="changelog">
+    <div class="section">
+      <h2>Текущая версия</h2>
+      <h1>{{ $store.getters.appVersion }}</h1>
+    </div>
+    <div class="section">
+      <h2>История версий</h2>
+      <el-timeline>
+        <el-timeline-item
+          v-for="(version, index) in changelog"
+          :key="index"
+          :timestamp="version.date"
+        >
+          <div class="version">{{ version.number }}</div>
+          <p>{{ version.content }}</p>
+        </el-timeline-item>
+      </el-timeline>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -169,14 +178,13 @@ export default {
         },
         {
           number: '0.1.4',
-          content:
-            'Добавлено отображение задач в виде доски на странице проекта',
+          content: 'Добавлено отображение задач в виде доски на странице проекта',
           date: '21.07.2020'
         }
       ]
-    };
+    }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

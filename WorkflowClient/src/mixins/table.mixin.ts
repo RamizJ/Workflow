@@ -86,7 +86,7 @@ export default class TableMixin extends Vue {
   }
 
   public get isMultipleSelected() {
-    return this.table.selection?.length > 1
+    return this.table?.selection?.length > 1
   }
 
   public get table(): any {

@@ -1,12 +1,13 @@
-<template lang="pug">
-  div.toolbar
-    slot
+<template>
+  <div class="toolbar">
+    <slot />
+  </div>
 </template>
 
 <script>
 export default {
   name: 'Toolbar'
-};
+}
 </script>
 
 <style lang="scss">

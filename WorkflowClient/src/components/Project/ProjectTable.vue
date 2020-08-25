@@ -24,15 +24,15 @@
         li
           a(v-if="isRowEditable" @click.prevent="onRowDoubleClick(child.data.row)") Открыть
         li
-          a(v-if="isRowEditable" @click.prevent="editEntity($event, child.data.row)") Изменить
+          a(v-if="isRowEditable" @click.prevent="editEntity(child.data.row)") Изменить
         el-divider(v-if="isRowEditable")
         li
           a(@click.prevent="createEntity") Новый проект
         el-divider
         li
-          a(v-if="isRowEditable" @click.prevent="deleteEntity($event, child.data.row, isMultipleSelected)") Переместить в корзину
+          a(v-if="isRowEditable" @click.prevent="deleteEntity(child.data.row, isMultipleSelected)") Переместить в корзину
         li
-          a(v-if="!isRowEditable" @click.prevent="restoreEntity($event, child.data.row, isMultipleSelected)") Восстановить
+          a(v-if="!isRowEditable" @click.prevent="restoreEntity(child.data.row, isMultipleSelected)") Восстановить
 
     project-dialog(v-if="modalVisible" :data="modalData" @close="modalVisible = false" @submit="reloadData")
 
@@ -68,26 +68,26 @@ export default class ProjectTable extends mixins(TableMixin) {
     this.modalVisible = true
   }
 
-  public editEntity(event: Event, entity: Project) {
+  public editEntity(entity: Project) {
     this.modalData = entity.id
     this.modalVisible = true
   }
 
-  private async deleteEntity(event: Event, entity: Project, multiple = false) {
+  private async deleteEntity(entity: Project, multiple = false) {
     if (multiple)
       await projectsModule.deleteMany(this.table.selection.map((item: Project) => item.id))
     else await projectsModule.deleteOne(entity.id as number)
     this.reloadData()
   }
 
-  private async restoreEntity(event: Event, entity: Project, multiple = false) {
+  private async restoreEntity(entity: Project, multiple = false) {
     if (multiple)
       await projectsModule.restoreMany(this.table.selection.map((item: Project) => item.id))
     else await projectsModule.restoreOne(entity.id as number)
     this.reloadData()
   }
 
-  public async onRowDoubleClick(row: any) {
+  public async onRowDoubleClick(row: Project) {
     if (!row.isRemoved) await this.$router.push(`/projects/${row.id}`)
   }
 }

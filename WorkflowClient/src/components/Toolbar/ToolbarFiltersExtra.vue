@@ -1,15 +1,23 @@
-<template lang="pug">
-  div.toolbar-filters-extra
-    el-popover(popper-class="filters-panel" placement="bottom-start" transition="fade" trigger="click")
-      el-button(slot="reference" size="mini")
-        feather(type="sliders" size="18")
-      slot
+<template>
+  <div class="toolbar-filters-extra">
+    <el-popover
+      popper-class="filters-panel"
+      placement="bottom-start"
+      transition="fade"
+      trigger="click"
+    >
+      <el-button slot="reference" size="mini">
+        <feather type="sliders" size="18"></feather>
+      </el-button>
+      <slot />
+    </el-popover>
+  </div>
 </template>
 
 <script>
 export default {
   name: 'ToolbarFiltersExtra'
-};
+}
 </script>
 
 <style lang="scss" scoped>

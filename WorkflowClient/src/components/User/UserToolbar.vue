@@ -1,24 +1,40 @@
-<template lang="pug">
-  toolbar
-    toolbar-filters
-      div.filter
-        div.label Поиск
-        el-input(v-model="q" size="medium" placeholder="Искать..." @change="onSearch")
-          el-button(slot="prefix" type="text" size="mini" @click="onSearch")
-            feather(type="search" size="16")
-    toolbar-filters-extra
-      el-row(:gutter="20")
-        el-col(:span="24")
-          el-checkbox(v-model="filters.showOnlyDeleted" @change="onFiltersChange") Только удалённые
-    toolbar-view(:sort-fields="sortFields" @order="onOrderChange" @sort="onSortChange" @view="onViewChange" list)
+<template>
+  <toolbar>
+    <toolbar-filters>
+      <div class="filter">
+        <div class="label">Поиск</div>
+        <el-input v-model="q" size="medium" placeholder="Искать..." @change="onSearch">
+          <el-button slot="prefix" type="text" size="mini" @click="onSearch">
+            <feather type="search" size="16"></feather>
+          </el-button>
+        </el-input>
+      </div>
+    </toolbar-filters>
+    <toolbar-filters-extra>
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <el-checkbox v-model="filters.showOnlyDeleted" @change="onFiltersChange"
+            >Только удалённые</el-checkbox
+          >
+        </el-col>
+      </el-row>
+    </toolbar-filters-extra>
+    <toolbar-view
+      :sort-fields="sortFields"
+      @order="onOrderChange"
+      @sort="onSortChange"
+      @view="onViewChange"
+      list="list"
+    ></toolbar-view>
+  </toolbar>
 </template>
 
 <script>
-import Toolbar from '@/components/Toolbar/Toolbar';
-import ToolbarFilters from '@/components/Toolbar/ToolbarFilters';
-import ToolbarFiltersExtra from '@/components/Toolbar/ToolbarFiltersExtra';
-import ToolbarView from '@/components/Toolbar/ToolbarView';
-import toolbarMixin from '@/mixins/toolbar.mixin2';
+import Toolbar from '@/components/Toolbar/Toolbar'
+import ToolbarFilters from '@/components/Toolbar/ToolbarFilters'
+import ToolbarFiltersExtra from '@/components/Toolbar/ToolbarFiltersExtra'
+import ToolbarView from '@/components/Toolbar/ToolbarView'
+import toolbarMixin from '@/mixins/toolbar.mixin2'
 
 export default {
   name: 'TeamToolbar',
@@ -39,7 +55,7 @@ export default {
         { value: 'email', label: 'По почте' },
         { value: 'position', label: 'По должности' }
       ]
-    };
+    }
   }
-};
+}
 </script>

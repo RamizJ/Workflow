@@ -1,21 +1,26 @@
-<template lang="pug">
-  div.page-header
-    div
-      div.page-header__title
-        slot(name="title")
-        div.page-header__action
-          slot(name="action")
-      div.page-header__subtitle
-        slot(name="subtitle")
-    div.page-header__search
-      slot(name="search")
-
+<template>
+  <div class="page-header">
+    <div>
+      <div class="page-header__title">
+        <slot name="title" />
+        <div class="page-header__action">
+          <slot name="action" />
+        </div>
+      </div>
+      <div class="page-header__subtitle">
+        <slot name="subtitle" />
+      </div>
+    </div>
+    <div class="page-header__search">
+      <slot name="search" />
+    </div>
+  </div>
 </template>
 
 <script>
 export default {
   name: 'PageHeader'
-};
+}
 </script>
 
 <style lang="scss" scoped>

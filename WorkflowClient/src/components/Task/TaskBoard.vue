@@ -14,7 +14,7 @@
           <draggable
             v-model="lists[index].items"
             v-bind="itemsDragOptions"
-            @change="onItemMove($event, list.name)"
+            @change="onEntityMove($event, list.name)"
           >
             <div
               class="item"
@@ -137,7 +137,7 @@ export default class TaskBoard extends mixins(TableMixin) {
       ]
   }
 
-  private async onListMove(event: Event) {
+  private async onListMove() {
     const newBoardLists = this.lists.map(list => {
       return {
         label: list.label,
@@ -147,8 +147,8 @@ export default class TaskBoard extends mixins(TableMixin) {
     localStorage.boardLists = JSON.stringify(newBoardLists)
   }
 
-  private async onItemMove(event: Event, listName: string) {
-    // if (event.added) await this.onItemStatusChange(event.added.element, listName)
+  private async onEntityMove(event: any, listName: string) {
+    if (event.added) await this.editEntityStatus(event.added.element, listName)
   }
 
   private updateLists() {
