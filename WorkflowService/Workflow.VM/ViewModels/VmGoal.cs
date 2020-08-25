@@ -40,14 +40,17 @@ namespace Workflow.VM.ViewModels
     {
         public VmGoal Goal { get; set; }
         public List<string> ObserverIds { get; set; }
+        public List<VmGoal> ChildGoals { get; set; }
+
 
         public VmGoalForm()
         { }
 
-        public VmGoalForm(VmGoal goal, List<string> observerIds)
+        public VmGoalForm(VmGoal goal, List<string> observerIds, List<VmGoal> childGoals)
         {
             Goal = goal;
             ObserverIds = observerIds;
+            ChildGoals = childGoals;
         }
     }
 }

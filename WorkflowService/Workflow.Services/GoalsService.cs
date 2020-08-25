@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
@@ -111,12 +112,10 @@ namespace Workflow.Services
                 throw new HttpResponseException(BadRequest,
                     $"Parameter '{nameof(goalForm)}' cannot be null");
 
-            var model = await CreateGoal(currentUser, goalForm.Goal, goal =>
-            {
-                goal.Observers = goalForm.ObserverIds?
-                    .Select(observerId => new GoalObserver(goal.Id, observerId))
-                    .ToList();
-            });
+            var model = await CreateGoal(currentUser, 
+                goalForm.Goal, 
+                goalForm.ObserverIds, 
+                goalForm.ChildGoals);
 
             return _vmConverter.ToViewModel(model);
         }
@@ -485,7 +484,8 @@ namespace Workflow.Services
         }
 
         private async Task<Goal> CreateGoal(ApplicationUser currentUser, VmGoal goal,
-            Action<Goal> createAction = null)
+            IEnumerable<string> observerIds = null,
+            IEnumerable<VmGoal> childGoals = null)
         {
             if (goal == null)
                 throw new HttpResponseException(BadRequest,
@@ -494,14 +494,37 @@ namespace Workflow.Services
             if (string.IsNullOrWhiteSpace(goal.Title))
                 throw new HttpResponseException(BadRequest, "Goal title cannot be empty");
 
+            var creatingGoals = new List<Goal>();
+
             var model = _vmConverter.ToModel(goal);
             model.Id = 0;
             model.CreationDate = DateTime.Now;
             model.OwnerId = currentUser.Id;
+            if (observerIds != null)
+            {
+                model.Observers = observerIds
+                    .Select(observerId => new GoalObserver(goal.Id, observerId))
+                    .ToList();
+            }
 
-            createAction?.Invoke(model);
+            creatingGoals.Add(model);
 
-            await _dataContext.Goals.AddAsync(model);
+            if (childGoals != null)
+            {
+                foreach (var childGoal in childGoals)
+                {
+                    var childModel = _vmConverter.ToModel(childGoal);
+                    childModel.Id = 0;
+                    childModel.CreationDate = DateTime.Now;
+                    childModel.OwnerId = currentUser.Id;
+                    childModel.ParentGoal = model;
+
+                    creatingGoals.Add(childModel);
+                }
+            }
+
+            //await _dataContext.BulkInsertAsync(creatingGoals);
+            await _dataContext.Goals.AddRangeAsync(creatingGoals);
             await _dataContext.SaveChangesAsync();
             return model;
         }
