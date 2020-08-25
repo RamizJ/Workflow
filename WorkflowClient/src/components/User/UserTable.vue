@@ -42,7 +42,7 @@
         <li><a @click.prevent="createEntity">Новый пользователь</a></li>
         <el-divider></el-divider>
         <li>
-          <a v-if="this.$route.params.teamId" @click.prevent="removeEntityFromTeam(child.data.row)"
+          <a v-if="$route.params.teamId" @click.prevent="removeEntityFromTeam(child.data.row)"
             >Убрать из команды</a
           >
         </li>
@@ -75,10 +75,11 @@ import { StateChanger } from 'vue-infinite-loading'
 import usersModule from '@/store/modules/users.module'
 import teamsModule from '@/store/modules/teams.module'
 import TableMixin from '@/mixins/table.mixin'
+import UserDialog from '@/components/User/UserDialog.vue'
 import User from '@/types/user.type'
 import Project from '@/types/project.type'
 
-@Component
+@Component({ components: { UserDialog } })
 export default class UserTable extends mixins(TableMixin) {
   private loading = false
 

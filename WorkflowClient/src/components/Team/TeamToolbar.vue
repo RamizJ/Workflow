@@ -3,7 +3,7 @@
     <toolbar-filters>
       <div class="filter">
         <div class="label">Поиск</div>
-        <el-input v-model="q" size="medium" placeholder="Искать..." @change="onSearch">
+        <el-input v-model="search" size="medium" placeholder="Искать..." @change="onSearch">
           <el-button slot="prefix" type="text" size="mini" @click="onSearch">
             <feather type="search" size="16"></feather>
           </el-button>

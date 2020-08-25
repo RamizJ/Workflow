@@ -159,7 +159,7 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
+import { Component, Ref } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 
 import usersModule from '@/store/modules/users.module'
@@ -169,6 +169,8 @@ import User from '@/types/user.type'
 
 @Component({ components: { BaseDialog } })
 export default class UserDialog extends mixins(DialogMixin) {
+  @Ref() readonly title?: HTMLInputElement
+
   public form: User = {
     lastName: '',
     firstName: '',
@@ -202,7 +204,8 @@ export default class UserDialog extends mixins(DialogMixin) {
 
   private async mounted() {
     await this.searchTeams('')
-    ;(this.$refs.title as HTMLElement).focus()
+    this.title?.focus()
+    // ;(this.$refs.title as HTMLInputElement).focus()
   }
 
   private async validateLogin(rule: any, value: string, callback: any) {

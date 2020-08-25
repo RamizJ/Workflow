@@ -55,7 +55,6 @@
         </li>
       </template>
     </vue-context>
-
     <team-dialog
       v-if="modalVisible"
       :data="modalData"
@@ -72,10 +71,11 @@ import { StateChanger } from 'vue-infinite-loading'
 
 import teamsModule from '@/store/modules/teams.module'
 import projectsModule from '@/store/modules/projects.module'
+import TeamDialog from '@/components/Team/TeamDialog.vue'
 import TableMixin from '@/mixins/table.mixin'
 import Team from '@/types/team.type'
 
-@Component
+@Component({ components: { TeamDialog } })
 export default class TeamTable extends mixins(TableMixin) {
   private loading = false
 
