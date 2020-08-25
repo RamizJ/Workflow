@@ -1,4 +1,4 @@
-import projectsAPI from '~/api/projects.api';
+import projectsAPI from '@/api/projects.api';
 
 export default {
   namespaced: true,
@@ -35,39 +35,19 @@ export default {
     }
   },
   actions: {
-    async fetchSidebarProjects({ state, commit }, params) {
-      let page = state.sidebarProjectsPage;
-
-      if (
-        !state.sidebarProjects.length ||
-        params?.reload ||
-        state.sidebarProjectsPage === 0
-      ) {
-        commit('setSidebarProjects', []);
-        commit('setSidebarProjectsPage', 0);
-        page = 0;
-      }
-
-      const response = await projectsAPI.getPage({
-        pageNumber: page,
-        pageSize: params?.pageSize || 20
+    async findOneById({ commit, dispatch, state }, id) {
+      const response = await projectsAPI.findOneById(id);
+      const project = response.data;
+      await dispatch('findTeams', {
+        projectId: id,
+        pageNumber: 0,
+        pageSize: 10
       });
-      const projects = response.data.map(project => {
-        project.teamIds = [];
-        return project;
-      });
-
-      const isAlreadyInSidebar = state.sidebarProjects.find(sidebarProject => {
-        return !!projects.find(project => project.id === sidebarProject.id);
-      });
-      if (isAlreadyInSidebar) return [];
-
-      commit('setSidebarProjectsPage', page + 1);
-      commit('appendSidebarProjects', projects);
-      return projects;
+      project.teamIds = state.projectTeams.map(team => parseInt(team.id));
+      commit('setProject', project);
     },
-    async fetchProjects({ state, dispatch, commit }, params) {
-      const response = await projectsAPI.getPage(params);
+    async findAll({ state, dispatch, commit }, params) {
+      const response = await projectsAPI.findAll(params);
       const projects = response.data.map(project => {
         project.teamIds = [];
         return project;
@@ -87,19 +67,61 @@ export default {
 
       return projects;
     },
-    async fetchProject({ commit, dispatch, state }, id) {
-      const response = await projectsAPI.get(id);
-      const project = response.data;
-      await dispatch('fetchProjectTeams', {
-        projectId: id,
-        pageNumber: 0,
-        pageSize: 10
+    async findAllByIds({ state, dispatch, commit }, ids) {
+      const response = await projectsAPI.findAllByIds(ids);
+      const projects = response.data.map(project => {
+        project.teamIds = [];
+        return project;
       });
-      project.teamIds = state.projectTeams.map(team => parseInt(team.id));
-      commit('setProject', project);
+      commit('setProjects', projects);
+      if (!projects.length) return projects;
+      return projects;
     },
-    async fetchProjectTeams({ commit }, params) {
-      const response = await projectsAPI.getTeamsPage(params);
+    async createOne({ commit }, project) {
+      let newProject = {
+        project: project,
+        teamIds: project.teamIds
+      };
+      const response = await projectsAPI.createOne(newProject);
+      const createdProject = response.data;
+      commit('setProject', createdProject);
+    },
+    async updateOne({ commit }, project) {
+      const teamIds = project.teamIds;
+      delete project.teamIds;
+      const convertedProject = {
+        project,
+        teamIds
+      };
+      const response = await projectsAPI.updateOne(convertedProject);
+      return response.data;
+    },
+    async updateMany({ commit }, projects) {
+      const convertedProjects = projects.map(project => {
+        const teamIds = project.teamIds;
+        delete project.teamIds;
+        return {
+          project,
+          teamIds
+        };
+      });
+      const response = await projectsAPI.updateOne(convertedProjects);
+      return response.data;
+    },
+    async deleteOne({ commit }, id) {
+      await projectsAPI.deleteOne(id);
+    },
+    async deleteMany({ commit }, ids) {
+      await projectsAPI.deleteMany(ids);
+    },
+    async restoreOne({ commit }, id) {
+      await projectsAPI.restoreOne(id);
+    },
+    async restoreMany({ commit }, ids) {
+      await projectsAPI.restoreMany(ids);
+    },
+    async findTeams({ commit }, params) {
+      const response = await projectsAPI.findTeams(params);
       const projectTeams = response.data.map(team => {
         team.userIds = [];
         team.projectIds = [];
@@ -108,60 +130,63 @@ export default {
       commit('setProjectTeams', projectTeams);
       return response.data;
     },
-    async createProject({ commit }, project) {
-      let newProject = {
-        project: project,
-        teamIds: project.teamIds
-      };
-      const response = await projectsAPI.create(newProject);
-      const createdProject = response.data;
-      commit('setProject', createdProject);
+    async addTeam({ commit }, { projectId, teamId }) {
+      await projectsAPI.addTeam(projectId, teamId);
     },
-    async updateProject({ commit }, project) {
-      const teamIds = project.teamIds;
-      delete project.teamIds;
-      let newProject = {
-        project,
-        teamIds
-      };
-      const response = await projectsAPI.update(newProject);
-      return response.data;
-    },
-    async updateProjectTeams({ commit }, { projectId, teamIds }) {
+    async addTeams({ commit }, { projectId, teamIds }) {
       for (let teamId of teamIds) {
         await projectsAPI.addTeam(projectId, teamId);
       }
     },
-    async addTeam({ commit }, { projectId, teamId }) {
-      await projectsAPI.addTeam(teamId, projectId);
+    async removeTeam({ commit }, { projectId, teamId }) {
+      await projectsAPI.removeTeam(projectId, teamId);
     },
-    async removeProjectTeam({ commit }, { projectId, teamId }) {
-      await projectsAPI.removeTeam(teamId, projectId);
-    },
-    async removeProjectTeams({ commit }, { projectId, teamIds }) {
+    async removeTeams({ commit }, { projectId, teamIds }) {
       for (let teamId of teamIds) {
-        await projectsAPI.removeTeam(teamId, projectId);
+        await projectsAPI.removeTeam(projectId, teamId);
       }
     },
-    async deleteProject({ commit }, id) {
-      const response = await projectsAPI.delete(id);
-      const project = response.data;
-      if (!project) throw Error;
+    async getTasksCount({ commit }, projectId) {
+      const response = await projectsAPI.getTasksCount(projectId);
+      return response.data;
     },
-    async deleteProjects({ commit }, ids) {
-      const response = await projectsAPI.deleteRange(ids);
-      const projects = response.data;
-      if (!projects) throw Error;
+    async getTasksCountByStatus({ commit }, { projectId, status }) {
+      const response = await projectsAPI.getTasksCountByStatus(
+        projectId,
+        status
+      );
+      return response.data;
     },
-    async restoreProject({ commit }, id) {
-      const response = await projectsAPI.restore(id);
-      const project = response.data;
-      if (!project) throw Error;
-    },
-    async restoreProjects({ commit }, ids) {
-      const response = await projectsAPI.restoreRange(ids);
-      const projects = response.data;
-      if (!projects) throw Error;
+    async fetchSidebarProjects({ state, commit }, params) {
+      let page = state.sidebarProjectsPage;
+
+      if (
+        !state.sidebarProjects.length ||
+        params?.reload ||
+        state.sidebarProjectsPage === 0
+      ) {
+        commit('setSidebarProjects', []);
+        commit('setSidebarProjectsPage', 0);
+        page = 0;
+      }
+
+      const response = await projectsAPI.findAll({
+        pageNumber: page,
+        pageSize: params?.pageSize || 20
+      });
+      const projects = response.data.map(project => {
+        project.teamIds = [];
+        return project;
+      });
+
+      const isAlreadyInSidebar = state.sidebarProjects.find(sidebarProject => {
+        return !!projects.find(project => project.id === sidebarProject.id);
+      });
+      if (isAlreadyInSidebar) return [];
+
+      commit('setSidebarProjectsPage', page + 1);
+      commit('appendSidebarProjects', projects);
+      return projects;
     }
   },
   getters: {

@@ -23,8 +23,8 @@
 <script>
 import Page from '@/components/Page';
 import BaseHeader from '@/components/BaseHeader';
-import ProjectToolbar from '@/components/Projects/ProjectToolbar';
-import ProjectTable from '@/components/Projects/ProjectTable';
+import ProjectToolbar from '@/components/Project/ProjectToolbar';
+import ProjectTable from '@/components/Project/ProjectTable';
 import pageMixin from '@/mixins/page.mixin';
 
 export default {

@@ -4,7 +4,7 @@ module.exports = {
     process.env.VUE_APP_MODE !== 'development' ? 'production' : 'development',
   resolve: {
     alias: {
-      '~': require('path').resolve(__dirname, 'src')
+      '@': require('path').resolve(__dirname, 'src')
     }
   }
 };

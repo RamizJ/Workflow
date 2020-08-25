@@ -8,7 +8,7 @@ module.exports = {
       process.env.VUE_APP_MODE !== 'development' ? 'production' : 'development',
     resolve: {
       alias: {
-        '~': path.resolve(__dirname, 'src/')
+        '@': path.resolve(__dirname, 'src/')
       }
     },
     plugins: [
@@ -21,7 +21,7 @@ module.exports = {
   css: {
     loaderOptions: {
       sass: {
-        prependData: `@import "~/styles/_variables.scss";`
+        prependData: `@import "@/styles/_variables.scss";`
       }
     }
   },

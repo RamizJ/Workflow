@@ -1,38 +1,41 @@
 <template lang="pug">
-  div.project-teams
-    team-toolbar(
+  div.team-users
+    user-toolbar(
       @search="onSearch"
       @filters="onFiltersChange"
       @order="onOrderChange"
       @sort="onSortChange"
       @view="onViewChange")
-    team-list(
+    user-table(
       v-if="view === 'list'"
       ref="items"
       :search="search"
       :filters="filters"
       :order="order"
       :sort="sort")
+
 </template>
 
 <script>
-import TeamToolbar from '@/components/Teams/TeamToolbar';
-import TeamList from '@/components/Teams/TeamTable';
+import UserToolbar from '@/components/User/UserToolbar';
+import UserTable from '@/components/User/UserTable';
 import pageMixin from '@/mixins/page.mixin';
 
 export default {
-  name: 'ProjectTeams',
-  components: { TeamList, TeamToolbar },
+  components: {
+    UserToolbar,
+    UserTable
+  },
   mixins: [pageMixin],
   created() {
-    if (!this.$route.query.sort) this.onSortChange('name');
+    if (!this.$route.query.sort) this.onSortChange('lastName');
     if (!this.$route.query.order) this.onOrderChange('Ascending');
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.project-teams {
+.team-users {
   height: 100%;
   display: flex;
   flex-direction: column;

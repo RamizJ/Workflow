@@ -35,11 +35,11 @@
 import { mapActions, mapGetters } from 'vuex';
 import Page from '@/components/Page';
 import BaseHeader from '@/components/BaseHeader';
-import TeamUsers from '@/components/Teams/TeamUsers';
-import UserDialog from '@/components/Users/UserDialog';
-import TeamDialog from '@/components/Teams/TeamDialog';
-import TeamProjects from '@/components/Teams/TeamProjects';
-import TeamAddUserDialog from '@/components/Teams/TeamAddUserDialog';
+import TeamUsers from '@/components/Team/TeamUsers';
+import UserDialog from '@/components/User/UserDialog';
+import TeamDialog from '@/components/Team/TeamDialog';
+import TeamProjects from '@/components/Team/TeamProjects';
+import TeamAddUserDialog from '@/components/Team/TeamAddUserDialog';
 
 export default {
   name: 'Team',
@@ -86,9 +86,9 @@ export default {
   },
   methods: {
     ...mapActions({
-      fetchTeam: 'teams/fetchTeam',
-      updateTeam: 'teams/updateTeam',
-      deleteTeam: 'teams/deleteTeam'
+      fetchTeam: 'teams/findOneById',
+      updateTeam: 'teams/updateOne',
+      deleteTeam: 'teams/deleteOne'
     }),
     loadTab() {
       const query = { ...this.$route.query };
@@ -121,7 +121,7 @@ export default {
     },
     async onTeamDelete() {
       await this.deleteTeam(this.teamItem.id);
-      await this.$router.push({ name: 'Teams' });
+      await this.$router.push({ name: 'Team' });
     }
   }
 };

@@ -1,4 +1,4 @@
-import usersAPI from '~/api/users.api';
+import usersAPI from '@/api/users.api';
 import { Message } from 'element-ui';
 
 export default {
@@ -16,46 +16,50 @@ export default {
     }
   },
   actions: {
-    async fetchUsers({ rootState, commit }, params) {
-      const response = await usersAPI.getPage(params);
-      const users = response.data;
-      commit('setUsers', users);
-      return users;
+    async findOneById({ commit }, id) {
+      const response = await usersAPI.findOneById(id);
+      commit('setUser', response.data);
+      return response.data;
     },
-    async fetchUser({ commit }, id) {
-      const response = await usersAPI.get(id);
-      const user = response.data;
-      commit('setUser', user);
+    async findAll({ commit }, params) {
+      const response = await usersAPI.findAll(params);
+      commit('setUsers', response.data);
+      return response.data;
     },
-    async createUser({ commit }, payload) {
-      const response = await usersAPI.create(payload);
-      const user = response.data;
-      commit('setUser', user);
+    async findAllByIds({ commit }, ids) {
+      const response = await usersAPI.findAllByIds(ids);
+      commit('setUsers', response.data);
+      return response.data;
     },
-    async updateUser({ commit }, payload) {
-      const response = await usersAPI.update(payload);
-      const user = response.data;
-      commit('setUser', user);
+    async createOne({ commit }, payload) {
+      const response = await usersAPI.createOne(payload);
+      commit('setUser', response.data);
+      return response.data;
     },
-    async deleteUser({ commit }, id) {
-      const response = await usersAPI.delete(id);
-      const user = response.data;
-      if (!user) throw Error;
+    async updateOne({ commit }, user) {
+      const response = await usersAPI.updateOne(user);
+      commit('setUser', response.data);
+      return response.data;
     },
-    async deleteUsers({ commit }, ids) {
-      const response = await usersAPI.deleteRange(ids);
-      const users = response.data;
-      if (!users) throw Error;
+    async updateMany({ commit }, users) {
+      const response = await usersAPI.updateMany(users);
+      commit('setUser', response.data);
+      return response.data;
     },
-    async restoreUser({ commit }, id) {
-      const response = await usersAPI.restore(id);
-      const user = response.data;
-      if (!user) throw Error;
+    async deleteOne({ commit }, id) {
+      await usersAPI.deleteOne(id);
     },
-    async restoreUsers({ commit }, ids) {
-      const response = await usersAPI.restoreRange(ids);
-      const users = response.data;
-      if (!users) throw Error;
+    async deleteMany({ commit }, ids) {
+      await usersAPI.deleteMany(ids);
+    },
+    async restoreOne({ commit }, id) {
+      await usersAPI.restoreOne(id);
+    },
+    async restoreMany({ commit }, ids) {
+      await usersAPI.restoreMany(ids);
+    },
+    async resetPassword({ commit }, { userId, newPassword }) {
+      await usersAPI.resetPassword(userId, newPassword);
     },
     async isLoginExist({ commit }, login) {
       try {

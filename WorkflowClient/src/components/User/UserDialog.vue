@@ -114,9 +114,9 @@ export default {
   },
   methods: {
     ...mapActions({
-      fetchItem: 'users/fetchUser',
-      createItem: 'users/createUser',
-      updateItem: 'users/updateUser',
+      fetchItem: 'users/findOneById',
+      createItem: 'users/createOne',
+      updateItem: 'users/updateOne',
       isLoginExist: 'users/isLoginExist',
       isEmailExist: 'users/isEmailExist'
     }),

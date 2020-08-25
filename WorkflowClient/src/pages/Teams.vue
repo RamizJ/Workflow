@@ -24,8 +24,8 @@
 <script>
 import Page from '@/components/Page';
 import BaseHeader from '@/components/BaseHeader';
-import TeamToolbar from '@/components/Teams/TeamToolbar';
-import TeamTable from '@/components/Teams/TeamTable';
+import TeamToolbar from '@/components/Team/TeamToolbar';
+import TeamTable from '@/components/Team/TeamTable';
 import pageMixin from '@/mixins/page.mixin';
 
 export default {

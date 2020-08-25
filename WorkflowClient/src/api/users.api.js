@@ -2,22 +2,23 @@ import httpClient from './httpClient';
 import qs from 'qs';
 
 export default {
-  get: id => httpClient.get(`/api/Users/Get/${id}`),
-  create: user => httpClient.post(`/api/Users/Create`, user),
-  update: user => httpClient.put(`/api/Users/Update`, user),
-  delete: userId => httpClient.delete(`/api/Users/Delete?id=${userId}`),
-  deleteRange: userIds => httpClient.patch(`/api/Users/DeleteRange`, userIds),
-  resetPassword: userId =>
-    httpClient.patch(`/api/Users/ResetPassword/${userId}`),
+  findOneById: id => httpClient.get(`/api/Users/Get/${id}`),
+  findAll: params => httpClient.post(`/api/Users/GetPage`, params),
+  findAllByIds: ids =>
+    httpClient.get(`/api/Users/GetRange?${qs.stringify(ids)}`),
+  createOne: item => httpClient.post(`/api/Users/Create`, item),
+  updateOne: item => httpClient.put(`/api/Users/Update`, item),
+  updateMany: items => httpClient.put(`/api/Users/UpdateRange`, items),
+  deleteOne: id => httpClient.delete(`/api/Users/Delete?id=${id}`),
+  deleteMany: ids => httpClient.patch(`/api/Users/DeleteRange`, ids),
+  restoreOne: id => httpClient.patch(`/api/Users/Restore/${id}`),
+  restoreMany: ids => httpClient.patch(`/api/Users/RestoreRange`, ids),
+  resetPassword: (userId, newPassword) =>
+    httpClient.patch(
+      `/api/Users/ResetPassword/${userId}?newPassword=${newPassword}`
+    ),
   isEmailExist: email =>
     httpClient.get(`/api/Users/IsEmailExist/${email}?email=${email}`),
   isUserNameExist: userName =>
-    httpClient.get(`/api/Users/IsUserNameExist/${userName}`),
-  getPage: query => httpClient.post(`/api/Users/GetPage`, query),
-  getRange: query =>
-    httpClient.get(
-      `/api/Users/GetRange${qs.stringify(query, { addQueryPrefix: true })}`
-    ),
-  restore: userId => httpClient.patch(`/api/Users/Restore/${userId}`),
-  restoreRange: userIds => httpClient.patch(`/api/Users/RestoreRange`, userIds)
+    httpClient.get(`/api/Users/IsUserNameExist/${userName}`)
 };

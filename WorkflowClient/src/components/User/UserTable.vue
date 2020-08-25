@@ -44,7 +44,7 @@
 
 <script>
 import tableMixin from '@/mixins/table.mixin';
-import UserDialog from '@/components/Users/UserDialog';
+import UserDialog from '@/components/User/UserDialog';
 
 export default {
   name: 'UserList',
@@ -59,12 +59,12 @@ export default {
       },
       actions: {
         fetchItems: this.$route.params.teamId
-          ? 'teams/fetchTeamUsers'
-          : 'users/fetchUsers',
-        deleteItem: 'users/deleteUser',
-        deleteItems: 'users/deleteUsers',
-        restoreItem: 'users/restoreUser',
-        restoreItems: 'users/restoreUsers',
+          ? 'teams/findUsers'
+          : 'users/findAll',
+        deleteItem: 'users/deleteOne',
+        deleteItems: 'users/deleteMany',
+        restoreItem: 'users/restoreOne',
+        restoreItems: 'users/restoreMany',
         removeFromTeam: 'teams/removeUser'
       }
     };

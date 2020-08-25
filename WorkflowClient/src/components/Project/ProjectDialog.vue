@@ -82,10 +82,10 @@ export default {
   },
   methods: {
     ...mapActions({
-      fetchItem: 'projects/fetchProject',
-      createItem: 'projects/createProject',
-      updateItem: 'projects/updateProject',
-      fetchProjectTeams: 'projects/fetchProjectTeams'
+      fetchItem: 'projects/findOneById',
+      createItem: 'projects/createOne',
+      updateItem: 'projects/updateOne',
+      fetchProjectTeams: 'projects/findTeams'
     })
   }
 };

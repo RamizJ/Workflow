@@ -56,7 +56,7 @@
 
 <script>
 import tableMixin from '@/mixins/table.mixin';
-import TaskDialog from '@/components/Tasks/TaskDialog';
+import TaskDialog from '@/components/Task/TaskDialog';
 
 export default {
   name: 'TaskTable',
@@ -68,13 +68,13 @@ export default {
         items: 'tasks/getTasks'
       },
       actions: {
-        fetchItems: 'tasks/fetchTasks',
-        deleteItem: 'tasks/deleteTask',
-        deleteItems: 'tasks/deleteTasks',
-        restoreItem: 'tasks/restoreTask',
-        restoreItems: 'tasks/restoreTasks',
-        updateItem: 'tasks/updateTask',
-        updateItems: 'tasks/updateTasks'
+        fetchItems: 'tasks/findAll',
+        updateItem: 'tasks/updateOne',
+        updateItems: 'tasks/updateMany',
+        deleteItem: 'tasks/deleteOne',
+        deleteItems: 'tasks/deleteMany',
+        restoreItem: 'tasks/restoreOne',
+        restoreItems: 'tasks/restoreMany',
       }
     };
   }

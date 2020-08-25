@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import AppSidebar from '~/components/AppSidebar.vue';
+import AppSidebar from '@/components/AppSidebar.vue';
 
 export default {
   name: 'LayoutDefault',

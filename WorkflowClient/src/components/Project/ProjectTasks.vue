@@ -26,9 +26,9 @@
 <script>
 import Page from '@/components/Page';
 import BaseHeader from '@/components/BaseHeader';
-import TaskToolbar from '@/components/Tasks/TaskToolbar';
-import TaskTable from '@/components/Tasks/TaskTable';
-import TaskBoard from '@/components/Tasks/TaskBoard';
+import TaskToolbar from '@/components/Task/TaskToolbar';
+import TaskTable from '@/components/Task/TaskTable';
+import TaskBoard from '@/components/Task/TaskBoard';
 import pageMixin from '@/mixins/page.mixin';
 
 export default {
