@@ -197,6 +197,8 @@ export default {
       downloadAttachment: 'tasks/downloadAttachment'
     }),
     async submit() {
+      if (this.loading) return;
+      this.loading = true;
       await this.$refs.form.validate(async valid => {
         if (valid) {
           await this.sendForm();
@@ -211,6 +213,7 @@ export default {
             type: 'error'
           });
         }
+        this.loading = false;
       });
     },
     async loadChecklist() {
