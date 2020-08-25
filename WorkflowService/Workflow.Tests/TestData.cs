@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.Identity;
@@ -90,6 +91,7 @@ namespace Workflow.Tests
                 .All()
                 .With(x => x.ParentGoalId = null)
                 .With(x => x.IsRemoved = false)
+                .With(x => x.CreationDate = DateTime.Now)
                 .TheFirst(6)
                 .With(x => x.ProjectId = Projects.First().Id)
                 .With(x => x.OwnerId = Users[0].Id)

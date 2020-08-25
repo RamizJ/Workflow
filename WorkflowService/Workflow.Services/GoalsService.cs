@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
@@ -512,23 +511,26 @@ namespace Workflow.Services
             if (vmGoals == null)
                 throw new HttpResponseException(BadRequest, $"Parameter '{nameof(vmGoals)}' cannot be null");
 
+            var goalIds = vmGoals.Select(g => g.Id).ToArray();
+            var existedGoals = _dataContext.Goals.Where(g => goalIds.Any(gId => gId == g.Id));
             foreach (var vmGoal in vmGoals)
             {
                 if (string.IsNullOrWhiteSpace(vmGoal.Title))
                     throw new HttpResponseException(BadRequest, 
                         "Cannot update goal. The title cannot be empty");
 
-                var model = new Goal
-                {
-                    Id = vmGoal.Id,
-                    ProjectId = vmGoal.ProjectId,
-                    Title = vmGoal.Title,
-                    Description = vmGoal.Description,
-                    State = vmGoal.State,
-                    Priority = vmGoal.Priority,
-                    GoalNumber = vmGoal.GoalNumber,
-                    PerformerId = vmGoal.PerformerId
-                };
+                var model = await existedGoals.FirstOrDefaultAsync(eg => eg.Id == vmGoal.Id);
+                if(model == null)
+                    throw new HttpResponseException(NotFound, $"Goal with id='{vmGoal.Id}' not found");
+
+                model.Id = vmGoal.Id;
+                model.ProjectId = vmGoal.ProjectId;
+                model.Title = vmGoal.Title;
+                model.Description = vmGoal.Description;
+                model.State = vmGoal.State;
+                model.Priority = vmGoal.Priority;
+                model.GoalNumber = vmGoal.GoalNumber;
+                model.PerformerId = vmGoal.PerformerId;
 
                 updateAction?.Invoke(model);
 

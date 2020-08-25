@@ -312,6 +312,7 @@ namespace Workflow.Tests.Services
             Assert.AreEqual(projectId, goal.ProjectId);
             Assert.AreEqual(priority, goal.Priority);
             Assert.AreEqual(state, goal.State);
+            Assert.AreEqual(0, (goal.CreationDate - DateTime.Now).TotalMinutes, 1);
             Assert.IsFalse(goal.IsRemoved);
         }
 
