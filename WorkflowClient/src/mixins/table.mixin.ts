@@ -149,7 +149,7 @@ export default class TableMixin extends Vue {
     this.selectedRow = row
   }
 
-  public onRowDoubleClick(row: any, column: any, event: Event) {
+  public onRowDoubleClick(row: any) {
     if (!row.isRemoved) {
       this.modalData = row.id
       this.modalVisible = true

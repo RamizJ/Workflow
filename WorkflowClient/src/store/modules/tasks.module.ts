@@ -122,7 +122,7 @@ class TasksModule extends VuexModule {
 
   @Action
   async addChild({ id, entities }: { id: number; entities: Task[] }): Promise<void> {
-    const childIds = []
+    const childIds: number[] = []
     for (const entity of entities) {
       const result = await this.context.dispatch('createOne', entity)
       childIds.push(result.id)

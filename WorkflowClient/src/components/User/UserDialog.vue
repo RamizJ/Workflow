@@ -165,8 +165,6 @@ import { mixins } from 'vue-class-component'
 import usersModule from '@/store/modules/users.module'
 import DialogMixin from '@/mixins/dialog.mixin'
 import BaseDialog from '@/components/BaseDialog.vue'
-import Query from '@/types/query.type'
-import Team from '@/types/team.type'
 import User from '@/types/user.type'
 
 @Component({ components: { BaseDialog } })
