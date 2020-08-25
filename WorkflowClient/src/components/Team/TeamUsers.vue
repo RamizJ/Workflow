@@ -18,20 +18,20 @@
   </div>
 </template>
 
-<script>
-import UserToolbar from '@/components/User/UserToolbar'
-import UserTable from '@/components/User/UserTable'
-import pageMixin from '@/mixins/page.mixin'
+<script lang="ts">
+import { Component } from 'vue-property-decorator'
+import { mixins } from 'vue-class-component'
 
-export default {
-  components: {
-    UserToolbar,
-    UserTable
-  },
-  mixins: [pageMixin],
-  created() {
+import PageMixin from '@/mixins/page.mixin'
+import UserToolbar from '@/components/User/UserToolbar.vue'
+import UserTable from '@/components/User/UserTable.vue'
+import { SortType } from '@/types/query.type'
+
+@Component({ components: { UserToolbar, UserTable } })
+export default class TeamUsers extends mixins(PageMixin) {
+  private created() {
     if (!this.$route.query.sort) this.onSortChange('lastName')
-    if (!this.$route.query.order) this.onOrderChange('Ascending')
+    if (!this.$route.query.order) this.onOrderChange(SortType.Ascending)
   }
 }
 </script>

@@ -14,10 +14,11 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'ToolbarFiltersExtra'
-}
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
+
+@Component
+export default class ToolbarFiltersExtra extends Vue {}
 </script>
 
 <style lang="scss" scoped>
