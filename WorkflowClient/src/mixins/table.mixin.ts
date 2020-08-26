@@ -67,7 +67,7 @@ export default class TableMixin extends Vue {
   private statuses = [
     { value: Status.New, label: 'Новое' },
     { value: Status.Perform, label: 'Выполняется' },
-    { value: Status.Testing, label: 'Тестируется' },
+    { value: Status.Testing, label: 'Проверяется' },
     { value: Status.Delay, label: 'Отложено' },
     { value: Status.Succeed, label: 'Выполнено' },
     { value: Status.Rejected, label: 'Отклонено' }

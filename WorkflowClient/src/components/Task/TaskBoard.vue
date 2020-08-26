@@ -130,7 +130,7 @@ export default class TaskBoard extends mixins(TableMixin) {
       return [
         { label: 'Новое', name: 'New' },
         { label: 'Выполняется', name: 'Perform' },
-        { label: 'Тестируется', name: 'Testing' },
+        { label: 'Проверяется', name: 'Testing' },
         { label: 'Отложено', name: 'Delay' },
         { label: 'Выполнено', name: 'Succeed' },
         { label: 'Отклонено', name: 'Rejected' }
