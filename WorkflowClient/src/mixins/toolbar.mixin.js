@@ -100,8 +100,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      fetchProjects: 'projects/fetchProjects',
-      fetchUsers: 'users/fetchUsers'
+      fetchProjects: 'projects/findAll',
+      fetchUsers: 'users/findAll'
     }),
     onSearch(value) {
       this.$emit('search', value);

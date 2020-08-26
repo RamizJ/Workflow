@@ -138,9 +138,9 @@ export default {
       updateItem: '',
       updateItems: '',
 
-      fetchProjects: 'projects/fetchProjects',
-      fetchTeams: 'teams/fetchTeams',
-      fetchUsers: 'users/fetchUsers'
+      fetchProjects: 'projects/findAll',
+      fetchTeams: 'teams/findAll',
+      fetchUsers: 'users/findAll'
     }),
     async searchProjects(query) {
       await this.fetchProjects({
