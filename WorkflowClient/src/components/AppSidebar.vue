@@ -1,109 +1,78 @@
-<template lang="pug">
-  div.sidebar
-    el-menu(
-      :router="true"
-      :default-active="$route.path")
-
-      //div.profile(v-if="me")
-        router-link(to="/profile")
-          div.avatar
-            el-avatar(:size="40" icon="el-icon-user-solid")
-            svg(viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="enable-background:new -580 439 577.9 194;" xml:space="preserve")
-              circle(cx="50" cy="50" r="40")
-          div
-            div.profile__title {{ me.firstName }}
-            div.profile__subtitle {{ me.email }}
-        div.actions
-          el-button(type="text" @click="exit")
-            feather(type="log-out")
+<template>
+  <div class="sidebar">
+    <el-menu :router="true" :default-active="$route.path">
+      <!--div.profile(v-if="me")
+    router-link(to="/profile")
+      div.avatar
+        el-avatar(:size="40" icon="el-icon-user-solid")
+        svg(viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="enable-background:new -580 439 577.9 194;" xml:space="preserve")
+          circle(cx="50" cy="50" r="40")
+      div
+        div.profile__title {{ me.firstName }}
+        div.profile__subtitle {{ me.email }}
+    div.actions
+      el-button(type="text" @click="exit")
+        feather(type="log-out")
 
 
 
-      //el-menu-item(index="/" disabled)
-        feather(type="activity")
-        span Обзор
-      el-menu-item(index="/tasks")
-        feather(type="list")
-        span Задачи
-      el-menu-item(index="/projects")
-        feather(type="layers")
-        span Проекты
-      el-menu-item(index="/teams")
-        feather(type="users")
-        span Команды
-      el-menu-item(index="/users")
-        feather(type="user")
-        span Пользователи
-      //el-menu-item(index="/journal")
-        feather(type="check-circle")
-        span Журнал
-      //el-menu-item(index="/trash")
-        feather(type="trash")
-        span Корзина
+    -->
+      <!--el-menu-item(index="/" disabled)
+    feather(type="activity")
+    span Обзор
+    -->
+      <el-menu-item index="/tasks">
+        <feather type="list"></feather><span>Задачи</span>
+      </el-menu-item>
+      <el-menu-item index="/projects">
+        <feather type="layers"></feather><span>Проекты</span>
+      </el-menu-item>
+      <el-menu-item index="/teams">
+        <feather type="users"></feather><span>Команды</span>
+      </el-menu-item>
+      <el-menu-item index="/users">
+        <feather type="user"></feather><span>Пользователи</span>
+      </el-menu-item>
+      <!--el-menu-item(index="/journal")
+    feather(type="check-circle")
+    span Журнал
+    -->
+      <!--el-menu-item(index="/trash")
+    feather(type="trash")
+    span Корзина
 
-      div.divider
+    -->
+      <div class="divider"></div>
+      <!--el-menu-item(index="/scopes" disabled)
+    feather(type="hexagon")
+    span Области
 
-      //el-menu-item(index="/scopes" disabled)
-        feather(type="hexagon")
-        span Области
 
+    -->
+      <el-menu-item index="/settings">
+        <feather type="settings"></feather><span>Настройки</span>
+      </el-menu-item>
+      <!--div.divider-->
+      <!--el-collapse(v-model="collapseState")
+    el-collapse-item(title="Проекты" name="projects")
+      el-menu-item(v-for="item in projects" :key="item.id" :index="`/projects/${item.id}`")
+        feather(type="box")
+        span {{ item.name }}
+      infinite-loading(ref="loader" @infinite="load" spinner="waveDots")
+        div(slot="no-more")
+        div(slot="no-results")
 
-      el-menu-item(index="/settings")
-        feather(type="settings")
-        span Настройки
-
-      div.divider
-
-      el-collapse(v-model="collapseState")
-        el-collapse-item(title="Проекты" name="projects")
-          el-menu-item(v-for="item in projects" :key="item.id" :index="`/projects/${item.id}`")
-            feather(type="box")
-            span {{ item.name }}
-          infinite-loading(ref="loader" @infinite="load" spinner="waveDots")
-            div(slot="no-more")
-            div(slot="no-results")
-
-    div.logo
-      img(src="@/assets/logo.svg")
-
+    -->
+    </el-menu>
+    <div class="logo"><img src="@/assets/logo.svg" /></div>
+  </div>
 </template>
 
-<script>
-import { mapActions, mapGetters } from 'vuex';
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
 
-export default {
-  name: 'AppSidebar',
-  data() {
-    return {
-      collapseState: ['projects']
-    };
-  },
-  computed: {
-    ...mapGetters({
-      me: 'auth/me',
-      projects: 'projects/getSidebarProjects'
-    })
-  },
-  methods: {
-    ...mapActions({
-      logout: 'auth/logout',
-      fetchSidebarProjects: 'projects/fetchSidebarProjects'
-    }),
-    async load($state) {
-      const projects = await this.fetchSidebarProjects();
-      if (projects.length) $state.loaded();
-      else $state.complete();
-    },
-    async exit() {
-      try {
-        await this.logout();
-        await this.$router.push({ name: 'Login' });
-      } catch (e) {
-        this.$message.error('Ошибка выхода из учётной записи');
-      }
-    }
-  }
-};
+@Component
+export default class AppSidebar extends Vue {}
 </script>
 
 <style lang="scss" scoped>

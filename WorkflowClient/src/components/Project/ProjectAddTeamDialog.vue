@@ -1,90 +1,110 @@
-<template lang="pug">
-  base-dialog(v-if="visible" @close="exit" ref="dialog")
-    h1(slot="title") Добавить команду
-    el-form(slot="body" :model="form" ref="form" v-loading="loading" @submit.native.prevent="submit")
-      el-row(:gutter="20")
-        el-col(:span="24")
-          el-form-item
-            el-select(
+<template>
+  <base-dialog v-if="visible" @close="exit" ref="dialog">
+    <h1 slot="title">Добавить команду</h1>
+    <el-form
+      slot="body"
+      :model="form"
+      ref="form"
+      v-loading="loading"
+      @submit.native.prevent="submit"
+    >
+      <el-row :gutter="20">
+        <el-col :span="24">
+          <el-form-item>
+            <el-select
               ref="input"
               v-model="form.teamId"
               placeholder="Найти команду..."
               :remote-method="searchTeams"
-              filterable remote clearable default-first-option)
-              el-option(v-for="item in teamsToAdd" :key="item.id" :label="item.value" :value="item.id")
-    template(slot="footer")
-      div.extra
-      div.send
-        el-tooltip(content="Сохранить" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-          el-button(type="text" @click="submit" circle)
-            feather(type="arrow-right")
+              filterable="filterable"
+              remote="remote"
+              clearable="clearable"
+              default-first-option="default-first-option"
+            >
+              <el-option
+                v-for="item in teamsToAdd"
+                :key="item.id"
+                :label="item.value"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
+    <template slot="footer">
+      <div class="extra"></div>
+      <div class="send">
+        <el-tooltip
+          content="Сохранить"
+          effect="dark"
+          placement="top"
+          transition="fade"
+          :visible-arrow="false"
+          :open-delay="500"
+        >
+          <el-button type="text" @click="submit" circle="circle">
+            <feather type="arrow-right"></feather>
+          </el-button>
+        </el-tooltip>
+      </div>
+    </template>
+  </base-dialog>
 </template>
 
-<script>
-import { mapActions, mapGetters } from 'vuex';
-import BaseDialog from '@/components/BaseDialog';
-import dialogMixin from '@/mixins/dialog.mixin';
+<script lang="ts">
+import { Component, Ref } from 'vue-property-decorator'
+import { mixins } from 'vue-class-component'
 
-export default {
-  components: { BaseDialog },
-  mixins: [dialogMixin],
-  data() {
-    return {
-      form: {
-        teamId: ''
-      }
-    };
-  },
-  computed: {
-    ...mapGetters({
-      projectTeams: 'projects/getProjectTeams',
-      teamProjects: 'teams/getTeamProjects'
-    }),
-    teamsToAdd() {
-      const allTeams = this.teamList;
-      const existingTeams = this.existingTeams;
-      return allTeams.filter(team => {
-        return !existingTeams.find(existingTeam => existingTeam.id === team.id);
-      });
-    },
-    existingTeams() {
-      return this.projectTeams.map(team => {
-        return {
-          value: team.name,
-          id: team.id
-        };
-      });
-    }
-  },
-  async mounted() {
-    await this.searchTeams();
-    await this.fetchProjectTeams({
-      projectId: this.$route.params.projectId,
-      pageNumber: 0,
-      pageSize: 100
-    });
-    this.$refs.input.focus();
-  },
-  methods: {
-    ...mapActions({
-      addTeam: 'projects/addTeam',
-      fetchItem: 'teams/findOneById',
-      createItem: 'teams/createOne',
-      updateItem: 'teams/updateOne',
-      fetchProjectTeams: 'projects/findTeams',
-      fetchTeamProjects: 'teams/findProjects'
-    }),
-    async submit() {
-      const projectId = this.$route.params.projectId;
-      const teamId = this.form.teamId;
-      if (teamId) {
-        this.loading = true;
-        await this.addTeam({ projectId, teamId });
-        this.$emit('submit');
-        this.loading = false;
-      }
-      this.exit();
-    }
+import projectsModule from '@/store/modules/projects.module'
+import DialogMixin from '@/mixins/dialog.mixin'
+import BaseDialog from '@/components/BaseDialog.vue'
+import Team from '@/types/team.type'
+import { Input } from 'element-ui'
+
+@Component({
+  components: {
+    BaseDialog
   }
-};
+})
+export default class ProjectAddTeamDialog extends mixins(DialogMixin) {
+  private form = {
+    teamId: ''
+  }
+
+  private async mounted() {
+    this.visible = true
+    await this.searchTeams()
+    setTimeout(() => (this.$refs.input as Input).focus(), 150)
+  }
+
+  private get teamsToAdd(): { id: number | undefined; value: string }[] {
+    const allTeams = this.teams
+    const existingTeams = this.existingTeams
+    return allTeams.filter(team => {
+      return !existingTeams.find(existingTeam => existingTeam.id === team.id)
+    })
+  }
+  private get existingTeams(): { id: number | undefined; value: string }[] {
+    const teams: Team[] = projectsModule.project?.teams || []
+    return teams.map((team: Team) => {
+      return {
+        id: team.id,
+        value: team.name
+      }
+    })
+  }
+
+  public async submit() {
+    const projectId = parseInt(this.$route.params.projectId)
+    const teamId = parseInt(this.form.teamId)
+    if (teamId) {
+      this.loading = true
+      await projectsModule.addTeam({ projectId, teamId })
+      this.$emit('submit')
+      this.loading = false
+    }
+    this.exit()
+  }
+}
 </script>

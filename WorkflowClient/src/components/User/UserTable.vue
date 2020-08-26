@@ -1,98 +1,153 @@
-<template lang="pug">
-  div.table-container
-    el-table(
+<template>
+  <div class="table-container">
+    <el-table
       ref="table"
       height="100%"
       v-loading="loading"
-      :data="tableData"
-      :row-class-name="onSetIndex"
-      @select="onItemSelect"
-      @row-click="onItemSingleClick"
-      @row-contextmenu="onItemRightClick"
-      @row-dblclick="onItemDoubleClick"
-      highlight-current-row border)
-      el-table-column(type="selection" width="38")
-      el-table-column(prop="lastName" label="Фамилия" width="150")
-      el-table-column(prop="firstName" label="Имя" width="150")
-      el-table-column(prop="middleName" label="Отчество" width="150")
-      el-table-column(prop="userName" label="Логин" width="150")
-      el-table-column(prop="email" label="Почта")
-      el-table-column(prop="phone" label="Телефон" width="120")
-      el-table-column(prop="position" label="Должность" width="180")
-      infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load" force-use-infinite-wrapper=".el-table__body-wrapper")
-        div(slot="no-more")
-        div(slot="no-results")
-
-    vue-context(ref="contextMenu")
-      template(slot-scope="child")
-        li
-          a(v-if="isEditVisible" @click.prevent="onItemEdit($event, child.data.row)") Изменить
-        el-divider(v-if="isEditVisible")
-        li
-          a(@click.prevent="onItemCreate") Новый пользователь
-        el-divider
-        li
-          a(v-if="isRemoveFromTeamVisible" @click.prevent="onItemRemoveFromTeam($event, child.data.row)") Убрать из команды
-        li
-          a(v-if="isDeleteVisible" @click.prevent="onItemDelete($event, child.data.row)") Переместить в корзину
-        li
-          a(v-if="isRestoreVisible" @click.prevent="onItemRestore($event, child.data.row)") Восстановить
-
-    user-dialog(v-if="dialogVisible" :data="dialogData" @close="dialogVisible = false" @submit="refresh")
-
+      :data="data"
+      :row-class-name="setIndex"
+      @select="onRowSelect"
+      @row-click="onRowSingleClick"
+      @row-contextmenu="onRowRightClick"
+      @row-dblclick="onRowDoubleClick"
+      highlight-current-row="highlight-current-row"
+      border="border"
+    >
+      <el-table-column type="selection" width="42"></el-table-column>
+      <el-table-column prop="lastName" label="Фамилия" width="150"></el-table-column>
+      <el-table-column prop="firstName" label="Имя" width="150"></el-table-column>
+      <el-table-column prop="middleName" label="Отчество" width="150"></el-table-column>
+      <el-table-column prop="userName" label="Логин" width="150"></el-table-column>
+      <el-table-column prop="email" label="Почта"></el-table-column>
+      <el-table-column prop="phone" label="Телефон" width="120"></el-table-column>
+      <el-table-column prop="position" label="Должность" width="180"></el-table-column>
+      <infinite-loading
+        slot="append"
+        ref="loader"
+        spinner="waveDots"
+        :distance="300"
+        @infinite="loadData"
+        force-use-infinite-wrapper=".el-table__body-wrapper"
+      >
+        <div slot="no-more"></div>
+        <div slot="no-results"></div>
+      </infinite-loading>
+    </el-table>
+    <vue-context ref="contextMenu">
+      <template slot-scope="child">
+        <li>
+          <a v-if="isRowEditable" @click.prevent="editEntity(child.data.row)">Изменить</a>
+        </li>
+        <el-divider v-if="isRowEditable"></el-divider>
+        <li>
+          <a v-if="isRowEditable && !$route.params.teamId" @click.prevent="createEntity"
+            >Новый пользователь</a
+          >
+        </li>
+        <li>
+          <a v-if="isRowEditable && $route.params.teamId" @click.prevent="addUser"
+            >Добавить участника</a
+          >
+        </li>
+        <el-divider v-if="isRowEditable"></el-divider>
+        <li>
+          <a v-if="$route.params.teamId" @click.prevent="removeEntityFromTeam(child.data.row)"
+            >Убрать из команды</a
+          >
+        </li>
+        <li>
+          <a v-if="isRowEditable" @click.prevent="deleteEntity(child.data.row)"
+            >Переместить в корзину</a
+          >
+        </li>
+        <li>
+          <a v-if="!isRowEditable" @click.prevent="restoreEntity(child.data.row)">Восстановить</a>
+        </li>
+      </template>
+    </vue-context>
+    <user-dialog
+      v-if="modalVisible"
+      :id="modalData"
+      @close="modalVisible = false"
+      @submit="reloadData"
+    ></user-dialog>
+    <team-add-user-dialog
+      v-if="modalAddUserVisible"
+      @close="modalAddUserVisible = false"
+      @submit="onUserAdded"
+    ></team-add-user-dialog>
+  </div>
 </template>
 
-<script>
-import tableMixin from '@/mixins/table.mixin';
-import UserDialog from '@/components/User/UserDialog';
+<script lang="ts">
+import { Component } from 'vue-property-decorator'
+import { mixins } from 'vue-class-component'
+import { StateChanger } from 'vue-infinite-loading'
 
-export default {
-  name: 'UserList',
-  components: { UserDialog },
-  mixins: [tableMixin],
-  data() {
-    return {
-      getters: {
-        items: this.$route.params.teamId
-          ? 'teams/getTeamUsers'
-          : 'users/getUsers'
-      },
-      actions: {
-        fetchItems: this.$route.params.teamId
-          ? 'teams/findUsers'
-          : 'users/findAll',
-        deleteItem: 'users/deleteOne',
-        deleteItems: 'users/deleteMany',
-        restoreItem: 'users/restoreOne',
-        restoreItems: 'users/restoreMany',
-        removeFromTeam: 'teams/removeUser'
-      }
-    };
-  },
-  computed: {
-    isRemoveFromTeamVisible() {
-      return !!this.$route.params.teamId;
-    }
-  },
-  methods: {
-    async onItemRemoveFromTeam(event, row) {
-      const teamId = this.$route.params.teamId;
-      const userId = row.id;
-      if (this.isMultipleSelected) {
-        const userIds = this.table.selection.map(item => item.id);
-        for (let id of userIds) {
-          await this.$store.dispatch(this.actions.removeFromTeam, {
-            teamId,
-            userId: id
-          });
-        }
-      } else
-        await this.$store.dispatch(this.actions.removeFromTeam, {
-          teamId,
-          userId
-        });
-      this.refresh();
-    }
+import usersModule from '@/store/modules/users.module'
+import teamsModule from '@/store/modules/teams.module'
+import TableMixin from '@/mixins/table.mixin'
+import UserDialog from '@/components/User/UserDialog.vue'
+import TeamAddUserDialog from '@/components/Team/TeamAddUserDialog.vue'
+import User from '@/types/user.type'
+import Project from '@/types/project.type'
+
+@Component({ components: { UserDialog, TeamAddUserDialog } })
+export default class UserTable extends mixins(TableMixin) {
+  private loading = false
+  private modalAddUserVisible = false
+
+  private async loadData($state: StateChanger) {
+    const isFirstLoad = !this.data.length
+    this.loading = isFirstLoad
+    let data: User[]
+    if (this.$route.params.teamId) data = await teamsModule.findUsers(this.query)
+    else data = await usersModule.findAll(this.query)
+    if (this.query.pageNumber !== undefined) this.query.pageNumber++
+    if (data.length) $state.loaded()
+    else $state.complete()
+    this.data = isFirstLoad ? data : this.data.concat(data)
+    this.loading = false
   }
-};
+
+  public createEntity() {
+    this.modalData = undefined
+    this.modalVisible = true
+  }
+
+  public editEntity(entity: Project) {
+    this.modalData = entity.id
+    this.modalVisible = true
+  }
+
+  private async deleteEntity(entity: User, multiple = false) {
+    if (multiple) await usersModule.deleteMany(this.table.selection.map((item: User) => item.id))
+    else await usersModule.deleteOne(entity.id as string)
+    this.reloadData()
+  }
+
+  private async restoreEntity(entity: User, multiple = false) {
+    if (multiple) await usersModule.restoreMany(this.table.selection.map((item: User) => item.id))
+    else await usersModule.restoreOne(entity.id as string)
+    this.reloadData()
+  }
+
+  private async removeEntityFromTeam(entity: User) {
+    const teamId = parseInt(this.$route.params.teamId)
+    const userId = entity.id!.toString()
+    if (this.isMultipleSelected) {
+      const userIds = this.table.selection.map((item: User) => item.id)
+      await teamsModule.removeUsers({ teamId, userIds })
+    } else await teamsModule.removeUser({ teamId, userId })
+    this.reloadData()
+  }
+
+  private addUser() {
+    this.modalAddUserVisible = true
+  }
+
+  private onUserAdded() {
+    this.reloadData()
+  }
+}
 </script>
