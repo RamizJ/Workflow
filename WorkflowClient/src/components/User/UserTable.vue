@@ -39,7 +39,16 @@
           <a v-if="isRowEditable" @click.prevent="editEntity(child.data.row)">Изменить</a>
         </li>
         <el-divider v-if="isRowEditable"></el-divider>
-        <li><a v-if="isRowEditable" @click.prevent="createEntity">Новый пользователь</a></li>
+        <li>
+          <a v-if="isRowEditable && !$route.params.teamId" @click.prevent="createEntity"
+            >Новый пользователь</a
+          >
+        </li>
+        <li>
+          <a v-if="isRowEditable && $route.params.teamId" @click.prevent="addUser"
+            >Добавить участника</a
+          >
+        </li>
         <el-divider v-if="isRowEditable"></el-divider>
         <li>
           <a v-if="$route.params.teamId" @click.prevent="removeEntityFromTeam(child.data.row)"
@@ -62,6 +71,11 @@
       @close="modalVisible = false"
       @submit="reloadData"
     ></user-dialog>
+    <team-add-user-dialog
+      v-if="modalAddUserVisible"
+      @close="modalAddUserVisible = false"
+      @submit="onUserAdded"
+    ></team-add-user-dialog>
   </div>
 </template>
 
@@ -74,12 +88,14 @@ import usersModule from '@/store/modules/users.module'
 import teamsModule from '@/store/modules/teams.module'
 import TableMixin from '@/mixins/table.mixin'
 import UserDialog from '@/components/User/UserDialog.vue'
+import TeamAddUserDialog from '@/components/Team/TeamAddUserDialog.vue'
 import User from '@/types/user.type'
 import Project from '@/types/project.type'
 
-@Component({ components: { UserDialog } })
+@Component({ components: { UserDialog, TeamAddUserDialog } })
 export default class UserTable extends mixins(TableMixin) {
   private loading = false
+  private modalAddUserVisible = false
 
   private async loadData($state: StateChanger) {
     const isFirstLoad = !this.data.length
@@ -123,6 +139,14 @@ export default class UserTable extends mixins(TableMixin) {
       const userIds = this.table.selection.map((item: User) => item.id)
       await teamsModule.removeUsers({ teamId, userIds })
     } else await teamsModule.removeUser({ teamId, userId })
+    this.reloadData()
+  }
+
+  private addUser() {
+    this.modalAddUserVisible = true
+  }
+
+  private onUserAdded() {
     this.reloadData()
   }
 }
