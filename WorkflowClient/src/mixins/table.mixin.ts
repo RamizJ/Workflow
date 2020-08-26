@@ -134,7 +134,7 @@ export default class TableMixin extends Vue {
     if (this.isShiftPressed) {
       const previousIndex = row.index
       const currentIndex = this.selectedRow?.index
-      if (!previousIndex || !currentIndex) return
+      if (previousIndex === undefined || currentIndex === undefined) return
       let from: number
       let to: number
       if (currentIndex < previousIndex) {
@@ -145,7 +145,7 @@ export default class TableMixin extends Vue {
         to = currentIndex
       }
       this.data.some((entity: any) => {
-        if (!entity.index) return
+        if (entity.index === undefined) return
         if (entity.index >= from && entity.index <= to) this.table.toggleRowSelection(entity)
       })
     } else {
