@@ -19,9 +19,9 @@ export default {
   findTeams: (query: Query) =>
     httpClient.post(`/api/Projects/GetTeamsPage?projectId=${query.projectId}`, query),
   addTeam: (projectId: number, teamId: number) =>
-    httpClient.patch(`/api/Projects/AddTeam/${teamId}?projectId=${projectId}`),
+    httpClient.patch(`/api/Projects/AddTeam/${projectId}/${teamId}`),
   removeTeam: (projectId: number, teamId: number) =>
-    httpClient.patch(`/api/Projects/RemoveTeam/${teamId}/${projectId}`),
+    httpClient.patch(`/api/Projects/RemoveTeam/${projectId}/${teamId}`),
   getTasksCount: (projectId: number) =>
     httpClient.get(`/api/Goals/GetTotalProjectGoalsCount/${projectId}`),
   getTasksCountByStatus: (projectId: number, status: string) =>
