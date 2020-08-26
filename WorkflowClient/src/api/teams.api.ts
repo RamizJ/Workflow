@@ -23,7 +23,7 @@ export default {
   addUsers: (teamId: number, userIds: string[]) =>
     httpClient.patch(`/api/Teams/AddUser/${teamId}`, userIds),
   removeUser: (teamId: number, userId: string) =>
-    httpClient.patch(`/api/Teams/RemoveUser/${teamId}/${userId}`),
+    httpClient.patch(`/api/Teams/RemoveUser/${teamId}`, JSON.stringify(userId)),
   findProjects: (query: Query) =>
     httpClient.post(`/api/Teams/GetProjectsPage?teamId=${query.teamId}`, query),
   addProject: (teamId: number, projectId: number) =>

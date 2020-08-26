@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "vue-cli-service serve --mode development",
-    "build:staging": "vue-cli-service build --mode staging",
-    "build:production": "vue-cli-service build --mode production",
+    "staging": "vue-cli-service build --mode staging",
+    "prod": "vue-cli-service build --mode production",
     "debug": "vue-cli-service serve --mode debug",
     "lint": "vue-cli-service lint"
   },
