@@ -94,7 +94,7 @@ export default class ToolbarMixin extends Vue {
   }
 
   public onSearch(value: string) {
-    this.$emit('search', value)
+    this.$emit('search', value || this.search)
   }
 
   public onFiltersChange() {

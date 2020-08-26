@@ -4,7 +4,7 @@
       <div class="filter">
         <div class="label">Поиск</div>
         <el-input v-model="search" size="medium" placeholder="Искать..." @change="onSearch">
-          <el-button slot="prefix" type="text" size="mini" @click="onSearch">
+          <el-button slot="prefix" type="text" size="mini" @click="onSearch(search || '')">
             <feather type="search" size="16"></feather>
           </el-button>
         </el-input>
