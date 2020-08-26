@@ -47,5 +47,9 @@ export default class ProjectsPage extends mixins(PageMixin) {
     if (!this.$route.query.sort) this.onSortChange('creationDate')
     if (!this.$route.query.order) this.onOrderChange(SortType.Descending)
   }
+
+  private onCreate() {
+    ;(this.$refs.items as ProjectTable).createEntity()
+  }
 }
 </script>

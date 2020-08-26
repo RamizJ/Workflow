@@ -1,11 +1,10 @@
 import { AxiosResponse } from 'axios'
 import { VuexModule, Module, Action, MutationAction, getModule } from 'vuex-module-decorators'
 
+import store from '@/store'
 import authAPI from '@/api/auth.api'
 import Credentials from '@/types/credentials.type'
 import User from '@/types/user.type'
-import ChangePassword from '@/types/change-password.type'
-import store from '@/store'
 
 @Module({
   dynamic: true,
@@ -66,8 +65,14 @@ class AuthModule extends VuexModule {
   }
 
   @Action
-  public async changePassword(changePasswordData: ChangePassword): Promise<void> {
-    await authAPI.changePassword(changePasswordData)
+  public async changePassword({
+    currentPassword,
+    newPassword
+  }: {
+    currentPassword: string
+    newPassword: string
+  }): Promise<void> {
+    await authAPI.changePassword(currentPassword, newPassword)
   }
 }
 

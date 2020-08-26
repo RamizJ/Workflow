@@ -72,16 +72,35 @@ class TeamsModule extends VuexModule {
   async findOneById(id: number): Promise<Team> {
     const response = await teamsAPI.findOneById(id)
     const result = response.data as Team
+    const teamUsers = await this.context.dispatch('findUsers', {
+      teamId: id,
+      pageNumber: 0,
+      pageSize: 20
+    })
+    const teamProjects = await this.context.dispatch('findProjects', {
+      teamId: id,
+      pageNumber: 0,
+      pageSize: 20
+    })
+    result.userIds = teamUsers.map(user => user.id)
+    result.projectIds = teamProjects.map(project => project.id)
     this.context.commit('setTeam', result)
     return result
   }
 
   @Action
   async createOne(entity: Team): Promise<Team> {
-    const response = await teamsAPI.createOne(entity)
-    const result = response.data as Team
-    this.context.commit('setTeam', result)
-    return result
+    const request = {
+      team: entity,
+      userIds: entity.userIds || [],
+      projectIds: entity.projectIds || []
+    }
+    const response = await teamsAPI.createOne(request)
+    const result = response.data as { team: Team; userIds: string[]; projectIds: number[] }
+    result.team.userIds = result.userIds
+    result.team.projectIds = result.projectIds
+    this.context.commit('setTeam', result.team)
+    return result.team
   }
 
   @Action
@@ -93,7 +112,12 @@ class TeamsModule extends VuexModule {
 
   @Action
   async updateOne(entity: Team): Promise<void> {
-    await teamsAPI.updateOne(entity)
+    const request = {
+      team: entity,
+      userIds: entity.userIds || [],
+      projectIds: entity.projectIds || []
+    }
+    await teamsAPI.updateOne(request)
   }
 
   @Action

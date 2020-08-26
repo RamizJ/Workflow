@@ -65,16 +65,29 @@ class ProjectsModule extends VuexModule {
   async findOneById(id: number): Promise<Project> {
     const response = await projectsAPI.findOneById(id)
     const result = response.data as Project
+    const projectTeams: Team[] = await this.context.dispatch('findTeams', {
+      projectId: id,
+      pageNumber: 0,
+      pageSize: 20
+    })
+    result.teams = projectTeams
+    result.teamIds = projectTeams.map(team => team.id!)
     this.context.commit('setProject', result)
+    this.context.commit('setProjectTeams', projectTeams)
     return result
   }
 
   @Action
   async createOne(entity: Project): Promise<Project> {
-    const response = await projectsAPI.createOne(entity)
-    const result = response.data as Project
-    this.context.commit('setProject', result)
-    return result
+    const request = {
+      project: entity,
+      teamIds: entity.teamIds || []
+    }
+    const response = await projectsAPI.createOne(request)
+    const result = response.data as { project: Project; teamIds: number[] }
+    result.project.teamIds = result.teamIds
+    this.context.commit('setProject', result.project)
+    return result.project
   }
 
   @Action
@@ -86,7 +99,11 @@ class ProjectsModule extends VuexModule {
 
   @Action
   async updateOne(entity: Project): Promise<void> {
-    await projectsAPI.updateOne(entity)
+    const request = {
+      project: entity,
+      teamIds: entity.teamIds || []
+    }
+    await projectsAPI.updateOne(request)
   }
 
   @Action

@@ -43,7 +43,7 @@
                 default-first-option="default-first-option"
               >
                 <el-option
-                  v-for="item in teamList"
+                  v-for="item in teams"
                   :key="item.id"
                   :label="item.value"
                   :value="item.id"
@@ -110,15 +110,23 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
+import { Component, Prop, Ref } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
+import { ElForm } from 'element-ui/types/form'
+import { Message } from 'element-ui'
 
 import projectsModule from '@/store/modules/projects.module'
 import DialogMixin from '@/mixins/dialog.mixin'
+import BaseDialog from '@/components/BaseDialog.vue'
 import Project from '@/types/project.type'
 
-@Component
+@Component({ components: { BaseDialog } })
 export default class ProjectDialog extends mixins(DialogMixin) {
+  @Prop() readonly id: number | undefined
+  @Ref() readonly title?: HTMLInputElement
+
+  private isEdit = !!this.id
+
   public form: Project = {
     name: '',
     description: '',
@@ -134,17 +142,47 @@ export default class ProjectDialog extends mixins(DialogMixin) {
   private teamsVisible = null
 
   private async mounted() {
+    this.visible = true
+
     this.loading = true
-    await this.searchTeams('')
-    if (this.isEdit) {
+    if (this.id) {
+      const id: number = parseInt(this.id.toString())
+      this.form = await projectsModule.findOneById(id)
+
       await projectsModule.findTeams({
-        projectId: this.data.id,
+        projectId: this.id,
         pageNumber: 0,
         pageSize: 10
       })
       this.form.teamIds = []
       this.form.teamIds = projectsModule.projectTeams.map(team => (team.id ? team.id : -1))
     }
+    await this.searchTeams()
+    this.loading = false
+  }
+
+  async submit() {
+    const form = this.$refs.form as ElForm
+    await form.validate(async valid => {
+      if (valid) {
+        await this.sendForm()
+        this.$emit('submit')
+        this.exit()
+      } else {
+        Message({
+          showClose: true,
+          message: 'Форма заполнена некорректно',
+          type: 'error'
+        })
+      }
+    })
+  }
+
+  async sendForm() {
+    this.loading = true
+    const entity: Project = { ...this.form } as Project
+    if (this.isEdit) await projectsModule.updateOne(entity)
+    else await projectsModule.createOne(entity)
     this.loading = false
   }
 }

@@ -7,8 +7,10 @@ export default {
   findOneById: (id: number) => httpClient.get(`/api/Projects/Get/${id}`),
   findAll: (query: Query) => httpClient.post(`/api/Projects/GetPage`, query),
   findAllByIds: (ids: number[]) => httpClient.get(`/api/Projects/GetRange?${qs.stringify(ids)}`),
-  createOne: (entity: Project) => httpClient.post(`/api/Projects/CreateByForm`, entity),
-  updateOne: (entity: Project) => httpClient.put(`/api/Projects/UpdateByForm`, entity),
+  createOne: (request: { project: Project; teamIds: number[] }) =>
+    httpClient.post(`/api/Projects/CreateByForm`, request),
+  updateOne: (request: { project: Project; teamIds: number[] }) =>
+    httpClient.put(`/api/Projects/UpdateByForm`, request),
   updateMany: (entities: Project[]) => httpClient.put(`/api/Goals/UpdateRange`, entities),
   deleteOne: (id: number) => httpClient.delete(`/api/Projects/Delete/${id}`),
   deleteMany: (ids: number[]) => httpClient.patch(`/api/Projects/DeleteRange`, ids),

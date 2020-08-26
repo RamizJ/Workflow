@@ -126,7 +126,7 @@
           </el-col>
         </transition>
         <transition name="fade">
-          <el-col v-if="attachmentsVisible || attachmentList.length" :span="24">
+          <el-col v-if="attachmentsVisible || form.attachments" :span="24">
             <el-form-item>
               <el-upload
                 action="https://demo.girngm.ru/workflow_dev/api/Goals/AddAttachments/"
@@ -134,7 +134,7 @@
                 :http-request="uploadAttachment"
                 :on-preview="onAttachmentClick"
                 :on-remove="removeAttachment"
-                :file-list="attachmentList"
+                :file-list="form.attachments"
                 :auto-upload="false"
                 drag="drag"
                 multiple="multiple"
@@ -244,7 +244,7 @@
           :open-delay="500"
         >
           <el-button
-            v-if="!attachmentList.length"
+            v-if="!form.attachments"
             type="text"
             @click="attachmentsVisible = !attachmentsVisible"
             circle="circle"
@@ -272,47 +272,45 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
+import { Component, Prop, Ref, Vue } from 'vue-property-decorator'
+import { mixins } from 'vue-class-component'
+import { ElUpload } from 'element-ui/types/upload'
 import { ElForm } from 'element-ui/types/form'
 import { Input, Message } from 'element-ui'
 import { Route } from 'vue-router'
+import moment from 'moment'
 
 import tasksModule from '@/store/modules/tasks.module'
+import DialogMixin from '@/mixins/dialog.mixin'
 import BaseDialog from '@/components/BaseDialog.vue'
+import Checklist from '@/components/Checklist.vue'
 import Task, { Priority, Status } from '@/types/task.type'
 import Attachment from '@/types/attachment.type'
-import projectsModule from '@/store/modules/projects.module'
-import usersModule from '@/store/modules/users.module'
-import teamsModule from '@/store/modules/teams.module'
-import { ElUpload } from 'element-ui/types/upload'
-import Checklist from '@/components/Checklist.vue'
 
 @Component({ components: { Checklist, BaseDialog } })
-export default class TaskDialog extends Vue {
-  @Prop()
-  id: number | undefined
+export default class TaskDialog extends mixins(DialogMixin) {
+  @Prop() readonly id: number | undefined
+  @Ref() readonly title?: Input
 
-  private loading = false
-  private visible = false
   private isEdit = !!this.id
+
   private form: Task = {
     title: '',
     description: '',
     projectId: parseInt(this.$route.params.projectId) || undefined,
-    projectName: '',
-    performerId: '',
-    performerFio: '',
-    creationDate: new Date(),
+    performerId: undefined,
+    performerFio: undefined,
+    creationDate: moment.utc(moment()).format(),
     state: Status.New,
     priority: Priority.Normal,
     isChildsExist: false,
     isRemoved: false
   }
 
-  private attachmentList: any[] | undefined = []
-  private childTasks: Task[] = []
-  private checklist: Task[] = []
-  private checklistNewItem = ''
+  // private attachmentList: any[] | undefined = []
+  // private childTasks: Task[] = []
+  // private checklist: Task[] = []
+  // private checklistNewItem = ''
 
   private rules = {
     title: [{ required: true, message: '!', trigger: 'blur' }],
@@ -332,39 +330,51 @@ export default class TaskDialog extends Vue {
   private expectedCompletedDateVisible = null
   private attachmentsVisible = null
 
-  private get projects() {
-    return projectsModule.projects.map(project => {
-      return {
-        value: project.name,
-        id: project.id
-      }
-    })
-  }
-
-  private get teams() {
-    return teamsModule.teams.map(team => {
-      return {
-        value: team.name,
-        id: team.id
-      }
-    })
-  }
-
-  private get users() {
-    return usersModule.users.map(user => {
-      return {
-        value: `${user.lastName} ${user.firstName}`,
-        id: user.id
-      }
-    })
-  }
+  // private get projects() {
+  //   return projectsModule.projects.map(project => {
+  //     return {
+  //       value: project.name,
+  //       id: project.id
+  //     }
+  //   })
+  // }
+  //
+  // private get teams() {
+  //   return teamsModule.teams.map(team => {
+  //     return {
+  //       value: team.name,
+  //       id: team.id
+  //     }
+  //   })
+  // }
+  //
+  // private get users() {
+  //   return usersModule.users.map(user => {
+  //     return {
+  //       value: `${user.lastName} ${user.firstName}`,
+  //       id: user.id
+  //     }
+  //   })
+  // }
 
   async mounted() {
     this.visible = true
-    // if (this.isEdit) this.form = { ...this.data } as Task;
 
     this.loading = true
-    if (this.isEdit) this.form = (await tasksModule.findOneById(this.id!)) as Task
+    if (this.id) {
+      const id: number = parseInt(this.id.toString())
+      this.form = await tasksModule.findOneById(id)
+    }
+
+    await this.searchUsers()
+    await this.searchProjects()
+    this.loading = false
+    ;(this.$refs.title as Input).focus()
+
+    // if (this.isEdit) this.form = { ...this.data } as Task;
+
+    // if (this.isEdit) this.form = (await tasksModule.findOneById(parseInt(this.id))) as Task
+
     // if (this.isEdit) {
     //   // await this.loadChecklist();
     //   // const attachments = await tasksModule.findAttachments(this.form.id as number);
@@ -377,10 +387,6 @@ export default class TaskDialog extends Vue {
     // } else {
     //   this.attachmentList = [];
     // }
-    await this.searchUsers()
-    await this.searchProjects()
-    this.loading = false
-    ;(this.$refs.title as Input).focus()
   }
 
   async submit() {
@@ -388,8 +394,7 @@ export default class TaskDialog extends Vue {
     await form.validate(async valid => {
       if (valid) {
         await this.sendForm()
-        // await this.saveChecklist();
-        ;(this.$refs.upload as ElUpload).submit()
+        if (this.form.attachments) (this.$refs.upload as ElUpload).submit()
         this.$emit('submit')
         this.exit()
       } else {
@@ -405,7 +410,6 @@ export default class TaskDialog extends Vue {
   async sendForm() {
     this.loading = true
     const entity: Task = { ...this.form } as Task
-    console.log(entity)
     entity.isChildsExist = !!entity.child?.length
     entity.isAttachmentsExist = !!entity.attachments?.length
     if (this.isEdit) await tasksModule.updateOne(entity)
@@ -421,7 +425,6 @@ export default class TaskDialog extends Vue {
   }
 
   onChecklistChange(checklist: Task[]) {
-    console.log('checklist change')
     this.form.child = checklist
   }
 
@@ -538,29 +541,29 @@ export default class TaskDialog extends Vue {
     if (attachment.id) await tasksModule.removeAttachments([attachment.id])
   }
 
-  async searchProjects(query = '') {
-    await projectsModule.findAll({
-      filter: query,
-      pageNumber: 0,
-      pageSize: 10
-    })
-  }
-
-  async searchTeams(query = '') {
-    await teamsModule.findAll({
-      filter: query,
-      pageNumber: 0,
-      pageSize: 10
-    })
-  }
-
-  async searchUsers(query = '') {
-    await usersModule.findAll({
-      filter: query,
-      pageNumber: 0,
-      pageSize: 10
-    })
-  }
+  // async searchProjects(query = '') {
+  //   await projectsModule.findAll({
+  //     filter: query,
+  //     pageNumber: 0,
+  //     pageSize: 10
+  //   })
+  // }
+  //
+  // async searchTeams(query = '') {
+  //   await teamsModule.findAll({
+  //     filter: query,
+  //     pageNumber: 0,
+  //     pageSize: 10
+  //   })
+  // }
+  //
+  // async searchUsers(query = '') {
+  //   await usersModule.findAll({
+  //     filter: query,
+  //     pageNumber: 0,
+  //     pageSize: 10
+  //   })
+  // }
 }
 
 /*export default {

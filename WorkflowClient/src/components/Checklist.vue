@@ -28,6 +28,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
 
 import tasksModule from '@/store/modules/tasks.module'
 import Task, { Status } from '@/types/task.type'
+import moment from 'moment'
 
 @Component
 export default class Checklist extends Vue {
@@ -94,7 +95,7 @@ export default class Checklist extends Vue {
     const entity: Task = {
       title: this.input,
       projectId: this.task.projectId,
-      creationDate: new Date(),
+      creationDate: moment.utc(moment()).format(),
       state: Status.New,
       parentGoalId: this.task.id,
       completed: false

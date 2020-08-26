@@ -48,5 +48,9 @@ export default class UsersPage extends mixins(PageMixin) {
     if (!this.$route.query.sort) this.onSortChange('lastName')
     if (!this.$route.query.order) this.onOrderChange(SortType.Ascending)
   }
+
+  private onCreate() {
+    ;(this.$refs.items as UserTable).createEntity()
+  }
 }
 </script>

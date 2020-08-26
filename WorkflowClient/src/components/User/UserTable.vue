@@ -13,7 +13,7 @@
       highlight-current-row="highlight-current-row"
       border="border"
     >
-      <el-table-column type="selection" width="38"></el-table-column>
+      <el-table-column type="selection" width="42"></el-table-column>
       <el-table-column prop="lastName" label="Фамилия" width="150"></el-table-column>
       <el-table-column prop="firstName" label="Имя" width="150"></el-table-column>
       <el-table-column prop="middleName" label="Отчество" width="150"></el-table-column>
@@ -47,20 +47,18 @@
           >
         </li>
         <li>
-          <a v-if="isRowEditable" @click.prevent="deleteEntity($event, child.data.row)"
+          <a v-if="isRowEditable" @click.prevent="deleteEntity(child.data.row)"
             >Переместить в корзину</a
           >
         </li>
         <li>
-          <a v-if="!isRowEditable" @click.prevent="restoreEntity($event, child.data.row)"
-            >Восстановить</a
-          >
+          <a v-if="!isRowEditable" @click.prevent="restoreEntity(child.data.row)">Восстановить</a>
         </li>
       </template>
     </vue-context>
     <user-dialog
       v-if="modalVisible"
-      :data="modalData"
+      :id="modalData"
       @close="modalVisible = false"
       @submit="reloadData"
     ></user-dialog>
@@ -86,7 +84,9 @@ export default class UserTable extends mixins(TableMixin) {
   private async loadData($state: StateChanger) {
     const isFirstLoad = !this.data.length
     this.loading = isFirstLoad
-    const data = await usersModule.findAll(this.query)
+    let data: User[]
+    if (this.$route.params.teamId) data = await teamsModule.findUsers(this.query)
+    else data = await usersModule.findAll(this.query)
     if (this.query.pageNumber !== undefined) this.query.pageNumber++
     if (data.length) $state.loaded()
     else $state.complete()

@@ -12,9 +12,9 @@ export default interface Task {
   ownerFio?: string
   performerId?: string
   performerFio?: string
-  creationDate: Date
-  expectedCompletedDate?: Date
-  estimatedPerformingTime?: Date
+  creationDate: string
+  expectedCompletedDate?: string
+  estimatedPerformingTime?: string
   state: Status
   priority?: Priority
   isChildsExist?: boolean

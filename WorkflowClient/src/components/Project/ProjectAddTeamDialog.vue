@@ -53,13 +53,14 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
+import { Component, Ref } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 
 import projectsModule from '@/store/modules/projects.module'
 import DialogMixin from '@/mixins/dialog.mixin'
 import BaseDialog from '@/components/BaseDialog.vue'
 import Team from '@/types/team.type'
+import { Input } from 'element-ui'
 
 @Component({
   components: {
@@ -67,19 +68,25 @@ import Team from '@/types/team.type'
   }
 })
 export default class ProjectAddTeamDialog extends mixins(DialogMixin) {
-  public form = {
+  private form = {
     teamId: ''
   }
 
+  private async mounted() {
+    this.visible = true
+    await this.searchTeams()
+    setTimeout(() => (this.$refs.input as Input).focus(), 150)
+  }
+
   private get teamsToAdd(): { id: number | undefined; value: string }[] {
-    const allTeams = this.teamList
+    const allTeams = this.teams
     const existingTeams = this.existingTeams
     return allTeams.filter(team => {
       return !existingTeams.find(existingTeam => existingTeam.id === team.id)
     })
   }
   private get existingTeams(): { id: number | undefined; value: string }[] {
-    const teams: Team[] = projectsModule.projectTeams
+    const teams: Team[] = projectsModule.project?.teams || []
     return teams.map((team: Team) => {
       return {
         id: team.id,

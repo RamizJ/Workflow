@@ -4,6 +4,7 @@ export default interface User {
   middleName?: string
   lastName?: string
   userName: string
+  password?: string
   email: string
   phone?: string
   positionId?: number

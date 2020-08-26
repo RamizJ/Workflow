@@ -48,5 +48,9 @@ export default class TeamsPage extends mixins(PageMixin) {
     if (!this.$route.query.sort) this.onSortChange('name')
     if (!this.$route.query.order) this.onOrderChange(SortType.Ascending)
   }
+
+  private onCreate() {
+    ;(this.$refs.items as TeamTable).createEntity()
+  }
 }
 </script>

@@ -72,6 +72,7 @@ import ProjectTeams from '@/components/Project/ProjectTeams.vue'
 import ProjectDialog from '@/components/Project/ProjectDialog.vue'
 import ProjectAddTeamDialog from '@/components/Project/ProjectAddTeamDialog.vue'
 import TaskDialog from '@/components/Task/TaskDialog.vue'
+import TaskTable from '@/components/Task/TaskTable.vue'
 import Project from '@/types/project.type'
 
 @Component({
@@ -150,9 +151,9 @@ export default class ProjectPage extends Vue {
   }
 
   async createTask() {
-    // if (this.$refs.projectTasks) this.$refs.projectTasks.$refs.items.onItemCreate()
-    // else this.dialogTaskVisible = true
-    this.taskModalVisible = true
+    const projectTasks = this.$refs.projectTasks as ProjectTasks
+    if (projectTasks) (projectTasks.$refs.items as TaskTable).createEntity()
+    else this.taskModalVisible = true
   }
 
   async addTeam() {

@@ -73,22 +73,13 @@
               <el-input v-model="form.middleName"></el-input>
             </el-form-item>
           </div>
-          <!--<div class="section">
+          <div class="section">
             <h2>Смена пароля</h2>
             <el-form-item prop="newPassword">
               <el-input
-                v-model="form.newPassword"
+                v-model="credentials.newPassword"
                 type="password"
                 placeholder="Новый пароль"
-                readonly="readonly"
-                onfocus="this.removeAttribute('readonly')"
-              ></el-input>
-            </el-form-item>
-            <el-form-item prop="confirmNewPassword">
-              <el-input
-                v-model="form.confirmNewPassword"
-                type="password"
-                placeholder="Новый пароль ещё раз"
                 readonly="readonly"
                 onfocus="this.removeAttribute('readonly')"
               ></el-input>
@@ -98,14 +89,14 @@
             <h2>Подтвердите текущий пароль</h2>
             <el-form-item prop="currentPassword">
               <el-input
-                v-model="form.currentPassword"
+                v-model="credentials.currentPassword"
                 type="password"
                 placeholder="Текущий пароль"
                 readonly="readonly"
                 onfocus="this.removeAttribute('readonly')"
               ></el-input>
             </el-form-item>
-          </div>-->
+          </div>
           <div class="section">
             <el-button type="primary" @click="updateAccount">Сохранить</el-button>
             <el-button @click="exit">Выйти</el-button>
@@ -123,6 +114,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 
 import authModule from '@/store/modules/auth.module'
+import usersModule from '@/store/modules/users.module'
 import Page from '@/components/Page.vue'
 import PageHeader from '@/components/BaseHeader.vue'
 import Changelog from '@/components/Changelog.vue'
@@ -146,11 +138,15 @@ export default class SettingsPage extends Vue {
     phone: '',
     roles: []
   }
+  private credentials = {
+    currentPassword: '',
+    newPassword: ''
+  }
   private rules = {
     lastName: [{ required: true, message: 'Введите фамилию', trigger: 'blur' }],
     firstName: [{ required: true, message: 'Введите имя', trigger: 'blur' }],
     userName: [{ required: true, message: 'Введите логин', trigger: 'blur' }],
-    // password: [{ validator: this.validatePassword, trigger: 'blur' }],
+    password: [{ validator: this.validatePassword, trigger: 'blur' }],
     email: [
       { required: true, message: 'Введите эл. почту', trigger: 'blur' },
       {
@@ -169,28 +165,27 @@ export default class SettingsPage extends Vue {
     if (authModule.me) this.form = { ...authModule.me } as User
   }
 
-  // async updateAccount() {
-  //   if (JSON.stringify(this.form) === JSON.stringify(this.me)) {
-  //     this.$message.warning('Внесите правки для сохранения изменений')
-  //     return
-  //   }
-  //   try {
-  //     if (this.form.newPassword) {
-  //       if (!this.form.currentPassword)
-  //         this.$message.warning('Введите текущий пароль для сохранения настроек')
-  //       await this.updatePassword({
-  //         currentPassword: this.form.currentPassword,
-  //         newPassword: this.form.newPassword
-  //       })
-  //     }
-  //     await this.updateUser(this.form)
-  //     await this.fetchMe()
-  //     this.$message.success('Данные профиля успешно обновлены')
-  //   } catch (e) {
-  //     this.$message.error('Не удалось обновить данные профиля')
-  //     console.error(e)
-  //   }
-  // }
+  async updateAccount() {
+    if (JSON.stringify(this.form) === JSON.stringify(authModule.me)) {
+      this.$message.warning('Внесите правки для сохранения изменений')
+      return
+    }
+    try {
+      const currentPassword = this.credentials.currentPassword
+      const newPassword = this.credentials.newPassword
+      if (newPassword) {
+        if (!currentPassword)
+          this.$message.warning('Введите текущий пароль для сохранения настроек')
+        else await authModule.changePassword({ currentPassword, newPassword })
+      }
+      await usersModule.updateOne(this.form)
+      await authModule.fetchMe()
+      this.$message.success('Данные профиля успешно обновлены')
+    } catch (e) {
+      this.$message.error('Не удалось обновить данные профиля')
+      console.error(e)
+    }
+  }
 
   async exit() {
     try {
@@ -213,6 +208,19 @@ export default class SettingsPage extends Vue {
 
   switchDebugMode(value: string) {
     localStorage.debugMode = value
+  }
+
+  private validatePassword(rule: any, value: string, callback: any) {
+    const length = value?.trim().length
+    const symbolsLeft = 6 - length
+    if (!value) callback(new Error('!'))
+    else if (length < 6)
+      callback(
+        new Error(`ещё ${symbolsLeft}
+        ${symbolsLeft > 1 ? (symbolsLeft > 4 ? 'символов' : 'символа') : 'символ'}`)
+      )
+    else if (!/[a-z]/.test(value)) callback(new Error('нужна буква'))
+    else callback()
   }
 }
 </script>

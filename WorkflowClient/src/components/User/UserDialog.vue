@@ -65,7 +65,7 @@
           </el-col>
         </transition>
         <transition name="fade">
-          <el-col v-if="teamsVisible || (form.teamIds &amp;&amp; form.teamIds.length)" :span="24">
+          <el-col v-if="teamsVisible || (form.teamIds && form.teamIds.length)" :span="24">
             <el-form-item prop="teams">
               <el-select
                 v-model="form.teamIds"
@@ -78,7 +78,7 @@
                 default-first-option="default-first-option"
               >
                 <el-option
-                  v-for="item in teamList"
+                  v-for="item in teams"
                   :key="item.id"
                   :label="item.value"
                   :value="item.id"
@@ -88,7 +88,7 @@
           </el-col>
         </transition>
         <transition name="fade">
-          <el-col v-if="rolesVisible || (form.roles &amp;&amp; form.roles.length)" :span="24">
+          <el-col v-if="rolesVisible || (form.roles && form.roles.length)" :span="24">
             <el-form-item prop="roles">
               <el-select v-model="form.roles" placeholder="Права" multiple="multiple">
                 <el-option
@@ -159,23 +159,31 @@
 </template>
 
 <script lang="ts">
-import { Component, Ref } from 'vue-property-decorator'
+import { Component, Prop, Ref } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 
 import usersModule from '@/store/modules/users.module'
 import DialogMixin from '@/mixins/dialog.mixin'
 import BaseDialog from '@/components/BaseDialog.vue'
 import User from '@/types/user.type'
+import { Input, Message } from 'element-ui'
+import { ElForm } from 'element-ui/types/form'
+import Project from '@/types/project.type'
+import projectsModule from '@/store/modules/projects.module'
 
 @Component({ components: { BaseDialog } })
 export default class UserDialog extends mixins(DialogMixin) {
-  @Ref() readonly title?: HTMLInputElement
+  @Prop() readonly id: string | undefined
+  @Ref() readonly title?: Input
 
-  public form: User = {
+  private isEdit = !!this.id
+
+  private form: User = {
     lastName: '',
     firstName: '',
     middleName: '',
     userName: '',
+    password: '',
     email: '',
     phone: '',
     position: '',
@@ -197,20 +205,52 @@ export default class UserDialog extends mixins(DialogMixin) {
       { validator: this.validateEmail, trigger: 'blur' }
     ]
   }
+  private roles: string[] = []
   private teamsVisible = null
   private rolesVisible = null
   private positionVisible = null
   private phoneVisible = null
 
   private async mounted() {
-    await this.searchTeams('')
+    this.visible = true
+
+    this.loading = true
+    if (this.id) this.form = await usersModule.findOneById(this.id.toString())
+    await this.searchTeams()
+    this.loading = false
+
     this.title?.focus()
-    // ;(this.$refs.title as HTMLInputElement).focus()
+    ;(this.$refs.title as HTMLInputElement).focus()
+  }
+
+  async submit() {
+    const form = this.$refs.form as ElForm
+    await form.validate(async valid => {
+      if (valid) {
+        await this.sendForm()
+        this.$emit('submit')
+        this.exit()
+      } else {
+        Message({
+          showClose: true,
+          message: 'Форма заполнена некорректно',
+          type: 'error'
+        })
+      }
+    })
+  }
+
+  async sendForm() {
+    this.loading = true
+    const entity: User = { ...this.form } as User
+    if (this.isEdit) await usersModule.updateOne(entity)
+    else await usersModule.createOne(entity)
+    this.loading = false
   }
 
   private async validateLogin(rule: any, value: string, callback: any) {
     const loginPattern = /^[a-zA-Z0-9_-]+$/
-    const isLoginChanged = this.data?.userName !== value
+    const isLoginChanged = usersModule.user?.userName !== value
     const isLoginValid = loginPattern.test(value)
 
     if (!isLoginValid) callback(new Error('!'))
@@ -224,7 +264,7 @@ export default class UserDialog extends mixins(DialogMixin) {
 
   private async validateEmail(rule: any, value: string, callback: any) {
     const emailAlreadyExist = await usersModule.isEmailExist(value)
-    if (emailAlreadyExist && this.data?.email !== value) callback(new Error('занято'))
+    if (emailAlreadyExist && usersModule.user?.email !== value) callback(new Error('занято'))
     else callback()
   }
 

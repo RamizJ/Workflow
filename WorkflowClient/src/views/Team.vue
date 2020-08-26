@@ -20,9 +20,6 @@
             </el-dropdown-item>
             <el-divider></el-divider>
             <el-dropdown-item>
-              <el-button type="text" size="mini" @click="onTeamEdit">Редактировать</el-button>
-            </el-dropdown-item>
-            <el-dropdown-item>
               <el-button type="text" size="mini" @click="onTeamDelete"
                 >Переместить в корзину</el-button
               >
@@ -66,6 +63,7 @@ import TeamDialog from '@/components/Team/TeamDialog.vue'
 import TeamAddUserDialog from '@/components/Team/TeamAddUserDialog.vue'
 import UserDialog from '@/components/User/UserDialog.vue'
 import Team from '@/types/team.type'
+import UserTable from '@/components/User/UserTable.vue'
 
 @Component({
   components: {
@@ -125,13 +123,15 @@ export default class TeamPage extends Vue {
   }
 
   onUserAdded() {
-    // this.$refs.teamUsers?.$refs.items.refresh()
+    const teamUsers = this.$refs.teamUsers as TeamUsers
+    const userTable = teamUsers.$refs.items as UserTable
+    userTable.reloadData()
   }
 
   async onUserCreate() {
-    // if (this.$refs.teamUsers) this.$refs.teamUsers.$refs.items.onItemCreate()
-    // else this.dialogUserVisible = true
-    this.dialogUserVisible = true
+    const teamUsers = this.$refs.teamUsers as TeamUsers
+    if (teamUsers) (teamUsers.$refs.items as UserTable).createEntity()
+    else this.dialogUserVisible = true
   }
 
   async onTeamEdit() {

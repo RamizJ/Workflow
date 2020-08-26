@@ -60,15 +60,16 @@ import teamsModule from '@/store/modules/teams.module'
 import DialogMixin from '@/mixins/dialog.mixin'
 import BaseDialog from '@/components/BaseDialog.vue'
 import Query from '@/types/query.type'
+import { Input } from 'element-ui'
 
 @Component({ components: { BaseDialog } })
 export default class TeamAddUserDialog extends mixins(DialogMixin) {
-  public form = {
+  private form = {
     userId: ''
   }
 
   private get usersToAdd() {
-    const allUsers = this.userList
+    const allUsers = this.users
     const existingUsers = this.existingUsers
     return allUsers.filter(user => {
       return !existingUsers.find((existingUser: any) => existingUser.id === user.id)
@@ -84,13 +85,15 @@ export default class TeamAddUserDialog extends mixins(DialogMixin) {
   }
 
   private async mounted() {
-    await this.searchUsers('')
+    this.visible = true
+
+    await this.searchUsers()
     await teamsModule.findUsers({
       teamId: parseInt(this.$route.params.teamId),
       pageNumber: 0,
       pageSize: 100
     } as Query)
-    ;(this.$refs.input as HTMLElement).focus()
+    setTimeout(() => (this.$refs.input as Input).focus(), 150)
   }
 
   public async submit() {

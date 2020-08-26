@@ -7,15 +7,10 @@ import usersModule from '@/store/modules/users.module'
 
 @Component
 export default class DialogMixin extends Vue {
-  @Prop()
-  data: any
-
   public visible = false
   public loading = false
-  public isEdit = !!this.data
-  public form: any
 
-  public get projectList() {
+  public get projects() {
     return projectsModule.projects.map(project => {
       return {
         value: project.name,
@@ -23,7 +18,7 @@ export default class DialogMixin extends Vue {
       }
     })
   }
-  public get teamList() {
+  public get teams() {
     return teamsModule.teams.map(team => {
       return {
         value: team.name,
@@ -31,7 +26,7 @@ export default class DialogMixin extends Vue {
       }
     })
   }
-  public get userList() {
+  public get users() {
     return usersModule.users.map(user => {
       return {
         value: `${user.lastName} ${user.firstName}`,
@@ -40,7 +35,7 @@ export default class DialogMixin extends Vue {
     })
   }
 
-  async searchProjects(query: string) {
+  async searchProjects(query = '') {
     await projectsModule.findAll({
       filter: query,
       pageNumber: 0,
@@ -48,7 +43,7 @@ export default class DialogMixin extends Vue {
     })
   }
 
-  async searchTeams(query: string) {
+  async searchTeams(query = '') {
     await teamsModule.findAll({
       filter: query,
       pageNumber: 0,
@@ -56,7 +51,7 @@ export default class DialogMixin extends Vue {
     })
   }
 
-  async searchUsers(query: string) {
+  async searchUsers(query = '') {
     await usersModule.findAll({
       filter: query,
       pageNumber: 0,
@@ -64,32 +59,32 @@ export default class DialogMixin extends Vue {
     })
   }
 
-  async sendForm() {
+  /*async sendForm() {
     this.loading = true
     const payload = { ...this.form }
     // if (this.isEdit) await this.updateItem(payload);
     // else await this.createItem(payload);
     this.loading = false
-  }
+  }*/
 
-  public async submit(event: Event) {
-    await (this.$refs.form as ElForm).validate(async valid => {
-      if (valid) {
-        await this.sendForm()
-        this.$emit('submit')
-        this.exit()
-      } else {
-        this.$message({
-          showClose: true,
-          message: 'Форма заполнена некорректно',
-          type: 'error'
-        })
-      }
-    })
-  }
+  // public async submit(event: Event) {
+  //   await (this.$refs.form as ElForm).validate(async valid => {
+  //     if (valid) {
+  //       // await this.sendForm()
+  //       this.$emit('submit')
+  //       this.exit()
+  //     } else {
+  //       this.$message({
+  //         showClose: true,
+  //         message: 'Форма заполнена некорректно',
+  //         type: 'error'
+  //       })
+  //     }
+  //   })
+  // }
 
   exit() {
-    // this.$refs.form?.resetFields();
+    ;(this.$refs.form as ElForm).resetFields()
     this.visible = false
     this.$emit('close')
   }

@@ -13,7 +13,7 @@
       highlight-current-row="highlight-current-row"
       border="border"
     >
-      <el-table-column type="selection" width="38"></el-table-column>
+      <el-table-column type="selection" width="42"></el-table-column>
       <el-table-column prop="title" label="Задача"></el-table-column>
       <el-table-column
         v-if="!$route.params.projectId"

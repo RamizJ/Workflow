@@ -1,6 +1,6 @@
-<template lang="pug">
-  div.table-container
-    el-table(
+<template>
+  <div class="table-container">
+    <el-table
       ref="table"
       height="100%"
       v-loading="loading"
@@ -10,32 +10,60 @@
       @row-click="onRowSingleClick"
       @row-dblclick="onRowDoubleClick"
       @row-contextmenu="onRowRightClick"
-      highlight-current-row border)
-      el-table-column(type="selection" width="38")
-      el-table-column(prop="name" label="Проект")
-      el-table-column(prop="ownerFio" label="Руководитель" width="250")
-      el-table-column(prop="creationDate" label="Дата создания" width="180" :formatter="formatDate")
-      infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="loadData" force-use-infinite-wrapper=".el-table__body-wrapper")
-        div(slot="no-more")
-        div(slot="no-results")
-
-    vue-context(ref="contextMenu")
-      template(slot-scope="child")
-        li
-          a(v-if="isRowEditable" @click.prevent="onRowDoubleClick(child.data.row)") Открыть
-        li
-          a(v-if="isRowEditable" @click.prevent="editEntity(child.data.row)") Изменить
-        el-divider(v-if="isRowEditable")
-        li
-          a(@click.prevent="createEntity") Новый проект
-        el-divider
-        li
-          a(v-if="isRowEditable" @click.prevent="deleteEntity(child.data.row, isMultipleSelected)") Переместить в корзину
-        li
-          a(v-if="!isRowEditable" @click.prevent="restoreEntity(child.data.row, isMultipleSelected)") Восстановить
-
-    project-dialog(v-if="modalVisible" :data="modalData" @close="modalVisible = false" @submit="reloadData")
-
+      highlight-current-row="highlight-current-row"
+      border="border"
+    >
+      <el-table-column type="selection" width="42"></el-table-column>
+      <el-table-column prop="name" label="Проект"></el-table-column>
+      <el-table-column prop="ownerFio" label="Руководитель" width="250"></el-table-column>
+      <el-table-column
+        prop="creationDate"
+        label="Дата создания"
+        width="180"
+        :formatter="formatDate"
+      ></el-table-column>
+      <infinite-loading
+        slot="append"
+        ref="loader"
+        spinner="waveDots"
+        :distance="300"
+        @infinite="loadData"
+        force-use-infinite-wrapper=".el-table__body-wrapper"
+      >
+        <div slot="no-more"></div>
+        <div slot="no-results"></div>
+      </infinite-loading>
+    </el-table>
+    <vue-context ref="contextMenu">
+      <template slot-scope="child">
+        <li>
+          <a v-if="isRowEditable" @click.prevent="onRowDoubleClick(child.data.row)">Открыть</a>
+        </li>
+        <li><a v-if="isRowEditable" @click.prevent="editEntity(child.data.row)">Изменить</a></li>
+        <el-divider v-if="isRowEditable"></el-divider>
+        <li><a @click.prevent="createEntity">Новый проект</a></li>
+        <el-divider></el-divider>
+        <li>
+          <a v-if="isRowEditable" @click.prevent="deleteEntity(child.data.row, isMultipleSelected)"
+            >Переместить в корзину</a
+          >
+        </li>
+        <li>
+          <a
+            v-if="!isRowEditable"
+            @click.prevent="restoreEntity(child.data.row, isMultipleSelected)"
+            >Восстановить</a
+          >
+        </li>
+      </template>
+    </vue-context>
+    <project-dialog
+      v-if="modalVisible"
+      :id="modalData"
+      @close="modalVisible = false"
+      @submit="reloadData"
+    ></project-dialog>
+  </div>
 </template>
 
 <script lang="ts">
@@ -47,6 +75,8 @@ import projectsModule from '@/store/modules/projects.module'
 import TableMixin from '@/mixins/table.mixin'
 import ProjectDialog from '@/components/Project/ProjectDialog.vue'
 import Project from '@/types/project.type'
+import teamsModule from '@/store/modules/teams.module'
+import usersModule from '@/store/modules/users.module'
 
 @Component({ components: { ProjectDialog } })
 export default class ProjectTable extends mixins(TableMixin) {
@@ -55,7 +85,9 @@ export default class ProjectTable extends mixins(TableMixin) {
   private async loadData($state: StateChanger) {
     const isFirstLoad = !this.data.length
     this.loading = isFirstLoad
-    const data = await projectsModule.findAll(this.query)
+    let data: Project[]
+    if (this.$route.params.teamId) data = await teamsModule.findProjects(this.query)
+    else data = await projectsModule.findAll(this.query)
     if (this.query.pageNumber !== undefined) this.query.pageNumber++
     if (data.length) $state.loaded()
     else $state.complete()

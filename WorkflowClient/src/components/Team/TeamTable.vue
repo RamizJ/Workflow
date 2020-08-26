@@ -13,7 +13,7 @@
       highlight-current-row="highlight-current-row"
       border="border"
     >
-      <el-table-column type="selection" width="38"></el-table-column>
+      <el-table-column type="selection" width="42"></el-table-column>
       <el-table-column prop="name" label="Команда"></el-table-column>
       <infinite-loading
         slot="append"
@@ -33,15 +33,13 @@
           <a v-if="isRowEditable" @click.prevent="onRowDoubleClick(child.data.row)">Открыть</a>
         </li>
         <li>
-          <a v-if="isRowEditable" @click.prevent="editEntity($event, child.data.row)">Изменить</a>
+          <a v-if="isRowEditable" @click.prevent="editEntity(child.data.row)">Изменить</a>
         </li>
         <el-divider v-if="isRowEditable"></el-divider>
         <li><a @click.prevent="createEntity">Новая команда</a></li>
         <el-divider></el-divider>
         <li>
-          <a
-            v-if="$route.params.projectId"
-            @click.prevent="removeEntityFromProject($event, child.data.row)"
+          <a v-if="$route.params.projectId" @click.prevent="removeEntityFromProject(child.data.row)"
             >Убрать из проекта</a
           >
         </li>
@@ -57,7 +55,7 @@
     </vue-context>
     <team-dialog
       v-if="modalVisible"
-      :data="modalData"
+      :id="modalData"
       @close="modalVisible = false"
       @submit="reloadData"
     ></team-dialog>
@@ -74,6 +72,7 @@ import projectsModule from '@/store/modules/projects.module'
 import TeamDialog from '@/components/Team/TeamDialog.vue'
 import TableMixin from '@/mixins/table.mixin'
 import Team from '@/types/team.type'
+import usersModule from '@/store/modules/users.module'
 
 @Component({ components: { TeamDialog } })
 export default class TeamTable extends mixins(TableMixin) {
@@ -82,7 +81,9 @@ export default class TeamTable extends mixins(TableMixin) {
   private async loadData($state: StateChanger) {
     const isFirstLoad = !this.data.length
     this.loading = isFirstLoad
-    const data = await teamsModule.findAll(this.query)
+    let data: Team[]
+    if (this.$route.params.projectId) data = await projectsModule.findTeams(this.query)
+    else data = await teamsModule.findAll(this.query)
     if (this.query.pageNumber !== undefined) this.query.pageNumber++
     if (data.length) $state.loaded()
     else $state.complete()

@@ -30,10 +30,7 @@
       </el-row>
       <el-row :gutter="20">
         <transition name="fade">
-          <el-col
-            v-if="teamMembersVisible || (form.userIds &amp;&amp; form.userIds.length)"
-            :span="24"
-          >
+          <el-col v-if="teamMembersVisible || (form.userIds && form.userIds.length)" :span="24">
             <el-form-item>
               <el-select
                 v-model="form.userIds"
@@ -46,7 +43,7 @@
                 default-first-option="default-first-option"
               >
                 <el-option
-                  v-for="item in userList"
+                  v-for="item in users"
                   :key="item.id"
                   :label="item.value"
                   :value="item.id"
@@ -57,7 +54,10 @@
         </transition>
         <transition name="fade">
           <el-col
-            v-if="!$route.params.projectId &amp;&amp; (projectsVisible || (form.projectIds &amp;&amp; form.projectIds.length))"
+            v-if="
+              !$route.params.projectId &&
+                (projectsVisible || (form.projectIds && form.projectIds.length))
+            "
             :span="24"
           >
             <el-form-item>
@@ -72,7 +72,7 @@
                 default-first-option="default-first-option"
               >
                 <el-option
-                  v-for="item in projectList"
+                  v-for="item in projects"
                   :key="item.id"
                   :label="item.value"
                   :value="item.id"
@@ -112,7 +112,7 @@
         >
           <el-button
             size="small"
-            v-if="!(form.userIds &amp;&amp; form.userIds.length)"
+            v-if="!(form.userIds && form.userIds.length)"
             type="text"
             @click="teamMembersVisible = !teamMembersVisible"
             circle="circle"
@@ -130,7 +130,7 @@
         >
           <el-button
             size="small"
-            v-if="!(form.projectIds &amp;&amp; form.projectIds.length)"
+            v-if="!(form.projectIds && form.projectIds.length)"
             type="text"
             @click="projectsVisible = !projectsVisible"
             circle="circle"
@@ -158,8 +158,10 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
+import { Component, Prop, Ref } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
+import { ElForm } from 'element-ui/types/form'
+import { Message } from 'element-ui'
 
 import teamsModule from '@/store/modules/teams.module'
 import DialogMixin from '@/mixins/dialog.mixin'
@@ -169,7 +171,12 @@ import Query from '@/types/query.type'
 
 @Component({ components: { BaseDialog } })
 export default class TeamDialog extends mixins(DialogMixin) {
-  public form: Team = {
+  @Prop() readonly id: number | undefined
+  @Ref() readonly title?: HTMLInputElement
+
+  private isEdit = !!this.id
+
+  private form: Team = {
     name: '',
     description: '',
     userIds: [],
@@ -183,17 +190,19 @@ export default class TeamDialog extends mixins(DialogMixin) {
   private projectsVisible = null
 
   private async mounted() {
+    this.visible = true
+
     if (this.$route.params.projectId) {
       if (this.form.projectIds?.length)
         this.form.projectIds.push(parseInt(this.$route.params.projectId))
       else this.form.projectIds = [parseInt(this.$route.params.projectId)]
     }
 
-    await this.searchUsers('')
-    await this.searchProjects('')
+    this.loading = true
+    if (this.id) {
+      const id: number = parseInt(this.id.toString())
+      this.form = await teamsModule.findOneById(id)
 
-    if (this.isEdit) {
-      this.loading = true
       await teamsModule.findUsers({
         teamId: this.form.id,
         pageNumber: 0,
@@ -212,9 +221,36 @@ export default class TeamDialog extends mixins(DialogMixin) {
       for (const project of teamsModule.teamProjects) {
         if (project.id) this.form.projectIds.push(project.id)
       }
-      this.loading = false
     }
+    await this.searchUsers()
+    await this.searchProjects()
+    this.loading = false
     ;(this.$refs.title as HTMLElement).focus()
+  }
+
+  async submit() {
+    const form = this.$refs.form as ElForm
+    await form.validate(async valid => {
+      if (valid) {
+        await this.sendForm()
+        this.$emit('submit')
+        this.exit()
+      } else {
+        Message({
+          showClose: true,
+          message: 'Форма заполнена некорректно',
+          type: 'error'
+        })
+      }
+    })
+  }
+
+  async sendForm() {
+    this.loading = true
+    const entity: Team = { ...this.form } as Team
+    if (this.isEdit) await teamsModule.updateOne(entity)
+    else await teamsModule.createOne(entity)
+    this.loading = false
   }
 }
 </script>

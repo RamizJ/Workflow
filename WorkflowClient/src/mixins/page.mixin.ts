@@ -10,10 +10,6 @@ export default class PageMixin extends Vue {
   public sort: string = (this.$route.query.sort as string) || ''
   public view: View = (this.$route.query.view as View) || View.List
 
-  public onCreate() {
-    // this.$refs.items.onItemCreate();
-  }
-
   public onFiltersChange(value: FilterField[]) {
     this.filters = value
   }

@@ -1,3 +1,5 @@
+import Team from '@/types/team.type'
+
 export default interface Project {
   id?: number
   name: string
@@ -11,6 +13,7 @@ export default interface Project {
   isRemoved?: boolean
 
   index?: number
+  teams?: Team[]
   teamId?: number
   teamIds?: number[]
 }
