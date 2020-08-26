@@ -185,7 +185,11 @@ export default class TableMixin extends Vue {
     return dateUtc.format('DD.MM.YYYY HH:mm')
   }
 
-  public formatFio(value: string): string {
+  public formatFio(row: any, column: any, value: string): string {
+    return this.shortenFullName(value)
+  }
+
+  public shortenFullName(value: string): string {
     if (!value) return value
     const fioArray = value.split(' ')
     const lastName = fioArray[0]

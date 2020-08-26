@@ -103,7 +103,7 @@ export default class ToolbarView extends Vue {
     margin-right: -5px;
   }
   .el-select {
-    width: 150px;
+    width: 160px;
     margin-bottom: 3px;
     .el-input__inner {
       padding: 0 5px;

@@ -24,7 +24,7 @@
             >
               <a class="item__header" @click="onRowDoubleClick(item)">{{ item.title }}</a>
               <div class="item__footer">
-                <div class="item__performer">{{ formatFio(item.performerFio) }}</div>
+                <div class="item__performer">{{ shortenFullName(item.performerFio) }}</div>
                 <div class="item__date">{{ formatDate(null, null, item.creationDate) }}</div>
               </div>
             </div>

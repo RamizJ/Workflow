@@ -16,6 +16,12 @@
       <el-table-column type="selection" width="42"></el-table-column>
       <el-table-column prop="title" label="Задача"></el-table-column>
       <el-table-column
+        prop="performerFio"
+        label="Ответственный"
+        width="150"
+        :formatter="formatFio"
+      ></el-table-column>
+      <el-table-column
         v-if="!$route.params.projectId"
         prop="projectName"
         label="Проект"
