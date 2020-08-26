@@ -56,8 +56,8 @@
           <a v-if="isRowEditable" @click.prevent="editEntity(child.data.row)">Изменить</a>
         </li>
         <el-divider v-if="isRowEditable"></el-divider>
-        <li><a @click.prevent="createEntity">Новая задача</a></li>
-        <el-divider></el-divider>
+        <li><a v-if="isRowEditable" @click.prevent="createEntity">Новая задача</a></li>
+        <el-divider v-if="isRowEditable"></el-divider>
         <li class="v-context__sub">
           <a v-if="isRowEditable">Изменить статус</a>
           <ul class="v-context">

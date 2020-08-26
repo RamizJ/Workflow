@@ -2,8 +2,11 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import InfiniteLoading from 'vue-infinite-loading'
 import moment from 'moment'
 
-import { Priority, Status } from '@/types/task.type'
+import Task, { Priority, Status } from '@/types/task.type'
 import Query, { FilterField, SortType } from '@/types/query.type'
+import Project from '@/types/project.type'
+import User from '@/types/user.type'
+import Team from '@/types/team.type'
 
 @Component
 export default class TableMixin extends Vue {
@@ -77,12 +80,14 @@ export default class TableMixin extends Vue {
 
   public data: any[] = []
   public selectedRow: any | undefined
-  public modalData: any | undefined
+  public modalData: number | string | undefined
   public modalVisible = false
   public isShiftPressed = false
 
   public get isRowEditable() {
-    return !this.selectedRow?.isRemoved
+    const filter = this.filters?.find(filter => filter.fieldName === 'isRemoved')
+    if (!filter) return true
+    if (filter.values[0] == true) return false
   }
 
   public get isMultipleSelected() {
