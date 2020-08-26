@@ -36,8 +36,8 @@
           <a v-if="isRowEditable" @click.prevent="editEntity(child.data.row)">Изменить</a>
         </li>
         <el-divider v-if="isRowEditable"></el-divider>
-        <li><a @click.prevent="createEntity">Новая команда</a></li>
-        <el-divider></el-divider>
+        <li><a v-if="isRowEditable" @click.prevent="createEntity">Новая команда</a></li>
+        <el-divider v-if="isRowEditable"></el-divider>
         <li>
           <a v-if="$route.params.projectId" @click.prevent="removeEntityFromProject(child.data.row)"
             >Убрать из проекта</a

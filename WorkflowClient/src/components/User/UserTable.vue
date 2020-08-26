@@ -39,8 +39,8 @@
           <a v-if="isRowEditable" @click.prevent="editEntity(child.data.row)">Изменить</a>
         </li>
         <el-divider v-if="isRowEditable"></el-divider>
-        <li><a @click.prevent="createEntity">Новый пользователь</a></li>
-        <el-divider></el-divider>
+        <li><a v-if="isRowEditable" @click.prevent="createEntity">Новый пользователь</a></li>
+        <el-divider v-if="isRowEditable"></el-divider>
         <li>
           <a v-if="$route.params.teamId" @click.prevent="removeEntityFromTeam(child.data.row)"
             >Убрать из команды</a
