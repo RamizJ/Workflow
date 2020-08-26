@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
@@ -112,12 +112,10 @@ namespace Workflow.Services
                 throw new HttpResponseException(BadRequest,
                     $"Parameter '{nameof(goalForm)}' cannot be null");
 
-            var model = await CreateGoal(currentUser, goalForm.Goal, goal =>
-            {
-                goal.Observers = goalForm.ObserverIds?
-                    .Select(observerId => new GoalObserver(goal.Id, observerId))
-                    .ToList();
-            });
+            var model = await CreateGoal(currentUser, 
+                goalForm.Goal, 
+                goalForm.ObserverIds, 
+                goalForm.ChildGoals);
 
             return _vmConverter.ToViewModel(model);
         }
@@ -486,7 +484,8 @@ namespace Workflow.Services
         }
 
         private async Task<Goal> CreateGoal(ApplicationUser currentUser, VmGoal goal,
-            Action<Goal> createAction = null)
+            IEnumerable<string> observerIds = null,
+            IEnumerable<VmGoal> childGoals = null)
         {
             if (goal == null)
                 throw new HttpResponseException(BadRequest,
@@ -495,14 +494,37 @@ namespace Workflow.Services
             if (string.IsNullOrWhiteSpace(goal.Title))
                 throw new HttpResponseException(BadRequest, "Goal title cannot be empty");
 
+            var creatingGoals = new List<Goal>();
+
             var model = _vmConverter.ToModel(goal);
             model.Id = 0;
             model.CreationDate = DateTime.Now;
             model.OwnerId = currentUser.Id;
+            if (observerIds != null)
+            {
+                model.Observers = observerIds
+                    .Select(observerId => new GoalObserver(goal.Id, observerId))
+                    .ToList();
+            }
 
-            createAction?.Invoke(model);
+            creatingGoals.Add(model);
 
-            await _dataContext.Goals.AddAsync(model);
+            if (childGoals != null)
+            {
+                foreach (var childGoal in childGoals)
+                {
+                    var childModel = _vmConverter.ToModel(childGoal);
+                    childModel.Id = 0;
+                    childModel.CreationDate = DateTime.Now;
+                    childModel.OwnerId = currentUser.Id;
+                    childModel.ParentGoal = model;
+
+                    creatingGoals.Add(childModel);
+                }
+            }
+
+            //await _dataContext.BulkInsertAsync(creatingGoals);
+            await _dataContext.Goals.AddRangeAsync(creatingGoals);
             await _dataContext.SaveChangesAsync();
             return model;
         }
@@ -512,23 +534,26 @@ namespace Workflow.Services
             if (vmGoals == null)
                 throw new HttpResponseException(BadRequest, $"Parameter '{nameof(vmGoals)}' cannot be null");
 
+            var goalIds = vmGoals.Select(g => g.Id).ToArray();
+            var existedGoals = _dataContext.Goals.Where(g => goalIds.Any(gId => gId == g.Id));
             foreach (var vmGoal in vmGoals)
             {
                 if (string.IsNullOrWhiteSpace(vmGoal.Title))
                     throw new HttpResponseException(BadRequest, 
                         "Cannot update goal. The title cannot be empty");
 
-                var model = new Goal
-                {
-                    Id = vmGoal.Id,
-                    ProjectId = vmGoal.ProjectId,
-                    Title = vmGoal.Title,
-                    Description = vmGoal.Description,
-                    State = vmGoal.State,
-                    Priority = vmGoal.Priority,
-                    GoalNumber = vmGoal.GoalNumber,
-                    PerformerId = vmGoal.PerformerId
-                };
+                var model = await existedGoals.FirstOrDefaultAsync(eg => eg.Id == vmGoal.Id);
+                if(model == null)
+                    throw new HttpResponseException(NotFound, $"Goal with id='{vmGoal.Id}' not found");
+
+                model.Id = vmGoal.Id;
+                model.ProjectId = vmGoal.ProjectId;
+                model.Title = vmGoal.Title;
+                model.Description = vmGoal.Description;
+                model.State = vmGoal.State;
+                model.Priority = vmGoal.Priority;
+                model.GoalNumber = vmGoal.GoalNumber;
+                model.PerformerId = vmGoal.PerformerId;
 
                 updateAction?.Invoke(model);
 

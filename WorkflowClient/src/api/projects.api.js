@@ -19,9 +19,9 @@ export default {
       params
     ),
   addTeam: (projectId, teamId) =>
-    httpClient.patch(`/api/Projects/AddTeam/${teamId}?projectId=${projectId}`),
+    httpClient.patch(`/api/Projects/AddTeam/${projectId}/${teamId}`),
   removeTeam: (projectId, teamId) =>
-    httpClient.patch(`/api/Projects/RemoveTeam/${teamId}/${projectId}`),
+    httpClient.patch(`/api/Projects/RemoveTeam/${projectId}/${teamId}`),
   getTasksCount: projectId =>
     httpClient.get(`/api/Goals/GetTotalProjectGoalsCount/${projectId}`),
   getTasksCountByStatus: (projectId, status) =>

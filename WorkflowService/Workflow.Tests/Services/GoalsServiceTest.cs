@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Workflow.DAL;
@@ -261,6 +263,47 @@ namespace Workflow.Tests.Services
             Assert.ThrowsAsync<HttpResponseException>(async () => await _service.Create(_currentUser, vmGoal));
         }
 
+        [TestCase(0)]
+        [TestCase(1)]
+        [TestCase(-1)]
+        public async Task CreateByFormTest(int id)
+        {
+            //Arrange
+            var vmGoal = new VmGoal
+            {
+                Id = id,
+                Title = "Goal3",
+                ProjectId = _testData.Projects.First().Id,
+                IsRemoved = false
+            };
+            var vmChildGoal = new VmGoal
+            {
+                Id = id,
+                Title = "Goal31",
+                ProjectId = _testData.Projects.First().Id,
+                IsRemoved = false
+            };
+            var vmChildGoal2 = _vmConverter.ToViewModel(_testData.Goals[15]);
+
+            var goalForm = new VmGoalForm(vmGoal, null, new List<VmGoal>
+            {
+                vmChildGoal,
+                vmChildGoal2
+            });
+
+
+            //Act
+            var result = await _service.CreateByForm(_currentUser, goalForm);
+            int childsCount = await _dataContext.Goals.CountAsync(g => g.ParentGoalId == result.Id);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(_testData.Goals.Count + 1, result.Id);
+            Assert.AreEqual(vmGoal.Title, result.Title);
+            Assert.IsTrue(result.IsChildsExist);
+            Assert.AreEqual(2, childsCount);
+        }
+
 
         [TestCase(null)]
         [TestCase("")]
@@ -312,6 +355,7 @@ namespace Workflow.Tests.Services
             Assert.AreEqual(projectId, goal.ProjectId);
             Assert.AreEqual(priority, goal.Priority);
             Assert.AreEqual(state, goal.State);
+            Assert.AreEqual(0, (goal.CreationDate - DateTime.Now).TotalMinutes, 1);
             Assert.IsFalse(goal.IsRemoved);
         }
 
@@ -325,7 +369,7 @@ namespace Workflow.Tests.Services
             vmGoal.Title = updatedName;
             vmGoal.Description = updatedDescription;
             var observerIds = _testData.Users.Skip(4).Take(6).Select(u => u.Id).ToList();
-            var vmGoalForm = new VmGoalForm(vmGoal, observerIds);
+            var vmGoalForm = new VmGoalForm(vmGoal, observerIds, null);
 
             //Act
             await _service.UpdateByFormRange(_currentUser, new[] {vmGoalForm});

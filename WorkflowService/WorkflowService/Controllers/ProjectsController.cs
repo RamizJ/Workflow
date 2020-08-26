@@ -219,8 +219,8 @@ namespace WorkflowService.Controllers
         /// <param name="projectId">Идентификатор проекта</param>
         /// <param name="teamId">Идентификатор команды</param>
         /// <returns></returns>
-        [HttpPatch("{teamId}")]
-        public async Task<IActionResult> AddTeam(int projectId, [FromBody] int teamId)
+        [HttpPatch("{projectId}/{teamId}")]
+        public async Task<IActionResult> AddTeam(int projectId, int teamId)
         {
             await _projectTeamsService.Add(projectId, teamId);
             return NoContent();
@@ -232,7 +232,7 @@ namespace WorkflowService.Controllers
         /// <param name="projectId">Идентификатор проекта</param>
         /// <param name="teamId">Идентификатор команды</param>
         /// <returns></returns>
-        [HttpPatch("{teamId}/{projectId}")]
+        [HttpPatch("{projectId}/{teamId}")]
         public async Task<IActionResult> RemoveTeam(int projectId, int teamId)
         {
             await _projectTeamsService.Remove(projectId, teamId);
