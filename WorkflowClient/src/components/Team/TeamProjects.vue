@@ -1,37 +1,39 @@
-<template lang="pug">
-  div.team-projects
-    project-toolbar(
+<template>
+  <div class="team-projects">
+    <project-toolbar
       @search="onSearch"
       @filters="onFiltersChange"
       @order="onOrderChange"
       @sort="onSortChange"
-      @view="onViewChange")
-    project-table(
+      @view="onViewChange"
+    ></project-toolbar>
+    <project-table
       v-if="view === 'list'"
       ref="items"
       :search="search"
       :filters="filters"
       :order="order"
-      :sort="sort")
-
+      :sort="sort"
+    ></project-table>
+  </div>
 </template>
 
-<script>
-import ProjectToolbar from '@/components/Project/ProjectToolbar';
-import ProjectTable from '@/components/Project/ProjectTable';
-import pageMixin from '@/mixins/page.mixin';
+<script lang="ts">
+import { Component } from 'vue-property-decorator'
+import { mixins } from 'vue-class-component'
 
-export default {
-  components: {
-    ProjectToolbar,
-    ProjectTable
-  },
-  mixins: [pageMixin],
-  created() {
-    if (!this.$route.query.sort) this.onSortChange('creationDate');
-    if (!this.$route.query.order) this.onOrderChange('Descending');
+import PageMixin from '@/mixins/page.mixin'
+import ProjectToolbar from '@/components/Project/ProjectToolbar.vue'
+import ProjectTable from '@/components/Project/ProjectTable.vue'
+import { SortType } from '@/types/query.type'
+
+@Component({ components: { ProjectToolbar, ProjectTable } })
+export default class TeamProjects extends mixins(PageMixin) {
+  private created() {
+    if (!this.$route.query.sort) this.onSortChange('creationDate')
+    if (!this.$route.query.order) this.onOrderChange(SortType.Descending)
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

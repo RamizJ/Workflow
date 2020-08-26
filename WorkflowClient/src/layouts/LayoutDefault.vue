@@ -1,20 +1,20 @@
-<template lang="pug">
-  div.layout-container
-    app-sidebar
-    main
-      transition(name="page-fade" mode="out-in")
-        router-view(:key="$route.path")
+<template>
+  <div class="layout-container">
+    <app-sidebar></app-sidebar>
+    <main>
+      <transition name="page-fade" mode="out-in">
+        <router-view :key="$route.path"></router-view>
+      </transition>
+    </main>
+  </div>
 </template>
 
-<script>
-import AppSidebar from '@/components/AppSidebar.vue';
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
+import AppSidebar from '@/components/AppSidebar.vue'
 
-export default {
-  name: 'LayoutDefault',
-  components: {
-    AppSidebar
-  }
-};
+@Component({ components: { AppSidebar } })
+export default class LayoutLogin extends Vue {}
 </script>
 
 <style lang="scss" scoped>

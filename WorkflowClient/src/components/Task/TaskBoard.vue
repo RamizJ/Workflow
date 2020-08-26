@@ -1,142 +1,216 @@
-<template lang="pug">
-  div.board
-    draggable.board__wrapper(v-model="lists" v-bind="listsDragOptions" @change="onListMove")
-      div.list(v-for="(list, index) in lists" :key="index")
-        div.list__header(v-if="list.name" :class="list.name.toLowerCase()") {{ list.label }}
-        div.list__items
-          draggable(v-model="lists[index].items" v-bind="itemsDragOptions" @change="onItemMove($event, list.name)")
-            div.item(
+<template>
+  <div class="board">
+    <draggable
+      class="board__wrapper"
+      v-model="lists"
+      v-bind="listsDragOptions"
+      @change="onListMove"
+    >
+      <div class="list" v-for="(list, index) in lists" :key="index">
+        <div class="list__header" v-if="list.name" :class="list.name.toLowerCase()">
+          {{ list.label }}
+        </div>
+        <div class="list__items">
+          <draggable
+            v-model="lists[index].items"
+            v-bind="itemsDragOptions"
+            @change="onEntityMove($event, list.name)"
+          >
+            <div
+              class="item"
               v-for="item in list.items"
               :key="item.id"
-              @contextmenu="onItemRightClick($event, item)")
-              a.item__header(@click="onItemDoubleClick($event, item)") {{ item.title }}
-              div.item__footer
-                div.item__performer {{ fioFormatter(item.performerFio) }}
-                div.item__date {{ dateFormatter(item.creationDate) }}
-
-    infinite-loading(slot="append" ref="loader" spinner="waveDots" :distance="300" @infinite="load")
-      div(slot="no-more")
-      div(slot="no-results")
-
-    vue-context(ref="contextMenu")
-      template(slot-scope="child")
-        li
-          a(v-if="isEditVisible" @click.prevent="onItemEdit(child.data.item)") Изменить
-        el-divider(v-if="isEditVisible")
-        li
-          a(@click.prevent="onItemCreate") Новая задача
-        el-divider
-        li.v-context__sub
-          a(v-if="isStatusVisible") Изменить статус
-          ul.v-context
-            li
-              a(@click.prevent="onItemStatusChange(child.data.item, 'New')") Новое
-            li
-              a(@click.prevent="onItemStatusChange(child.data.item, 'Succeed')") Выполнено
-            li
-              a(@click.prevent="onItemStatusChange(child.data.item, 'Delay')") Отложено
-            li
-              a(@click.prevent="onItemStatusChange(child.data.item, 'Rejected')") Отклонено
-            el-divider
-            li
-              a(@click.prevent="onItemStatusChange(child.data.item, 'Perform')") Выполняется
-            li
-              a(@click.prevent="onItemStatusChange(child.data.item, 'Testing')") Проверяется
-          li
-            a(v-if="isDeleteVisible" @click.prevent="onItemDelete(child.data.item)") Переместить в корзину
-          li
-            a(v-if="isRestoreVisible" @click.prevent="onItemRestore(child.data.item)") Восстановить
-
-    task-dialog(v-if="dialogVisible" :data="dialogData" @close="dialogVisible = false" @submit="refresh")
-
+              @contextmenu="onRowRightClick(item)"
+            >
+              <a class="item__header" @click="onRowDoubleClick(item)">{{ item.title }}</a>
+              <div class="item__footer">
+                <div class="item__performer">{{ shortenFullName(item.performerFio) }}</div>
+                <div class="item__date">{{ formatDate(null, null, item.creationDate) }}</div>
+              </div>
+            </div>
+          </draggable>
+        </div>
+      </div>
+    </draggable>
+    <infinite-loading
+      slot="append"
+      ref="loader"
+      spinner="waveDots"
+      :distance="300"
+      @infinite="loadData"
+    >
+      <div slot="no-more"></div>
+      <div slot="no-results"></div>
+    </infinite-loading>
+    <vue-context ref="contextMenu">
+      <template slot-scope="child">
+        <li><a v-if="isRowEditable" @click.prevent="editEntity(child.data.item)">Изменить</a></li>
+        <el-divider v-if="isRowEditable"></el-divider>
+        <li><a @click.prevent="createEntity">Новая задача</a></li>
+        <el-divider></el-divider>
+        <li class="v-context__sub">
+          <a v-if="isRowEditable">Изменить статус</a>
+          <ul class="v-context">
+            <li><a @click.prevent="editEntityStatus(child.data.item, 'New')">Новое</a></li>
+            <li>
+              <a @click.prevent="editEntityStatus(child.data.item, 'Succeed')">Выполнено</a>
+            </li>
+            <li><a @click.prevent="editEntityStatus(child.data.item, 'Delay')">Отложено</a></li>
+            <li>
+              <a @click.prevent="editEntityStatus(child.data.item, 'Rejected')">Отклонено</a>
+            </li>
+            <el-divider></el-divider>
+            <li>
+              <a @click.prevent="editEntityStatus(child.data.item, 'Perform')">Выполняется</a>
+            </li>
+            <li>
+              <a @click.prevent="editEntityStatus(child.data.item, 'Testing')">Проверяется</a>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <a v-if="isRowEditable" @click.prevent="deleteEntity(child.data.item, isMultipleSelected)"
+            >Переместить в корзину</a
+          >
+        </li>
+        <li>
+          <a
+            v-if="!isRowEditable"
+            @click.prevent="restoreEntity(child.data.item, isMultipleSelected)"
+            >Восстановить</a
+          >
+        </li>
+      </template>
+    </vue-context>
+    <task-dialog
+      v-if="modalVisible"
+      :data="modalData"
+      @close="modalVisible = false"
+      @submit="reloadData"
+    ></task-dialog>
+  </div>
 </template>
 
-<script>
-import Draggable from 'vuedraggable';
-import TaskDialog from '@/components/Task/TaskDialog';
-import boardMixin from '@/mixins/board.mixin';
+<script lang="ts">
+import { Component } from 'vue-property-decorator'
+import { mixins } from 'vue-class-component'
+import Draggable from 'vuedraggable'
 
-export default {
-  name: 'TaskBoard',
-  components: {
-    Draggable,
-    TaskDialog
-  },
-  mixins: [boardMixin],
-  data() {
+import TableMixin from '@/mixins/table.mixin'
+import TaskDialog from '@/components/Task/TaskDialog.vue'
+import { StateChanger } from 'vue-infinite-loading'
+import tasksModule from '@/store/modules/tasks.module'
+import Task, { Status } from '@/types/task.type'
+
+@Component({ components: { Draggable, TaskDialog } })
+export default class TaskBoard extends mixins(TableMixin) {
+  private loading = false
+  private lists: any[] = []
+
+  private get listsDragOptions() {
     return {
-      lists: [],
-      getters: {
-        items: 'tasks/getTasks'
-      },
-      actions: {
-        fetchItems: 'tasks/findAll',
-        updateItem: 'tasks/updateOne',
-        updateItems: 'tasks/updateMany',
-        deleteItem: 'tasks/deleteOne',
-        deleteItems: 'tasks/deleteMany',
-        restoreItem: 'tasks/restoreOne',
-        restoreItems: 'tasks/restoreMany',
-      }
-    };
-  },
-  computed: {
-    listsDragOptions() {
-      return {
-        animation: '200',
-        ghostClass: 'ghost',
-        handle: '.list__header',
-        disabled: false,
-        group: 'lists'
-      };
-    },
-    itemsDragOptions() {
-      return {
-        animation: '200',
-        ghostClass: 'ghost',
-        group: 'list-items',
-        disabled: false
-      };
-    },
-    boardLists() {
-      if (localStorage.boardLists) return JSON.parse(localStorage.boardLists);
-      else
-        return [
-          { label: 'Новое', name: 'New' },
-          { label: 'Выполняется', name: 'Perform' },
-          { label: 'Тестируется', name: 'Testing' },
-          { label: 'Отложено', name: 'Delay' },
-          { label: 'Выполнено', name: 'Succeed' },
-          { label: 'Отклонено', name: 'Rejected' }
-        ];
-    }
-  },
-  methods: {
-    async onListMove(event) {
-      const newBoardLists = this.lists.map(list => {
-        return {
-          label: list.label,
-          name: list.name
-        };
-      });
-      localStorage.boardLists = JSON.stringify(newBoardLists);
-    },
-    async onItemMove(event, listName) {
-      if (event.added)
-        await this.onItemStatusChange(event.added.element, listName);
-    },
-    updateLists() {
-      this.lists = [];
-      this.boardLists.forEach(list => {
-        this.lists.push({
-          label: list.label,
-          name: list.name,
-          items: this.data.filter(item => item.state === list.name)
-        });
-      });
+      animation: '200',
+      ghostClass: 'ghost',
+      handle: '.list__header',
+      disabled: false,
+      group: 'lists'
     }
   }
-};
+  private get itemsDragOptions() {
+    return {
+      animation: '200',
+      ghostClass: 'ghost',
+      group: 'list-items',
+      disabled: false
+    }
+  }
+  private get boardLists() {
+    if (localStorage.boardLists) return JSON.parse(localStorage.boardLists)
+    else
+      return [
+        { label: 'Новое', name: 'New' },
+        { label: 'Выполняется', name: 'Perform' },
+        { label: 'Проверяется', name: 'Testing' },
+        { label: 'Отложено', name: 'Delay' },
+        { label: 'Выполнено', name: 'Succeed' },
+        { label: 'Отклонено', name: 'Rejected' }
+      ]
+  }
+
+  private async onListMove() {
+    const newBoardLists = this.lists.map(list => {
+      return {
+        label: list.label,
+        name: list.name
+      }
+    })
+    localStorage.boardLists = JSON.stringify(newBoardLists)
+  }
+
+  private async onEntityMove(event: any, listName: string) {
+    if (event.added) await this.editEntityStatus(event.added.element, listName)
+  }
+
+  private updateLists() {
+    this.lists = []
+    this.boardLists.forEach((list: any) => {
+      this.lists.push({
+        label: list.label,
+        name: list.name,
+        items: this.data.filter(item => item.state === list.name)
+      })
+    })
+  }
+
+  private async loadData($state: StateChanger) {
+    const isFirstLoad = !this.data.length
+    this.loading = isFirstLoad
+    const data = await tasksModule.findAll(this.query)
+    if (this.query.pageNumber !== undefined) this.query.pageNumber++
+    if (data.length) $state.loaded()
+    else $state.complete()
+    this.data = isFirstLoad ? data : this.data.concat(data)
+    this.loading = false
+    this.updateLists()
+  }
+
+  public createEntity() {
+    this.modalData = undefined
+    this.modalVisible = true
+  }
+
+  public editEntity(entity: Task) {
+    this.modalData = entity.id
+    this.modalVisible = true
+  }
+
+  private async deleteEntity(entity: Task, multiple = false) {
+    if (multiple) await tasksModule.deleteMany(this.table.selection.map((item: Task) => item.id))
+    else await tasksModule.deleteOne(entity.id as number)
+    this.reloadData()
+  }
+
+  private async restoreEntity(entity: Task, multiple = false) {
+    if (multiple) await tasksModule.restoreMany(this.table.selection.map((item: Task) => item.id))
+    else await tasksModule.restoreOne(entity.id as number)
+    this.reloadData()
+  }
+
+  private async editEntityStatus(entity: Task, status: string) {
+    if (this.isMultipleSelected) {
+      const items = this.table.selection.map((item: Task) => {
+        item.state = status as Status
+        return item
+      })
+      await tasksModule.updateMany(items)
+    } else {
+      const item = entity
+      item.state = status as Status
+      await tasksModule.updateOne(item)
+    }
+    await this.reloadData()
+  }
+}
 </script>
 
 <style lang="scss" scoped>

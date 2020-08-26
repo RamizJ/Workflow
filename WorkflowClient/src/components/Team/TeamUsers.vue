@@ -1,37 +1,39 @@
-<template lang="pug">
-  div.team-users
-    user-toolbar(
+<template>
+  <div class="team-users">
+    <user-toolbar
       @search="onSearch"
       @filters="onFiltersChange"
       @order="onOrderChange"
       @sort="onSortChange"
-      @view="onViewChange")
-    user-table(
+      @view="onViewChange"
+    ></user-toolbar>
+    <user-table
       v-if="view === 'list'"
       ref="items"
       :search="search"
       :filters="filters"
       :order="order"
-      :sort="sort")
-
+      :sort="sort"
+    ></user-table>
+  </div>
 </template>
 
-<script>
-import UserToolbar from '@/components/User/UserToolbar';
-import UserTable from '@/components/User/UserTable';
-import pageMixin from '@/mixins/page.mixin';
+<script lang="ts">
+import { Component } from 'vue-property-decorator'
+import { mixins } from 'vue-class-component'
 
-export default {
-  components: {
-    UserToolbar,
-    UserTable
-  },
-  mixins: [pageMixin],
-  created() {
-    if (!this.$route.query.sort) this.onSortChange('lastName');
-    if (!this.$route.query.order) this.onOrderChange('Ascending');
+import PageMixin from '@/mixins/page.mixin'
+import UserToolbar from '@/components/User/UserToolbar.vue'
+import UserTable from '@/components/User/UserTable.vue'
+import { SortType } from '@/types/query.type'
+
+@Component({ components: { UserToolbar, UserTable } })
+export default class TeamUsers extends mixins(PageMixin) {
+  private created() {
+    if (!this.$route.query.sort) this.onSortChange('lastName')
+    if (!this.$route.query.order) this.onOrderChange(SortType.Ascending)
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

@@ -1,13 +1,14 @@
-<template lang="pug">
-  section
-    router-view
-
+<template>
+  <section>
+    <router-view />
+  </section>
 </template>
 
-<script>
-export default {
-  name: 'LayoutLogin'
-};
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
+
+@Component
+export default class LayoutLogin extends Vue {}
 </script>
 
 <style lang="scss" scoped>

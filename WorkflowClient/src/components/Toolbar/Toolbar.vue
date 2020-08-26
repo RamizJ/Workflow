@@ -1,12 +1,14 @@
-<template lang="pug">
-  div.toolbar
-    slot
+<template>
+  <div class="toolbar">
+    <slot />
+  </div>
 </template>
 
-<script>
-export default {
-  name: 'Toolbar'
-};
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
+
+@Component
+export default class Toolbar extends Vue {}
 </script>
 
 <style lang="scss">

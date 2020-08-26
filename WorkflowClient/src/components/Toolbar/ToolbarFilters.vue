@@ -1,13 +1,16 @@
-<template lang="pug">
-  div.toolbar-filters
-    div.toolbar-filters__content
-      slot
+<template>
+  <div class="toolbar-filters">
+    <div class="toolbar-filters__content">
+      <slot />
+    </div>
+  </div>
 </template>
 
-<script>
-export default {
-  name: 'ToolbarFilters'
-};
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
+
+@Component
+export default class ToolbarFilters extends Vue {}
 </script>
 
 <style lang="scss" scoped>
