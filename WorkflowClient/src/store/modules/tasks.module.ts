@@ -57,8 +57,12 @@ class TasksModule extends VuexModule {
       result.parent = (await this.context.dispatch('findParent', id)) as Task[]
     if (result.isChildsExist)
       result.child = (await this.context.dispatch('findChild', id)) as Task[]
-    if (result.isAttachmentsExist)
-      result.attachments = (await this.context.dispatch('findAttachments', id)) as Attachment[]
+    // if (result.isAttachmentsExist)
+    result.attachments = (await this.context.dispatch('findAttachments', id)) as Attachment[]
+    result.attachments = result.attachments.map(attachment => {
+      attachment.name = attachment.fileName
+      return attachment
+    })
     this.context.commit('setTask', result)
     return result
   }

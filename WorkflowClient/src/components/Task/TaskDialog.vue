@@ -126,7 +126,7 @@
           </el-col>
         </transition>
         <transition name="fade">
-          <el-col v-if="attachmentsVisible || form.attachments" :span="24">
+          <el-col v-if="attachmentsVisible || form.attachments.length" :span="24">
             <el-form-item>
               <el-upload
                 action="https://demo.girngm.ru/workflow_dev/api/Goals/AddAttachments/"
@@ -136,8 +136,8 @@
                 :on-remove="removeAttachment"
                 :file-list="form.attachments"
                 :auto-upload="false"
-                drag="drag"
-                multiple="multiple"
+                drag
+                multiple
                 ><i class="el-icon-upload"></i>
                 <div class="el-upload__text">
                   <em>Выберите файл</em><span> или перетащите его сюда</span>
@@ -244,7 +244,7 @@
           :open-delay="500"
         >
           <el-button
-            v-if="!form.attachments"
+            v-if="!form.attachments.length"
             type="text"
             @click="attachmentsVisible = !attachmentsVisible"
             circle="circle"
@@ -304,7 +304,8 @@ export default class TaskDialog extends mixins(DialogMixin) {
     state: Status.New,
     priority: Priority.Normal,
     isChildsExist: false,
-    isRemoved: false
+    isRemoved: false,
+    attachments: []
   }
 
   // private attachmentList: any[] | undefined = []
@@ -523,17 +524,18 @@ export default class TaskDialog extends mixins(DialogMixin) {
   }
 
   async uploadAttachment(request: any): Promise<void> {
-    console.log(typeof request)
     this.loading = true
     const id = this.id
     if (!id) return
     const files = new FormData()
     files.append('files', request.file)
     await tasksModule.uploadAttachments({ id, files })
+    this.form.isAttachmentsExist = true
     this.loading = false
   }
 
   async onAttachmentClick(attachment: Attachment) {
+    if (!attachment.id) return
     await tasksModule.downloadAttachment(attachment)
   }
 
