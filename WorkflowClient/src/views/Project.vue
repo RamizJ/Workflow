@@ -55,6 +55,7 @@
     <project-add-team-dialog
       v-if="teamModalVisible"
       @close="teamModalVisible = false"
+      @submit="onTeamAdd"
     ></project-add-team-dialog>
     <task-dialog v-if="taskModalVisible" @close="taskModalVisible = false"></task-dialog>
   </page>
@@ -74,6 +75,7 @@ import ProjectAddTeamDialog from '@/components/Project/ProjectAddTeamDialog.vue'
 import TaskDialog from '@/components/Task/TaskDialog.vue'
 import TaskTable from '@/components/Task/TaskTable.vue'
 import Project from '@/types/project.type'
+import TeamTable from '@/components/Team/TeamTable.vue'
 
 @Component({
   components: {
@@ -158,6 +160,12 @@ export default class ProjectPage extends Vue {
 
   async addTeam() {
     this.teamModalVisible = true
+  }
+
+  onTeamAdd() {
+    const projectTeams = this.$refs.projectTeams as ProjectTeams
+    const projectTeamsTable = projectTeams.$refs.items as TeamTable
+    projectTeamsTable.reloadData()
   }
 }
 </script>
