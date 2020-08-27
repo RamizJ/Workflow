@@ -338,7 +338,7 @@ export default class TaskDialog extends mixins(DialogMixin) {
     await form.validate(async valid => {
       if (valid) {
         await this.sendForm()
-        if (this.form.attachments?.length) (this.$refs.upload as ElUpload).submit()
+        if (this.$refs.upload) (this.$refs.upload as ElUpload).submit()
         this.$emit('submit')
         this.exit()
       } else {

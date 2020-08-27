@@ -1,25 +1,28 @@
-<template lang="pug">
-  page
-    base-header
-      template(slot="title") Задачи
-      template(slot="action")
-        el-button(type="text" size="mini" @click="onCreate") Создать
-
-    task-toolbar(
+<template>
+  <page>
+    <base-header>
+      <template slot="title">Задачи</template>
+      <template slot="action">
+        <el-button type="text" size="mini" @click="onCreate">Создать</el-button>
+      </template>
+    </base-header>
+    <task-toolbar
       @search="onSearch"
       @filters="onFiltersChange"
       @order="onOrderChange"
       @sort="onSortChange"
-      @view="onViewChange")
-    task-table(
+      @view="onViewChange"
+    ></task-toolbar>
+    <task-table
       v-if="view === 'list'"
       ref="items"
       :search="search"
       :filters="filters"
       :order="order"
-      :sort="sort")
-    task-board(ref="items" v-if="view === 'board'")
-
+      :sort="sort"
+    ></task-table>
+    <task-board ref="items" v-if="view === 'board'"></task-board>
+  </page>
 </template>
 
 <script lang="ts">

@@ -74,7 +74,7 @@
     <team-add-user-dialog
       v-if="modalAddUserVisible"
       @close="modalAddUserVisible = false"
-      @submit="onUserAdded"
+      @submit="reloadData"
     ></team-add-user-dialog>
   </div>
 </template>
@@ -144,10 +144,6 @@ export default class UserTable extends mixins(TableMixin) {
 
   private addUser() {
     this.modalAddUserVisible = true
-  }
-
-  private onUserAdded() {
-    this.reloadData()
   }
 }
 </script>
