@@ -49,21 +49,22 @@ namespace Workflow.Tests.Services
             _dbConnection.Close();
         }
 
-        [TestCase(1)]
-        [TestCase(2)]
-        [TestCase(3)]
-        public async Task GetTest(int goalId)
+        [TestCase(1, true)]
+        [TestCase(2, false)]
+        [TestCase(3, false)]
+        public async Task GetTest(int goalId, bool isChildsExists)
         {
             //Arrange
             var expectedGoal = _testData.Goals.First(t => t.Id == goalId);
 
             //Act
-            var team = await _service.Get(_currentUser, goalId);
+            var vmGoal = await _service.Get(_currentUser, goalId);
 
             //Assert
-            Assert.AreEqual(expectedGoal.Id, team.Id);
-            Assert.AreEqual(expectedGoal.Title, team.Title);
-            Assert.AreEqual(expectedGoal.Description, team.Description);
+            Assert.AreEqual(expectedGoal.Id, vmGoal.Id);
+            Assert.AreEqual(expectedGoal.Title, vmGoal.Title);
+            Assert.AreEqual(expectedGoal.Description, vmGoal.Description);
+            Assert.AreEqual(isChildsExists, vmGoal.IsChildsExist);
         }
 
 
@@ -382,12 +383,18 @@ namespace Workflow.Tests.Services
             var id = _testData.Goals.First().Id;
 
             //Act
-            var goal = await _service.Delete(_currentUser, id);
+            var vmGoal = await _service.Delete(_currentUser, id);
+            var childGoals = await _dataContext.Goals
+                .Where(g => g.ParentGoalId == id)
+                .ToArrayAsync();
 
             //Assert
-            Assert.IsNotNull(goal);
-            Assert.AreEqual(1, goal.Id);
-            Assert.IsTrue(goal.IsRemoved);
+            Assert.IsNotNull(vmGoal);
+            Assert.AreEqual(1, vmGoal.Id);
+            Assert.IsTrue(vmGoal.IsRemoved);
+
+            foreach (var childGoal in childGoals) 
+                Assert.IsTrue(childGoal.IsRemoved);
         }
 
         [Test]
