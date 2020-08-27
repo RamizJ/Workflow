@@ -55,8 +55,8 @@ class TasksModule extends VuexModule {
     const result = response.data as Task
     if (result.parentGoalId)
       result.parent = (await this.context.dispatch('findParent', id)) as Task[]
-    if (result.isChildsExist)
-      result.child = (await this.context.dispatch('findChild', id)) as Task[]
+    // if (result.isChildsExist)
+    result.childTasks = (await this.context.dispatch('findChild', { id })) as Task[]
     // if (result.isAttachmentsExist)
     result.attachments = (await this.context.dispatch('findAttachments', id)) as Attachment[]
     result.attachments = result.attachments.map(attachment => {
@@ -69,22 +69,61 @@ class TasksModule extends VuexModule {
 
   @Action
   async createOne(entity: Task): Promise<Task> {
-    const response = await tasksAPI.createOne(entity)
+    const request = {
+      goal: entity,
+      childGoals: entity.childTasks || []
+    }
+
+    if (entity.childTasks?.length) {
+      const updatedTasks: Task[] = []
+      for (const childTask of entity.childTasks) {
+        let updatedTask = childTask
+        if (!childTask.id) updatedTask = await this.context.dispatch('createOne', childTask)
+        if (childTask.isRemoved && childTask.id)
+          await this.context.dispatch('deleteOne', childTask.id)
+        else updatedTasks.push(updatedTask)
+      }
+      await this.context.dispatch('updateMany', updatedTasks)
+      entity.childTasks = updatedTasks
+    }
+
+    const response = await tasksAPI.createOne(request)
     const result = response.data as Task
+    result.attachments = entity.attachments
     this.context.commit('setTask', result)
     return result
   }
 
   @Action
-  async createMany(entities: Task[]): Promise<void> {
+  async createMany(entities: Task[]): Promise<Task[]> {
+    const results: Task[] = []
     for (const entity of entities) {
-      await this.context.dispatch('createOne', entity)
+      const createdEntity = await this.context.dispatch('createOne', entity)
+      results.push(createdEntity)
     }
+    return results
   }
 
   @Action
   async updateOne(entity: Task): Promise<void> {
-    await tasksAPI.updateOne(entity)
+    const request = {
+      goal: entity,
+      childGoals: entity.childTasks || []
+    }
+
+    if (entity.childTasks?.length) {
+      const updatedTasks: Task[] = []
+      for (const childTask of entity.childTasks) {
+        let updatedTask = childTask
+        if (!childTask.id) updatedTask = await this.context.dispatch('createOne', childTask)
+        if (childTask.isRemoved && childTask.id)
+          await this.context.dispatch('deleteOne', childTask.id)
+        else updatedTasks.push(updatedTask)
+      }
+      await this.context.dispatch('updateMany', updatedTasks)
+      entity.childTasks = updatedTasks
+    }
+    await tasksAPI.updateOne(request)
   }
 
   @Action
@@ -119,8 +158,13 @@ class TasksModule extends VuexModule {
   }
 
   @Action
-  async findChild(id: number): Promise<Task[]> {
-    const response = await tasksAPI.findChild(id)
+  async findChild({ id, query }: { id: number; query: Query | undefined }): Promise<Task[]> {
+    if (!query)
+      query = {
+        pageNumber: 0,
+        pageSize: 20
+      }
+    const response = await tasksAPI.findChild(id, query)
     return response.data as Task[]
   }
 

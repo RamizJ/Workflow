@@ -21,9 +21,9 @@ export default interface Task {
   isAttachmentsExist?: boolean
   isRemoved?: boolean
 
+  childTasks?: Task[]
   attachments?: Attachment[]
   parent?: Task[]
-  child?: Task[]
 
   index?: number
   completed?: boolean

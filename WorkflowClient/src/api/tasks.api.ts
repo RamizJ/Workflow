@@ -11,15 +11,18 @@ export default {
       query
     ),
   findAllByIds: (ids: number[]) => httpClient.get(`/api/Goals/GetRange?${qs.stringify(ids)}`),
-  createOne: (entity: Task) => httpClient.post(`/api/Goals/Create`, entity),
-  updateOne: (entity: Task) => httpClient.put(`/api/Goals/Update`, entity),
+  createOne: (request: { goal: Task; childGoals: Task[] }) =>
+    httpClient.post(`/api/Goals/CreateByForm`, request),
+  updateOne: (request: { goal: Task; childGoals: Task[] }) =>
+    httpClient.put(`/api/Goals/UpdateByForm`, request),
   updateMany: (entities: Task[]) => httpClient.put(`/api/Goals/UpdateRange`, entities),
   deleteOne: (id: number) => httpClient.delete(`/api/Goals/Delete/${id}`),
   deleteMany: (ids: number[]) => httpClient.patch(`/api/Goals/DeleteRange`, ids),
   restoreOne: (id: number) => httpClient.patch(`/api/Goals/Restore/${id}`),
   restoreMany: (ids: number[]) => httpClient.patch(`/api/Goals/RestoreRange`, ids),
   findParent: (id: number) => httpClient.get(`/api/Goals/GetParentGoal/${id}`),
-  findChild: (id: number) => httpClient.get(`/api/Goals/GetChildGoals/${id}`),
+  findChild: (id: number, query: Query | undefined) =>
+    httpClient.post(`/api/Goals/GetChildGoals/${id}`, query),
   addChild: (parentId: number, childIds: number[]) =>
     httpClient.patch(`/api/Goals/AddChildGoals/${parentId}`, childIds),
   findAttachments: (taskId: number) => httpClient.get(`/api/Goals/GetAttachments/${taskId}`),
