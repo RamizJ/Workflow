@@ -163,6 +163,7 @@ export default class ProjectPage extends Vue {
   }
 
   onTeamAdd() {
+    if (!this.$refs.projectTeams) return
     const projectTeams = this.$refs.projectTeams as ProjectTeams
     const projectTeamsTable = projectTeams.$refs.items as TeamTable
     projectTeamsTable.reloadData()
