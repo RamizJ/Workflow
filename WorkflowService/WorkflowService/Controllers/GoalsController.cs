@@ -328,7 +328,7 @@ namespace WorkflowService.Controllers
         /// <param name="parentGoalId">Идентификатор родительской задачи</param>
         /// <param name="pageOptions"></param>
         /// <returns>Родительская задача</returns>
-        [HttpGet("{parentGoalId}")]
+        [HttpPost("{parentGoalId}")]
         public async Task<ActionResult<VmGoal>> GetChildGoals(int parentGoalId, [FromBody] PageOptions pageOptions)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
