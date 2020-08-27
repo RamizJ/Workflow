@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EFCore.BulkExtensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
@@ -337,35 +336,30 @@ namespace Workflow.Services
                     if (queries.Any())
                         query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
+                else if (field.SameAs(nameof(VmGoal.ProjectId)))
+                {
+                    var values = field.Values.SelectIntValues().ToArray();
+                    query = query.Where(g => values.Any(v => v == g.ProjectId));
+                }
                 else if (field.SameAs(nameof(VmGoal.GoalNumber)))
                 {
-                    var values = field.Values.OfType<int>().ToArray();
+                    var values = field.Values.SelectIntValues().ToArray();
                     query = query.Where(g => values.Any(v => v == g.GoalNumber));
                 }
                 else if (field.SameAs(nameof(VmGoal.State)))
                 {
-                    var values = field.Values.Select(v =>
-                    {
-                        GoalState? state = null;
-                        if (Enum.TryParse<GoalState>(v.ToString(), out var s))
-                            state = s;
-
-                        return state;
-                    }).Where(s => s != null).Cast<int>().ToArray();
-
+                    var values = field.Values.SelectEnumValues<GoalState>().Cast<int>().ToArray();
                     query = query.Where(g => values.Any(v => v == (int) g.State));
                 }
                 else if (field.SameAs(nameof(VmGoal.Priority)))
                 {
-                    var values = field.Values.Select(v =>
-                    {
-                        GoalPriority? priority = null;
-                        if (Enum.TryParse<GoalPriority>(v.ToString(), out var p))
-                            priority = p;
-                        return priority;
-                    }).Where(s => s != null).Cast<int>().ToArray();
-
+                    var values = field.Values.SelectEnumValues<GoalPriority>().Cast<int>().ToArray();
                     query = query.Where(g => values.Any(v => v == (int) g.Priority));
+                }
+                else if (field.SameAs(nameof(VmGoal.OwnerId)))
+                {
+                    var values = field.Values.OfType<string>().ToArray();
+                    query = query.Where(g => values.Any(v => v == g.OwnerId));
                 }
                 else if (field.SameAs(nameof(VmGoal.OwnerFio)))
                 {
@@ -378,6 +372,11 @@ namespace Workflow.Services
 
                     if (queries.Any())
                         query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
+                }
+                else if (field.SameAs(nameof(VmGoal.PerformerId)))
+                {
+                    var values = field.Values.OfType<string>().ToArray();
+                    query = query.Where(g => values.Any(v => v == g.PerformerId));
                 }
                 else if (field.SameAs(nameof(VmGoal.PerformerFio)))
                 {
@@ -393,7 +392,7 @@ namespace Workflow.Services
                 }
                 else if (field.SameAs(nameof(VmGoal.IsRemoved)))
                 {
-                    var values = field.Values.OfType<bool>().ToArray();
+                    var values = field.Values.SelectBoolValues().ToArray();
                     query = query.Where(g => values.Any(v => v == g.IsRemoved));
                 }
             }
