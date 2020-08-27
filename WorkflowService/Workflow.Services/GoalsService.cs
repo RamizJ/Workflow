@@ -40,8 +40,9 @@ namespace Workflow.Services
                 throw new ArgumentNullException(nameof(currentUser));
 
             var query = await GetQuery(currentUser, true);
-            var goal = await query.FirstOrDefaultAsync(s => s.Id == id);
-            return _vmConverter.ToViewModel(goal);
+            query = query.Where(g => g.Id == id);
+            var vmGoals = SelectViews(query);
+            return await vmGoals.FirstOrDefaultAsync();
         }
 
         /// <inheritdoc />
@@ -565,19 +566,38 @@ namespace Workflow.Services
         private async Task<IEnumerable<VmGoal>> RemoveRestore(ApplicationUser currentUser, 
             IEnumerable<int> ids, bool isRemoved)
         {
-            var query = await GetQuery(currentUser, !isRemoved);
+            var query = await GetQuery(currentUser, !isRemoved, true);
             var models = await query
                 .Where(t => ids.Any(tId => t.Id == tId))
                 .ToArrayAsync();
 
-            foreach (var model in models)
-            {
-                model.IsRemoved = isRemoved;
-                _dataContext.Entry(model).State = EntityState.Modified;
-            }
+            SetIsRemoved(models, isRemoved);
 
             await _dataContext.SaveChangesAsync();
-            return models.Select(m => _vmConverter.ToViewModel(m));
+            var vmGoals = models.Select(m =>
+            {
+                var vm = _vmConverter.ToViewModel(m);
+                vm.IsChildsExist = m.ChildGoals?.Any() ?? false;
+                return vm;
+            });
+            return vmGoals;
+        }
+
+        private void SetIsRemoved(IEnumerable<Goal> goals, bool isRemoved)
+        {
+            if(goals == null)
+                return;
+
+            foreach (var goal in goals)
+            {
+                goal.IsRemoved = isRemoved;
+                _dataContext.Entry(goal).State = EntityState.Modified;
+
+                if (isRemoved)
+                {
+                    SetIsRemoved(goal.ChildGoals, true);
+                }
+            }
         }
 
 
