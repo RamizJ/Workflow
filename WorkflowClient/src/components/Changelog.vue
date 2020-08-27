@@ -27,6 +27,15 @@ import { Component, Vue } from 'vue-property-decorator'
 export default class Changelog extends Vue {
   private changelog = [
     {
+      number: '0.7.2',
+      content: `
+            Восстановлен функционал чек-листа;
+            исправлена ошибка при которой не добавлялись вложения к ещё не созданной задаче;
+            мелкие исправления и улучшения
+          `,
+      date: '27.08.2020'
+    },
+    {
       number: '0.7.1',
       content: `
             Добавить участника вместо Нового пользователя в контекстном меню на странице команды;
