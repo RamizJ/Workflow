@@ -91,7 +91,7 @@ a {
   height: 33px;
   line-height: 33px;
   font-size: 13px;
-  padding: 0 15px;
+  padding: 0 27px 0 15px;
   margin: 0 6px;
   color: var(--text);
   border-radius: 6px;
@@ -119,6 +119,9 @@ a {
   .el-button {
     //color: white;
   }
+}
+.el-select-dropdown.is-multiple .el-select-dropdown__item.selected::after {
+  right: 10px;
 }
 
 .el-select-dropdown.is-multiple .el-select-dropdown__item.selected {
@@ -393,4 +396,10 @@ a {
   font-weight: 500;
   font-size: 12.5px !important;
   color: var(--text-placeholder);
+}
+
+.el-tag, .el-tag.el-tag--info {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

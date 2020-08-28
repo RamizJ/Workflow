@@ -40,7 +40,7 @@
           <a v-if="isRowEditable" @click.prevent="onRowDoubleClick(child.data.row)">Открыть</a>
         </li>
         <li><a v-if="isRowEditable" @click.prevent="editEntity(child.data.row)">Изменить</a></li>
-        <el-divider v-if="isRowEditable"></el-divider>
+        <el-divider v-if="isRowEditable && !$route.params.teamId"></el-divider>
         <li>
           <a v-if="isRowEditable && !$route.params.teamId" @click.prevent="createEntity"
             >Новый проект</a
@@ -48,7 +48,9 @@
         </li>
         <el-divider v-if="isRowEditable && !$route.params.teamId"></el-divider>
         <li>
-          <a v-if="isRowEditable" @click.prevent="deleteEntity(child.data.row, isMultipleSelected)"
+          <a
+            v-if="isRowEditable && !$route.params.teamId"
+            @click.prevent="deleteEntity(child.data.row, isMultipleSelected)"
             >Переместить в корзину</a
           >
         </li>
