@@ -1,4 +1,5 @@
 import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
+import moment from 'moment'
 
 import store from '@/store'
 import tasksAPI from '@/api/tasks.api'
@@ -55,8 +56,10 @@ class TasksModule extends VuexModule {
     const result = response.data as Task
     if (result.parentGoalId)
       result.parent = (await this.context.dispatch('findParent', id)) as Task[]
-    if (result.isChildsExist)
-      result.childTasks = (await this.context.dispatch('findChild', { id })) as Task[]
+    if (result.isChildsExist) {
+      const child = (await this.context.dispatch('findChild', { id })) as Task[]
+      result.childTasks = child.sort(this.compare).reverse()
+    }
     if (result.isAttachmentsExist)
       result.attachments = (await this.context.dispatch('findAttachments', id)) as Attachment[]
     result.attachments = result.attachments?.map(attachment => {
@@ -76,18 +79,16 @@ class TasksModule extends VuexModule {
     const hasChild = !!entity.childTasks?.length
 
     if (hasChild) {
-      const updatedTasks: Task[] = []
-      for (const childTask of entity.childTasks!) {
-        let updatedTask = childTask
-        if (!childTask.id) updatedTask = await this.context.dispatch('createOne', childTask)
-        updatedTask.parentGoalId = createdTask.id
-        if (childTask.isRemoved && childTask.id)
-          await this.context.dispatch('deleteOne', childTask.id)
-        else updatedTasks.push(updatedTask)
+      const child: Task[] = []
+      for (const childTask of entity.childTasks!.reverse()) {
+        childTask.parentGoalId = createdTask.id
+        if (childTask.isRemoved) continue
+        const createdChild = await this.context.dispatch('createOne', childTask)
+        child.push(createdChild)
       }
-      const childIds = updatedTasks.map(task => task.id)
+      const childIds = child.map(task => task.id)
       await this.context.dispatch('addChild', { id: createdTask.id, childIds })
-      await this.context.dispatch('updateMany', updatedTasks)
+      await this.context.dispatch('updateMany', child)
     }
 
     this.context.commit('setTask', createdTask)
@@ -111,19 +112,33 @@ class TasksModule extends VuexModule {
     const hasChild = !!(entity.childTasks && entity.childTasks.length)
 
     if (hasChild) {
-      const updatedTasks: Task[] = []
-      for (const childTask of entity.childTasks!) {
+      const child: Task[] = []
+      for (const childTask of entity.childTasks!.reverse()) {
+        childTask.parentGoalId = entity.id
         let updatedTask = childTask
-        if (!childTask.id) updatedTask = await this.context.dispatch('createOne', childTask)
-        updatedTask.parentGoalId = entity.id
         if (childTask.isRemoved && childTask.id)
           await this.context.dispatch('deleteOne', childTask.id)
-        else updatedTasks.push(updatedTask)
+        if (!childTask.id && !childTask.isRemoved)
+          updatedTask = await this.context.dispatch('createOne', childTask)
+        if (childTask.id && !childTask.isRemoved) child.push(updatedTask)
       }
-      const childIds = updatedTasks.map(task => task.id)
+      const childIds = child.map(task => task.id)
       await this.context.dispatch('addChild', { id: entity.id, childIds })
-      await this.context.dispatch('updateMany', updatedTasks)
+      await this.context.dispatch('updateMany', child)
     }
+  }
+
+  private compare(taskA: Task, taskB: Task): number {
+    const dateA = moment.utc(taskA.creationDate)
+    const dateB = moment.utc(taskB.creationDate)
+
+    if (dateA < dateB) {
+      return -1
+    }
+    if (dateA > dateB) {
+      return 1
+    }
+    return 0
   }
 
   @Action

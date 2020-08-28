@@ -275,7 +275,7 @@ import moment from 'moment'
 import tasksModule from '@/store/modules/tasks.module'
 import DialogMixin from '@/mixins/dialog.mixin'
 import BaseDialog from '@/components/BaseDialog.vue'
-import Checklist from '@/components/Checklist.vue'
+import Checklist from '@/components/Task/TaskDialogChecklist.vue'
 import Task, { Priority, Status } from '@/types/task.type'
 import Attachment from '@/types/attachment.type'
 

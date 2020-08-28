@@ -38,12 +38,10 @@ export default class Checklist extends Vue {
   @Watch('task', { deep: true })
   onItemsChange(task: Task) {
     if (!task.childTasks) return
-    this.checklist = task.childTasks
-      .map(task => {
-        task.completed = task.state === 'Succeed'
-        return task
-      })
-      .reverse()
+    this.checklist = task.childTasks.map(task => {
+      task.completed = task.state === 'Succeed'
+      return task
+    })
   }
 
   private input = ''
@@ -51,12 +49,10 @@ export default class Checklist extends Vue {
 
   private async mounted() {
     if (!this.task.childTasks) return
-    this.checklist = this.task.childTasks
-      .map(task => {
-        task.completed = task.state === 'Succeed'
-        return task
-      })
-      .reverse()
+    this.checklist = this.task.childTasks.map(task => {
+      task.completed = task.state === 'Succeed'
+      return task
+    })
   }
 
   private onChange() {
@@ -79,7 +75,7 @@ export default class Checklist extends Vue {
       parentGoalId: this.task.id,
       completed: false
     }
-    this.checklist.push(entity)
+    this.checklist.unshift(entity)
     this.input = ''
     this.$emit('change', this.checklist)
   }
