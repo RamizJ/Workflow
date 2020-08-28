@@ -10,7 +10,7 @@
         </el-input>
       </div>
     </toolbar-filters>
-    <toolbar-filters-extra>
+    <toolbar-filters-extra v-if="!$route.params.projectId && !$route.params.teamId">
       <el-row :gutter="20">
         <el-col :span="24">
           <el-checkbox v-model="filters.showOnlyDeleted" @change="onFiltersChange"
