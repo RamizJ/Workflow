@@ -36,7 +36,7 @@ class TasksModule extends VuexModule {
   @Action({ rawError: true })
   async findAll(query: Query): Promise<Task[]> {
     const response = await tasksAPI.findAll(query)
-    const results = response.data as Task[]
+    const results = (response.data as Task[]).filter(task => !task.parentGoalId)
     this.context.commit('setTasks', results)
     return results
   }
@@ -55,8 +55,8 @@ class TasksModule extends VuexModule {
     const result = response.data as Task
     if (result.parentGoalId)
       result.parent = (await this.context.dispatch('findParent', id)) as Task[]
-    // if (result.isChildsExist)
-    result.childTasks = (await this.context.dispatch('findChild', { id })) as Task[]
+    if (result.isChildsExist)
+      result.childTasks = (await this.context.dispatch('findChild', { id })) as Task[]
     // if (result.isAttachmentsExist)
     result.attachments = (await this.context.dispatch('findAttachments', id)) as Attachment[]
     result.attachments = result.attachments.map(attachment => {
@@ -79,6 +79,7 @@ class TasksModule extends VuexModule {
       for (const childTask of entity.childTasks) {
         let updatedTask = childTask
         if (!childTask.id) updatedTask = await this.context.dispatch('createOne', childTask)
+        updatedTask.parentGoalId = entity.id
         if (childTask.isRemoved && childTask.id)
           await this.context.dispatch('deleteOne', childTask.id)
         else updatedTasks.push(updatedTask)
