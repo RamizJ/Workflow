@@ -11,10 +11,8 @@ export default {
       query
     ),
   findAllByIds: (ids: number[]) => httpClient.get(`/api/Goals/GetRange?${qs.stringify(ids)}`),
-  createOne: (request: { goal: Task; childGoals: Task[] }) =>
-    httpClient.post(`/api/Goals/CreateByForm`, request),
-  updateOne: (request: { goal: Task; childGoals: Task[] }) =>
-    httpClient.put(`/api/Goals/UpdateByForm`, request),
+  createOne: (entity: Task) => httpClient.post(`/api/Goals/Create`, entity),
+  updateOne: (entity: Task) => httpClient.put(`/api/Goals/Update`, entity),
   updateMany: (entities: Task[]) => httpClient.put(`/api/Goals/UpdateRange`, entities),
   deleteOne: (id: number) => httpClient.delete(`/api/Goals/Delete/${id}`),
   deleteMany: (ids: number[]) => httpClient.patch(`/api/Goals/DeleteRange`, ids),
