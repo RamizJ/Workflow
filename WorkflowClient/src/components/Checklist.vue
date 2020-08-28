@@ -16,7 +16,8 @@
         <el-input
           v-model="checklist[index].title"
           @keyup.delete.native="onDelete(index)"
-          @change="onChange(index)"
+          @change="onChange"
+          @blur="onBlur(index)"
         ></el-input>
       </div>
     </div>
@@ -28,6 +29,7 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 
 import Task, { Status } from '@/types/task.type'
 import moment from 'moment'
+import en from 'element-ui/src/locale/lang/en'
 
 @Component
 export default class Checklist extends Vue {
@@ -57,11 +59,17 @@ export default class Checklist extends Vue {
       .reverse()
   }
 
-  private async onChange(index: number) {
+  private onChange() {
     this.$emit('change', this.checklist)
   }
 
-  private async onAdd(): Promise<void> {
+  private onBlur(index: number) {
+    const entity = this.checklist[index]
+    if (!entity.title) entity.isRemoved = true
+    this.$forceUpdate()
+  }
+
+  private onAdd(): void {
     if (!this.input) return
     const entity: Task = {
       title: this.input,
@@ -76,15 +84,16 @@ export default class Checklist extends Vue {
     this.$emit('change', this.checklist)
   }
 
-  private async onCheck(index: number): Promise<void> {
+  private onCheck(index: number): void {
     this.checklist[index].state = this.checklist[index].completed ? Status.Succeed : Status.New
     this.$emit('change', this.checklist)
   }
 
-  private async onDelete(index: number): Promise<void> {
+  private onDelete(index: number): void {
     const entity = this.checklist[index]
     if (entity.title === undefined) {
       this.checklist[index].isRemoved = true
+      this.$forceUpdate()
       this.$emit('change', this.checklist)
     }
     if (entity && entity.title === '') entity.title = undefined
