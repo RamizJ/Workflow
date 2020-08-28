@@ -84,10 +84,10 @@ class ProjectsModule extends VuexModule {
       teamIds: entity.teamIds || []
     }
     const response = await projectsAPI.createOne(request)
-    const result = response.data as { project: Project; teamIds: number[] }
-    result.project.teamIds = result.teamIds
-    this.context.commit('setProject', result.project)
-    return result.project
+    const result = response.data as Project
+    result.teamIds = entity.teamIds
+    this.context.commit('setProject', result)
+    return result
   }
 
   @Action
