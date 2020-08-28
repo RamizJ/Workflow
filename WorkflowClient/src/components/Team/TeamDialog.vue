@@ -36,11 +36,11 @@
                 v-model="form.userIds"
                 placeholder="Участники"
                 :remote-method="searchUsers"
-                multiple="multiple"
-                filterable="filterable"
-                remote="remote"
-                clearable="clearable"
-                default-first-option="default-first-option"
+                default-first-option
+                filterable
+                clearable
+                multiple
+                remote
               >
                 <el-option
                   v-for="item in users"
@@ -168,6 +168,8 @@ import DialogMixin from '@/mixins/dialog.mixin'
 import BaseDialog from '@/components/BaseDialog.vue'
 import Team from '@/types/team.type'
 import Query from '@/types/query.type'
+import usersModule from '@/store/modules/users.module'
+import projectsModule from '@/store/modules/projects.module'
 
 @Component({ components: { BaseDialog } })
 export default class TeamDialog extends mixins(DialogMixin) {
@@ -189,6 +191,43 @@ export default class TeamDialog extends mixins(DialogMixin) {
   private teamMembersVisible = null
   private projectsVisible = null
 
+  public get projects() {
+    return teamsModule.teamProjects.map(project => {
+      return {
+        value: project.name,
+        id: project.id
+      }
+    })
+  }
+  public get users() {
+    return teamsModule.teamUsers.map(user => {
+      return {
+        value: `${user.lastName} ${user.firstName}`,
+        id: user.id
+      }
+    })
+  }
+
+  async searchProjects(query = '') {
+    if (!query && this.projects.length) return
+    await teamsModule.findProjects({
+      teamId: this.form.id,
+      filter: query,
+      pageNumber: 0,
+      pageSize: 20
+    } as Query)
+  }
+
+  async searchUsers(query = '') {
+    if (!query && this.users.length) return
+    await teamsModule.findUsers({
+      teamId: this.form.id,
+      filter: query,
+      pageNumber: 0,
+      pageSize: 20
+    } as Query)
+  }
+
   private async mounted() {
     this.visible = true
 
@@ -203,27 +242,18 @@ export default class TeamDialog extends mixins(DialogMixin) {
       const id: number = parseInt(this.id.toString())
       this.form = await teamsModule.findOneById(id)
 
-      await teamsModule.findUsers({
-        teamId: this.form.id,
-        pageNumber: 0,
-        pageSize: 10
-      } as Query)
-      await teamsModule.findProjects({
-        teamId: this.form.id,
-        pageNumber: 0,
-        pageSize: 10
-      } as Query)
+      await this.searchUsers()
+      await this.searchProjects()
+
       this.form.userIds = []
-      for (const user of teamsModule.teamUsers) {
+      for (const user of this.users) {
         if (user.id) this.form.userIds.push(user.id)
       }
       this.form.projectIds = []
-      for (const project of teamsModule.teamProjects) {
+      for (const project of this.projects) {
         if (project.id) this.form.projectIds.push(project.id)
       }
     }
-    await this.searchUsers()
-    await this.searchProjects()
     this.loading = false
     ;(this.$refs.title as HTMLElement).focus()
   }
