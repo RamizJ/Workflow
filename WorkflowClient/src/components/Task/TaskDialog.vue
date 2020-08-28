@@ -84,10 +84,10 @@
                 v-model="form.performerId"
                 placeholder="Ответственный"
                 :remote-method="searchUsers"
-                filterable="filterable"
-                remote="remote"
-                clearable="clearable"
-                default-first-option="default-first-option"
+                @blur="searchUsers()"
+                default-first-option
+                filterable
+                remote
               >
                 <el-option
                   v-for="item in users"
