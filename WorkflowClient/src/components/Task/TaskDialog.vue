@@ -370,6 +370,7 @@ export default class TaskDialog extends mixins(DialogMixin) {
 
   onChecklistChange(checklist: Task[]) {
     this.form.childTasks = checklist
+    this.$forceUpdate()
   }
 
   validateDate(date: Date) {
