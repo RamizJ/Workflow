@@ -1,4 +1,6 @@
-export default interface User {
+import Entity from '@/types/entity.type'
+
+export default interface User extends Entity {
   id?: string
   firstName: string
   middleName?: string
@@ -12,6 +14,5 @@ export default interface User {
   isRemoved?: boolean
   roles: string[]
 
-  index?: number
   teamIds?: number[]
 }

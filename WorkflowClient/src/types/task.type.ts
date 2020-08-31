@@ -1,6 +1,7 @@
 import Attachment from '@/types/attachment.type'
+import Entity from '@/types/entity.type'
 
-export default interface Task {
+export default interface Task extends Entity {
   id?: number
   goalNumber?: number
   title?: string
@@ -24,8 +25,6 @@ export default interface Task {
   childTasks?: Task[]
   attachments?: Attachment[]
   parent?: Task[]
-
-  index?: number
   completed?: boolean
 }
 

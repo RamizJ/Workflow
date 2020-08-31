@@ -1,6 +1,7 @@
 import Team from '@/types/team.type'
+import Entity from '@/types/entity.type'
 
-export default interface Project {
+export default interface Project extends Entity {
   id?: number
   name: string
   description?: string
@@ -12,7 +13,6 @@ export default interface Project {
   groupName?: string
   isRemoved?: boolean
 
-  index?: number
   teams?: Team[]
   teamId?: number
   teamIds?: number[]

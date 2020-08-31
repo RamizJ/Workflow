@@ -1,4 +1,6 @@
-export default interface Team {
+import Entity from '@/types/entity.type'
+
+export default interface Team extends Entity {
   id?: number
   name: string
   description?: string
@@ -8,6 +10,4 @@ export default interface Team {
 
   userIds?: string[]
   projectIds?: number[]
-
-  index?: number
 }

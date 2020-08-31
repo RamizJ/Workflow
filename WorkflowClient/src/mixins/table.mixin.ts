@@ -3,12 +3,9 @@ import { ElTableColumn } from 'element-ui/types/table-column'
 import InfiniteLoading from 'vue-infinite-loading'
 import moment from 'moment'
 
-import Task, { Priority, Status } from '@/types/task.type'
+import Entity from '@/types/entity.type'
+import { Priority, Status } from '@/types/task.type'
 import Query, { FilterField, SortType } from '@/types/query.type'
-import Project from '@/types/project.type'
-import User from '@/types/user.type'
-import Team from '@/types/team.type'
-import { ElTable } from 'element-ui/types/table'
 
 @Component
 export default class TableMixin extends Vue {
@@ -49,8 +46,8 @@ export default class TableMixin extends Vue {
     { value: Priority.High, label: 'Высокий' }
   ]
 
-  public data: Task[] | Project[] | Team[] | User[] = []
-  public selectedRow: Task | Project | Team | User | undefined
+  public data: Entity[] = []
+  public selectedRow: Entity | undefined
   public modalData: number | string | undefined
   public modalVisible = false
   public isShiftPressed = false
@@ -122,24 +119,15 @@ export default class TableMixin extends Vue {
     this.modalVisible = false
   }
 
-  public setIndex({
-    row,
-    rowIndex
-  }: {
-    row: Task | Project | Team | User
-    rowIndex: number
-  }): void {
+  public setIndex({ row, rowIndex }: { row: Entity; rowIndex: number }): void {
     row.index = rowIndex
   }
 
-  public onRowSelect(
-    selection: Task[] | Project[] | Team[] | User[],
-    entity: Task | Project | Team | User
-  ) {
+  public onRowSelect(selection: Entity[], entity: Entity) {
     this.selectedRow = entity
   }
 
-  public onRowSingleClick(row: Task | Project | Team | User): void {
+  public onRowSingleClick(row: Entity): void {
     this.table.clearSelection()
     if (this.isShiftPressed) {
       const previousIndex = row.index
@@ -154,7 +142,7 @@ export default class TableMixin extends Vue {
         from = previousIndex
         to = currentIndex
       }
-      this.data.some((entity: Task | Project | Team | User) => {
+      this.data.some((entity: Entity) => {
         if (entity.index === undefined) return
         if (entity.index >= from && entity.index <= to) this.table.toggleRowSelection(entity)
       })
@@ -164,18 +152,14 @@ export default class TableMixin extends Vue {
     this.selectedRow = row
   }
 
-  public onRowDoubleClick(row: Task | Project | Team | User): void {
+  public onRowDoubleClick(row: Entity): void {
     if (!row.isRemoved) {
       this.modalData = row.id
       this.modalVisible = true
     }
   }
 
-  public onRowRightClick(
-    row: Task | Project | Team | User,
-    column: ElTableColumn,
-    event: Event
-  ): void {
+  public onRowRightClick(row: Entity, column: ElTableColumn, event: Event): void {
     if (!this.isMultipleSelected) {
       this.table.clearSelection()
       this.table.toggleRowSelection(row)
@@ -186,36 +170,20 @@ export default class TableMixin extends Vue {
     event.preventDefault()
   }
 
-  public formatPriority(
-    row: Task | Project | Team | User,
-    column: ElTableColumn,
-    value: string
-  ): string {
+  public formatPriority(row: Entity, column: ElTableColumn, value: string): string {
     return this.priorities.find(priority => priority.value == (value as Priority))?.label || ''
   }
 
-  public formatStatus(
-    row: Task | Project | Team | User,
-    column: ElTableColumn,
-    value: string
-  ): string {
+  public formatStatus(row: Entity, column: ElTableColumn, value: string): string {
     return this.statuses.find(status => status.value === (value as Status))?.label || ''
   }
 
-  public formatDate(
-    row: Task | Project | Team | User,
-    column: ElTableColumn,
-    value: string
-  ): string {
+  public formatDate(row: Entity, column: ElTableColumn, value: string): string {
     const dateUtc = moment.utc(value)
     return dateUtc.format('DD.MM.YYYY HH:mm')
   }
 
-  public formatFio(
-    row: Task | Project | Team | User,
-    column: ElTableColumn,
-    value: string
-  ): string {
+  public formatFio(row: Entity, column: ElTableColumn, value: string): string {
     return this.shortenFullName(value)
   }
 
