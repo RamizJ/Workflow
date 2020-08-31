@@ -106,7 +106,7 @@ import Task, { Status } from '@/types/task.type'
 export default class TaskBoard extends mixins(TableMixin) {
   public data: Task[] = []
   private loading = false
-  private lists: any[] = []
+  private lists: { label: string; name: string; items: Task[] }[] = []
 
   private get listsDragOptions() {
     return {
@@ -148,13 +148,13 @@ export default class TaskBoard extends mixins(TableMixin) {
     localStorage.boardLists = JSON.stringify(newBoardLists)
   }
 
-  private async onEntityMove(event: any, listName: string) {
+  private async onEntityMove(event: { added?: { element: Task } }, listName: string) {
     if (event.added) await this.editEntityStatus(event.added.element, listName)
   }
 
   private updateLists() {
     this.lists = []
-    this.boardLists.forEach((list: any) => {
+    this.boardLists.forEach((list: { label: string; name: string; items: Task[] }) => {
       this.lists.push({
         label: list.label,
         name: list.name,

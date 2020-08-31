@@ -53,7 +53,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Ref } from 'vue-property-decorator'
+import { Component } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 
 import projectsModule from '@/store/modules/projects.module'

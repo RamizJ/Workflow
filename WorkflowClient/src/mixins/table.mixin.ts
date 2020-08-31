@@ -62,8 +62,8 @@ export default class TableMixin extends Vue {
   }
 
   public get table(): any {
-    if (Array.isArray(this.$refs.table)) return this.$refs.table[0] as any
-    else return this.$refs.table as any
+    if (Array.isArray(this.$refs.table)) return this.$refs.table[0]
+    else return this.$refs.table
   }
 
   public get infiniteLoader(): InfiniteLoading {
@@ -72,8 +72,8 @@ export default class TableMixin extends Vue {
   }
 
   public get contextMenu(): any {
-    if (Array.isArray(this.$refs.contextMenu)) return this.$refs.contextMenu[0] as any
-    else return this.$refs.contextMenu as any
+    if (Array.isArray(this.$refs.contextMenu)) return this.$refs.contextMenu[0]
+    else return this.$refs.contextMenu
   }
 
   @Watch('filters', { deep: true })

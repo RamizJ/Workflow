@@ -266,7 +266,7 @@
 <script lang="ts">
 import { Component, Prop, Ref } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
-import { ElUpload } from 'element-ui/types/upload'
+import { ElUpload, HttpRequestOptions } from 'element-ui/types/upload'
 import { ElForm } from 'element-ui/types/form'
 import { Input, Message } from 'element-ui'
 import moment from 'moment'
@@ -378,7 +378,7 @@ export default class TaskDialog extends mixins(DialogMixin) {
     return date < currentDate
   }
 
-  async uploadAttachment(request: any): Promise<void> {
+  async uploadAttachment(request: HttpRequestOptions): Promise<void> {
     this.loading = true
     const id = this.id || this.form.id
     if (!id) return
