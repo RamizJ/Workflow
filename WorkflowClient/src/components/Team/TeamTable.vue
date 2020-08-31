@@ -96,6 +96,7 @@ import ProjectAddTeamDialog from '@/components/Project/ProjectAddTeamDialog.vue'
 
 @Component({ components: { ProjectAddTeamDialog, TeamDialog } })
 export default class TeamTable extends mixins(TableMixin) {
+  public data: Team[] = []
   private loading = false
   private modalAddTeamVisible = false
 

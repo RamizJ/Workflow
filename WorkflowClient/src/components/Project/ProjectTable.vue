@@ -86,6 +86,7 @@ import usersModule from '@/store/modules/users.module'
 
 @Component({ components: { ProjectDialog } })
 export default class ProjectTable extends mixins(TableMixin) {
+  public data: Project[] = []
   private loading = false
 
   private async loadData($state: StateChanger) {

@@ -100,6 +100,7 @@ import Project from '@/types/project.type'
 
 @Component({ components: { UserDialog, TeamAddUserDialog } })
 export default class UserTable extends mixins(TableMixin) {
+  public data: User[] = []
   private loading = false
   private modalAddUserVisible = false
 

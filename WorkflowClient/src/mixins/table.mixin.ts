@@ -1,4 +1,5 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
+import { ElTableColumn } from 'element-ui/types/table-column'
 import InfiniteLoading from 'vue-infinite-loading'
 import moment from 'moment'
 
@@ -18,37 +19,6 @@ export default class TableMixin extends Vue {
   order: string | undefined
   @Prop()
   sort: string | undefined
-
-  @Watch('filters', { deep: true })
-  onFiltersChange(value: FilterField[]) {
-    this.query.filterFields = value
-    this.query.withRemoved = !!value.find(
-      filter => filter.fieldName === 'isRemoved' && filter.values[0] === true
-    )
-    this.reloadData()
-  }
-
-  @Watch('search')
-  onSearchChange(value: string) {
-    this.query.filter = value
-    this.reloadData()
-  }
-
-  @Watch('order')
-  onOrderChange(value: SortType) {
-    if (this.query.sortFields) {
-      this.query.sortFields[0].sortType = value
-      this.reloadData()
-    }
-  }
-
-  @Watch('sort')
-  onSortChange(value: string) {
-    if (this.query.sortFields) {
-      this.query.sortFields[0].fieldName = value
-      this.reloadData()
-    }
-  }
 
   public query: Query = {
     projectId: parseInt(this.$route.params.projectId) || undefined,
@@ -78,19 +48,18 @@ export default class TableMixin extends Vue {
     { value: Priority.High, label: 'Высокий' }
   ]
 
-  public data: any[] = []
-  public selectedRow: any | undefined
+  public data: Task[] | Project[] | Team[] | User[] = []
+  public selectedRow: Task | Project | Team | User | undefined
   public modalData: number | string | undefined
   public modalVisible = false
   public isShiftPressed = false
 
-  public get isRowEditable() {
+  public get isRowEditable(): boolean {
     const filter = this.filters?.find(filter => filter.fieldName === 'isRemoved')
-    if (!filter) return true
-    if (filter.values[0] == true) return false
+    return !filter || filter.values[0] == false
   }
 
-  public get isMultipleSelected() {
+  public get isMultipleSelected(): boolean {
     return this.table?.selection?.length > 1
   }
 
@@ -109,27 +78,67 @@ export default class TableMixin extends Vue {
     else return this.$refs.contextMenu as any
   }
 
-  private created() {
+  @Watch('filters', { deep: true })
+  onFiltersChange(value: FilterField[]): void {
+    this.query.filterFields = value
+    this.query.withRemoved = !!value.find(
+      filter => filter.fieldName === 'isRemoved' && filter.values[0] === true
+    )
+    this.reloadData()
+  }
+
+  @Watch('search')
+  onSearchChange(value: string): void {
+    this.query.filter = value
+    this.reloadData()
+  }
+
+  @Watch('order')
+  onOrderChange(value: SortType): void {
+    if (this.query.sortFields) {
+      this.query.sortFields[0].sortType = value
+      this.reloadData()
+    }
+  }
+
+  @Watch('sort')
+  onSortChange(value: string): void {
+    if (this.query.sortFields) {
+      this.query.sortFields[0].fieldName = value
+      this.reloadData()
+    }
+  }
+
+  private created(): void {
     document.onkeydown = this.onKeyDown
     document.onkeyup = this.onKeyUp
   }
 
-  public reloadData() {
+  public reloadData(): void {
     this.data = []
     this.query.pageNumber = 0
     this.infiniteLoader.stateChanger.reset()
     this.modalVisible = false
   }
 
-  public setIndex({ row, rowIndex }: { row: any; rowIndex: number }) {
+  public setIndex({
+    row,
+    rowIndex
+  }: {
+    row: Task | Project | Team | User
+    rowIndex: number
+  }): void {
     row.index = rowIndex
   }
 
-  public onRowSelect(selection: any[], entity: any) {
+  public onRowSelect(
+    selection: Task[] | Project[] | Team[] | User[],
+    entity: Task | Project | Team | User
+  ) {
     this.selectedRow = entity
   }
 
-  public onRowSingleClick(row: any) {
+  public onRowSingleClick(row: Task | Project | Team | User): void {
     this.table.clearSelection()
     if (this.isShiftPressed) {
       const previousIndex = row.index
@@ -144,7 +153,7 @@ export default class TableMixin extends Vue {
         from = previousIndex
         to = currentIndex
       }
-      this.data.some((entity: any) => {
+      this.data.some((entity: Task | Project | Team | User) => {
         if (entity.index === undefined) return
         if (entity.index >= from && entity.index <= to) this.table.toggleRowSelection(entity)
       })
@@ -154,14 +163,18 @@ export default class TableMixin extends Vue {
     this.selectedRow = row
   }
 
-  public onRowDoubleClick(row: any) {
+  public onRowDoubleClick(row: Task | Project | Team | User): void {
     if (!row.isRemoved) {
       this.modalData = row.id
       this.modalVisible = true
     }
   }
 
-  public onRowRightClick(row: any, column: any, event: Event) {
+  public onRowRightClick(
+    row: Task | Project | Team | User,
+    column: ElTableColumn,
+    event: Event
+  ): void {
     if (!this.isMultipleSelected) {
       this.table.clearSelection()
       this.table.toggleRowSelection(row)
@@ -172,20 +185,36 @@ export default class TableMixin extends Vue {
     event.preventDefault()
   }
 
-  public formatPriority(row: any, column: any, value: string): string {
+  public formatPriority(
+    row: Task | Project | Team | User,
+    column: ElTableColumn,
+    value: string
+  ): string {
     return this.priorities.find(priority => priority.value == (value as Priority))?.label || ''
   }
 
-  public formatStatus(row: any, column: any, value: string): string {
+  public formatStatus(
+    row: Task | Project | Team | User,
+    column: ElTableColumn,
+    value: string
+  ): string {
     return this.statuses.find(status => status.value === (value as Status))?.label || ''
   }
 
-  public formatDate(row: any, column: any, value: string): string {
+  public formatDate(
+    row: Task | Project | Team | User,
+    column: ElTableColumn,
+    value: string
+  ): string {
     const dateUtc = moment.utc(value)
     return dateUtc.format('DD.MM.YYYY HH:mm')
   }
 
-  public formatFio(row: any, column: any, value: string): string {
+  public formatFio(
+    row: Task | Project | Team | User,
+    column: ElTableColumn,
+    value: string
+  ): string {
     return this.shortenFullName(value)
   }
 

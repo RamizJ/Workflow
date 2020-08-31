@@ -104,6 +104,7 @@ import Task, { Status } from '@/types/task.type'
 
 @Component({ components: { Draggable, TaskDialog } })
 export default class TaskBoard extends mixins(TableMixin) {
+  public data: Task[] = []
   private loading = false
   private lists: any[] = []
 
