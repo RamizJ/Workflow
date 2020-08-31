@@ -94,7 +94,8 @@ namespace Workflow.Services
         public async Task<int> GetProjectGoalsByStateCount(ApplicationUser currentUser, int projectId, GoalState goalState)
         {
             var query = await GetQuery(currentUser, false);
-            return await query.CountAsync(g => g.ProjectId == projectId 
+            return await query.CountAsync(g => g.ProjectId == projectId
+                                               && g.ParentGoalId == null
                                                && g.State == goalState);
         }
 
@@ -500,6 +501,7 @@ namespace Workflow.Services
             model.Id = 0;
             model.CreationDate = DateTime.Now;
             model.OwnerId = currentUser.Id;
+            
             if (observerIds != null)
             {
                 model.Observers = observerIds
@@ -554,6 +556,8 @@ namespace Workflow.Services
                 model.Priority = vmGoal.Priority;
                 model.GoalNumber = vmGoal.GoalNumber;
                 model.PerformerId = vmGoal.PerformerId;
+                model.ExpectedCompletedDate = vmGoal.ExpectedCompletedDate;
+                model.EstimatedPerformingTime = vmGoal.EstimatedPerformingTime;
 
                 updateAction?.Invoke(model);
 
