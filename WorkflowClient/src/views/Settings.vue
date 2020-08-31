@@ -1,8 +1,8 @@
 <template>
-  <page>
-    <page-header>
-      <template slot="title">Настройки</template>
-    </page-header>
+  <div class="page">
+    <div class="header">
+      <div class="header__title">Настройки</div>
+    </div>
     <el-tabs ref="tabs" v-model="activeTab">
       <el-tab-pane label="Профиль" name="profile">
         <div class="section">
@@ -107,7 +107,7 @@
         <changelog></changelog>
       </el-tab-pane>
     </el-tabs>
-  </page>
+  </div>
 </template>
 
 <script lang="ts">
@@ -115,15 +115,11 @@ import { Component, Vue } from 'vue-property-decorator'
 
 import authModule from '@/store/modules/auth.module'
 import usersModule from '@/store/modules/users.module'
-import Page from '@/components/Page.vue'
-import PageHeader from '@/components/BaseHeader.vue'
-import Changelog from '@/components/Changelog.vue'
+import Changelog from '@/components/Changelog/Changelog.vue'
 import User from '@/types/user.type'
 
 @Component({
   components: {
-    Page,
-    PageHeader,
     Changelog
   }
 })

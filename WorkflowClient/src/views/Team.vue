@@ -1,15 +1,15 @@
 <template>
-  <page v-loading="loading">
-    <base-header>
-      <template slot="title">
+  <div class="page">
+    <div class="header">
+      <div class="header_title">
         <input
           class="title"
           v-model="teamItem.name"
           v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
           @change="onTeamUpdate"
         />
-      </template>
-      <template slot="action">
+      </div>
+      <div class="header__action">
         <el-dropdown placement="bottom" :show-timeout="0">
           <el-button type="text" size="mini">
             <feather type="chevron-down" size="22"></feather>
@@ -26,8 +26,8 @@
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-      </template>
-    </base-header>
+      </div>
+    </div>
     <el-tabs v-if="teamItem.id" ref="tabs" v-model="activeTab" @tab-click="setTab">
       <el-tab-pane name="members" label="Участники">
         <team-users v-if="activeTab === 'members'" ref="teamUsers"></team-users>
@@ -48,15 +48,13 @@
       @submit="onUserAdded"
     ></team-add-user-dialog>
     <user-dialog v-if="dialogUserVisible" @close="dialogUserVisible = false"></user-dialog>
-  </page>
+  </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 
 import teamsModule from '@/store/modules/teams.module'
-import Page from '@/components/Page.vue'
-import BaseHeader from '@/components/BaseHeader.vue'
 import TeamUsers from '@/components/Team/TeamUsers.vue'
 import TeamProjects from '@/components/Team/TeamProjects.vue'
 import TeamDialog from '@/components/Team/TeamDialog.vue'
@@ -67,8 +65,6 @@ import UserTable from '@/components/User/UserTable.vue'
 
 @Component({
   components: {
-    Page,
-    BaseHeader,
     TeamUsers,
     TeamProjects,
     TeamDialog,

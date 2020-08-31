@@ -10,8 +10,6 @@
       <div class="title">
         <slot name="title" />
       </div>
-      <!--el-tooltip.submit(content="Сохранить" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="800")slot(name="submit")
-    -->
       <el-tooltip
         class="close"
         content="Закрыть"
@@ -41,13 +39,9 @@ import { MessageBox } from 'element-ui'
 
 @Component
 export default class BaseDialog extends Vue {
-  private showDialog = false
+  private showDialog = true
 
-  private mounted() {
-    this.showDialog = true
-  }
-
-  private confirmClose(done: any) {
+  private confirmClose(done: Function) {
     const needConfirm = localStorage.confirmDialogClose === 'true'
     if (needConfirm) {
       MessageBox.confirm('Вы действительно хотите закрыть окно?', 'Предупреждение', {
