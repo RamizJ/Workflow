@@ -189,7 +189,7 @@ export default class TeamDialog extends mixins(DialogMixin) {
   private teamMembersVisible = null
   private projectsVisible = null
 
-  public get projects() {
+  public get projects(): { value: string | undefined; id: number | undefined }[] {
     return teamsModule.teamProjects.map(project => {
       return {
         value: project.name,
@@ -197,7 +197,7 @@ export default class TeamDialog extends mixins(DialogMixin) {
       }
     })
   }
-  public get users() {
+  public get users(): { value: string | undefined; id: string | undefined }[] {
     return teamsModule.teamUsers.map(user => {
       return {
         value: `${user.lastName} ${user.firstName}`,

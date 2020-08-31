@@ -1,8 +1,8 @@
 import Entity from '@/types/entity.type'
 
-export default interface Team extends Entity {
+export default class Team extends Entity {
   id?: number
-  name: string
+  name?: string
   description?: string
   groupId?: number
   groupName?: string

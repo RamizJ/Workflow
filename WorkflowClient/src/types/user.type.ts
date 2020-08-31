@@ -1,18 +1,18 @@
 import Entity from '@/types/entity.type'
 
-export default interface User extends Entity {
+export default class User extends Entity {
   id?: string
-  firstName: string
+  firstName?: string
   middleName?: string
   lastName?: string
-  userName: string
+  userName?: string
   password?: string
-  email: string
+  email?: string
   phone?: string
   positionId?: number
   position?: string
   isRemoved?: boolean
-  roles: string[]
+  roles?: string[]
 
   teamIds?: number[]
 }

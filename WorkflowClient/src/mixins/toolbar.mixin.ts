@@ -71,7 +71,7 @@ export default class ToolbarMixin extends Vue {
     return filterFields
   }
 
-  public get projects(): { value: string; id: number | undefined }[] {
+  public get projects(): { value: string | undefined; id: number | undefined }[] {
     return projectsModule.projects.map(project => {
       return {
         value: project.name,

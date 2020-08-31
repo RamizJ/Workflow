@@ -10,7 +10,7 @@ export default class DialogMixin extends Vue {
   public visible = false
   public loading = false
 
-  public get projects(): { value: string; id: number | undefined }[] {
+  public get projects(): { value: string | undefined; id: number | undefined }[] {
     return projectsModule.projects.map(project => {
       return {
         value: project.name,
@@ -18,7 +18,7 @@ export default class DialogMixin extends Vue {
       }
     })
   }
-  public get teams(): { value: string; id: number | undefined }[] {
+  public get teams(): { value: string | undefined; id: number | undefined }[] {
     return teamsModule.teams.map(team => {
       return {
         value: team.name,
@@ -26,7 +26,7 @@ export default class DialogMixin extends Vue {
       }
     })
   }
-  public get users(): { value: string; id: string | undefined }[] {
+  public get users(): { value: string | undefined; id: string | undefined }[] {
     return usersModule.users.map(user => {
       return {
         value: `${user.lastName} ${user.firstName}`,

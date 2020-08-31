@@ -78,14 +78,14 @@ export default class ProjectAddTeamDialog extends mixins(DialogMixin) {
     setTimeout(() => (this.$refs.input as Input).focus(), 150)
   }
 
-  private get teamsToAdd(): { id: number | undefined; value: string }[] {
+  private get teamsToAdd(): { id: number | undefined; value: string | undefined }[] {
     const allTeams = this.teams
     const existingTeams = this.existingTeams
     return allTeams.filter(team => {
       return !existingTeams.find(existingTeam => existingTeam.id === team.id)
     })
   }
-  private get existingTeams(): { id: number | undefined; value: string }[] {
+  private get existingTeams(): { id: number | undefined; value: string | undefined }[] {
     const teams: Team[] = projectsModule.project?.teams || []
     return teams.map((team: Team) => {
       return {

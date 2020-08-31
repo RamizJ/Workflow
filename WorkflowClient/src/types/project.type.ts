@@ -1,9 +1,9 @@
 import Team from '@/types/team.type'
 import Entity from '@/types/entity.type'
 
-export default interface Project extends Entity {
+export default class Project extends Entity {
   id?: number
-  name: string
+  name?: string
   description?: string
   ownerId?: string
   ownerFio?: string
