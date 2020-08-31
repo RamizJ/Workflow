@@ -67,24 +67,13 @@
           </el-col>
         </transition>
         <transition name="fade">
-          <el-col v-if="checklistVisible || form.child" :span="24">
+          <el-col v-if="checklistVisible || (form.childTasks && form.childTasks.length)" :span="24">
             <el-form-item>
-              <checklist :task="form" @change="onChecklistChange"></checklist>
-              <!--el-card.checklist(shadow="never" :body-style="{ padding: '0px 10px' }")
-            el-input(
-              v-model="checklistNewItem"
-              placeholder="Новый пункт"
-              @keyup.enter.native="addToChecklist")
-              el-button(slot="prefix" type="text" size="mini" @click="addToChecklist")
-                feather(type="plus" size="18")
-            div.checklist__item(
-              v-for="(checklistItem, index) in checklist"
-              //:key="index"
-              //:class="checklist[index].checked ? 'completed' : 'new'")
-              el-checkbox(v-model="checklist[index].checked")
-              el-input(v-model="checklist[index].title" @keyup.delete.native="onChecklistItemDelete(index)")
-
-            -->
+              <checklist
+                :items="form.childTasks"
+                :task="form"
+                @change="onChecklistChange"
+              ></checklist>
             </el-form-item>
           </el-col>
         </transition>
@@ -95,10 +84,10 @@
                 v-model="form.performerId"
                 placeholder="Ответственный"
                 :remote-method="searchUsers"
-                filterable="filterable"
-                remote="remote"
-                clearable="clearable"
-                default-first-option="default-first-option"
+                @blur="searchUsers()"
+                default-first-option
+                filterable
+                remote
               >
                 <el-option
                   v-for="item in users"
@@ -126,11 +115,14 @@
           </el-col>
         </transition>
         <transition name="fade">
-          <el-col v-if="attachmentsVisible || form.attachments.length" :span="24">
+          <el-col
+            v-if="attachmentsVisible || (form.attachments && form.attachments.length)"
+            :span="24"
+          >
             <el-form-item>
               <el-upload
-                action="https://demo.girngm.ru/workflow_dev/api/Goals/AddAttachments/"
                 ref="upload"
+                action="https://demo.girngm.ru/workflow_dev/api/Goals/AddAttachments/"
                 :http-request="uploadAttachment"
                 :on-preview="onAttachmentClick"
                 :on-remove="removeAttachment"
@@ -176,7 +168,7 @@
           :open-delay="500"
         >
           <el-button
-            v-if="!checklistVisible"
+            v-if="!(form.childTasks && form.childTasks.length)"
             type="text"
             @click="checklistVisible = !checklistVisible"
             circle="circle"
@@ -244,7 +236,7 @@
           :open-delay="500"
         >
           <el-button
-            v-if="!form.attachments.length"
+            v-if="!(form.attachments && form.attachments.length)"
             type="text"
             @click="attachmentsVisible = !attachmentsVisible"
             circle="circle"
@@ -272,18 +264,17 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Ref, Vue } from 'vue-property-decorator'
+import { Component, Prop, Ref } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
-import { ElUpload } from 'element-ui/types/upload'
+import { ElUpload, HttpRequestOptions } from 'element-ui/types/upload'
 import { ElForm } from 'element-ui/types/form'
 import { Input, Message } from 'element-ui'
-import { Route } from 'vue-router'
 import moment from 'moment'
 
 import tasksModule from '@/store/modules/tasks.module'
 import DialogMixin from '@/mixins/dialog.mixin'
 import BaseDialog from '@/components/BaseDialog.vue'
-import Checklist from '@/components/Checklist.vue'
+import Checklist from '@/components/Task/TaskDialogChecklist.vue'
 import Task, { Priority, Status } from '@/types/task.type'
 import Attachment from '@/types/attachment.type'
 
@@ -308,11 +299,6 @@ export default class TaskDialog extends mixins(DialogMixin) {
     attachments: []
   }
 
-  // private attachmentList: any[] | undefined = []
-  // private childTasks: Task[] = []
-  // private checklist: Task[] = []
-  // private checklistNewItem = ''
-
   private rules = {
     title: [{ required: true, message: '!', trigger: 'blur' }],
     performerId: [{ required: true, message: '!', trigger: 'blur' }],
@@ -331,33 +317,6 @@ export default class TaskDialog extends mixins(DialogMixin) {
   private expectedCompletedDateVisible = null
   private attachmentsVisible = null
 
-  // private get projects() {
-  //   return projectsModule.projects.map(project => {
-  //     return {
-  //       value: project.name,
-  //       id: project.id
-  //     }
-  //   })
-  // }
-  //
-  // private get teams() {
-  //   return teamsModule.teams.map(team => {
-  //     return {
-  //       value: team.name,
-  //       id: team.id
-  //     }
-  //   })
-  // }
-  //
-  // private get users() {
-  //   return usersModule.users.map(user => {
-  //     return {
-  //       value: `${user.lastName} ${user.firstName}`,
-  //       id: user.id
-  //     }
-  //   })
-  // }
-
   async mounted() {
     this.visible = true
 
@@ -371,23 +330,6 @@ export default class TaskDialog extends mixins(DialogMixin) {
     await this.searchProjects()
     this.loading = false
     ;(this.$refs.title as Input).focus()
-
-    // if (this.isEdit) this.form = { ...this.data } as Task;
-
-    // if (this.isEdit) this.form = (await tasksModule.findOneById(parseInt(this.id))) as Task
-
-    // if (this.isEdit) {
-    //   // await this.loadChecklist();
-    //   // const attachments = await tasksModule.findAttachments(this.form.id as number);
-    //   this.attachmentList = this.form.attachments?.map(attachment => {
-    //     return {
-    //       name: attachment.fileName,
-    //       id: attachment.id
-    //     };
-    //   });
-    // } else {
-    //   this.attachmentList = [];
-    // }
   }
 
   async submit() {
@@ -395,7 +337,7 @@ export default class TaskDialog extends mixins(DialogMixin) {
     await form.validate(async valid => {
       if (valid) {
         await this.sendForm()
-        if (this.form.attachments) (this.$refs.upload as ElUpload).submit()
+        if (this.$refs.upload) (this.$refs.upload as ElUpload).submit()
         this.$emit('submit')
         this.exit()
       } else {
@@ -411,10 +353,10 @@ export default class TaskDialog extends mixins(DialogMixin) {
   async sendForm() {
     this.loading = true
     const entity: Task = { ...this.form } as Task
-    entity.isChildsExist = !!entity.child?.length
+    entity.isChildsExist = !!entity.childTasks?.length
     entity.isAttachmentsExist = !!entity.attachments?.length
     if (this.isEdit) await tasksModule.updateOne(entity)
-    else await tasksModule.createOne(entity)
+    else this.form = await tasksModule.createOne(entity)
     this.loading = false
   }
 
@@ -426,96 +368,9 @@ export default class TaskDialog extends mixins(DialogMixin) {
   }
 
   onChecklistChange(checklist: Task[]) {
-    this.form.child = checklist
+    this.form.childTasks = checklist
+    this.$forceUpdate()
   }
-
-  // async loadChecklist() {
-  //   if (!this.form.isChildsExist) return;
-  //   this.loading = true;
-  //   const childTasks: Task[] = await tasksModule.findChild(this.form.id as number);
-  //   this.childTasks = Array.from(
-  //     childTasks.map(task => {
-  //       task.completed = task.state === 'Succeed';
-  //       return { ...task };
-  //     })
-  //   );
-  //   this.checklist = childTasks.map(task => {
-  //     task.completed = task.state === 'Succeed';
-  //     return task;
-  //   });
-  //   this.loading = false;
-  // }
-  //
-  // async addToChecklist() {
-  //   if (!this.checklistNewItem) return;
-  //   this.checklist.unshift({
-  //     title: this.checklistNewItem,
-  //     projectId: this.form.projectId,
-  //     creationDate: new Date(),
-  //     state: Status.New,
-  //     parentGoalId: this.form.id,
-  //     completed: false
-  //   } as Task);
-  //   this.checklistNewItem = '';
-  // }
-  //
-  // onChecklistItemDelete(itemIndex: number) {
-  //   if (this.checklist[itemIndex].title === undefined) this.checklist.splice(itemIndex, 1);
-  //   if (this.checklist[itemIndex] && this.checklist[itemIndex].title === '')
-  //     this.checklist[itemIndex].title = undefined;
-  // }
-  //
-  // async saveChecklist() {
-  //   if (!this.checklist.length) return;
-  //   this.loading = true;
-  //
-  //   const previousChecklist = this.childTasks;
-  //   const currentChecklist = this.checklist
-  //     .map(item => {
-  //       item.state = item.completed ? Status.Succeed : Status.New;
-  //       return item;
-  //     })
-  //     .reverse();
-  //
-  //   this.form.isChildsExist = true;
-  //
-  //   const parentId = this.isEdit ? this.form.id : this.id;
-  //   const tasksToCreate = currentChecklist.filter(item => !item.id);
-  //   if (tasksToCreate.length)
-  //     await tasksModule.addChild({ id: parentId as number, entities: tasksToCreate });
-  //
-  //   const removedItems = this.getRemovedChecklistItems(previousChecklist, currentChecklist);
-  //   await tasksModule.deleteMany(removedItems.map(item => item.id as number));
-  //
-  //   const changedItems = this.getChangedChecklistItems(previousChecklist, currentChecklist);
-  //   await tasksModule.updateMany(changedItems);
-  //
-  //   this.loading = false;
-  // }
-  //
-  // getRemovedChecklistItems(previousChecklist: Task[], currentChecklist: Task[]) {
-  //   const removedItems: Task[] = [];
-  //   for (const previousItem of previousChecklist) {
-  //     const existingItem = currentChecklist.find(currentItem => currentItem.id === previousItem.id);
-  //     if (!existingItem) removedItems.push(previousItem);
-  //   }
-  //   return removedItems;
-  // }
-  //
-  // getChangedChecklistItems(previousChecklist: Task[], currentChecklist: Task[]) {
-  //   const changedItems = [];
-  //   for (const previousItem of previousChecklist) {
-  //     const changedItem = currentChecklist.find(
-  //       currentItem =>
-  //         currentItem.id &&
-  //         currentItem.id === previousItem.id &&
-  //         (currentItem.completed !== previousItem.completed ||
-  //           currentItem.title !== previousItem.title)
-  //     );
-  //     if (changedItem) changedItems.push(changedItem);
-  //   }
-  //   return changedItems;
-  // }
 
   validateDate(date: Date) {
     const currentDate = new Date()
@@ -523,9 +378,9 @@ export default class TaskDialog extends mixins(DialogMixin) {
     return date < currentDate
   }
 
-  async uploadAttachment(request: any): Promise<void> {
+  async uploadAttachment(request: HttpRequestOptions): Promise<void> {
     this.loading = true
-    const id = this.id
+    const id = this.id || this.form.id
     if (!id) return
     const files = new FormData()
     files.append('files', request.file)
@@ -542,236 +397,7 @@ export default class TaskDialog extends mixins(DialogMixin) {
   async removeAttachment(attachment: Attachment) {
     if (attachment.id) await tasksModule.removeAttachments([attachment.id])
   }
-
-  // async searchProjects(query = '') {
-  //   await projectsModule.findAll({
-  //     filter: query,
-  //     pageNumber: 0,
-  //     pageSize: 10
-  //   })
-  // }
-  //
-  // async searchTeams(query = '') {
-  //   await teamsModule.findAll({
-  //     filter: query,
-  //     pageNumber: 0,
-  //     pageSize: 10
-  //   })
-  // }
-  //
-  // async searchUsers(query = '') {
-  //   await usersModule.findAll({
-  //     filter: query,
-  //     pageNumber: 0,
-  //     pageSize: 10
-  //   })
-  // }
 }
-
-/*export default {
-  components: { BaseDialog },
-  mixins: [dialogMixin],
-  data() {
-    return {
-      form: {
-        title: '',
-        description: '',
-        projectId: this.$route.params.projectId
-          ? parseInt(this.$route.params.projectId)
-          : null,
-        projectName: null,
-        creationDate: new Date(),
-        expectedCompletedDate: null,
-        state: 'New',
-        priority: 'Normal',
-        ownerId: null,
-        ownerFio: null,
-        performerId: null,
-        performerFio: null,
-        observerIds: [],
-        isChildsExist: false
-      },
-      checklistNewItem: '',
-      checklist: [],
-      rules: {
-        title: [{ required: true, message: '!', trigger: 'blur' }],
-        performerId: [{ required: true, message: '!', trigger: 'blur' }],
-        projectId: [{ required: true, message: '!', trigger: 'blur' }]
-      },
-      priorities: [
-        { value: 'High', label: 'Высокий приоритет' },
-        { value: 'Normal', label: 'Средний приоритет' },
-        { value: 'Low', label: 'Низкий приоритет' }
-      ],
-      childTasks: [],
-      attachmentList: [],
-      descriptionVisible: null,
-      checklistVisible: null,
-      priorityVisible: null,
-      performerVisible: null,
-      expectedCompletedDateVisible: null,
-      attachmentsVisible: null
-    };
-  },
-  computed: {
-    ...mapGetters({
-      task: 'tasks/getTask',
-      me: 'auth/me',
-      attachments: 'tasks/getTaskAttachments'
-    })
-  },
-  async mounted() {
-    this.loading = true;
-    if (this.isEdit) {
-      await this.loadChecklist();
-      await this.fetchAttachments(this.form.id);
-      this.attachmentList = this.attachments.map(attachment => {
-        return {
-          name: attachment.fileName,
-          id: attachment.id
-        };
-      });
-    } else {
-      this.attachmentList = [];
-    }
-    await this.searchUsers();
-    await this.searchProjects();
-    this.loading = false;
-    this.$refs.title?.focus();
-  },
-  methods: {
-    ...mapActions({
-      fetchItem: 'tasks/findOneById',
-      createItem: 'tasks/createOne',
-      updateItem: 'tasks/updateOne',
-      updateTasks: 'tasks/updateMany',
-      deleteTasks: 'tasks/deleteMany',
-      fetchChildTasks: 'tasks/findChild',
-      addChildTasks: 'tasks/addChild',
-      fetchAttachments: 'tasks/findAttachments',
-      addAttachments: 'tasks/uploadAttachments',
-      removeAttachments: 'tasks/removeAttachments',
-      downloadAttachment: 'tasks/downloadAttachment'
-    }),
-    async submit() {
-      await this.$refs.form.validate(async valid => {
-        if (valid) {
-          await this.sendForm();
-          await this.saveChecklist();
-          this.$refs.upload?.submit();
-          this.$emit('submit');
-          this.exit();
-        } else {
-          this.$message({
-            showClose: true,
-            message: 'Форма заполнена некорректно',
-            type: 'error'
-          });
-        }
-      });
-    },
-    async loadChecklist() {
-      if (!this.form.isChildsExist) return;
-      this.loading = true;
-      const childTasks = await this.fetchChildTasks(this.form.id);
-      this.childTasks = Array.from(childTasks.map(task => {
-        task.checked = task.state === 'Succeed';
-        return { ...task };
-      }));
-      this.checklist = childTasks.map(task => {
-        task.checked = task.state === 'Succeed';
-        return task;
-      });
-      this.loading = false;
-    },
-    async addToChecklist() {
-      if (!this.checklistNewItem) return;
-      this.checklist.unshift({
-        title: this.checklistNewItem,
-        projectId: this.form.projectId,
-        creationDate: new Date(),
-        state: 'New',
-        parentGoalId: this.form.id,
-        checked: false
-      });
-      this.checklistNewItem = '';
-    },
-    onChecklistItemDelete(itemIndex) {
-      if (this.checklist[itemIndex].title === null)
-        this.checklist.splice(itemIndex, 1)
-      if (this.checklist[itemIndex] && this.checklist[itemIndex].title === '')
-        this.checklist[itemIndex].title = null;
-    },
-    async saveChecklist() {
-      if (!this.checklist.length) return;
-      this.loading = true;
-
-      const previousChecklist = this.childTasks;
-      const currentChecklist = this.checklist.map(item => {
-        item.state = item.checked ? 'Succeed' : 'New';
-        return item;
-      }).reverse();
-
-      this.form.isChildsExist = true;
-
-      const parentId = this.isEdit ? this.form.id : this.task.id;
-      const tasksToCreate = currentChecklist.filter(item => !item.id)
-      if (tasksToCreate.length)
-        await this.addChildTasks({ parentId, tasks: tasksToCreate });
-
-      const removedItems = this.getRemovedChecklistItems(previousChecklist, currentChecklist);
-      await this.deleteTasks(removedItems.map(item => item.id));
-
-      const changedItems = this.getChangedChecklistItems(previousChecklist, currentChecklist);
-      await this.updateTasks(changedItems);
-
-      this.loading = false;
-    },
-    getRemovedChecklistItems(previousChecklist, currentChecklist) {
-      let removedItems = [];
-      for (let previousItem of previousChecklist) {
-        const existingItem = currentChecklist.find(currentItem => currentItem.id === previousItem.id)
-        if (!existingItem)
-          removedItems.push(previousItem);
-      }
-      return removedItems;
-    },
-    getChangedChecklistItems(previousChecklist, currentChecklist) {
-      let changedItems = [];
-      for (let previousItem of previousChecklist) {
-        const changedItem = currentChecklist.find(currentItem =>
-          currentItem.id &&
-          (currentItem.id === previousItem.id) &&
-          ((currentItem.checked !== previousItem.checked) || (currentItem.title !== previousItem.title))
-        )
-        if (changedItem)
-          changedItems.push(changedItem);
-      }
-      return changedItems;
-    },
-    validateDate(date) {
-      const currentDate = new Date();
-      currentDate.setDate(currentDate.getDate() - 1);
-      return date < currentDate;
-    },
-    async uploadAttachment(request) {
-      this.loading = true;
-      let files = new FormData();
-      files.append('files', request.file);
-      await this.addAttachments({
-        taskId: this.form.id || this.task.id,
-        files
-      });
-      this.loading = false;
-    },
-    async onAttachmentClick(file) {
-      await this.downloadAttachment(file);
-    },
-    async removeAttachment(file) {
-      if (file.id) await this.removeAttachments([file.id]);
-    }
-  }
-};*/
 </script>
 
 <style lang="scss">

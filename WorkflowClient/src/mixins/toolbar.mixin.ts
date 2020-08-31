@@ -35,7 +35,7 @@ export default class ToolbarMixin extends Vue {
     { value: Priority.High, label: 'Высокий' }
   ]
 
-  public get filterFields() {
+  public get filterFields(): FilterField[] {
     const filterFields: FilterField[] = []
     if (this.filters.statuses.length)
       filterFields.push({
@@ -71,7 +71,7 @@ export default class ToolbarMixin extends Vue {
     return filterFields
   }
 
-  public get projects() {
+  public get projects(): { value: string | undefined; id: number | undefined }[] {
     return projectsModule.projects.map(project => {
       return {
         value: project.name,
@@ -80,7 +80,7 @@ export default class ToolbarMixin extends Vue {
     })
   }
 
-  public get users() {
+  public get users(): { value: string; id: string | undefined }[] {
     return usersModule.users.map(user => {
       return {
         value: `${user.lastName} ${user.firstName}`,
@@ -89,29 +89,29 @@ export default class ToolbarMixin extends Vue {
     })
   }
 
-  private mounted() {
+  private mounted(): void {
     this.fixSearchableDropdown()
   }
 
-  public onSearch(value: string) {
+  public onSearch(value: string): void {
     this.$emit('search', value || this.search)
   }
 
-  public onFiltersChange() {
+  public onFiltersChange(): void {
     this.$emit('filters', this.filterFields)
   }
 
-  public onOrderChange(value: SortType) {
+  public onOrderChange(value: SortType): void {
     this.order = value
     this.$emit('order', value)
   }
 
-  public onSortChange(value: string) {
+  public onSortChange(value: string): void {
     this.sort = value
     this.$emit('sort', value)
   }
 
-  public onViewChange(value: View) {
+  public onViewChange(value: View): void {
     this.view = value
     this.$emit('view', value)
   }
@@ -140,7 +140,7 @@ export default class ToolbarMixin extends Vue {
     })
   }
 
-  private fixSearchableDropdown() {
+  private fixSearchableDropdown(): void {
     document.querySelectorAll('.el-select.remote').forEach(element => {
       const dropdownElement = element as HTMLElement
       const arrow = element.children[1].children[1]

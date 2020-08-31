@@ -19,20 +19,21 @@ export default {
   restoreOne: (id: number) => httpClient.patch(`/api/Goals/Restore/${id}`),
   restoreMany: (ids: number[]) => httpClient.patch(`/api/Goals/RestoreRange`, ids),
   findParent: (id: number) => httpClient.get(`/api/Goals/GetParentGoal/${id}`),
-  findChild: (id: number) => httpClient.get(`/api/Goals/GetChildGoals/${id}`),
+  findChild: (id: number, query: Query | undefined) =>
+    httpClient.post(`/api/Goals/GetChildGoals/${id}`, query),
   addChild: (parentId: number, childIds: number[]) =>
     httpClient.patch(`/api/Goals/AddChildGoals/${parentId}`, childIds),
   findAttachments: (taskId: number) => httpClient.get(`/api/Goals/GetAttachments/${taskId}`),
-  uploadAttachments: (taskId: number, files: any) =>
+  uploadAttachments: (taskId: number, files: FormData) =>
     httpClient.patch(`/api/Goals/AddAttachments/${taskId}`, files, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     }),
-  downloadAttachment: (attachmentId: any) =>
+  downloadAttachment: (attachmentId: number) =>
     httpClient.get(`/api/Goals/DownloadAttachmentFile/${attachmentId}`, {
       responseType: 'blob'
     }),
-  removeAttachments: (attachmentIds: any) =>
+  removeAttachments: (attachmentIds: number[]) =>
     httpClient.patch(`/api/Goals/RemoveAttachments`, attachmentIds)
 }

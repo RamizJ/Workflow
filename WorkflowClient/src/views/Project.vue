@@ -1,15 +1,15 @@
 <template>
-  <page v-loading="loading">
-    <base-header v-if="projectItem.id">
-      <template slot="title">
+  <div class="page">
+    <div class="header">
+      <div class="header__title">
         <input
           class="title"
           v-model="projectItem.name"
           v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
           @change="updateEntity"
         />
-      </template>
-      <template slot="action">
+      </div>
+      <div class="header__action">
         <el-dropdown placement="bottom" :show-timeout="0">
           <el-button type="text" size="mini">
             <feather type="chevron-down" size="22"></feather>
@@ -29,8 +29,8 @@
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-      </template>
-    </base-header>
+      </div>
+    </div>
     <el-tabs v-if="projectItem.id" ref="tabs" v-model="activeTab" @tab-click="setTab">
       <el-tab-pane name="overview" label="Обзор">
         <project-overview
@@ -55,17 +55,16 @@
     <project-add-team-dialog
       v-if="teamModalVisible"
       @close="teamModalVisible = false"
+      @submit="onTeamAdd"
     ></project-add-team-dialog>
     <task-dialog v-if="taskModalVisible" @close="taskModalVisible = false"></task-dialog>
-  </page>
+  </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 
 import projectsModule from '@/store/modules/projects.module'
-import Page from '@/components/Page.vue'
-import BaseHeader from '@/components/BaseHeader.vue'
 import ProjectOverview from '@/components/Project/ProjectOverview.vue'
 import ProjectTasks from '@/components/Project/ProjectTasks.vue'
 import ProjectTeams from '@/components/Project/ProjectTeams.vue'
@@ -74,11 +73,10 @@ import ProjectAddTeamDialog from '@/components/Project/ProjectAddTeamDialog.vue'
 import TaskDialog from '@/components/Task/TaskDialog.vue'
 import TaskTable from '@/components/Task/TaskTable.vue'
 import Project from '@/types/project.type'
+import TeamTable from '@/components/Team/TeamTable.vue'
 
 @Component({
   components: {
-    Page,
-    BaseHeader,
     ProjectOverview,
     ProjectTeams,
     ProjectTasks,
@@ -122,13 +120,13 @@ export default class ProjectPage extends Vue {
     const query = { ...this.$route.query }
     query.tab = query.tab?.toString() || this.activeTab
     this.activeTab = query.tab
-    if (JSON.stringify(query) !== JSON.stringify(this.$route.query)) this.$router.push({ query })
+    if (JSON.stringify(query) !== JSON.stringify(this.$route.query)) this.$router.replace({ query })
   }
 
   setTab() {
     const query = { tab: this.activeTab }
     if (JSON.stringify({ tab: '' }) !== JSON.stringify(this.$route.query))
-      this.$router.push({ query })
+      this.$router.replace({ query })
   }
 
   async editEntity() {
@@ -137,7 +135,7 @@ export default class ProjectPage extends Vue {
 
   async deleteEntity() {
     await projectsModule.deleteOne(this.id)
-    await this.$router.push({ name: 'Project' })
+    await this.$router.replace({ name: 'Project' })
   }
 
   async updateEntity() {
@@ -158,6 +156,13 @@ export default class ProjectPage extends Vue {
 
   async addTeam() {
     this.teamModalVisible = true
+  }
+
+  onTeamAdd() {
+    if (!this.$refs.projectTeams) return
+    const projectTeams = this.$refs.projectTeams as ProjectTeams
+    const projectTeamsTable = projectTeams.$refs.items as TeamTable
+    projectTeamsTable.reloadData()
   }
 }
 </script>

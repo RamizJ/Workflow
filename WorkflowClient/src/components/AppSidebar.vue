@@ -13,9 +13,6 @@
     div.actions
       el-button(type="text" @click="exit")
         feather(type="log-out")
-
-
-
     -->
       <!--el-menu-item(index="/" disabled)
     feather(type="activity")
@@ -33,36 +30,15 @@
       <el-menu-item index="/users">
         <feather type="user"></feather><span>Пользователи</span>
       </el-menu-item>
-      <!--el-menu-item(index="/journal")
-    feather(type="check-circle")
-    span Журнал
-    -->
-      <!--el-menu-item(index="/trash")
-    feather(type="trash")
-    span Корзина
+      <el-menu-item index="/reports">
+        <feather type="file-text"></feather><span>Отчёты</span>
+      </el-menu-item>
 
-    -->
       <div class="divider"></div>
-      <!--el-menu-item(index="/scopes" disabled)
-    feather(type="hexagon")
-    span Области
 
-
-    -->
       <el-menu-item index="/settings">
         <feather type="settings"></feather><span>Настройки</span>
       </el-menu-item>
-      <!--div.divider-->
-      <!--el-collapse(v-model="collapseState")
-    el-collapse-item(title="Проекты" name="projects")
-      el-menu-item(v-for="item in projects" :key="item.id" :index="`/projects/${item.id}`")
-        feather(type="box")
-        span {{ item.name }}
-      infinite-loading(ref="loader" @infinite="load" spinner="waveDots")
-        div(slot="no-more")
-        div(slot="no-results")
-
-    -->
     </el-menu>
     <div class="logo"><img src="@/assets/logo.svg" /></div>
   </div>

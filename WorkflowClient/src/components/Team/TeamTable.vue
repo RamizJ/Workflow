@@ -36,7 +36,16 @@
           <a v-if="isRowEditable" @click.prevent="editEntity(child.data.row)">Изменить</a>
         </li>
         <el-divider v-if="isRowEditable"></el-divider>
-        <li><a v-if="isRowEditable" @click.prevent="createEntity">Новая команда</a></li>
+        <li>
+          <a v-if="isRowEditable && !$route.params.projectId" @click.prevent="createEntity"
+            >Новая команда</a
+          >
+        </li>
+        <li>
+          <a v-if="isRowEditable && $route.params.projectId" @click.prevent="addTeam"
+            >Добавить команду</a
+          >
+        </li>
         <el-divider v-if="isRowEditable"></el-divider>
         <li>
           <a v-if="$route.params.projectId" @click.prevent="removeEntityFromProject(child.data.row)"
@@ -44,12 +53,18 @@
           >
         </li>
         <li>
-          <a v-if="isRowEditable" @click.prevent="deleteEntity(child.data.row)"
+          <a
+            v-if="isRowEditable && !$route.params.projectId"
+            @click.prevent="deleteEntity(child.data.row, isMultipleSelected)"
             >Переместить в корзину</a
           >
         </li>
         <li>
-          <a v-if="!isRowEditable" @click.prevent="restoreEntity(child.data.row)">Восстановить</a>
+          <a
+            v-if="!isRowEditable"
+            @click.prevent="restoreEntity(child.data.row, isMultipleSelected)"
+            >Восстановить</a
+          >
         </li>
       </template>
     </vue-context>
@@ -59,6 +74,11 @@
       @close="modalVisible = false"
       @submit="reloadData"
     ></team-dialog>
+    <project-add-team-dialog
+      v-if="modalAddTeamVisible"
+      @close="modalAddTeamVisible = false"
+      @submit="reloadData"
+    ></project-add-team-dialog>
   </div>
 </template>
 
@@ -72,11 +92,13 @@ import projectsModule from '@/store/modules/projects.module'
 import TeamDialog from '@/components/Team/TeamDialog.vue'
 import TableMixin from '@/mixins/table.mixin'
 import Team from '@/types/team.type'
-import usersModule from '@/store/modules/users.module'
+import ProjectAddTeamDialog from '@/components/Project/ProjectAddTeamDialog.vue'
 
-@Component({ components: { TeamDialog } })
+@Component({ components: { ProjectAddTeamDialog, TeamDialog } })
 export default class TeamTable extends mixins(TableMixin) {
+  public data: Team[] = []
   private loading = false
+  private modalAddTeamVisible = false
 
   private async loadData($state: StateChanger) {
     const isFirstLoad = !this.data.length
@@ -124,6 +146,10 @@ export default class TeamTable extends mixins(TableMixin) {
     if (this.isMultipleSelected) await projectsModule.removeTeams({ projectId, teamIds })
     else await projectsModule.removeTeam({ projectId, teamId })
     this.reloadData()
+  }
+
+  private addTeam() {
+    this.modalAddTeamVisible = true
   }
 }
 </script>

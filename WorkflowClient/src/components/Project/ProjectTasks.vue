@@ -31,8 +31,6 @@ import { Component } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 
 import PageMixin from '@/mixins/page.mixin'
-import Page from '@/components/Page.vue'
-import BaseHeader from '@/components/BaseHeader.vue'
 import TaskToolbar from '@/components/Task/TaskToolbar.vue'
 import TaskTable from '@/components/Task/TaskTable.vue'
 import TaskBoard from '@/components/Task/TaskBoard.vue'
@@ -40,8 +38,6 @@ import { SortType } from '@/types/query.type'
 
 @Component({
   components: {
-    Page,
-    BaseHeader,
     TaskToolbar,
     TaskTable,
     TaskBoard

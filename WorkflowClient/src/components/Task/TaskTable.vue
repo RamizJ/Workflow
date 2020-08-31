@@ -121,6 +121,7 @@ import Task, { Status } from '@/types/task.type'
 
 @Component({ components: { TaskDialog } })
 export default class TaskTable extends mixins(TableMixin) {
+  public data: Task[] = []
   private loading = false
 
   private async loadData($state: StateChanger) {

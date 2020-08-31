@@ -56,12 +56,18 @@
           >
         </li>
         <li>
-          <a v-if="isRowEditable" @click.prevent="deleteEntity(child.data.row)"
+          <a
+            v-if="isRowEditable && !$route.params.teamId"
+            @click.prevent="deleteEntity(child.data.row, isMultipleSelected)"
             >Переместить в корзину</a
           >
         </li>
         <li>
-          <a v-if="!isRowEditable" @click.prevent="restoreEntity(child.data.row)">Восстановить</a>
+          <a
+            v-if="!isRowEditable"
+            @click.prevent="restoreEntity(child.data.row, isMultipleSelected)"
+            >Восстановить</a
+          >
         </li>
       </template>
     </vue-context>
@@ -74,7 +80,7 @@
     <team-add-user-dialog
       v-if="modalAddUserVisible"
       @close="modalAddUserVisible = false"
-      @submit="onUserAdded"
+      @submit="reloadData"
     ></team-add-user-dialog>
   </div>
 </template>
@@ -94,6 +100,7 @@ import Project from '@/types/project.type'
 
 @Component({ components: { UserDialog, TeamAddUserDialog } })
 export default class UserTable extends mixins(TableMixin) {
+  public data: User[] = []
   private loading = false
   private modalAddUserVisible = false
 
@@ -134,7 +141,7 @@ export default class UserTable extends mixins(TableMixin) {
 
   private async removeEntityFromTeam(entity: User) {
     const teamId = parseInt(this.$route.params.teamId)
-    const userId = entity.id!.toString()
+    const userId = entity.id?.toString() || ''
     if (this.isMultipleSelected) {
       const userIds = this.table.selection.map((item: User) => item.id)
       await teamsModule.removeUsers({ teamId, userIds })
@@ -144,10 +151,6 @@ export default class UserTable extends mixins(TableMixin) {
 
   private addUser() {
     this.modalAddUserVisible = true
-  }
-
-  private onUserAdded() {
-    this.reloadData()
   }
 }
 </script>

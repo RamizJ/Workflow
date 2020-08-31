@@ -46,6 +46,12 @@ export const routes = [
     meta: { layout: LayoutDefault }
   },
   {
+    path: '/reports',
+    name: 'Reports',
+    component: () => import('@/views/Reports.vue'),
+    meta: { layout: LayoutDefault }
+  },
+  {
     path: '/settings',
     name: 'Settings',
     component: () => import('@/views/Settings.vue'),
