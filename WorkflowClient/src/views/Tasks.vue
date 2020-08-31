@@ -1,11 +1,11 @@
 <template>
-  <page>
-    <base-header>
-      <template slot="title">Задачи</template>
-      <template slot="action">
+  <div class="page">
+    <div class="header">
+      <div class="header__title">Задачи</div>
+      <div class="header__action">
         <el-button type="text" size="mini" @click="onCreate">Создать</el-button>
-      </template>
-    </base-header>
+      </div>
+    </div>
     <task-toolbar
       @search="onSearch"
       @filters="onFiltersChange"
@@ -22,25 +22,22 @@
       :sort="sort"
     ></task-table>
     <task-board ref="items" v-if="view === 'board'"></task-board>
-  </page>
+  </div>
 </template>
 
 <script lang="ts">
 import { Component } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
-import { SortType } from '@/types/query.type'
+
 import PageMixin from '@/mixins/page.mixin'
-import Page from '@/components/Page.vue'
-import BaseHeader from '@/components/BaseHeader.vue'
 import TaskToolbar from '@/components/Task/TaskToolbar.vue'
 import TaskTable from '@/components/Task/TaskTable.vue'
 import TaskBoard from '@/components/Task/TaskBoard.vue'
 import { View } from '@/types/view.type'
+import { SortType } from '@/types/query.type'
 
 @Component({
   components: {
-    Page,
-    BaseHeader,
     TaskToolbar,
     TaskTable,
     TaskBoard

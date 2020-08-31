@@ -1,4 +1,4 @@
-import { Component, Prop, Vue } from 'vue-property-decorator'
+import { Component, Vue } from 'vue-property-decorator'
 import { ElForm } from 'element-ui/types/form'
 
 import projectsModule from '@/store/modules/projects.module'
@@ -10,7 +10,7 @@ export default class DialogMixin extends Vue {
   public visible = false
   public loading = false
 
-  public get projects() {
+  public get projects(): { value: string | undefined; id: number | undefined }[] {
     return projectsModule.projects.map(project => {
       return {
         value: project.name,
@@ -18,7 +18,7 @@ export default class DialogMixin extends Vue {
       }
     })
   }
-  public get teams() {
+  public get teams(): { value: string | undefined; id: number | undefined }[] {
     return teamsModule.teams.map(team => {
       return {
         value: team.name,
@@ -26,7 +26,7 @@ export default class DialogMixin extends Vue {
       }
     })
   }
-  public get users() {
+  public get users(): { value: string | undefined; id: string | undefined }[] {
     return usersModule.users.map(user => {
       return {
         value: `${user.lastName} ${user.firstName}`,
@@ -35,7 +35,7 @@ export default class DialogMixin extends Vue {
     })
   }
 
-  async searchProjects(query = '') {
+  public async searchProjects(query = ''): Promise<void> {
     await projectsModule.findAll({
       filter: query,
       pageNumber: 0,
@@ -43,7 +43,7 @@ export default class DialogMixin extends Vue {
     })
   }
 
-  async searchTeams(query = '') {
+  public async searchTeams(query = ''): Promise<void> {
     await teamsModule.findAll({
       filter: query,
       pageNumber: 0,
@@ -51,7 +51,7 @@ export default class DialogMixin extends Vue {
     })
   }
 
-  async searchUsers(query = '') {
+  public async searchUsers(query = ''): Promise<void> {
     await usersModule.findAll({
       filter: query,
       pageNumber: 0,
@@ -59,141 +59,9 @@ export default class DialogMixin extends Vue {
     })
   }
 
-  /*async sendForm() {
-    this.loading = true
-    const payload = { ...this.form }
-    // if (this.isEdit) await this.updateItem(payload);
-    // else await this.createItem(payload);
-    this.loading = false
-  }*/
-
-  // public async submit(event: Event) {
-  //   await (this.$refs.form as ElForm).validate(async valid => {
-  //     if (valid) {
-  //       // await this.sendForm()
-  //       this.$emit('submit')
-  //       this.exit()
-  //     } else {
-  //       this.$message({
-  //         showClose: true,
-  //         message: 'Форма заполнена некорректно',
-  //         type: 'error'
-  //       })
-  //     }
-  //   })
-  // }
-
-  exit() {
+  public exit(): void {
     ;(this.$refs.form as ElForm).resetFields()
     this.visible = false
     this.$emit('close')
   }
 }
-
-/*export default {
-  props: {
-    data: Object
-  },
-  data() {
-    return {
-      visible: false,
-      loading: false,
-      isEdit: !!this.data
-    };
-  },
-  async created() {
-    this.visible = true;
-    if (this.isEdit) this.form = { ...this.data };
-  },
-  computed: {
-    ...mapGetters({
-      projects: 'projects/getProjects',
-      teams: 'teams/getTeams',
-      users: 'users/getUsers',
-      me: 'auth/me'
-    }),
-    projectList() {
-      return this.projects.map(project => {
-        return {
-          value: project.name,
-          id: project.id
-        };
-      });
-    },
-    teamList() {
-      return this.teams.map(team => {
-        return {
-          value: team.name,
-          id: team.id
-        };
-      });
-    },
-    userList() {
-      return this.users.map(user => {
-        return {
-          value: `${user.lastName} ${user.firstName}`,
-          id: user.id
-        };
-      });
-    }
-  },
-  methods: {
-    ...mapActions({
-      fetchItem: '',
-      createItem: '',
-      updateItem: '',
-      deleteItem: '',
-      fetchProjects: 'projects/findAll',
-      fetchTeams: 'teams/findAll',
-      fetchUsers: 'users/findAll'
-    }),
-    async searchProjects(query) {
-      await this.fetchProjects({
-        filter: query,
-        pageNumber: 0,
-        pageSize: 10
-      });
-    },
-    async searchTeams(query) {
-      await this.fetchTeams({
-        filter: query,
-        pageNumber: 0,
-        pageSize: 10
-      });
-    },
-    async searchUsers(query) {
-      await this.fetchUsers({
-        filter: query,
-        pageNumber: 0,
-        pageSize: 10
-      });
-    },
-    async sendForm() {
-      this.loading = true;
-      const payload = { ...this.form };
-      if (this.isEdit) await this.updateItem(payload);
-      else await this.createItem(payload);
-      this.loading = false;
-    },
-    async submit(event) {
-      await this.$refs.form.validate(async valid => {
-        if (valid) {
-          await this.sendForm();
-          this.$emit('submit');
-          this.exit();
-        } else {
-          this.$message({
-            showClose: true,
-            message: 'Форма заполнена некорректно',
-            type: 'error'
-          });
-        }
-      });
-    },
-    exit() {
-      this.$refs.form?.resetFields();
-      this.visible = false;
-      this.$emit('close');
-    }
-  }
-};*/

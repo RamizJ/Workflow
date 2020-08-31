@@ -1,4 +1,5 @@
 import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
+import moment from 'moment'
 
 import store from '@/store'
 import tasksAPI from '@/api/tasks.api'
@@ -36,7 +37,7 @@ class TasksModule extends VuexModule {
   @Action({ rawError: true })
   async findAll(query: Query): Promise<Task[]> {
     const response = await tasksAPI.findAll(query)
-    const results = response.data as Task[]
+    const results = (response.data as Task[]).filter(task => !task.parentGoalId)
     this.context.commit('setTasks', results)
     return results
   }
@@ -55,11 +56,13 @@ class TasksModule extends VuexModule {
     const result = response.data as Task
     if (result.parentGoalId)
       result.parent = (await this.context.dispatch('findParent', id)) as Task[]
-    // if (result.isChildsExist)
-    result.childTasks = (await this.context.dispatch('findChild', { id })) as Task[]
-    // if (result.isAttachmentsExist)
-    result.attachments = (await this.context.dispatch('findAttachments', id)) as Attachment[]
-    result.attachments = result.attachments.map(attachment => {
+    if (result.isChildsExist) {
+      const child = (await this.context.dispatch('findChild', { id })) as Task[]
+      result.childTasks = child.sort(this.compare).reverse()
+    }
+    if (result.isAttachmentsExist)
+      result.attachments = (await this.context.dispatch('findAttachments', id)) as Attachment[]
+    result.attachments = result.attachments?.map(attachment => {
       attachment.name = attachment.fileName
       return attachment
     })
@@ -69,29 +72,25 @@ class TasksModule extends VuexModule {
 
   @Action
   async createOne(entity: Task): Promise<Task> {
-    const request = {
-      goal: entity,
-      childGoals: entity.childTasks || []
-    }
+    const response = await tasksAPI.createOne(entity)
+    const createdTask = response.data as Task
+    createdTask.attachments = entity.attachments
 
     if (entity.childTasks?.length) {
-      const updatedTasks: Task[] = []
-      for (const childTask of entity.childTasks) {
-        let updatedTask = childTask
-        if (!childTask.id) updatedTask = await this.context.dispatch('createOne', childTask)
-        if (childTask.isRemoved && childTask.id)
-          await this.context.dispatch('deleteOne', childTask.id)
-        else updatedTasks.push(updatedTask)
+      const child: Task[] = []
+      for (const childTask of entity.childTasks.reverse()) {
+        childTask.parentGoalId = createdTask.id
+        if (childTask.isRemoved) continue
+        const createdChild = await this.context.dispatch('createOne', childTask)
+        child.push(createdChild)
       }
-      await this.context.dispatch('updateMany', updatedTasks)
-      entity.childTasks = updatedTasks
+      const childIds = child.map(task => task.id)
+      await this.context.dispatch('addChild', { id: createdTask.id, childIds })
+      await this.context.dispatch('updateMany', child)
     }
 
-    const response = await tasksAPI.createOne(request)
-    const result = response.data as Task
-    result.attachments = entity.attachments
-    this.context.commit('setTask', result)
-    return result
+    this.context.commit('setTask', createdTask)
+    return createdTask
   }
 
   @Action
@@ -106,24 +105,36 @@ class TasksModule extends VuexModule {
 
   @Action
   async updateOne(entity: Task): Promise<void> {
-    const request = {
-      goal: entity,
-      childGoals: entity.childTasks || []
-    }
+    await tasksAPI.updateOne(entity)
 
     if (entity.childTasks?.length) {
-      const updatedTasks: Task[] = []
-      for (const childTask of entity.childTasks) {
+      const child: Task[] = []
+      for (const childTask of entity.childTasks.reverse()) {
+        childTask.parentGoalId = entity.id
         let updatedTask = childTask
-        if (!childTask.id) updatedTask = await this.context.dispatch('createOne', childTask)
         if (childTask.isRemoved && childTask.id)
           await this.context.dispatch('deleteOne', childTask.id)
-        else updatedTasks.push(updatedTask)
+        if (!childTask.id && !childTask.isRemoved)
+          updatedTask = await this.context.dispatch('createOne', childTask)
+        if (childTask.id && !childTask.isRemoved) child.push(updatedTask)
       }
-      await this.context.dispatch('updateMany', updatedTasks)
-      entity.childTasks = updatedTasks
+      const childIds = child.map(task => task.id)
+      await this.context.dispatch('addChild', { id: entity.id, childIds })
+      await this.context.dispatch('updateMany', child)
     }
-    await tasksAPI.updateOne(request)
+  }
+
+  private compare(taskA: Task, taskB: Task): number {
+    const dateA = moment.utc(taskA.creationDate)
+    const dateB = moment.utc(taskB.creationDate)
+
+    if (dateA < dateB) {
+      return -1
+    }
+    if (dateA > dateB) {
+      return 1
+    }
+    return 0
   }
 
   @Action
@@ -169,12 +180,7 @@ class TasksModule extends VuexModule {
   }
 
   @Action
-  async addChild({ id, entities }: { id: number; entities: Task[] }): Promise<void> {
-    const childIds: number[] = []
-    for (const entity of entities) {
-      const result = await this.context.dispatch('createOne', entity)
-      childIds.push(result.id)
-    }
+  async addChild({ id, childIds }: { id: number; childIds: number[] }): Promise<void> {
     await tasksAPI.addChild(id, childIds)
   }
 

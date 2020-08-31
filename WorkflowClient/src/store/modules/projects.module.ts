@@ -71,7 +71,7 @@ class ProjectsModule extends VuexModule {
       pageSize: 20
     })
     result.teams = projectTeams
-    result.teamIds = projectTeams.map(team => team.id!)
+    result.teamIds = projectTeams.map(team => (team.id ? team.id : -1))
     this.context.commit('setProject', result)
     this.context.commit('setProjectTeams', projectTeams)
     return result
@@ -84,10 +84,10 @@ class ProjectsModule extends VuexModule {
       teamIds: entity.teamIds || []
     }
     const response = await projectsAPI.createOne(request)
-    const result = response.data as { project: Project; teamIds: number[] }
-    result.project.teamIds = result.teamIds
-    this.context.commit('setProject', result.project)
-    return result.project
+    const result = response.data as Project
+    result.teamIds = entity.teamIds
+    this.context.commit('setProject', result)
+    return result
   }
 
   @Action

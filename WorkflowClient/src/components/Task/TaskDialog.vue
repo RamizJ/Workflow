@@ -84,10 +84,10 @@
                 v-model="form.performerId"
                 placeholder="Ответственный"
                 :remote-method="searchUsers"
-                filterable="filterable"
-                remote="remote"
-                clearable="clearable"
-                default-first-option="default-first-option"
+                @blur="searchUsers()"
+                default-first-option
+                filterable
+                remote
               >
                 <el-option
                   v-for="item in users"
@@ -264,18 +264,17 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Ref, Vue } from 'vue-property-decorator'
+import { Component, Prop, Ref } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
-import { ElUpload } from 'element-ui/types/upload'
+import { ElUpload, HttpRequestOptions } from 'element-ui/types/upload'
 import { ElForm } from 'element-ui/types/form'
 import { Input, Message } from 'element-ui'
-import { Route } from 'vue-router'
 import moment from 'moment'
 
 import tasksModule from '@/store/modules/tasks.module'
 import DialogMixin from '@/mixins/dialog.mixin'
 import BaseDialog from '@/components/BaseDialog.vue'
-import Checklist from '@/components/Checklist.vue'
+import Checklist from '@/components/Task/TaskDialogChecklist.vue'
 import Task, { Priority, Status } from '@/types/task.type'
 import Attachment from '@/types/attachment.type'
 
@@ -370,6 +369,7 @@ export default class TaskDialog extends mixins(DialogMixin) {
 
   onChecklistChange(checklist: Task[]) {
     this.form.childTasks = checklist
+    this.$forceUpdate()
   }
 
   validateDate(date: Date) {
@@ -378,7 +378,7 @@ export default class TaskDialog extends mixins(DialogMixin) {
     return date < currentDate
   }
 
-  async uploadAttachment(request: any): Promise<void> {
+  async uploadAttachment(request: HttpRequestOptions): Promise<void> {
     this.loading = true
     const id = this.id || this.form.id
     if (!id) return

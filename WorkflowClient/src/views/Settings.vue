@@ -1,8 +1,8 @@
 <template>
-  <page>
-    <page-header>
-      <template slot="title">Настройки</template>
-    </page-header>
+  <div class="page">
+    <div class="header">
+      <div class="header__title">Настройки</div>
+    </div>
     <el-tabs ref="tabs" v-model="activeTab">
       <el-tab-pane label="Профиль" name="profile">
         <div class="section">
@@ -107,7 +107,7 @@
         <changelog></changelog>
       </el-tab-pane>
     </el-tabs>
-  </page>
+  </div>
 </template>
 
 <script lang="ts">
@@ -115,15 +115,11 @@ import { Component, Vue } from 'vue-property-decorator'
 
 import authModule from '@/store/modules/auth.module'
 import usersModule from '@/store/modules/users.module'
-import Page from '@/components/Page.vue'
-import PageHeader from '@/components/BaseHeader.vue'
-import Changelog from '@/components/Changelog.vue'
+import Changelog from '@/components/Changelog/Changelog.vue'
 import User from '@/types/user.type'
 
 @Component({
   components: {
-    Page,
-    PageHeader,
     Changelog
   }
 })
@@ -161,11 +157,11 @@ export default class SettingsPage extends Vue {
   private confirmDialogClose = localStorage.confirmDialogClose === 'true'
   private debugMode = localStorage.debugMode === 'true'
 
-  private mounted() {
+  private mounted(): void {
     if (authModule.me) this.form = { ...authModule.me } as User
   }
 
-  async updateAccount() {
+  async updateAccount(): Promise<void> {
     if (JSON.stringify(this.form) === JSON.stringify(authModule.me)) {
       this.$message.warning('Внесите правки для сохранения изменений')
       return
@@ -187,7 +183,7 @@ export default class SettingsPage extends Vue {
     }
   }
 
-  async exit() {
+  async exit(): Promise<void> {
     try {
       await authModule.logout()
       await this.$router.push({ name: 'Login' })
@@ -196,21 +192,21 @@ export default class SettingsPage extends Vue {
     }
   }
 
-  switchTheme(appearance: string) {
+  private switchTheme(appearance: string): void {
     localStorage.setItem('theme', appearance)
     document.documentElement.setAttribute('theme', appearance)
     this.appearance = appearance
   }
 
-  switchConfirmDialogClose(value: string) {
+  private switchConfirmDialogClose(value: string): void {
     localStorage.confirmDialogClose = value
   }
 
-  switchDebugMode(value: string) {
+  private switchDebugMode(value: string): void {
     localStorage.debugMode = value
   }
 
-  private validatePassword(rule: any, value: string, callback: any) {
+  private validatePassword(rule: never, value: string, callback: Function): void {
     const length = value?.trim().length
     const symbolsLeft = 6 - length
     if (!value) callback(new Error('!'))

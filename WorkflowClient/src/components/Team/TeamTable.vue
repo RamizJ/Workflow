@@ -53,12 +53,18 @@
           >
         </li>
         <li>
-          <a v-if="isRowEditable" @click.prevent="deleteEntity(child.data.row)"
+          <a
+            v-if="isRowEditable && !$route.params.projectId"
+            @click.prevent="deleteEntity(child.data.row, isMultipleSelected)"
             >Переместить в корзину</a
           >
         </li>
         <li>
-          <a v-if="!isRowEditable" @click.prevent="restoreEntity(child.data.row)">Восстановить</a>
+          <a
+            v-if="!isRowEditable"
+            @click.prevent="restoreEntity(child.data.row, isMultipleSelected)"
+            >Восстановить</a
+          >
         </li>
       </template>
     </vue-context>
@@ -90,6 +96,7 @@ import ProjectAddTeamDialog from '@/components/Project/ProjectAddTeamDialog.vue'
 
 @Component({ components: { ProjectAddTeamDialog, TeamDialog } })
 export default class TeamTable extends mixins(TableMixin) {
+  public data: Team[] = []
   private loading = false
   private modalAddTeamVisible = false
 

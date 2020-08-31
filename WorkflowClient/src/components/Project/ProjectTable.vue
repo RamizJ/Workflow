@@ -40,7 +40,7 @@
           <a v-if="isRowEditable" @click.prevent="onRowDoubleClick(child.data.row)">Открыть</a>
         </li>
         <li><a v-if="isRowEditable" @click.prevent="editEntity(child.data.row)">Изменить</a></li>
-        <el-divider v-if="isRowEditable"></el-divider>
+        <el-divider v-if="isRowEditable && !$route.params.teamId"></el-divider>
         <li>
           <a v-if="isRowEditable && !$route.params.teamId" @click.prevent="createEntity"
             >Новый проект</a
@@ -48,7 +48,9 @@
         </li>
         <el-divider v-if="isRowEditable && !$route.params.teamId"></el-divider>
         <li>
-          <a v-if="isRowEditable" @click.prevent="deleteEntity(child.data.row, isMultipleSelected)"
+          <a
+            v-if="isRowEditable && !$route.params.teamId"
+            @click.prevent="deleteEntity(child.data.row, isMultipleSelected)"
             >Переместить в корзину</a
           >
         </li>
@@ -80,10 +82,10 @@ import TableMixin from '@/mixins/table.mixin'
 import ProjectDialog from '@/components/Project/ProjectDialog.vue'
 import Project from '@/types/project.type'
 import teamsModule from '@/store/modules/teams.module'
-import usersModule from '@/store/modules/users.module'
 
 @Component({ components: { ProjectDialog } })
 export default class ProjectTable extends mixins(TableMixin) {
+  public data: Project[] = []
   private loading = false
 
   private async loadData($state: StateChanger) {

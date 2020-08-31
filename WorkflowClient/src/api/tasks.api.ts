@@ -11,10 +11,8 @@ export default {
       query
     ),
   findAllByIds: (ids: number[]) => httpClient.get(`/api/Goals/GetRange?${qs.stringify(ids)}`),
-  createOne: (request: { goal: Task; childGoals: Task[] }) =>
-    httpClient.post(`/api/Goals/CreateByForm`, request),
-  updateOne: (request: { goal: Task; childGoals: Task[] }) =>
-    httpClient.put(`/api/Goals/UpdateByForm`, request),
+  createOne: (entity: Task) => httpClient.post(`/api/Goals/Create`, entity),
+  updateOne: (entity: Task) => httpClient.put(`/api/Goals/Update`, entity),
   updateMany: (entities: Task[]) => httpClient.put(`/api/Goals/UpdateRange`, entities),
   deleteOne: (id: number) => httpClient.delete(`/api/Goals/Delete/${id}`),
   deleteMany: (ids: number[]) => httpClient.patch(`/api/Goals/DeleteRange`, ids),
@@ -26,16 +24,16 @@ export default {
   addChild: (parentId: number, childIds: number[]) =>
     httpClient.patch(`/api/Goals/AddChildGoals/${parentId}`, childIds),
   findAttachments: (taskId: number) => httpClient.get(`/api/Goals/GetAttachments/${taskId}`),
-  uploadAttachments: (taskId: number, files: any) =>
+  uploadAttachments: (taskId: number, files: FormData) =>
     httpClient.patch(`/api/Goals/AddAttachments/${taskId}`, files, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     }),
-  downloadAttachment: (attachmentId: any) =>
+  downloadAttachment: (attachmentId: number) =>
     httpClient.get(`/api/Goals/DownloadAttachmentFile/${attachmentId}`, {
       responseType: 'blob'
     }),
-  removeAttachments: (attachmentIds: any) =>
+  removeAttachments: (attachmentIds: number[]) =>
     httpClient.patch(`/api/Goals/RemoveAttachments`, attachmentIds)
 }

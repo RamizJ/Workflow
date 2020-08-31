@@ -21,6 +21,63 @@ a {
   }
 }
 
+.page {
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  padding: 0 30px 20px;
+  height: 100vh;
+  width: 100%;
+  flex-direction: column;
+  .header {
+    padding: 25px 0 25px;
+    display: flex;
+    align-items: flex-start;
+    &__title {
+      cursor: default;
+      display: flex;
+      align-items: baseline;
+      font-size: 28px;
+      line-height: 34px;
+      font-weight: 800;
+    }
+    &__subtitle > * {
+      margin-top: 10px;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    &__action {
+      margin-left: 6px;
+      height: 29px;
+      display: inline-flex;
+      align-items: flex-end;
+      .el-button--text {
+        padding: 0;
+      }
+      i {
+        color: var(--text);
+        padding: 0;
+        vertical-align: text-bottom;
+      }
+    }
+    input {
+      border: none;
+      padding: 0;
+      color: var(--text);
+      background-color: var(--background);
+      &.title {
+        font-size: 28px;
+        font-weight: 800;
+        height: auto;
+      }
+      &.subtitle {
+        font-size: 14px;
+        font-weight: 400;
+      }
+    }
+  }
+}
+
 .el-dialog {
   width: 46%;
   border-color: var(--card-border);
@@ -91,7 +148,7 @@ a {
   height: 33px;
   line-height: 33px;
   font-size: 13px;
-  padding: 0 15px;
+  padding: 0 27px 0 15px;
   margin: 0 6px;
   color: var(--text);
   border-radius: 6px;
@@ -119,6 +176,9 @@ a {
   .el-button {
     //color: white;
   }
+}
+.el-select-dropdown.is-multiple .el-select-dropdown__item.selected::after {
+  right: 10px;
 }
 
 .el-select-dropdown.is-multiple .el-select-dropdown__item.selected {
@@ -393,4 +453,10 @@ a {
   font-weight: 500;
   font-size: 12.5px !important;
   color: var(--text-placeholder);
+}
+
+.el-tag, .el-tag.el-tag--info {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

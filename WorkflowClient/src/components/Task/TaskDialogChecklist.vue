@@ -16,7 +16,8 @@
         <el-input
           v-model="checklist[index].title"
           @keyup.delete.native="onDelete(index)"
-          @change="onChange(index)"
+          @change="onChange"
+          @blur="onBlur(index)"
         ></el-input>
       </div>
     </div>
@@ -36,12 +37,10 @@ export default class Checklist extends Vue {
   @Watch('task', { deep: true })
   onItemsChange(task: Task) {
     if (!task.childTasks) return
-    this.checklist = task.childTasks
-      .map(task => {
-        task.completed = task.state === 'Succeed'
-        return task
-      })
-      .reverse()
+    this.checklist = task.childTasks.map(task => {
+      task.completed = task.state === 'Succeed'
+      return task
+    })
   }
 
   private input = ''
@@ -49,19 +48,23 @@ export default class Checklist extends Vue {
 
   private async mounted() {
     if (!this.task.childTasks) return
-    this.checklist = this.task.childTasks
-      .map(task => {
-        task.completed = task.state === 'Succeed'
-        return task
-      })
-      .reverse()
+    this.checklist = this.task.childTasks.map(task => {
+      task.completed = task.state === 'Succeed'
+      return task
+    })
   }
 
-  private async onChange(index: number) {
+  private onChange() {
     this.$emit('change', this.checklist)
   }
 
-  private async onAdd(): Promise<void> {
+  private onBlur(index: number) {
+    const entity = this.checklist[index]
+    if (!entity.title) entity.isRemoved = true
+    this.$forceUpdate()
+  }
+
+  private onAdd(): void {
     if (!this.input) return
     const entity: Task = {
       title: this.input,
@@ -71,20 +74,21 @@ export default class Checklist extends Vue {
       parentGoalId: this.task.id,
       completed: false
     }
-    this.checklist.push(entity)
+    this.checklist.unshift(entity)
     this.input = ''
     this.$emit('change', this.checklist)
   }
 
-  private async onCheck(index: number): Promise<void> {
+  private onCheck(index: number): void {
     this.checklist[index].state = this.checklist[index].completed ? Status.Succeed : Status.New
     this.$emit('change', this.checklist)
   }
 
-  private async onDelete(index: number): Promise<void> {
+  private onDelete(index: number): void {
     const entity = this.checklist[index]
     if (entity.title === undefined) {
       this.checklist[index].isRemoved = true
+      this.$forceUpdate()
       this.$emit('change', this.checklist)
     }
     if (entity && entity.title === '') entity.title = undefined

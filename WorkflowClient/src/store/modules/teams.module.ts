@@ -72,18 +72,8 @@ class TeamsModule extends VuexModule {
   async findOneById(id: number): Promise<Team> {
     const response = await teamsAPI.findOneById(id)
     const result = response.data as Team
-    const teamUsers = await this.context.dispatch('findUsers', {
-      teamId: id,
-      pageNumber: 0,
-      pageSize: 20
-    })
-    const teamProjects = await this.context.dispatch('findProjects', {
-      teamId: id,
-      pageNumber: 0,
-      pageSize: 20
-    })
-    result.userIds = teamUsers.map(user => user.id)
-    result.projectIds = teamProjects.map(project => project.id)
+    result.userIds = []
+    result.projectIds = []
     this.context.commit('setTeam', result)
     return result
   }
