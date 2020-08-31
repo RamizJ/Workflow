@@ -168,8 +168,6 @@ import DialogMixin from '@/mixins/dialog.mixin'
 import BaseDialog from '@/components/BaseDialog.vue'
 import Team from '@/types/team.type'
 import Query from '@/types/query.type'
-import usersModule from '@/store/modules/users.module'
-import projectsModule from '@/store/modules/projects.module'
 
 @Component({ components: { BaseDialog } })
 export default class TeamDialog extends mixins(DialogMixin) {

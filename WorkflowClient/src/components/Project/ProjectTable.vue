@@ -82,7 +82,6 @@ import TableMixin from '@/mixins/table.mixin'
 import ProjectDialog from '@/components/Project/ProjectDialog.vue'
 import Project from '@/types/project.type'
 import teamsModule from '@/store/modules/teams.module'
-import usersModule from '@/store/modules/users.module'
 
 @Component({ components: { ProjectDialog } })
 export default class ProjectTable extends mixins(TableMixin) {

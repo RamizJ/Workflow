@@ -76,11 +76,9 @@ class TasksModule extends VuexModule {
     const createdTask = response.data as Task
     createdTask.attachments = entity.attachments
 
-    const hasChild = !!entity.childTasks?.length
-
-    if (hasChild) {
+    if (entity.childTasks?.length) {
       const child: Task[] = []
-      for (const childTask of entity.childTasks!.reverse()) {
+      for (const childTask of entity.childTasks.reverse()) {
         childTask.parentGoalId = createdTask.id
         if (childTask.isRemoved) continue
         const createdChild = await this.context.dispatch('createOne', childTask)
@@ -109,11 +107,9 @@ class TasksModule extends VuexModule {
   async updateOne(entity: Task): Promise<void> {
     await tasksAPI.updateOne(entity)
 
-    const hasChild = !!(entity.childTasks && entity.childTasks.length)
-
-    if (hasChild) {
+    if (entity.childTasks?.length) {
       const child: Task[] = []
-      for (const childTask of entity.childTasks!.reverse()) {
+      for (const childTask of entity.childTasks.reverse()) {
         childTask.parentGoalId = entity.id
         let updatedTask = childTask
         if (childTask.isRemoved && childTask.id)

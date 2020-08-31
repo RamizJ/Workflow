@@ -1,6 +1,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 import { FilterField, SortType } from '@/types/query.type'
 import { View } from '@/types/view.type'
+import { Dictionary } from 'vue-router/types/router'
 
 @Component
 export default class PageMixin extends Vue {
@@ -10,7 +11,7 @@ export default class PageMixin extends Vue {
   public sort: string = (this.$route.query.sort as string) || ''
   public view: View = (this.$route.query.view as View) || View.List
 
-  public onFiltersChange(value: FilterField[]) {
+  public onFiltersChange(value: FilterField[]): void {
     this.filters = value
   }
 
@@ -35,7 +36,9 @@ export default class PageMixin extends Vue {
   }
 
   private async updateUrl(queryLabel: string, queryValue: string): Promise<void> {
-    const query: any = { ...this.$route.query }
+    const query: Dictionary<string | (string | null)[] | null | undefined> | undefined = {
+      ...this.$route.query
+    }
     if (query[queryLabel] !== queryValue) {
       query[queryLabel] = queryValue || undefined
       await this.$router.replace({ query })

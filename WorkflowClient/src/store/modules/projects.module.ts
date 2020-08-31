@@ -71,7 +71,7 @@ class ProjectsModule extends VuexModule {
       pageSize: 20
     })
     result.teams = projectTeams
-    result.teamIds = projectTeams.map(team => team.id!)
+    result.teamIds = projectTeams.map(team => (team.id ? team.id : -1))
     this.context.commit('setProject', result)
     this.context.commit('setProjectTeams', projectTeams)
     return result

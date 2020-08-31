@@ -1,4 +1,4 @@
-import { Component, Prop, Vue } from 'vue-property-decorator'
+import { Component, Vue } from 'vue-property-decorator'
 import { ElForm } from 'element-ui/types/form'
 
 import projectsModule from '@/store/modules/projects.module'
@@ -10,7 +10,7 @@ export default class DialogMixin extends Vue {
   public visible = false
   public loading = false
 
-  public get projects() {
+  public get projects(): { value: string; id: number | undefined }[] {
     return projectsModule.projects.map(project => {
       return {
         value: project.name,
@@ -18,7 +18,7 @@ export default class DialogMixin extends Vue {
       }
     })
   }
-  public get teams() {
+  public get teams(): { value: string; id: number | undefined }[] {
     return teamsModule.teams.map(team => {
       return {
         value: team.name,
@@ -26,7 +26,7 @@ export default class DialogMixin extends Vue {
       }
     })
   }
-  public get users() {
+  public get users(): { value: string; id: string | undefined }[] {
     return usersModule.users.map(user => {
       return {
         value: `${user.lastName} ${user.firstName}`,
@@ -35,7 +35,7 @@ export default class DialogMixin extends Vue {
     })
   }
 
-  async searchProjects(query = '') {
+  public async searchProjects(query = ''): Promise<void> {
     await projectsModule.findAll({
       filter: query,
       pageNumber: 0,
@@ -43,7 +43,7 @@ export default class DialogMixin extends Vue {
     })
   }
 
-  async searchTeams(query = '') {
+  public async searchTeams(query = ''): Promise<void> {
     await teamsModule.findAll({
       filter: query,
       pageNumber: 0,
@@ -51,7 +51,7 @@ export default class DialogMixin extends Vue {
     })
   }
 
-  async searchUsers(query = '') {
+  public async searchUsers(query = ''): Promise<void> {
     await usersModule.findAll({
       filter: query,
       pageNumber: 0,
@@ -59,7 +59,7 @@ export default class DialogMixin extends Vue {
     })
   }
 
-  exit() {
+  public exit(): void {
     ;(this.$refs.form as ElForm).resetFields()
     this.visible = false
     this.$emit('close')

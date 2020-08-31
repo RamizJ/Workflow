@@ -106,12 +106,12 @@ export default class TeamPage extends Vue {
     const query = { ...this.$route.query }
     query.tab = query.tab?.toString() || this.activeTab
     this.activeTab = query.tab
-    if (JSON.stringify(query) !== JSON.stringify(this.$route.query)) this.$router.push({ query })
+    if (JSON.stringify(query) !== JSON.stringify(this.$route.query)) this.$router.replace({ query })
   }
 
   setTab() {
     const query = { tab: this.activeTab }
-    if (JSON.stringify(query) !== JSON.stringify(this.$route.query)) this.$router.push({ query })
+    if (JSON.stringify(query) !== JSON.stringify(this.$route.query)) this.$router.replace({ query })
   }
 
   async onUserAdd() {

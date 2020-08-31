@@ -157,11 +157,11 @@ export default class SettingsPage extends Vue {
   private confirmDialogClose = localStorage.confirmDialogClose === 'true'
   private debugMode = localStorage.debugMode === 'true'
 
-  private mounted() {
+  private mounted(): void {
     if (authModule.me) this.form = { ...authModule.me } as User
   }
 
-  async updateAccount() {
+  async updateAccount(): Promise<void> {
     if (JSON.stringify(this.form) === JSON.stringify(authModule.me)) {
       this.$message.warning('Внесите правки для сохранения изменений')
       return
@@ -183,7 +183,7 @@ export default class SettingsPage extends Vue {
     }
   }
 
-  async exit() {
+  async exit(): Promise<void> {
     try {
       await authModule.logout()
       await this.$router.push({ name: 'Login' })
@@ -192,21 +192,21 @@ export default class SettingsPage extends Vue {
     }
   }
 
-  switchTheme(appearance: string) {
+  private switchTheme(appearance: string): void {
     localStorage.setItem('theme', appearance)
     document.documentElement.setAttribute('theme', appearance)
     this.appearance = appearance
   }
 
-  switchConfirmDialogClose(value: string) {
+  private switchConfirmDialogClose(value: string): void {
     localStorage.confirmDialogClose = value
   }
 
-  switchDebugMode(value: string) {
+  private switchDebugMode(value: string): void {
     localStorage.debugMode = value
   }
 
-  private validatePassword(rule: any, value: string, callback: any) {
+  private validatePassword(rule: never, value: string, callback: Function): void {
     const length = value?.trim().length
     const symbolsLeft = 6 - length
     if (!value) callback(new Error('!'))

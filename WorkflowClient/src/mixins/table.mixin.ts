@@ -8,6 +8,7 @@ import Query, { FilterField, SortType } from '@/types/query.type'
 import Project from '@/types/project.type'
 import User from '@/types/user.type'
 import Team from '@/types/team.type'
+import { ElTable } from 'element-ui/types/table'
 
 @Component
 export default class TableMixin extends Vue {

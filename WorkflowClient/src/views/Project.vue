@@ -120,13 +120,13 @@ export default class ProjectPage extends Vue {
     const query = { ...this.$route.query }
     query.tab = query.tab?.toString() || this.activeTab
     this.activeTab = query.tab
-    if (JSON.stringify(query) !== JSON.stringify(this.$route.query)) this.$router.push({ query })
+    if (JSON.stringify(query) !== JSON.stringify(this.$route.query)) this.$router.replace({ query })
   }
 
   setTab() {
     const query = { tab: this.activeTab }
     if (JSON.stringify({ tab: '' }) !== JSON.stringify(this.$route.query))
-      this.$router.push({ query })
+      this.$router.replace({ query })
   }
 
   async editEntity() {
@@ -135,7 +135,7 @@ export default class ProjectPage extends Vue {
 
   async deleteEntity() {
     await projectsModule.deleteOne(this.id)
-    await this.$router.push({ name: 'Project' })
+    await this.$router.replace({ name: 'Project' })
   }
 
   async updateEntity() {

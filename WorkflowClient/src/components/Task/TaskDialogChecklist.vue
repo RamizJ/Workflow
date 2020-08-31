@@ -29,7 +29,6 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 
 import Task, { Status } from '@/types/task.type'
 import moment from 'moment'
-import en from 'element-ui/src/locale/lang/en'
 
 @Component
 export default class Checklist extends Vue {

@@ -264,12 +264,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Ref, Vue } from 'vue-property-decorator'
+import { Component, Prop, Ref } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 import { ElUpload } from 'element-ui/types/upload'
 import { ElForm } from 'element-ui/types/form'
 import { Input, Message } from 'element-ui'
-import { Route } from 'vue-router'
 import moment from 'moment'
 
 import tasksModule from '@/store/modules/tasks.module'
