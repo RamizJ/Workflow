@@ -143,9 +143,9 @@ export default class ToolbarMixin extends Vue {
   private fixSearchableDropdown(): void {
     document.querySelectorAll('.el-select.remote').forEach(element => {
       const dropdownElement = element as HTMLElement
-      const arrow = element.children[1].children[1]
+      const arrow = element.children[1].children[1] as HTMLSpanElement
       arrow.addEventListener('click', function() {
-        // this.click();
+        arrow.click()
         dropdownElement.click()
       })
     })
