@@ -30,9 +30,6 @@
       <el-menu-item index="/users">
         <feather type="user"></feather><span>Пользователи</span>
       </el-menu-item>
-      <el-menu-item index="/reports">
-        <feather type="file-text"></feather><span>Отчёты</span>
-      </el-menu-item>
 
       <div class="divider"></div>
 

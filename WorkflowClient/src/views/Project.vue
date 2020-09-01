@@ -45,6 +45,9 @@
       <el-tab-pane name="team" label="Команды">
         <project-teams ref="projectTeams" v-if="activeTab === 'team'"></project-teams>
       </el-tab-pane>
+      <el-tab-pane name="reports" label="Отчёты">
+        <project-reports ref="projectReports" v-if="activeTab === 'reports'" />
+      </el-tab-pane>
     </el-tabs>
 
     <project-dialog
@@ -68,6 +71,7 @@ import projectsModule from '@/store/modules/projects.module'
 import ProjectOverview from '@/components/Project/ProjectOverview.vue'
 import ProjectTasks from '@/components/Project/ProjectTasks.vue'
 import ProjectTeams from '@/components/Project/ProjectTeams.vue'
+import ProjectReports from '@/components/Project/ProjectReports.vue'
 import ProjectDialog from '@/components/Project/ProjectDialog.vue'
 import ProjectAddTeamDialog from '@/components/Project/ProjectAddTeamDialog.vue'
 import TaskDialog from '@/components/Task/TaskDialog.vue'
@@ -78,8 +82,9 @@ import TeamTable from '@/components/Team/TeamTable.vue'
 @Component({
   components: {
     ProjectOverview,
-    ProjectTeams,
     ProjectTasks,
+    ProjectTeams,
+    ProjectReports,
     ProjectDialog,
     ProjectAddTeamDialog,
     TaskDialog
@@ -89,12 +94,6 @@ export default class ProjectPage extends Vue {
   private loading = true
   private searchQuery = ''
   private activeTab = 'overview'
-  private tabs = [
-    { value: 'overview', label: 'Общее' },
-    { value: 'tasks', label: 'Задачи' },
-    { value: 'team', label: 'Команда' },
-    { value: 'history', label: 'История' }
-  ]
   private projectItem: Project = {
     name: '',
     description: '',
