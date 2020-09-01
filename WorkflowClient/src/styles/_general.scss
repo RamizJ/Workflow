@@ -85,7 +85,7 @@ a {
 }
 .el-message-box {
   padding: 16px;
-  border-radius: 10px;
+  border-radius: 6px;
   border: none;
   background-color: var(--card-background);
   box-shadow: 0 1px 3px rgba(0,0,0,.3);
@@ -104,7 +104,7 @@ a {
 .el-popover, .el-popper {
   outline: none;
   border-width: 0;
-  border-radius: 8px;
+  border-radius: 5px;
   border-color: var(--popover-border);
   box-shadow: var(--dropdown-shadow);
   background-color: var(--popover-background);
@@ -140,7 +140,7 @@ a {
 .el-select-dropdown__list,
 .el-dropdown-menu {
   padding: 6px 0;
-  border-radius: 7px;
+  border-radius: 5px;
   border: none;
 }
 .el-select-dropdown__item,
@@ -151,7 +151,7 @@ a {
   padding: 0 27px 0 15px;
   margin: 0 6px;
   color: var(--text);
-  border-radius: 6px;
+  border-radius: 4px;
   .el-button {
     font-size: 13px;
     padding: 10px 0;
@@ -231,7 +231,7 @@ a {
 }
 
 .el-button {
-  border-radius: 6px;
+  border-radius: 5px;
 }
 .el-button--default {
   color: var(--text);
@@ -256,7 +256,7 @@ a {
   color: var(--text);
   background-color: var(--input-background);
   border-color: var(--input-border);
-  border-radius: 8px;
+  border-radius: 5px;
   transition: background-color .25s, border-color .25s;
   &:hover:not(:focus) {
     background-color: var(--input-hover-background);

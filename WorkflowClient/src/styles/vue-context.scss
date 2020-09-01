@@ -5,7 +5,7 @@
     background: var(--dropdown-background);
     padding: 6px 0;
     border: none;
-    border-radius: 7px;
+    border-radius: 5px;
     box-shadow: var(--dropdown-shadow);
     overflow-y: unset;
     > li a {
@@ -13,7 +13,7 @@
       margin: 0 6px;
       font-size: 13px;
       cursor: pointer;
-      border-radius: 6px;
+      border-radius: 4px;
       transition: background-color 0.05s;
       color: var(--text);
       &:hover {

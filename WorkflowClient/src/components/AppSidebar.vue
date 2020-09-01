@@ -22,7 +22,7 @@
         <feather type="list"></feather><span>Задачи</span>
       </el-menu-item>
       <el-menu-item index="/projects">
-        <feather type="layers"></feather><span>Проекты</span>
+        <feather type="copy"></feather><span>Проекты</span>
       </el-menu-item>
       <el-menu-item index="/teams">
         <feather type="users"></feather><span>Команды</span>
@@ -74,21 +74,21 @@ export default class AppSidebar extends Vue {}
 .el-submenu__title {
   color: var(--sidebar-text);
   height: auto;
-  line-height: 40px;
+  line-height: 38px;
   font-size: 14px;
   font-weight: 400;
   letter-spacing: 0.1px;
   padding: 0 8px !important;
   margin: 4px 0;
-  border-radius: 10px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   z-index: 1;
   transition: background-color 0.25s, color 0.25s;
   i {
-    height: 14px;
-    margin-right: 12px;
-    margin-left: 8px;
+    width: 13px;
+    margin-right: 10px;
+    margin-left: 6px;
     overflow: unset;
   }
   &:focus {
@@ -117,7 +117,7 @@ export default class AppSidebar extends Vue {}
 .el-menu-item i {
   color: var(--sidebar-text);
   opacity: 0.85;
-  margin-bottom: 1px;
+  //margin-bottom: 0.5px;
 }
 .el-menu--collapse {
   width: var(--header-height);
