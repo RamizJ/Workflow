@@ -98,7 +98,7 @@ export default class BaseDialog extends Vue {
 
 <style lang="scss">
 .base-dialog {
-  border-radius: 12px !important;
+  border-radius: 6px !important;
   border-width: var(--border-width);
   border-color: var(--card-border);
   background-color: var(--card-background);
