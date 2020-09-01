@@ -1,7 +1,7 @@
 <template>
-  <el-card class="card" shadow="never" v-if="!loading">
+  <el-card class="card" shadow="never" v-loading="loading">
     <div class="card__title">Статистика по дням (в разработке)</div>
-    <chart-line :data="chartPieData" :options="chartPieOptions" />
+    <chart-line v-if="!loading" :data="chartPieData" :options="chartPieOptions" />
   </el-card>
 </template>
 
@@ -20,7 +20,6 @@ export default class ReportDailyStatistics extends Vue {
     this.loading = true
     const projectId = parseInt(this.$route.params.projectId)
     if (!projectId) return
-    const data: number[] = []
     this.loading = false
   }
 }

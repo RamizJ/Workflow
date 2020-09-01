@@ -1,7 +1,7 @@
 <template>
-  <el-card class="card" shadow="never" v-if="!loading">
+  <el-card class="card" shadow="never" v-loading="loading">
     <div class="card__title">Обзор задач</div>
-    <chart-doughnut :data="chartPieData" :options="chartPieOptions" />
+    <chart-doughnut v-if="!loading" :data="chartPieData" :options="chartPieOptions" />
   </el-card>
 </template>
 
@@ -98,6 +98,8 @@ export default class ReportTasksOverview extends Vue {
 
 <style lang="scss" scoped>
 .card {
+  min-width: 350px;
+  min-height: 350px;
   &__title {
     cursor: default;
     color: var(--text);
