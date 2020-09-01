@@ -20,7 +20,7 @@
           <div class="card__title">Задач выполнено</div>
           <div class="card__body">
             <div class="tasks-stats">{{ completedTasksCount }} из {{ totalTasksCount }}</div>
-            <el-progress :percentage="progressPercentage"></el-progress>
+            <el-progress :percentage="progressPercentage || 0"></el-progress>
           </div>
         </el-card>
       </el-col>
@@ -61,7 +61,8 @@ export default class ProjectOverview extends Vue {
     const total: number = this.totalTasksCount
     const completed: number = this.completedTasksCount
     const result = Math.round((completed * 100) / total)
-    return result || 0
+    if (result > 100) return 100
+    else return result || 0
   }
 
   private async mounted() {
@@ -83,9 +84,12 @@ export default class ProjectOverview extends Vue {
 }
 .card {
   &__title {
-    font-size: 15px;
-    font-weight: 600;
+    cursor: default;
     color: var(--text);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
   }
   &__body {
     padding-top: 14px;

@@ -99,6 +99,7 @@ export default class ReportTasksOverview extends Vue {
 <style lang="scss" scoped>
 .card {
   &__title {
+    cursor: default;
     color: var(--text);
     font-size: 12px;
     font-weight: 600;
