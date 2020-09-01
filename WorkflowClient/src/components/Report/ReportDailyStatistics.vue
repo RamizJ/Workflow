@@ -29,6 +29,7 @@ export default class ReportDailyStatistics extends Vue {
 <style lang="scss" scoped>
 .card {
   &__title {
+    color: var(--text);
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.3px;
