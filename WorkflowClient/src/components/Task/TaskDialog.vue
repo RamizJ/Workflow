@@ -87,6 +87,7 @@
                 @blur="searchUsers()"
                 default-first-option
                 filterable
+                clearable
                 remote
               >
                 <el-option

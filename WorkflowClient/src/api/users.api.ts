@@ -4,9 +4,9 @@ import Query from '@/types/query.type'
 import User from '@/types/user.type'
 
 export default {
-  findOneById: (id: string) => http.get(`/api/Users/Get/${id}`),
   findAll: (query: Query) => http.post(`/api/Users/GetPage`, query),
   findAllByIds: (ids: string[]) => http.get(`/api/Users/GetRange?${qs.stringify(ids)}`),
+  findOneById: (id: string) => http.get(`/api/Users/Get/${id}`),
   createOne: (entity: User) => http.post(`/api/Users/Create`, entity),
   updateOne: (entity: User) => http.put(`/api/Users/Update`, entity),
   updateMany: (entities: User[]) => http.put(`/api/Users/UpdateRange`, entities),

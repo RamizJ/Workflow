@@ -4,9 +4,9 @@ import Query from '@/types/query.type'
 import Team from '@/types/team.type'
 
 export default {
-  findOneById: (id: number) => http.get(`/api/Teams/Get/${id}`),
   findAll: (query: Query) => http.post(`/api/Teams/GetPage`, query),
   findAllByIds: (ids: number[]) => http.get(`/api/Teams/GetRange?${qs.stringify(ids)}`),
+  findOneById: (id: number) => http.get(`/api/Teams/Get/${id}`),
   createOne: (request: { team: Team; userIds: string[]; projectIds: number[] }) =>
     http.post(`/api/Teams/CreateByForm`, request),
   updateOne: (request: { team: Team; userIds: string[]; projectIds: number[] }) =>

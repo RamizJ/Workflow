@@ -4,10 +4,10 @@ import Query from '@/types/query.type'
 import Task from '@/types/task.type'
 
 export default {
-  findOneById: (id: number) => http.get(`/api/Goals/Get/${id}`),
   findAll: (query: Query) =>
     http.post(`/api/Goals/GetPage${query.projectId ? '?projectId=' + query.projectId : ''}`, query),
   findAllByIds: (ids: number[]) => http.get(`/api/Goals/GetRange?${qs.stringify(ids)}`),
+  findOneById: (id: number) => http.get(`/api/Goals/Get/${id}`),
   createOne: (entity: Task) => http.post(`/api/Goals/Create`, entity),
   updateOne: (entity: Task) => http.put(`/api/Goals/Update`, entity),
   updateMany: (entities: Task[]) => http.put(`/api/Goals/UpdateRange`, entities),

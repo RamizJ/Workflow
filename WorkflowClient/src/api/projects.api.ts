@@ -4,9 +4,9 @@ import Query from '@/types/query.type'
 import Project from '@/types/project.type'
 
 export default {
-  findOneById: (id: number) => http.get(`/api/Projects/Get/${id}`),
   findAll: (query: Query) => http.post(`/api/Projects/GetPage`, query),
   findAllByIds: (ids: number[]) => http.get(`/api/Projects/GetRange?${qs.stringify(ids)}`),
+  findOneById: (id: number) => http.get(`/api/Projects/Get/${id}`),
   createOne: (request: { project: Project; teamIds: number[] }) =>
     http.post(`/api/Projects/CreateByForm`, request),
   updateOne: (request: { project: Project; teamIds: number[] }) =>
