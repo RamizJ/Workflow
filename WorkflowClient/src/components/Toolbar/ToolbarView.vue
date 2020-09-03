@@ -62,17 +62,17 @@ export default class ToolbarView extends Vue {
   private sort = this.$route.query.sort || ''
   private view = (this.$route.query.view as View) || View.List
 
-  private onOrderChange() {
+  private onOrderChange(): void {
     const value = this.order === SortType.Ascending ? SortType.Descending : SortType.Ascending
     this.order = value
     this.$emit('order', value)
   }
 
-  private onSortChange(value: string) {
+  private onSortChange(value: string): void {
     this.$emit('sort', value)
   }
 
-  private onViewChange(value: string) {
+  private onViewChange(value: string): void {
     this.view = value as View
     this.$emit('view', value)
   }

@@ -55,12 +55,12 @@
 <script lang="ts">
 import { Component } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
+import { Input } from 'element-ui'
 
 import teamsModule from '@/store/modules/teams.module'
 import DialogMixin from '@/mixins/dialog.mixin'
 import BaseDialog from '@/components/BaseDialog.vue'
 import Query from '@/types/query.type'
-import { Input } from 'element-ui'
 
 @Component({ components: { BaseDialog } })
 export default class TeamAddUserDialog extends mixins(DialogMixin) {
@@ -68,15 +68,18 @@ export default class TeamAddUserDialog extends mixins(DialogMixin) {
     userId: ''
   }
 
-  private get usersToAdd() {
+  private get usersToAdd(): { value: string | undefined; id: string | undefined }[] {
     const allUsers = this.users
     const existingUsers = this.existingUsers
     return allUsers.filter(user => {
-      return !existingUsers.find((existingUser: any) => existingUser.id === user.id)
+      return !existingUsers.find(
+        (existingUser: { value: string | undefined; id: string | undefined }) =>
+          existingUser.id === user.id
+      )
     })
   }
-  private get existingUsers() {
-    return teamsModule.teamUsers.map((user: any) => {
+  private get existingUsers(): { value: string | undefined; id: string | undefined }[] {
+    return teamsModule.teamUsers.map(user => {
       return {
         value: `${user.lastName} ${user.firstName}`,
         id: user.id
@@ -84,9 +87,8 @@ export default class TeamAddUserDialog extends mixins(DialogMixin) {
     })
   }
 
-  private async mounted() {
+  protected async mounted(): Promise<void> {
     this.visible = true
-
     await this.searchUsers()
     await teamsModule.findUsers({
       teamId: parseInt(this.$route.params.teamId),
@@ -96,7 +98,7 @@ export default class TeamAddUserDialog extends mixins(DialogMixin) {
     setTimeout(() => (this.$refs.input as Input).focus(), 150)
   }
 
-  public async submit() {
+  public async submit(): Promise<void> {
     const teamId = parseInt(this.$route.params.teamId)
     const userId = this.form.userId.trim()
     if (userId) {

@@ -39,7 +39,7 @@ import { SortType } from '@/types/query.type'
   }
 })
 export default class ProjectsPage extends mixins(PageMixin) {
-  private created() {
+  protected mounted() {
     if (!this.$route.query.sort) this.onSortChange('creationDate')
     if (!this.$route.query.order) this.onOrderChange(SortType.Descending)
   }

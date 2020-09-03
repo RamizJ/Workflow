@@ -1,4 +1,4 @@
-export default interface Query {
+export default class Query {
   pageNumber?: number
   pageSize?: number
   filter?: string

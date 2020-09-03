@@ -141,9 +141,8 @@ export default class ProjectDialog extends mixins(DialogMixin) {
   private descriptionVisible = null
   private teamsVisible = null
 
-  private async mounted() {
+  protected async mounted(): Promise<void> {
     this.visible = true
-
     this.loading = true
     if (this.id) {
       const id: number = parseInt(this.id.toString())
@@ -161,7 +160,7 @@ export default class ProjectDialog extends mixins(DialogMixin) {
     this.loading = false
   }
 
-  async submit() {
+  private async submit(): Promise<void> {
     const form = this.$refs.form as ElForm
     await form.validate(async valid => {
       if (valid) {
@@ -178,7 +177,7 @@ export default class ProjectDialog extends mixins(DialogMixin) {
     })
   }
 
-  async sendForm() {
+  private async sendForm(): Promise<void> {
     this.loading = true
     const entity: Project = { ...this.form } as Project
     if (this.isEdit) await projectsModule.updateOne(entity)

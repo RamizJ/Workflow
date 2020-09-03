@@ -88,7 +88,7 @@ export default class ProjectTable extends mixins(TableMixin) {
   public data: Project[] = []
   private loading = false
 
-  private async loadData($state: StateChanger) {
+  private async loadData($state: StateChanger): Promise<void> {
     const isFirstLoad = !this.data.length
     this.loading = isFirstLoad
     let data: Project[]
@@ -101,31 +101,31 @@ export default class ProjectTable extends mixins(TableMixin) {
     this.loading = false
   }
 
-  public createEntity() {
+  public createEntity(): void {
     this.modalData = undefined
     this.modalVisible = true
   }
 
-  public editEntity(entity: Project) {
+  public editEntity(entity: Project): void {
     this.modalData = entity.id
     this.modalVisible = true
   }
 
-  private async deleteEntity(entity: Project, multiple = false) {
+  private async deleteEntity(entity: Project, multiple = false): Promise<void> {
     if (multiple)
       await projectsModule.deleteMany(this.table.selection.map((item: Project) => item.id))
     else await projectsModule.deleteOne(entity.id as number)
     this.reloadData()
   }
 
-  private async restoreEntity(entity: Project, multiple = false) {
+  private async restoreEntity(entity: Project, multiple = false): Promise<void> {
     if (multiple)
       await projectsModule.restoreMany(this.table.selection.map((item: Project) => item.id))
     else await projectsModule.restoreOne(entity.id as number)
     this.reloadData()
   }
 
-  public async onRowDoubleClick(row: Project) {
+  public async onRowDoubleClick(row: Project): Promise<void> {
     if (!row.isRemoved) await this.$router.push(`/projects/${row.id}`)
   }
 }

@@ -317,7 +317,7 @@ export default class TaskDialog extends mixins(DialogMixin) {
   private expectedCompletedDateVisible = null
   private attachmentsVisible = null
 
-  async mounted() {
+  protected async mounted(): Promise<void> {
     this.visible = true
 
     this.loading = true
@@ -332,7 +332,7 @@ export default class TaskDialog extends mixins(DialogMixin) {
     ;(this.$refs.title as Input).focus()
   }
 
-  async submit() {
+  private async submit(): Promise<void> {
     const form = this.$refs.form as ElForm
     await form.validate(async valid => {
       if (valid) {
@@ -350,7 +350,7 @@ export default class TaskDialog extends mixins(DialogMixin) {
     })
   }
 
-  async sendForm() {
+  private async sendForm(): Promise<void> {
     this.loading = true
     const entity: Task = { ...this.form } as Task
     entity.isChildsExist = !!entity.childTasks?.length
@@ -360,25 +360,25 @@ export default class TaskDialog extends mixins(DialogMixin) {
     this.loading = false
   }
 
-  exit() {
+  public exit(): void {
     const form = this.$refs.form as ElForm
     form.resetFields()
     this.visible = false
     this.$emit('close')
   }
 
-  onChecklistChange(checklist: Task[]) {
+  private onChecklistChange(checklist: Task[]): void {
     this.form.childTasks = checklist
     this.$forceUpdate()
   }
 
-  validateDate(date: Date) {
+  private validateDate(date: Date): boolean {
     const currentDate = new Date()
     currentDate.setDate(currentDate.getDate() - 1)
     return date < currentDate
   }
 
-  async uploadAttachment(request: HttpRequestOptions): Promise<void> {
+  private async uploadAttachment(request: HttpRequestOptions): Promise<void> {
     this.loading = true
     const id = this.id || this.form.id
     if (!id) return
@@ -389,12 +389,12 @@ export default class TaskDialog extends mixins(DialogMixin) {
     this.loading = false
   }
 
-  async onAttachmentClick(attachment: Attachment) {
+  private async onAttachmentClick(attachment: Attachment): Promise<void> {
     if (!attachment.id) return
     await tasksModule.downloadAttachment(attachment)
   }
 
-  async removeAttachment(attachment: Attachment) {
+  private async removeAttachment(attachment: Attachment): Promise<void> {
     if (attachment.id) await tasksModule.removeAttachments([attachment.id])
   }
 }

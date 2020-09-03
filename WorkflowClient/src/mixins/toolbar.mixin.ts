@@ -89,7 +89,7 @@ export default class ToolbarMixin extends Vue {
     })
   }
 
-  private mounted(): void {
+  protected mounted(): void {
     this.fixSearchableDropdown()
   }
 

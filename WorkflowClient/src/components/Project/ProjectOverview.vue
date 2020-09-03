@@ -65,7 +65,7 @@ export default class ProjectOverview extends Vue {
     else return result || 0
   }
 
-  private async mounted() {
+  protected async mounted(): Promise<void> {
     this.project = { ...this.data } as Project
     if (this.project.id) {
       this.totalTasksCount = await projectModule.getTasksCount(this.project.id)

@@ -198,6 +198,7 @@ class TasksModule extends VuexModule {
 
   @Action
   async downloadAttachment(attachment: Attachment): Promise<void> {
+    if (!attachment.id || !attachment.fileName) return
     const response = await tasksAPI.downloadAttachment(attachment.id)
     const url = window.URL.createObjectURL(new Blob([response.data]))
     const link = document.createElement('a')

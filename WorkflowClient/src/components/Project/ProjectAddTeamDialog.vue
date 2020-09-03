@@ -72,12 +72,6 @@ export default class ProjectAddTeamDialog extends mixins(DialogMixin) {
     teamId: ''
   }
 
-  private async mounted() {
-    this.visible = true
-    await this.searchTeams()
-    setTimeout(() => (this.$refs.input as Input).focus(), 150)
-  }
-
   private get teamsToAdd(): { id: number | undefined; value: string | undefined }[] {
     const allTeams = this.teams
     const existingTeams = this.existingTeams
@@ -95,7 +89,13 @@ export default class ProjectAddTeamDialog extends mixins(DialogMixin) {
     })
   }
 
-  public async submit() {
+  protected async mounted(): Promise<void> {
+    this.visible = true
+    await this.searchTeams()
+    setTimeout(() => (this.$refs.input as Input).focus(), 150)
+  }
+
+  public async submit(): Promise<void> {
     const projectId = parseInt(this.$route.params.projectId)
     const teamId = parseInt(this.form.teamId)
     if (teamId) {

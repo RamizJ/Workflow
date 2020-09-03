@@ -104,7 +104,7 @@ export default class UserTable extends mixins(TableMixin) {
   private loading = false
   private modalAddUserVisible = false
 
-  private async loadData($state: StateChanger) {
+  private async loadData($state: StateChanger): Promise<void> {
     const isFirstLoad = !this.data.length
     this.loading = isFirstLoad
     let data: User[]
@@ -117,29 +117,29 @@ export default class UserTable extends mixins(TableMixin) {
     this.loading = false
   }
 
-  public createEntity() {
+  public createEntity(): void {
     this.modalData = undefined
     this.modalVisible = true
   }
 
-  public editEntity(entity: Project) {
+  public editEntity(entity: Project): void {
     this.modalData = entity.id
     this.modalVisible = true
   }
 
-  private async deleteEntity(entity: User, multiple = false) {
+  private async deleteEntity(entity: User, multiple = false): Promise<void> {
     if (multiple) await usersModule.deleteMany(this.table.selection.map((item: User) => item.id))
     else await usersModule.deleteOne(entity.id as string)
     this.reloadData()
   }
 
-  private async restoreEntity(entity: User, multiple = false) {
+  private async restoreEntity(entity: User, multiple = false): Promise<void> {
     if (multiple) await usersModule.restoreMany(this.table.selection.map((item: User) => item.id))
     else await usersModule.restoreOne(entity.id as string)
     this.reloadData()
   }
 
-  private async removeEntityFromTeam(entity: User) {
+  private async removeEntityFromTeam(entity: User): Promise<void> {
     const teamId = parseInt(this.$route.params.teamId)
     const userId = entity.id?.toString() || ''
     if (this.isMultipleSelected) {
@@ -149,7 +149,7 @@ export default class UserTable extends mixins(TableMixin) {
     this.reloadData()
   }
 
-  private addUser() {
+  private addUser(): void {
     this.modalAddUserVisible = true
   }
 }

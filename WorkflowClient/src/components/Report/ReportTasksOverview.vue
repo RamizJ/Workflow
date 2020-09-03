@@ -18,7 +18,7 @@ export default class ReportTasksOverview extends Vue {
   private chartPieOptions = {}
   private loading = true
 
-  private async mounted() {
+  protected async mounted(): Promise<void> {
     this.loading = true
     const projectId = parseInt(this.$route.params.projectId)
     if (!projectId) return

@@ -43,7 +43,7 @@ export default class LoginPage extends Vue {
     password: [{ required: true, message: '!', trigger: 'blur' }]
   }
 
-  async submit(): Promise<void> {
+  private async submit(): Promise<void> {
     const formCredentials = { ...this.form }
     this.formComponent.validate(async valid => {
       if (valid) {

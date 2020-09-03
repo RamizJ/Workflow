@@ -211,7 +211,7 @@ export default class UserDialog extends mixins(DialogMixin) {
   private positionVisible = null
   private phoneVisible = null
 
-  private async mounted() {
+  protected async mounted(): Promise<void> {
     this.visible = true
 
     this.loading = true
@@ -223,7 +223,7 @@ export default class UserDialog extends mixins(DialogMixin) {
     ;(this.$refs.title as HTMLInputElement).focus()
   }
 
-  async submit() {
+  private async submit(): Promise<void> {
     const form = this.$refs.form as ElForm
     await form.validate(async valid => {
       if (valid) {
@@ -240,7 +240,7 @@ export default class UserDialog extends mixins(DialogMixin) {
     })
   }
 
-  async sendForm() {
+  private async sendForm(): Promise<void> {
     this.loading = true
     const entity: User = { ...this.form } as User
     if (this.isEdit) await usersModule.updateOne(entity)
@@ -248,7 +248,7 @@ export default class UserDialog extends mixins(DialogMixin) {
     this.loading = false
   }
 
-  private async validateLogin(rule: any, value: string, callback: any) {
+  private async validateLogin(rule: any, value: string, callback: any): Promise<void> {
     const loginPattern = /^[a-zA-Z0-9_-]+$/
     const isLoginChanged = usersModule.user?.userName !== value
     const isLoginValid = loginPattern.test(value)
@@ -262,13 +262,13 @@ export default class UserDialog extends mixins(DialogMixin) {
     }
   }
 
-  private async validateEmail(rule: any, value: string, callback: any) {
+  private async validateEmail(rule: any, value: string, callback: any): Promise<void> {
     const emailAlreadyExist = await usersModule.isEmailExist(value)
     if (emailAlreadyExist && usersModule.user?.email !== value) callback(new Error('занято'))
     else callback()
   }
 
-  private validatePassword(rule: any, value: string, callback: any) {
+  private validatePassword(rule: any, value: string, callback: any): void {
     const length = value?.trim().length
     const symbolsLeft = 6 - length
     if (!value && this.isEdit) callback()

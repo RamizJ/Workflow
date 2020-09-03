@@ -206,7 +206,7 @@ export default class TeamDialog extends mixins(DialogMixin) {
     })
   }
 
-  async searchProjects(query = '') {
+  public async searchProjects(query = ''): Promise<void> {
     if (!query && this.projects.length) return
     await teamsModule.findProjects({
       teamId: this.form.id,
@@ -216,7 +216,7 @@ export default class TeamDialog extends mixins(DialogMixin) {
     } as Query)
   }
 
-  async searchUsers(query = '') {
+  public async searchUsers(query = ''): Promise<void> {
     if (!query && this.users.length) return
     await teamsModule.findUsers({
       teamId: this.form.id,
@@ -226,7 +226,7 @@ export default class TeamDialog extends mixins(DialogMixin) {
     } as Query)
   }
 
-  private async mounted() {
+  protected async mounted(): Promise<void> {
     this.visible = true
 
     if (this.$route.params.projectId) {
@@ -256,7 +256,7 @@ export default class TeamDialog extends mixins(DialogMixin) {
     ;(this.$refs.title as HTMLElement).focus()
   }
 
-  async submit() {
+  private async submit(): Promise<void> {
     const form = this.$refs.form as ElForm
     await form.validate(async valid => {
       if (valid) {
@@ -273,7 +273,7 @@ export default class TeamDialog extends mixins(DialogMixin) {
     })
   }
 
-  async sendForm() {
+  private async sendForm(): Promise<void> {
     this.loading = true
     const entity: Team = { ...this.form } as Team
     if (this.isEdit) await teamsModule.updateOne(entity)

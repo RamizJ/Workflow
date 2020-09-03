@@ -124,7 +124,7 @@ export default class TaskTable extends mixins(TableMixin) {
   public data: Task[] = []
   private loading = false
 
-  private async loadData($state: StateChanger) {
+  private async loadData($state: StateChanger): Promise<void> {
     const isFirstLoad = !this.data.length
     this.loading = isFirstLoad
     const data = await tasksModule.findAll(this.query)
@@ -135,29 +135,29 @@ export default class TaskTable extends mixins(TableMixin) {
     this.loading = false
   }
 
-  public createEntity() {
+  public createEntity(): void {
     this.modalData = undefined
     this.modalVisible = true
   }
 
-  public editEntity(entity: Task) {
+  public editEntity(entity: Task): void {
     this.modalData = entity.id
     this.modalVisible = true
   }
 
-  private async deleteEntity(entity: Task, multiple = false) {
+  private async deleteEntity(entity: Task, multiple = false): Promise<void> {
     if (multiple) await tasksModule.deleteMany(this.table.selection.map((item: Task) => item.id))
     else await tasksModule.deleteOne(entity.id as number)
     this.reloadData()
   }
 
-  private async restoreEntity(entity: Task, multiple = false) {
+  private async restoreEntity(entity: Task, multiple = false): Promise<void> {
     if (multiple) await tasksModule.restoreMany(this.table.selection.map((item: Task) => item.id))
     else await tasksModule.restoreOne(entity.id as number)
     this.reloadData()
   }
 
-  private async editEntityStatus(entity: Task, status: string) {
+  private async editEntityStatus(entity: Task, status: string): Promise<void> {
     if (this.isMultipleSelected) {
       const items = this.table.selection.map((item: Task) => {
         item.state = status as Status

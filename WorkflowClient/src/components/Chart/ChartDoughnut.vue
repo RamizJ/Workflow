@@ -13,7 +13,7 @@ export default class ChartDoughnut extends Vue<Doughnut> {
   @Prop() readonly data!: ChartData
   @Prop() readonly options!: ChartOptions
 
-  private mounted() {
+  protected mounted(): void {
     this.renderChart(this.data, this.options)
   }
 }

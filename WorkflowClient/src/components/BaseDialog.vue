@@ -41,7 +41,7 @@ import { MessageBox } from 'element-ui'
 export default class BaseDialog extends Vue {
   private showDialog = true
 
-  private confirmClose(done: Function) {
+  private confirmClose(done: Function): void {
     const needConfirm = localStorage.confirmDialogClose === 'true'
     if (needConfirm) {
       MessageBox.confirm('Вы действительно хотите закрыть окно?', 'Предупреждение', {
@@ -54,7 +54,7 @@ export default class BaseDialog extends Vue {
     } else done()
   }
 
-  private close() {
+  private close(): void {
     ;(this.$refs.dialog as any).hide()
   }
 }

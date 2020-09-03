@@ -40,7 +40,7 @@ import { SortType } from '@/types/query.type'
   }
 })
 export default class UsersPage extends mixins(PageMixin) {
-  private created() {
+  protected mounted() {
     if (!this.$route.query.sort) this.onSortChange('lastName')
     if (!this.$route.query.order) this.onOrderChange(SortType.Ascending)
   }

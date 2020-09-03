@@ -105,8 +105,8 @@ import Task, { Status } from '@/types/task.type'
 @Component({ components: { Draggable, TaskDialog } })
 export default class TaskBoard extends mixins(TableMixin) {
   public data: Task[] = []
+  public lists: { label: string; name: string; items: Task[] }[] = []
   private loading = false
-  private lists: { label: string; name: string; items: Task[] }[] = []
 
   private get listsDragOptions() {
     return {
@@ -125,7 +125,7 @@ export default class TaskBoard extends mixins(TableMixin) {
       disabled: false
     }
   }
-  private get boardLists() {
+  private get boardLists(): { label: string; name: string; items?: Task[] }[] {
     if (localStorage.boardLists) return JSON.parse(localStorage.boardLists)
     else
       return [
@@ -138,7 +138,7 @@ export default class TaskBoard extends mixins(TableMixin) {
       ]
   }
 
-  private async onListMove() {
+  private async onListMove(): Promise<void> {
     const newBoardLists = this.lists.map(list => {
       return {
         label: list.label,
@@ -148,13 +148,16 @@ export default class TaskBoard extends mixins(TableMixin) {
     localStorage.boardLists = JSON.stringify(newBoardLists)
   }
 
-  private async onEntityMove(event: { added?: { element: Task } }, listName: string) {
+  private async onEntityMove(
+    event: { added?: { element: Task } },
+    listName: string
+  ): Promise<void> {
     if (event.added) await this.editEntityStatus(event.added.element, listName)
   }
 
-  private updateLists() {
+  private updateLists(): void {
     this.lists = []
-    this.boardLists.forEach((list: { label: string; name: string; items: Task[] }) => {
+    this.boardLists.forEach((list: { label: string; name: string; items?: Task[] }) => {
       this.lists.push({
         label: list.label,
         name: list.name,
@@ -163,7 +166,7 @@ export default class TaskBoard extends mixins(TableMixin) {
     })
   }
 
-  private async loadData($state: StateChanger) {
+  private async loadData($state: StateChanger): Promise<void> {
     const isFirstLoad = !this.data.length
     this.loading = isFirstLoad
     const data = await tasksModule.findAll(this.query)
@@ -175,29 +178,29 @@ export default class TaskBoard extends mixins(TableMixin) {
     this.updateLists()
   }
 
-  public createEntity() {
+  public createEntity(): void {
     this.modalData = undefined
     this.modalVisible = true
   }
 
-  public editEntity(entity: Task) {
+  public editEntity(entity: Task): void {
     this.modalData = entity.id
     this.modalVisible = true
   }
 
-  private async deleteEntity(entity: Task, multiple = false) {
+  private async deleteEntity(entity: Task, multiple = false): Promise<void> {
     if (multiple) await tasksModule.deleteMany(this.table.selection.map((item: Task) => item.id))
     else await tasksModule.deleteOne(entity.id as number)
     this.reloadData()
   }
 
-  private async restoreEntity(entity: Task, multiple = false) {
+  private async restoreEntity(entity: Task, multiple = false): Promise<void> {
     if (multiple) await tasksModule.restoreMany(this.table.selection.map((item: Task) => item.id))
     else await tasksModule.restoreOne(entity.id as number)
     this.reloadData()
   }
 
-  private async editEntityStatus(entity: Task, status: string) {
+  private async editEntityStatus(entity: Task, status: string): Promise<void> {
     if (this.isMultipleSelected) {
       const items = this.table.selection.map((item: Task) => {
         item.state = status as Status

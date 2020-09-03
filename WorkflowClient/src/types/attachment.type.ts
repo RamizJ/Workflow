@@ -1,9 +1,11 @@
-export default interface Attachment {
-  id: number
+import moment from 'moment'
+
+export default class Attachment {
+  id?: number
   name?: string
-  fileName: string
-  fileSize: number
+  fileName?: string
+  fileSize?: number
   fileType?: string
-  creationDate: Date
-  fileDataId: number
+  creationDate: Date = moment().toDate()
+  fileDataId?: number
 }

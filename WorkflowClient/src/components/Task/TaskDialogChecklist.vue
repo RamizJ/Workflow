@@ -34,19 +34,10 @@ import moment from 'moment'
 export default class Checklist extends Vue {
   @Prop() readonly task!: Task
 
-  @Watch('task', { deep: true })
-  onItemsChange(task: Task) {
-    if (!task.childTasks) return
-    this.checklist = task.childTasks.map(task => {
-      task.completed = task.state === 'Succeed'
-      return task
-    })
-  }
-
   private input = ''
   private checklist: Task[] = []
 
-  private async mounted() {
+  protected mounted(): void {
     if (!this.task.childTasks) return
     this.checklist = this.task.childTasks.map(task => {
       task.completed = task.state === 'Succeed'
@@ -54,11 +45,20 @@ export default class Checklist extends Vue {
     })
   }
 
-  private onChange() {
+  @Watch('task', { deep: true })
+  onItemsChange(task: Task): void {
+    if (!task.childTasks) return
+    this.checklist = task.childTasks.map(task => {
+      task.completed = task.state === 'Succeed'
+      return task
+    })
+  }
+
+  private onChange(): void {
     this.$emit('change', this.checklist)
   }
 
-  private onBlur(index: number) {
+  private onBlur(index: number): void {
     const entity = this.checklist[index]
     if (!entity.title) entity.isRemoved = true
     this.$forceUpdate()

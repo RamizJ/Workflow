@@ -100,7 +100,7 @@ export default class TeamTable extends mixins(TableMixin) {
   private loading = false
   private modalAddTeamVisible = false
 
-  private async loadData($state: StateChanger) {
+  private async loadData($state: StateChanger): Promise<void> {
     const isFirstLoad = !this.data.length
     this.loading = isFirstLoad
     let data: Team[]
@@ -113,33 +113,33 @@ export default class TeamTable extends mixins(TableMixin) {
     this.loading = false
   }
 
-  public createEntity() {
+  public createEntity(): void {
     this.modalData = undefined
     this.modalVisible = true
   }
 
-  public editEntity(entity: Team) {
+  public editEntity(entity: Team): void {
     this.modalData = entity.id
     this.modalVisible = true
   }
 
-  private async deleteEntity(entity: Team, multiple = false) {
+  private async deleteEntity(entity: Team, multiple = false): Promise<void> {
     if (multiple) await teamsModule.deleteMany(this.table.selection.map((item: Team) => item.id))
     else await teamsModule.deleteOne(entity.id as number)
     this.reloadData()
   }
 
-  private async restoreEntity(entity: Team, multiple = false) {
+  private async restoreEntity(entity: Team, multiple = false): Promise<void> {
     if (multiple) await teamsModule.restoreMany(this.table.selection.map((item: Team) => item.id))
     else await teamsModule.restoreOne(entity.id as number)
     this.reloadData()
   }
 
-  public async onRowDoubleClick(row: Team) {
+  public async onRowDoubleClick(row: Team): Promise<void> {
     if (!row.isRemoved) await this.$router.push(`/teams/${row.id}`)
   }
 
-  private async removeEntityFromProject(row: Team) {
+  private async removeEntityFromProject(row: Team): Promise<void> {
     const projectId = parseInt(this.$route.params.projectId)
     const teamId = row.id || -1
     const teamIds = this.table.selection.map((item: Team) => item.id)
@@ -148,7 +148,7 @@ export default class TeamTable extends mixins(TableMixin) {
     this.reloadData()
   }
 
-  private addTeam() {
+  private addTeam(): void {
     this.modalAddTeamVisible = true
   }
 }

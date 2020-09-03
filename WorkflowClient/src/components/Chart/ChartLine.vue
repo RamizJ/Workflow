@@ -13,7 +13,7 @@ export default class ChartPie extends Vue<Line> {
   @Prop() readonly data!: ChartData
   @Prop() readonly options!: ChartOptions
 
-  mounted() {
+  protected mounted(): void {
     this.renderChart(this.data, this.options)
   }
 }

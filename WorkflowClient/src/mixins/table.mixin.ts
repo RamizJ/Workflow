@@ -18,20 +18,7 @@ export default class TableMixin extends Vue {
   @Prop()
   sort: string | undefined
 
-  public query: Query = {
-    projectId: parseInt(this.$route.params.projectId) || undefined,
-    teamId: parseInt(this.$route.params.teamId) || undefined,
-    filter: '',
-    pageNumber: 0,
-    pageSize: 20,
-    filterFields: [],
-    sortFields: [
-      {
-        fieldName: (this.$route.query.sort as string) || 'creationDate',
-        sortType: (this.$route.query.order as SortType) || SortType.Descending
-      }
-    ]
-  }
+  public query: Query = new Query()
   private statuses = [
     { value: Status.New, label: 'Новое' },
     { value: Status.Perform, label: 'Выполняется' },
@@ -47,6 +34,7 @@ export default class TableMixin extends Vue {
   ]
 
   public data: Entity[] = []
+  public lists: { label: string; name: string; items: Entity[] }[] = []
   public selectedRow: Entity | undefined
   public modalData: number | string | undefined
   public modalVisible = false
@@ -107,12 +95,31 @@ export default class TableMixin extends Vue {
     }
   }
 
-  private created(): void {
+  protected mounted(): void {
     document.onkeydown = this.onKeyDown
     document.onkeyup = this.onKeyUp
+    this.query = {
+      projectId: parseInt(this.$route.params.projectId) || undefined,
+      teamId: parseInt(this.$route.params.teamId) || undefined,
+      filter: '',
+      pageNumber: 0,
+      pageSize: 20,
+      filterFields: [],
+      sortFields: [
+        {
+          fieldName: (this.$route.query.sort as string) || 'creationDate',
+          sortType: (this.$route.query.order as SortType) || SortType.Descending
+        }
+      ]
+    }
+    if (this.filters) this.onFiltersChange(this.filters)
+    if (this.search) this.onSearchChange(this.search)
+    if (this.order) this.onOrderChange(this.order as SortType)
+    if (this.sort) this.onSortChange(this.sort)
   }
 
   public reloadData(): void {
+    this.lists = []
     this.data = []
     this.query.pageNumber = 0
     this.infiniteLoader.stateChanger.reset()
@@ -123,7 +130,7 @@ export default class TableMixin extends Vue {
     row.index = rowIndex
   }
 
-  public onRowSelect(selection: Entity[], entity: Entity) {
+  public onRowSelect(selection: Entity[], entity: Entity): void {
     this.selectedRow = entity
   }
 

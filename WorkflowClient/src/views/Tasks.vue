@@ -21,7 +21,14 @@
       :order="order"
       :sort="sort"
     ></task-table>
-    <task-board ref="items" v-if="view === 'board'"></task-board>
+    <task-board
+      v-if="view === 'board'"
+      ref="items"
+      :search="search"
+      :filters="filters"
+      :order="order"
+      :sort="sort"
+    ></task-board>
   </div>
 </template>
 
@@ -44,7 +51,7 @@ import { SortType } from '@/types/query.type'
   }
 })
 export default class Tasks extends mixins(PageMixin) {
-  private created() {
+  protected mounted() {
     if (!this.$route.query.sort) this.onSortChange('creationDate')
     if (!this.$route.query.order) this.onOrderChange(SortType.Descending)
   }

@@ -92,7 +92,6 @@ import TeamTable from '@/components/Team/TeamTable.vue'
 })
 export default class ProjectPage extends Vue {
   private loading = true
-  private searchQuery = ''
   private activeTab = 'overview'
   private projectItem: Project = {
     name: '',
@@ -107,7 +106,7 @@ export default class ProjectPage extends Vue {
     return parseInt(this.$route.params.projectId)
   }
 
-  private async mounted() {
+  protected async mounted() {
     this.loading = true
     this.loadTab()
     const project = await projectsModule.findOneById(this.id)
@@ -115,49 +114,49 @@ export default class ProjectPage extends Vue {
     this.loading = false
   }
 
-  loadTab() {
+  private loadTab() {
     const query = { ...this.$route.query }
     query.tab = query.tab?.toString() || this.activeTab
     this.activeTab = query.tab
     if (JSON.stringify(query) !== JSON.stringify(this.$route.query)) this.$router.replace({ query })
   }
 
-  setTab() {
+  private setTab() {
     const query = { tab: this.activeTab }
     if (JSON.stringify({ tab: '' }) !== JSON.stringify(this.$route.query))
       this.$router.replace({ query })
   }
 
-  async editEntity() {
+  private async editEntity() {
     this.projectModalVisible = true
   }
 
-  async deleteEntity() {
+  private async deleteEntity() {
     await projectsModule.deleteOne(this.id)
     await this.$router.replace({ name: 'Project' })
   }
 
-  async updateEntity() {
+  private async updateEntity() {
     await projectsModule.updateOne(this.projectItem)
   }
 
-  async changeEntityDescription(value: string) {
+  private async changeEntityDescription(value: string) {
     this.projectItem.description = value
     this.projectItem.teamIds = projectsModule.project?.teamIds
     await projectsModule.updateOne(this.projectItem)
   }
 
-  async createTask() {
+  private async createTask() {
     const projectTasks = this.$refs.projectTasks as ProjectTasks
     if (projectTasks) (projectTasks.$refs.items as TaskTable).createEntity()
     else this.taskModalVisible = true
   }
 
-  async addTeam() {
+  private async addTeam() {
     this.teamModalVisible = true
   }
 
-  onTeamAdd() {
+  private onTeamAdd() {
     if (!this.$refs.projectTeams) return
     const projectTeams = this.$refs.projectTeams as ProjectTeams
     const projectTeamsTable = projectTeams.$refs.items as TeamTable

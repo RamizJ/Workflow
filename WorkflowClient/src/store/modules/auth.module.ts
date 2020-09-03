@@ -1,5 +1,5 @@
-import { AxiosResponse } from 'axios'
 import { VuexModule, Module, Action, MutationAction, getModule } from 'vuex-module-decorators'
+import { AxiosResponse } from 'axios'
 
 import store from '@/store'
 import authAPI from '@/api/auth.api'
@@ -29,8 +29,8 @@ class AuthModule extends VuexModule {
   @MutationAction({ mutate: ['_user', '_token'] })
   public async login(credentials: Credentials) {
     const response: AxiosResponse = await authAPI.login(credentials)
-    const user: User = response.data.user
-    const token: string = response.data.token
+    const user: User = response.data.user as User
+    const token: string = response.data.token as string
     localStorage.setItem('access_token', token)
     return {
       _user: user,

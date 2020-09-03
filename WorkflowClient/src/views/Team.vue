@@ -74,7 +74,6 @@ import UserTable from '@/components/User/UserTable.vue'
 })
 export default class TeamPage extends Vue {
   private loading = true
-  private searchQuery = ''
   private teamItem: Team = {
     name: '',
     description: '',
@@ -82,10 +81,6 @@ export default class TeamPage extends Vue {
     projectIds: []
   }
   private activeTab = 'members'
-  private tabs = [
-    { value: 'members', label: 'Участники' },
-    { value: 'projects', label: 'Проекты' }
-  ]
   private dialogTeamVisible = false
   private dialogUserVisible = false
   private dialogAddUserVisible = false
@@ -94,7 +89,7 @@ export default class TeamPage extends Vue {
     return parseInt(this.$route.params.teamId)
   }
 
-  private async mounted() {
+  protected async mounted() {
     this.loading = true
     this.loadTab()
     const team = await teamsModule.findOneById(this.id)
@@ -102,43 +97,43 @@ export default class TeamPage extends Vue {
     this.loading = false
   }
 
-  loadTab() {
+  private loadTab() {
     const query = { ...this.$route.query }
     query.tab = query.tab?.toString() || this.activeTab
     this.activeTab = query.tab
     if (JSON.stringify(query) !== JSON.stringify(this.$route.query)) this.$router.replace({ query })
   }
 
-  setTab() {
+  private setTab() {
     const query = { tab: this.activeTab }
     if (JSON.stringify(query) !== JSON.stringify(this.$route.query)) this.$router.replace({ query })
   }
 
-  async onUserAdd() {
+  private async onUserAdd() {
     this.dialogAddUserVisible = true
   }
 
-  onUserAdded() {
+  private onUserAdded() {
     const teamUsers = this.$refs.teamUsers as TeamUsers
     const userTable = teamUsers.$refs.items as UserTable
     userTable.reloadData()
   }
 
-  async onUserCreate() {
+  private async onUserCreate() {
     const teamUsers = this.$refs.teamUsers as TeamUsers
     if (teamUsers) (teamUsers.$refs.items as UserTable).createEntity()
     else this.dialogUserVisible = true
   }
 
-  async onTeamEdit() {
+  private async onTeamEdit() {
     this.dialogTeamVisible = true
   }
 
-  async onTeamUpdate() {
+  private async onTeamUpdate() {
     await teamsModule.updateOne(this.teamItem)
   }
 
-  async onTeamDelete() {
+  private async onTeamDelete() {
     await teamsModule.deleteOne(this.id)
     await this.$router.push({ name: 'Team' })
   }

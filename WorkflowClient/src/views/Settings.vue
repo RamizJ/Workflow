@@ -124,7 +124,6 @@ import User from '@/types/user.type'
   }
 })
 export default class SettingsPage extends Vue {
-  private search = ''
   private form: User = {
     lastName: '',
     firstName: '',
@@ -157,11 +156,11 @@ export default class SettingsPage extends Vue {
   private confirmDialogClose = localStorage.confirmDialogClose === 'true'
   private debugMode = localStorage.debugMode === 'true'
 
-  private mounted(): void {
+  protected mounted(): void {
     if (authModule.me) this.form = { ...authModule.me } as User
   }
 
-  async updateAccount(): Promise<void> {
+  private async updateAccount(): Promise<void> {
     if (JSON.stringify(this.form) === JSON.stringify(authModule.me)) {
       this.$message.warning('Внесите правки для сохранения изменений')
       return
@@ -183,7 +182,7 @@ export default class SettingsPage extends Vue {
     }
   }
 
-  async exit(): Promise<void> {
+  private async exit(): Promise<void> {
     try {
       await authModule.logout()
       await this.$router.push({ name: 'Login' })
