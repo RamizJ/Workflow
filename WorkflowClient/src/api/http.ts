@@ -3,7 +3,7 @@ import { Message } from 'element-ui'
 
 const getToken = () => localStorage.getItem('access_token')
 
-const httpClient: AxiosInstance = axios.create({
+const http: AxiosInstance = axios.create({
   baseURL: process.env.VUE_APP_API_URL,
   headers: {
     'Content-Type': 'application/json'
@@ -86,7 +86,7 @@ const errorResponseHandler = (error: any) => {
   if (isDebugMode) pushErrorMessage(error)
 }
 
-httpClient.interceptors.request.use(authInterceptor)
-httpClient.interceptors.response.use(response => response, errorResponseHandler)
+http.interceptors.request.use(authInterceptor)
+http.interceptors.response.use(response => response, errorResponseHandler)
 
-export default httpClient
+export default http
