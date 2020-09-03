@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { Message } from 'element-ui'
 
-const getToken = () => localStorage.getItem('access_token')
+const getToken = () => localStorage.getItem('workflow_access_token')
 
 const http: AxiosInstance = axios.create({
   baseURL: process.env.VUE_APP_API_URL,

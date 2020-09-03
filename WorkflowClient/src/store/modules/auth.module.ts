@@ -14,7 +14,7 @@ import User from '@/types/user.type'
 })
 class AuthModule extends VuexModule {
   _user: User | null = null
-  _token: string | null = localStorage.getItem('access_token') || null
+  _token: string | null = localStorage.getItem('workflow_access_token') || null
 
   public get me(): User | null {
     return this._user
@@ -31,7 +31,7 @@ class AuthModule extends VuexModule {
     const response: AxiosResponse = await authAPI.login(credentials)
     const user: User = response.data.user as User
     const token: string = response.data.token as string
-    localStorage.setItem('access_token', token)
+    localStorage.setItem('workflow_access_token', token)
     return {
       _user: user,
       _token: token
@@ -41,7 +41,7 @@ class AuthModule extends VuexModule {
   @MutationAction({ mutate: ['_user', '_token'] })
   public async logout() {
     await authAPI.logout()
-    localStorage.removeItem('access_token')
+    localStorage.removeItem('workflow_access_token')
     return {
       _user: null,
       _token: null
@@ -59,7 +59,7 @@ class AuthModule extends VuexModule {
     else {
       return {
         _user: response.data as User,
-        _token: localStorage.getItem('access_token') || this._token
+        _token: localStorage.getItem('workflow_access_token') || this._token
       }
     }
   }
