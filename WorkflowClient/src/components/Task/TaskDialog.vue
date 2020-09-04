@@ -91,7 +91,7 @@
                 remote
               >
                 <el-option
-                  v-if="!users.find(user => user.id === form.performerId)"
+                  v-if="!users.some(user => user.id.toString() === form.performerId.toString())"
                   :key="form.performerId"
                   :label="shortenFullName(form.performerFio)"
                   :value="form.performerId"
@@ -362,6 +362,7 @@ export default class TaskDialog extends mixins(DialogMixin) {
     const entity: Task = { ...this.form } as Task
     entity.isChildsExist = !!entity.childTasks?.length
     entity.isAttachmentsExist = !!entity.attachments?.length
+    if (!this.performerVisible) delete entity.performerId
     if (this.isEdit) await tasksModule.updateOne(entity)
     else this.form = await tasksModule.createOne(entity)
     this.loading = false
