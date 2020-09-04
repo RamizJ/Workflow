@@ -91,6 +91,12 @@
                 remote
               >
                 <el-option
+                  v-if="!users.find(user => user.id === form.performerId)"
+                  :key="form.performerId"
+                  :label="shortenFullName(form.performerFio)"
+                  :value="form.performerId"
+                ></el-option>
+                <el-option
                   v-for="item in users"
                   :key="item.id"
                   :label="item.value"

@@ -29,7 +29,7 @@ export default class DialogMixin extends Vue {
   public get users(): { value: string | undefined; id: string | undefined }[] {
     return usersModule.users.map(user => {
       return {
-        value: `${user.lastName} ${user.firstName}`,
+        value: this.shortenFullName(`${user.lastName} ${user.firstName} ${user.middleName}`),
         id: user.id
       }
     })
@@ -57,6 +57,15 @@ export default class DialogMixin extends Vue {
       pageNumber: 0,
       pageSize: 10
     })
+  }
+
+  public shortenFullName(value: string): string {
+    if (!value) return value
+    const fioArray = value.split(' ')
+    const lastName = fioArray[0]
+    const firstNameInitial = fioArray[1][0] ? `${fioArray[1][0]}.` : ''
+    const middleNameInitial = fioArray[2][0] ? `${fioArray[2][0]}.` : ''
+    return `${lastName} ${firstNameInitial} ${middleNameInitial}`
   }
 
   public exit(): void {

@@ -84,7 +84,7 @@
     </vue-context>
     <task-dialog
       v-if="modalVisible"
-      :data="modalData"
+      :id="modalData"
       @close="modalVisible = false"
       @submit="reloadData"
     ></task-dialog>
