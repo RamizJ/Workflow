@@ -168,10 +168,10 @@ export default class TableMixin extends Vue {
 
   public onRowRightClick(row: Entity, column: ElTableColumn, event: Event): void {
     if (!this.isMultipleSelected) {
-      this.table.clearSelection()
-      this.table.toggleRowSelection(row)
+      this.table?.clearSelection()
+      this.table?.toggleRowSelection(row)
     }
-    this.table.setCurrentRow(row)
+    this.table?.setCurrentRow(row)
     this.selectedRow = row
     this.contextMenu.open(event, { row, column })
     event.preventDefault()

@@ -169,7 +169,7 @@ export default class TaskTable extends mixins(TableMixin) {
       item.state = status as Status
       await tasksModule.updateOne(item)
     }
-    await this.reloadData()
+    this.reloadData()
   }
 }
 </script>

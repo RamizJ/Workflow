@@ -20,7 +20,7 @@
               class="item"
               v-for="item in list.items"
               :key="item.id"
-              @contextmenu="onRowRightClick(item)"
+              @contextmenu="onRowRightClick(item, null, $event)"
             >
               <a class="item__header" @click="onRowDoubleClick(item)">{{ item.title }}</a>
               <div class="item__footer">
@@ -44,39 +44,41 @@
     </infinite-loading>
     <vue-context ref="contextMenu">
       <template slot-scope="child">
-        <li><a v-if="isRowEditable" @click.prevent="editEntity(child.data.item)">Изменить</a></li>
+        <li>
+          <a v-if="isRowEditable" @click.prevent="editEntity(child.data.row)">Изменить</a>
+        </li>
         <el-divider v-if="isRowEditable"></el-divider>
         <li><a @click.prevent="createEntity">Новая задача</a></li>
         <el-divider></el-divider>
         <li class="v-context__sub">
           <a v-if="isRowEditable">Изменить статус</a>
           <ul class="v-context">
-            <li><a @click.prevent="editEntityStatus(child.data.item, 'New')">Новое</a></li>
+            <li><a @click.prevent="editEntityStatus(child.data.row, 'New')">Новое</a></li>
             <li>
-              <a @click.prevent="editEntityStatus(child.data.item, 'Succeed')">Выполнено</a>
+              <a @click.prevent="editEntityStatus(child.data.row, 'Succeed')">Выполнено</a>
             </li>
-            <li><a @click.prevent="editEntityStatus(child.data.item, 'Delay')">Отложено</a></li>
+            <li><a @click.prevent="editEntityStatus(child.data.row, 'Delay')">Отложено</a></li>
             <li>
-              <a @click.prevent="editEntityStatus(child.data.item, 'Rejected')">Отклонено</a>
+              <a @click.prevent="editEntityStatus(child.data.row, 'Rejected')">Отклонено</a>
             </li>
             <el-divider></el-divider>
             <li>
-              <a @click.prevent="editEntityStatus(child.data.item, 'Perform')">Выполняется</a>
+              <a @click.prevent="editEntityStatus(child.data.row, 'Perform')">Выполняется</a>
             </li>
             <li>
-              <a @click.prevent="editEntityStatus(child.data.item, 'Testing')">Проверяется</a>
+              <a @click.prevent="editEntityStatus(child.data.row, 'Testing')">Проверяется</a>
             </li>
           </ul>
         </li>
         <li>
-          <a v-if="isRowEditable" @click.prevent="deleteEntity(child.data.item, isMultipleSelected)"
+          <a v-if="isRowEditable" @click.prevent="deleteEntity(child.data.row, isMultipleSelected)"
             >Переместить в корзину</a
           >
         </li>
         <li>
           <a
             v-if="!isRowEditable"
-            @click.prevent="restoreEntity(child.data.item, isMultipleSelected)"
+            @click.prevent="restoreEntity(child.data.row, isMultipleSelected)"
             >Восстановить</a
           >
         </li>
@@ -152,7 +154,7 @@ export default class TaskBoard extends mixins(TableMixin) {
     event: { added?: { element: Task } },
     listName: string
   ): Promise<void> {
-    if (event.added) await this.editEntityStatus(event.added.element, listName)
+    if (event.added) await this.editEntityStatus(event.added.element, listName, false)
   }
 
   private updateLists(): void {
@@ -200,7 +202,7 @@ export default class TaskBoard extends mixins(TableMixin) {
     this.reloadData()
   }
 
-  private async editEntityStatus(entity: Task, status: string): Promise<void> {
+  private async editEntityStatus(entity: Task, status: string, reload = true): Promise<void> {
     if (this.isMultipleSelected) {
       const items = this.table.selection.map((item: Task) => {
         item.state = status as Status
@@ -212,7 +214,7 @@ export default class TaskBoard extends mixins(TableMixin) {
       item.state = status as Status
       await tasksModule.updateOne(item)
     }
-    await this.reloadData()
+    if (reload) this.reloadData()
   }
 }
 </script>
