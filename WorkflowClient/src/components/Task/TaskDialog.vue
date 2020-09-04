@@ -91,7 +91,7 @@
                 remote
               >
                 <el-option
-                  v-if="!users.some(user => user.id.toString() === form.performerId.toString())"
+                  v-if="!users.some((user) => user.id.toString() === form.performerId.toString())"
                   :key="form.performerId"
                   :label="shortenFullName(form.performerFio)"
                   :value="form.performerId"
@@ -290,8 +290,6 @@ export default class TaskDialog extends mixins(DialogMixin) {
   @Prop() readonly id: number | undefined
   @Ref() readonly title?: Input
 
-  private isEdit = !!this.id
-
   private form: Task = {
     title: '',
     description: '',
@@ -303,18 +301,18 @@ export default class TaskDialog extends mixins(DialogMixin) {
     priority: Priority.Normal,
     isChildsExist: false,
     isRemoved: false,
-    attachments: []
+    attachments: [],
   }
 
   private rules = {
     title: [{ required: true, message: '!', trigger: 'blur' }],
     performerId: [{ required: true, message: '!', trigger: 'blur' }],
-    projectId: [{ required: true, message: '!', trigger: 'blur' }]
+    projectId: [{ required: true, message: '!', trigger: 'blur' }],
   }
   private priorities = [
     { value: Priority.High, label: 'Высокий приоритет' },
     { value: Priority.Normal, label: 'Средний приоритет' },
-    { value: Priority.Low, label: 'Низкий приоритет' }
+    { value: Priority.Low, label: 'Низкий приоритет' },
   ]
 
   private descriptionVisible = null
@@ -341,7 +339,7 @@ export default class TaskDialog extends mixins(DialogMixin) {
 
   private async submit(): Promise<void> {
     const form = this.$refs.form as ElForm
-    await form.validate(async valid => {
+    await form.validate(async (valid) => {
       if (valid) {
         await this.sendForm()
         if (this.$refs.upload) (this.$refs.upload as ElUpload).submit()
@@ -351,7 +349,7 @@ export default class TaskDialog extends mixins(DialogMixin) {
         Message({
           showClose: true,
           message: 'Форма заполнена некорректно',
-          type: 'error'
+          type: 'error',
         })
       }
     })
@@ -363,7 +361,7 @@ export default class TaskDialog extends mixins(DialogMixin) {
     entity.isChildsExist = !!entity.childTasks?.length
     entity.isAttachmentsExist = !!entity.attachments?.length
     if (!this.performerVisible) delete entity.performerId
-    if (this.isEdit) await tasksModule.updateOne(entity)
+    if (this.id) await tasksModule.updateOne(entity)
     else this.form = await tasksModule.createOne(entity)
     this.loading = false
   }

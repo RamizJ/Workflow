@@ -39,7 +39,7 @@ export default class Checklist extends Vue {
 
   protected mounted(): void {
     if (!this.task.childTasks) return
-    this.checklist = this.task.childTasks.map(task => {
+    this.checklist = this.task.childTasks.map((task) => {
       task.completed = task.state === 'Succeed'
       return task
     })
@@ -48,7 +48,7 @@ export default class Checklist extends Vue {
   @Watch('task', { deep: true })
   onItemsChange(task: Task): void {
     if (!task.childTasks) return
-    this.checklist = task.childTasks.map(task => {
+    this.checklist = task.childTasks.map((task) => {
       task.completed = task.state === 'Succeed'
       return task
     })
@@ -72,7 +72,7 @@ export default class Checklist extends Vue {
       creationDate: moment.utc(moment()).format(),
       state: Status.New,
       parentGoalId: this.task.id,
-      completed: false
+      completed: false,
     }
     this.checklist.unshift(entity)
     this.input = ''

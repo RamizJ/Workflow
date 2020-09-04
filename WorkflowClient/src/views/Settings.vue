@@ -120,8 +120,8 @@ import User from '@/types/user.type'
 
 @Component({
   components: {
-    Changelog
-  }
+    Changelog,
+  },
 })
 export default class SettingsPage extends Vue {
   private form: User = {
@@ -131,11 +131,11 @@ export default class SettingsPage extends Vue {
     userName: '',
     email: '',
     phone: '',
-    roles: []
+    roles: [],
   }
   private credentials = {
     currentPassword: '',
-    newPassword: ''
+    newPassword: '',
   }
   private rules = {
     lastName: [{ required: true, message: 'Введите фамилию', trigger: 'blur' }],
@@ -147,9 +147,9 @@ export default class SettingsPage extends Vue {
       {
         type: 'email',
         message: 'Некорректный адрес эл. почты',
-        trigger: 'blur'
-      }
-    ]
+        trigger: 'blur',
+      },
+    ],
   }
   private activeTab = 'profile'
   private appearance = localStorage.getItem('theme') || 'light'

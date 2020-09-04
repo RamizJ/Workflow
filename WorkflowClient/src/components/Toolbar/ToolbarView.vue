@@ -57,9 +57,17 @@ export default class ToolbarView extends Vue {
   @Prop() readonly grid: boolean | undefined
   @Prop() readonly list: boolean | undefined
 
-  private order = (this.$route.query.order as SortType) || SortType.Descending
-  private sort = this.$route.query.sort || (this.sortFields ? this.sortFields[0].value : '')
-  private view = (this.$route.query.view as View) || View.List
+  private order = SortType.Descending
+  private sort = ''
+  private view = View.List
+
+  protected mounted(): void {
+    this.order = (this.$route.query.order as SortType) || SortType.Descending
+    this.sort =
+      this.$route.query.sort.toString() ||
+      (this.sortFields ? this.sortFields[0].value.toString() : '')
+    this.view = (this.$route.query.view as View) || View.List
+  }
 
   private onOrderChange(): void {
     const value = this.order === SortType.Ascending ? SortType.Descending : SortType.Ascending

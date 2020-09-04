@@ -30,8 +30,8 @@ import { SortType } from '@/types/query.type'
 @Component({
   components: {
     TeamList,
-    TeamToolbar
-  }
+    TeamToolbar,
+  },
 })
 export default class ProjectTeams extends mixins(PageMixin) {
   protected mounted(): void {

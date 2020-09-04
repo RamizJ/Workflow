@@ -64,12 +64,12 @@ import { Input } from 'element-ui'
 
 @Component({
   components: {
-    BaseDialog
-  }
+    BaseDialog,
+  },
 })
 export default class ProjectAddTeamDialog extends mixins(DialogMixin) {
   private form = {
-    teamId: ''
+    teamId: '',
   }
 
   private get teamsToAdd(): { id: number | undefined; value: string | undefined }[] {
@@ -84,7 +84,7 @@ export default class ProjectAddTeamDialog extends mixins(DialogMixin) {
     return teams.map((team: Team) => {
       return {
         id: team.id,
-        value: team.name
+        value: team.name,
       }
     })
   }

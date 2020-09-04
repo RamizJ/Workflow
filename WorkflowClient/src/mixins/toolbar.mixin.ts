@@ -19,7 +19,7 @@ export default class ToolbarMixin extends Vue {
     performers: [],
     owners: [],
     deadlineRange: '',
-    showOnlyDeleted: false
+    showOnlyDeleted: false,
   }
   public statuses = [
     { value: Status.New, label: 'Новое' },
@@ -27,12 +27,12 @@ export default class ToolbarMixin extends Vue {
     { value: Status.Testing, label: 'Проверяется' },
     { value: Status.Delay, label: 'Отложено' },
     { value: Status.Succeed, label: 'Выполнено' },
-    { value: Status.Rejected, label: 'Отклонено' }
+    { value: Status.Rejected, label: 'Отклонено' },
   ]
   public priorities = [
     { value: Priority.Low, label: 'Низкий' },
     { value: Priority.Normal, label: 'Средний' },
-    { value: Priority.High, label: 'Высокий' }
+    { value: Priority.High, label: 'Высокий' },
   ]
 
   public get filterFields(): FilterField[] {
@@ -40,51 +40,51 @@ export default class ToolbarMixin extends Vue {
     if (this.filters.statuses.length)
       filterFields.push({
         fieldName: 'state',
-        values: this.filters.statuses
+        values: this.filters.statuses,
       })
     if (this.filters.priorities.length)
       filterFields.push({
         fieldName: 'priority',
-        values: this.filters.priorities
+        values: this.filters.priorities,
       })
     if (this.filters.projects.length)
       filterFields.push({
         fieldName: 'projectId',
-        values: this.filters.projects
+        values: this.filters.projects,
       })
     if (this.filters.performers.length)
       filterFields.push({
         fieldName: 'performerId',
-        values: this.filters.performers
+        values: this.filters.performers,
       })
     if (this.filters.owners.length)
       filterFields.push({
         fieldName: 'ownerId',
-        values: this.filters.owners
+        values: this.filters.owners,
       })
     if (this.filters.showOnlyDeleted) {
       filterFields.push({
         fieldName: 'isRemoved',
-        values: [true]
+        values: [true],
       })
     }
     return filterFields
   }
 
   public get projects(): { value: string | undefined; id: number | undefined }[] {
-    return projectsModule.projects.map(project => {
+    return projectsModule.projects.map((project) => {
       return {
         value: project.name,
-        id: project.id
+        id: project.id,
       }
     })
   }
 
   public get users(): { value: string; id: string | undefined }[] {
-    return usersModule.users.map(user => {
+    return usersModule.users.map((user) => {
       return {
         value: `${user.lastName} ${user.firstName}`,
-        id: user.id
+        id: user.id,
       }
     })
   }
@@ -124,7 +124,7 @@ export default class ToolbarMixin extends Vue {
     await projectsModule.findAll({
       filter: query,
       pageNumber: 0,
-      pageSize: 10
+      pageSize: 10,
     })
   }
 
@@ -136,12 +136,12 @@ export default class ToolbarMixin extends Vue {
     await usersModule.findAll({
       filter: query,
       pageNumber: 0,
-      pageSize: 10
+      pageSize: 10,
     })
   }
 
   private fixSearchableDropdown(): void {
-    document.querySelectorAll('.el-select.remote').forEach(element => {
+    document.querySelectorAll('.el-select.remote').forEach((element) => {
       const dropdownElement = element as HTMLElement
       const arrow = element.children[1].children[1] as HTMLSpanElement
       arrow.addEventListener('click', function() {

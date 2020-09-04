@@ -25,32 +25,32 @@ export default class ReportTasksOverview extends Vue {
     const data: number[] = []
     const newTasks = await projectsModule.getTasksCountByStatus({
       projectId,
-      status: Status.New
+      status: Status.New,
     })
     data.push(newTasks)
     const performTasks = await projectsModule.getTasksCountByStatus({
       projectId,
-      status: Status.Perform
+      status: Status.Perform,
     })
     data.push(performTasks)
     const testingTasks = await projectsModule.getTasksCountByStatus({
       projectId,
-      status: Status.Testing
+      status: Status.Testing,
     })
     data.push(testingTasks)
     const delayTasks = await projectsModule.getTasksCountByStatus({
       projectId,
-      status: Status.Delay
+      status: Status.Delay,
     })
     data.push(delayTasks)
     const succeedTasks = await projectsModule.getTasksCountByStatus({
       projectId,
-      status: Status.Succeed
+      status: Status.Succeed,
     })
     data.push(succeedTasks)
     const rejectedTasks = await projectsModule.getTasksCountByStatus({
       projectId,
-      status: Status.Rejected
+      status: Status.Rejected,
     })
     data.push(rejectedTasks)
 
@@ -60,7 +60,7 @@ export default class ReportTasksOverview extends Vue {
       'Проверяется',
       'Отложено',
       'Выполнено',
-      'Отклонено'
+      'Отклонено',
     ]
 
     const colors: string[] = [
@@ -69,7 +69,7 @@ export default class ReportTasksOverview extends Vue {
       '#ff6d37',
       'lightgrey',
       '#00cf3a',
-      '#ca0000'
+      '#ca0000',
     ]
 
     const borderColor: string[] = [
@@ -78,7 +78,7 @@ export default class ReportTasksOverview extends Vue {
       'rgba(255,255,255,0.1)',
       'rgba(255,255,255,0.1)',
       'rgba(255,255,255,0.1)',
-      'rgba(255,255,255,0.1)'
+      'rgba(255,255,255,0.1)',
     ]
 
     this.chartPieData = {
@@ -86,10 +86,10 @@ export default class ReportTasksOverview extends Vue {
         {
           backgroundColor: colors,
           borderColor,
-          data
-        }
+          data,
+        },
       ],
-      labels
+      labels,
     }
     this.loading = false
   }

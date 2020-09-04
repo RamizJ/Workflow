@@ -40,8 +40,8 @@ import { SortType } from '@/types/query.type'
   components: {
     TaskToolbar,
     TaskTable,
-    TaskBoard
-  }
+    TaskBoard,
+  },
 })
 export default class ProjectTasks extends mixins(PageMixin) {
   protected mounted(): void {

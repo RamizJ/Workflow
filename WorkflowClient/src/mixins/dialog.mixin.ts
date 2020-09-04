@@ -11,26 +11,26 @@ export default class DialogMixin extends Vue {
   public loading = false
 
   public get projects(): { value: string | undefined; id: number | undefined }[] {
-    return projectsModule.projects.map(project => {
+    return projectsModule.projects.map((project) => {
       return {
         value: project.name,
-        id: project.id
+        id: project.id,
       }
     })
   }
   public get teams(): { value: string | undefined; id: number | undefined }[] {
-    return teamsModule.teams.map(team => {
+    return teamsModule.teams.map((team) => {
       return {
         value: team.name,
-        id: team.id
+        id: team.id,
       }
     })
   }
   public get users(): { value: string | undefined; id: string | undefined }[] {
-    return usersModule.users.map(user => {
+    return usersModule.users.map((user) => {
       return {
         value: this.shortenFullName(`${user.lastName} ${user.firstName} ${user.middleName}`),
-        id: user.id
+        id: user.id,
       }
     })
   }
@@ -39,7 +39,7 @@ export default class DialogMixin extends Vue {
     await projectsModule.findAll({
       filter: query,
       pageNumber: 0,
-      pageSize: 10
+      pageSize: 10,
     })
   }
 
@@ -47,7 +47,7 @@ export default class DialogMixin extends Vue {
     await teamsModule.findAll({
       filter: query,
       pageNumber: 0,
-      pageSize: 10
+      pageSize: 10,
     })
   }
 
@@ -55,7 +55,7 @@ export default class DialogMixin extends Vue {
     await usersModule.findAll({
       filter: query,
       pageNumber: 0,
-      pageSize: 10
+      pageSize: 10,
     })
   }
 

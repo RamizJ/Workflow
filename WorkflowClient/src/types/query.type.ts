@@ -22,5 +22,5 @@ export interface SortField {
 
 export enum SortType {
   Ascending = 'Ascending',
-  Descending = 'Descending'
+  Descending = 'Descending',
 }

@@ -4,7 +4,7 @@ import { ChartData, ChartOptions } from 'chart.js'
 import { Doughnut } from 'vue-chartjs'
 
 @Component({
-  extends: Doughnut
+  extends: Doughnut,
 })
 export default class ChartDoughnut extends Vue<Doughnut> {
   constructor(props: any) {

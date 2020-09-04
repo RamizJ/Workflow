@@ -35,11 +35,11 @@ import { SortType } from '@/types/query.type'
 @Component({
   components: {
     ProjectToolbar,
-    ProjectTable
-  }
+    ProjectTable,
+  },
 })
 export default class ProjectsPage extends mixins(PageMixin) {
-  protected mounted() {
+  protected mounted(): void {
     if (!this.$route.query.sort) this.onSortChange('creationDate')
     if (!this.$route.query.order) this.onOrderChange(SortType.Descending)
   }

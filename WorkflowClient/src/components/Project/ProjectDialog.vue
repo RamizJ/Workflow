@@ -125,18 +125,16 @@ export default class ProjectDialog extends mixins(DialogMixin) {
   @Prop() readonly id: number | undefined
   @Ref() readonly title?: HTMLInputElement
 
-  private isEdit = !!this.id
-
   public form: Project = {
     name: '',
     description: '',
     ownerId: '',
     ownerFio: '',
     creationDate: new Date(),
-    teamIds: []
+    teamIds: [],
   }
   private rules = {
-    name: [{ required: true, message: '!', trigger: 'blur' }]
+    name: [{ required: true, message: '!', trigger: 'blur' }],
   }
   private descriptionVisible = null
   private teamsVisible = null
@@ -151,7 +149,7 @@ export default class ProjectDialog extends mixins(DialogMixin) {
       await projectsModule.findTeams({
         projectId: this.id,
         pageNumber: 0,
-        pageSize: 10
+        pageSize: 10,
       })
       this.form.teamIds = []
       this.form.teamIds = projectsModule.projectTeams.map(team => (team.id ? team.id : -1))
@@ -171,7 +169,7 @@ export default class ProjectDialog extends mixins(DialogMixin) {
         Message({
           showClose: true,
           message: 'Форма заполнена некорректно',
-          type: 'error'
+          type: 'error',
         })
       }
     })
@@ -180,7 +178,7 @@ export default class ProjectDialog extends mixins(DialogMixin) {
   private async sendForm(): Promise<void> {
     this.loading = true
     const entity: Project = { ...this.form } as Project
-    if (this.isEdit) await projectsModule.updateOne(entity)
+    if (this.id) await projectsModule.updateOne(entity)
     else await projectsModule.createOne(entity)
     this.loading = false
   }

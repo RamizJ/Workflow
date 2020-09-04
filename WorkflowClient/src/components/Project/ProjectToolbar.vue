@@ -42,14 +42,14 @@ import ToolbarView from '@/components/Toolbar/ToolbarView.vue'
     Toolbar,
     ToolbarFilters,
     ToolbarFiltersExtra,
-    ToolbarView
-  }
+    ToolbarView,
+  },
 })
 export default class ProjectToolbar extends mixins(ToolbarMixin) {
   private sortFields = [
     { value: 'creationDate', label: 'По дате создания' },
     { value: 'name', label: 'По названию' },
-    { value: 'state', label: 'По руководителю' }
+    { value: 'state', label: 'По руководителю' },
   ]
 }
 </script>

@@ -6,5 +6,5 @@ export default {
   logout: () => http.post(`/api/Authentication/Logout`),
   changePassword: (currentPassword: string, newPassword: string) =>
     http.post(`/api/Users/ChangePassword`, { currentPassword, newPassword }),
-  getMe: () => http.get(`/api/Users/GetCurrent`)
+  getMe: () => http.get(`/api/Users/GetCurrent`),
 }

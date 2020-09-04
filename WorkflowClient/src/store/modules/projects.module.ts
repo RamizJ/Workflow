@@ -11,7 +11,7 @@ import { Status } from '@/types/task.type'
   dynamic: true,
   namespaced: true,
   name: 'projectsModule',
-  store
+  store,
 })
 class ProjectsModule extends VuexModule {
   _project: Project | null = null
@@ -68,10 +68,10 @@ class ProjectsModule extends VuexModule {
     const projectTeams: Team[] = await this.context.dispatch('findTeams', {
       projectId: id,
       pageNumber: 0,
-      pageSize: 20
+      pageSize: 20,
     })
     result.teams = projectTeams
-    result.teamIds = projectTeams.map(team => (team.id ? team.id : -1))
+    result.teamIds = projectTeams.map((team) => (team.id ? team.id : -1))
     this.context.commit('setProject', result)
     this.context.commit('setProjectTeams', projectTeams)
     return result
@@ -81,7 +81,7 @@ class ProjectsModule extends VuexModule {
   async createOne(entity: Project): Promise<Project> {
     const request = {
       project: entity,
-      teamIds: entity.teamIds || []
+      teamIds: entity.teamIds || [],
     }
     const response = await projectsAPI.createOne(request)
     const result = response.data as Project
@@ -101,7 +101,7 @@ class ProjectsModule extends VuexModule {
   async updateOne(entity: Project): Promise<void> {
     const request = {
       project: entity,
-      teamIds: entity.teamIds || []
+      teamIds: entity.teamIds || [],
     }
     await projectsAPI.updateOne(request)
   }
@@ -134,7 +134,7 @@ class ProjectsModule extends VuexModule {
   @Action
   async findTeams(query: Query): Promise<Team[]> {
     const response = await projectsAPI.findTeams(query)
-    const results = (response.data as Team[]).map(team => {
+    const results = (response.data as Team[]).map((team) => {
       team.userIds = []
       team.projectIds = []
       return team
@@ -176,7 +176,7 @@ class ProjectsModule extends VuexModule {
   @Action
   async getTasksCountByStatus({
     projectId,
-    status
+    status,
   }: {
     projectId: number
     status: Status

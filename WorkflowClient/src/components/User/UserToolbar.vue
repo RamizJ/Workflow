@@ -45,7 +45,7 @@ export default class UserToolbar extends mixins(ToolbarMixin) {
     { value: 'middleName', label: 'По отчеству' },
     { value: 'userName', label: 'По логину' },
     { value: 'email', label: 'По почте' },
-    { value: 'position', label: 'По должности' }
+    { value: 'position', label: 'По должности' },
   ]
 }
 </script>

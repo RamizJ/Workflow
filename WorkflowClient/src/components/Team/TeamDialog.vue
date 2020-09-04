@@ -174,34 +174,32 @@ export default class TeamDialog extends mixins(DialogMixin) {
   @Prop() readonly id: number | undefined
   @Ref() readonly title?: HTMLInputElement
 
-  private isEdit = !!this.id
-
   private form: Team = {
     name: '',
     description: '',
     userIds: [],
-    projectIds: []
+    projectIds: [],
   }
   private rules = {
-    name: [{ required: true, message: '!', trigger: 'blur' }]
+    name: [{ required: true, message: '!', trigger: 'blur' }],
   }
   private descriptionVisible = null
   private teamMembersVisible = null
   private projectsVisible = null
 
   public get projects(): { value: string | undefined; id: number | undefined }[] {
-    return teamsModule.teamProjects.map(project => {
+    return teamsModule.teamProjects.map((project) => {
       return {
         value: project.name,
-        id: project.id
+        id: project.id,
       }
     })
   }
   public get users(): { value: string | undefined; id: string | undefined }[] {
-    return teamsModule.teamUsers.map(user => {
+    return teamsModule.teamUsers.map((user) => {
       return {
         value: `${user.lastName} ${user.firstName}`,
-        id: user.id
+        id: user.id,
       }
     })
   }
@@ -212,7 +210,7 @@ export default class TeamDialog extends mixins(DialogMixin) {
       teamId: this.form.id,
       filter: query,
       pageNumber: 0,
-      pageSize: 20
+      pageSize: 20,
     } as Query)
   }
 
@@ -222,7 +220,7 @@ export default class TeamDialog extends mixins(DialogMixin) {
       teamId: this.form.id,
       filter: query,
       pageNumber: 0,
-      pageSize: 20
+      pageSize: 20,
     } as Query)
   }
 
@@ -258,7 +256,7 @@ export default class TeamDialog extends mixins(DialogMixin) {
 
   private async submit(): Promise<void> {
     const form = this.$refs.form as ElForm
-    await form.validate(async valid => {
+    await form.validate(async (valid) => {
       if (valid) {
         await this.sendForm()
         this.$emit('submit')
@@ -267,7 +265,7 @@ export default class TeamDialog extends mixins(DialogMixin) {
         Message({
           showClose: true,
           message: 'Форма заполнена некорректно',
-          type: 'error'
+          type: 'error',
         })
       }
     })
@@ -276,7 +274,7 @@ export default class TeamDialog extends mixins(DialogMixin) {
   private async sendForm(): Promise<void> {
     this.loading = true
     const entity: Team = { ...this.form } as Team
-    if (this.isEdit) await teamsModule.updateOne(entity)
+    if (this.id) await teamsModule.updateOne(entity)
     else await teamsModule.createOne(entity)
     this.loading = false
   }

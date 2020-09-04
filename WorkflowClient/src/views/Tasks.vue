@@ -47,16 +47,16 @@ import { SortType } from '@/types/query.type'
   components: {
     TaskToolbar,
     TaskTable,
-    TaskBoard
-  }
+    TaskBoard,
+  },
 })
 export default class Tasks extends mixins(PageMixin) {
-  protected mounted() {
+  protected mounted(): void {
     if (!this.$route.query.sort) this.onSortChange('creationDate')
     if (!this.$route.query.order) this.onOrderChange(SortType.Descending)
   }
 
-  private onCreate() {
+  private onCreate(): void {
     if (this.view === View.List) (this.$refs.items as TaskTable).createEntity()
     if (this.view === View.Board) (this.$refs.items as TaskBoard).createEntity()
   }

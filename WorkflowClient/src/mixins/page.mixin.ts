@@ -37,7 +37,7 @@ export default class PageMixin extends Vue {
 
   private async updateUrl(queryLabel: string, queryValue: string): Promise<void> {
     const query: Dictionary<string | (string | null)[] | null | undefined> | undefined = {
-      ...this.$route.query
+      ...this.$route.query,
     }
     if (query[queryLabel] !== queryValue) {
       query[queryLabel] = queryValue || undefined

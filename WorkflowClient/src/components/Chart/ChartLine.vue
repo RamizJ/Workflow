@@ -4,7 +4,7 @@ import { ChartData, ChartOptions } from 'chart.js'
 import { Line } from 'vue-chartjs'
 
 @Component({
-  extends: Line
+  extends: Line,
 })
 export default class ChartPie extends Vue<Line> {
   constructor(props: any) {

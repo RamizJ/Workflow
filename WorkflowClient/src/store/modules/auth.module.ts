@@ -10,7 +10,7 @@ import User from '@/types/user.type'
   dynamic: true,
   namespaced: true,
   name: 'authModule',
-  store: store
+  store: store,
 })
 class AuthModule extends VuexModule {
   _user: User | null = null
@@ -34,7 +34,7 @@ class AuthModule extends VuexModule {
     localStorage.setItem('workflow_access_token', token)
     return {
       _user: user,
-      _token: token
+      _token: token,
     }
   }
 
@@ -44,7 +44,7 @@ class AuthModule extends VuexModule {
     localStorage.removeItem('workflow_access_token')
     return {
       _user: null,
-      _token: null
+      _token: null,
     }
   }
 
@@ -54,12 +54,12 @@ class AuthModule extends VuexModule {
     if (!response || response.status === 401)
       return {
         _user: null,
-        _token: null
+        _token: null,
       }
     else {
       return {
         _user: response.data as User,
-        _token: localStorage.getItem('workflow_access_token') || this._token
+        _token: localStorage.getItem('workflow_access_token') || this._token,
       }
     }
   }
@@ -67,7 +67,7 @@ class AuthModule extends VuexModule {
   @Action
   public async changePassword({
     currentPassword,
-    newPassword
+    newPassword,
   }: {
     currentPassword: string
     newPassword: string

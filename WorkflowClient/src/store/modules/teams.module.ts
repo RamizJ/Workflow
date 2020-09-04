@@ -11,7 +11,7 @@ import User from '@/types/user.type'
   dynamic: true,
   namespaced: true,
   name: 'teamsModule',
-  store
+  store,
 })
 class TeamsModule extends VuexModule {
   _team: Team | null = null
@@ -83,7 +83,7 @@ class TeamsModule extends VuexModule {
     const request = {
       team: entity,
       userIds: entity.userIds || [],
-      projectIds: entity.projectIds || []
+      projectIds: entity.projectIds || [],
     }
     const response = await teamsAPI.createOne(request)
     const result = response.data as { team: Team; userIds: string[]; projectIds: number[] }
@@ -105,7 +105,7 @@ class TeamsModule extends VuexModule {
     const request = {
       team: entity,
       userIds: entity.userIds || [],
-      projectIds: entity.projectIds || []
+      projectIds: entity.projectIds || [],
     }
     await teamsAPI.updateOne(request)
   }

@@ -15,8 +15,8 @@ module.exports = {
     devtool: 'source-map',
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, 'src/')
-      }
+        '@': path.resolve(__dirname, 'src/'),
+      },
     },
     plugins: [
       // new BundleAnalyzerPlugin(),
@@ -24,22 +24,22 @@ module.exports = {
       new webpack.NormalModuleReplacementPlugin(
         /element-ui[\/\\]lib[\/\\]locale[\/\\]lang[\/\\]zh-CN/,
         'element-ui/lib/locale/lang/ru-RU'
-      )
-    ]
+      ),
+    ],
   },
   css: {
     loaderOptions: {
       sass: {
-        prependData: `@import "@/styles/_variables.scss";`
-      }
-    }
+        prependData: `@import "@/styles/_variables.scss";`,
+      },
+    },
   },
   devServer: {
-    headers: { 'Cache-Control': 'no-store' }
+    headers: { 'Cache-Control': 'no-store' },
   },
-  chainWebpack: config => {
+  chainWebpack: (config) => {
     if (process.env.NODE_ENV === 'development') {
       config.plugins.delete('preload')
     }
-  }
+  },
 }

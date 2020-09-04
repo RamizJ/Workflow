@@ -25,5 +25,5 @@ export default {
   getTasksCount: (projectId: number) =>
     http.get(`/api/Goals/GetTotalProjectGoalsCount/${projectId}`),
   getTasksCountByStatus: (projectId: number, status: string) =>
-    http.get(`/api/Goals/GetProjectGoalsByStateCount/${projectId}?goalState=${status}`)
+    http.get(`/api/Goals/GetProjectGoalsByStateCount/${projectId}?goalState=${status}`),
 }

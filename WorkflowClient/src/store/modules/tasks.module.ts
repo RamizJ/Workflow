@@ -11,7 +11,7 @@ import Attachment from '@/types/attachment.type'
   dynamic: true,
   namespaced: true,
   name: 'tasksModule',
-  store
+  store,
 })
 class TasksModule extends VuexModule {
   _task: Task | null = null
@@ -37,7 +37,7 @@ class TasksModule extends VuexModule {
   @Action({ rawError: true })
   async findAll(query: Query): Promise<Task[]> {
     const response = await tasksAPI.findAll(query)
-    const results = (response.data as Task[]).filter(task => !task.parentGoalId)
+    const results = (response.data as Task[]).filter((task) => !task.parentGoalId)
     this.context.commit('setTasks', results)
     return results
   }
@@ -62,7 +62,7 @@ class TasksModule extends VuexModule {
     }
     if (result.isAttachmentsExist)
       result.attachments = (await this.context.dispatch('findAttachments', id)) as Attachment[]
-    result.attachments = result.attachments?.map(attachment => {
+    result.attachments = result.attachments?.map((attachment) => {
       attachment.name = attachment.fileName
       return attachment
     })
@@ -84,7 +84,7 @@ class TasksModule extends VuexModule {
         const createdChild = await this.context.dispatch('createOne', childTask)
         child.push(createdChild)
       }
-      const childIds = child.map(task => task.id)
+      const childIds = child.map((task) => task.id)
       await this.context.dispatch('addChild', { id: createdTask.id, childIds })
       await this.context.dispatch('updateMany', child)
     }
@@ -118,7 +118,7 @@ class TasksModule extends VuexModule {
           updatedTask = await this.context.dispatch('createOne', childTask)
         if (childTask.id && !childTask.isRemoved) child.push(updatedTask)
       }
-      const childIds = child.map(task => task.id)
+      const childIds = child.map((task) => task.id)
       await this.context.dispatch('addChild', { id: entity.id, childIds })
       await this.context.dispatch('updateMany', child)
     }
@@ -173,7 +173,7 @@ class TasksModule extends VuexModule {
     if (!query)
       query = {
         pageNumber: 0,
-        pageSize: 20
+        pageSize: 20,
       }
     const response = await tasksAPI.findChild(id, query)
     return response.data as Task[]

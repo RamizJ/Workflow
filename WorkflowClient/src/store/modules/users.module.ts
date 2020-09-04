@@ -10,7 +10,7 @@ import Query from '@/types/query.type'
   dynamic: true,
   namespaced: true,
   name: 'usersModule',
-  store
+  store,
 })
 class UsersModule extends VuexModule {
   _user: User | null = null

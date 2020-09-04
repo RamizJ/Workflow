@@ -48,7 +48,7 @@ import {
   Divider,
   Loading,
   MessageBox,
-  Message
+  Message,
 } from 'element-ui'
 import language from 'element-ui/lib/locale/lang/ru-RU'
 import locale from 'element-ui/lib/locale'

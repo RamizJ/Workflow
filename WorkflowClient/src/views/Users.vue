@@ -36,16 +36,16 @@ import { SortType } from '@/types/query.type'
 @Component({
   components: {
     UserToolbar,
-    UserTable
-  }
+    UserTable,
+  },
 })
 export default class UsersPage extends mixins(PageMixin) {
-  protected mounted() {
+  protected mounted(): void {
     if (!this.$route.query.sort) this.onSortChange('lastName')
     if (!this.$route.query.order) this.onOrderChange(SortType.Ascending)
   }
 
-  private onCreate() {
+  private onCreate(): void {
     ;(this.$refs.items as UserTable).createEntity()
   }
 }

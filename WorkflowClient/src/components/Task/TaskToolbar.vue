@@ -132,8 +132,8 @@ import ToolbarMixin from '@/mixins/toolbar.mixin.ts'
     Toolbar,
     ToolbarFilters,
     ToolbarFiltersExtra,
-    ToolbarView
-  }
+    ToolbarView,
+  },
 })
 export default class TaskToolbar extends mixins(ToolbarMixin) {
   private sortFields = [
@@ -142,7 +142,7 @@ export default class TaskToolbar extends mixins(ToolbarMixin) {
     { value: 'performerFio', label: 'По ответственному' },
     { value: 'projectName', label: 'По проекту' },
     { value: 'state', label: 'По статусу' },
-    { value: 'priority', label: 'По приоритету' }
+    { value: 'priority', label: 'По приоритету' },
   ]
 }
 </script>

@@ -69,8 +69,8 @@ import UserTable from '@/components/User/UserTable.vue'
     TeamProjects,
     TeamDialog,
     TeamAddUserDialog,
-    UserDialog
-  }
+    UserDialog,
+  },
 })
 export default class TeamPage extends Vue {
   private loading = true
@@ -78,7 +78,7 @@ export default class TeamPage extends Vue {
     name: '',
     description: '',
     userIds: [],
-    projectIds: []
+    projectIds: [],
   }
   private activeTab = 'members'
   private dialogTeamVisible = false
@@ -89,7 +89,7 @@ export default class TeamPage extends Vue {
     return parseInt(this.$route.params.teamId)
   }
 
-  protected async mounted() {
+  protected async mounted(): void {
     this.loading = true
     this.loadTab()
     const team = await teamsModule.findOneById(this.id)

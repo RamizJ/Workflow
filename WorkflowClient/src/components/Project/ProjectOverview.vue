@@ -52,7 +52,7 @@ export default class ProjectOverview extends Vue {
     description: '',
     ownerId: '',
     ownerFio: '',
-    teamIds: []
+    teamIds: [],
   }
   private totalTasksCount = 0
   private completedTasksCount = 0
@@ -71,7 +71,7 @@ export default class ProjectOverview extends Vue {
       this.totalTasksCount = await projectModule.getTasksCount(this.project.id)
       this.completedTasksCount = await projectModule.getTasksCountByStatus({
         projectId: this.project.id,
-        status: Status.Succeed
+        status: Status.Succeed,
       })
     }
   }

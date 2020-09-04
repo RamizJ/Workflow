@@ -87,8 +87,8 @@ import TeamTable from '@/components/Team/TeamTable.vue'
     ProjectReports,
     ProjectDialog,
     ProjectAddTeamDialog,
-    TaskDialog
-  }
+    TaskDialog,
+  },
 })
 export default class ProjectPage extends Vue {
   private loading = true
@@ -96,7 +96,7 @@ export default class ProjectPage extends Vue {
   private projectItem: Project = {
     name: '',
     description: '',
-    teamIds: []
+    teamIds: [],
   }
   private projectModalVisible = false
   private teamModalVisible = false

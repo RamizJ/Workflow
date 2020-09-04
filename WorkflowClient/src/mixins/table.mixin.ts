@@ -25,12 +25,12 @@ export default class TableMixin extends Vue {
     { value: Status.Testing, label: 'Проверяется' },
     { value: Status.Delay, label: 'Отложено' },
     { value: Status.Succeed, label: 'Выполнено' },
-    { value: Status.Rejected, label: 'Отклонено' }
+    { value: Status.Rejected, label: 'Отклонено' },
   ]
   private priorities = [
     { value: Priority.Low, label: 'Низкий' },
     { value: Priority.Normal, label: 'Средний' },
-    { value: Priority.High, label: 'Высокий' }
+    { value: Priority.High, label: 'Высокий' },
   ]
 
   public data: Entity[] = []
@@ -41,7 +41,7 @@ export default class TableMixin extends Vue {
   public isShiftPressed = false
 
   public get isRowEditable(): boolean {
-    const filter = this.filters?.find(filter => filter.fieldName === 'isRemoved')
+    const filter = this.filters?.find((filter) => filter.fieldName === 'isRemoved')
     return !filter || filter.values[0] == false
   }
 
@@ -68,7 +68,7 @@ export default class TableMixin extends Vue {
   onFiltersChange(value: FilterField[]): void {
     this.query.filterFields = value
     this.query.withRemoved = !!value.find(
-      filter => filter.fieldName === 'isRemoved' && filter.values[0] === true
+      (filter) => filter.fieldName === 'isRemoved' && filter.values[0] === true
     )
     this.reloadData()
   }
@@ -108,9 +108,9 @@ export default class TableMixin extends Vue {
       sortFields: [
         {
           fieldName: (this.$route.query.sort as string) || 'creationDate',
-          sortType: (this.$route.query.order as SortType) || SortType.Descending
-        }
-      ]
+          sortType: (this.$route.query.order as SortType) || SortType.Descending,
+        },
+      ],
     }
     if (this.filters) this.onFiltersChange(this.filters)
     if (this.search) this.onSearchChange(this.search)
@@ -178,11 +178,11 @@ export default class TableMixin extends Vue {
   }
 
   public formatPriority(row: Entity, column: ElTableColumn, value: string): string {
-    return this.priorities.find(priority => priority.value == (value as Priority))?.label || ''
+    return this.priorities.find((priority) => priority.value == (value as Priority))?.label || ''
   }
 
   public formatStatus(row: Entity, column: ElTableColumn, value: string): string {
-    return this.statuses.find(status => status.value === (value as Status))?.label || ''
+    return this.statuses.find((status) => status.value === (value as Status))?.label || ''
   }
 
   public formatDate(row: Entity, column: ElTableColumn, value: string): string {

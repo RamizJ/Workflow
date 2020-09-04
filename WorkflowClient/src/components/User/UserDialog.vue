@@ -176,8 +176,6 @@ export default class UserDialog extends mixins(DialogMixin) {
   @Prop() readonly id: string | undefined
   @Ref() readonly title?: Input
 
-  private isEdit = !!this.id
-
   private form: User = {
     lastName: '',
     firstName: '',
@@ -188,7 +186,7 @@ export default class UserDialog extends mixins(DialogMixin) {
     phone: '',
     position: '',
     teamIds: this.$route.params.teamId ? [parseInt(this.$route.params.teamId)] : [],
-    roles: []
+    roles: [],
   }
   private rules = {
     name: [{ required: true, message: '!', trigger: 'blur' }],
@@ -196,14 +194,14 @@ export default class UserDialog extends mixins(DialogMixin) {
     firstName: [{ required: true, message: '!', trigger: 'blur' }],
     userName: [
       { required: true, message: '!', trigger: 'blur' },
-      { validator: this.validateLogin, trigger: 'blur' }
+      { validator: this.validateLogin, trigger: 'blur' },
     ],
     password: [{ validator: this.validatePassword, trigger: 'blur' }],
     email: [
       { required: true, message: '!', trigger: 'blur' },
       { type: 'email', message: 'не почта', trigger: 'blur' },
-      { validator: this.validateEmail, trigger: 'blur' }
-    ]
+      { validator: this.validateEmail, trigger: 'blur' },
+    ],
   }
   private roles: string[] = []
   private teamsVisible = null
@@ -225,7 +223,7 @@ export default class UserDialog extends mixins(DialogMixin) {
 
   private async submit(): Promise<void> {
     const form = this.$refs.form as ElForm
-    await form.validate(async valid => {
+    await form.validate(async (valid) => {
       if (valid) {
         await this.sendForm()
         this.$emit('submit')
@@ -234,7 +232,7 @@ export default class UserDialog extends mixins(DialogMixin) {
         Message({
           showClose: true,
           message: 'Форма заполнена некорректно',
-          type: 'error'
+          type: 'error',
         })
       }
     })
@@ -243,7 +241,7 @@ export default class UserDialog extends mixins(DialogMixin) {
   private async sendForm(): Promise<void> {
     this.loading = true
     const entity: User = { ...this.form } as User
-    if (this.isEdit) await usersModule.updateOne(entity)
+    if (this.id) await usersModule.updateOne(entity)
     else await usersModule.createOne(entity)
     this.loading = false
   }
@@ -271,7 +269,7 @@ export default class UserDialog extends mixins(DialogMixin) {
   private validatePassword(rule: any, value: string, callback: any): void {
     const length = value?.trim().length
     const symbolsLeft = 6 - length
-    if (!value && this.isEdit) callback()
+    if (!value && this.id) callback()
     if (!value) callback(new Error('!'))
     else if (length < 6)
       callback(

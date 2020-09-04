@@ -5,7 +5,7 @@ import moment from 'moment'
 export enum Priority {
   Low = 'Low',
   Normal = 'Normal',
-  High = 'High'
+  High = 'High',
 }
 
 export enum Status {
@@ -14,7 +14,7 @@ export enum Status {
   Delay = 'Delay',
   Testing = 'Testing',
   Succeed = 'Succeed',
-  Rejected = 'Rejected'
+  Rejected = 'Rejected',
 }
 
 export default class Task extends Entity {

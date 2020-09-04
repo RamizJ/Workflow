@@ -36,16 +36,16 @@ import { SortType } from '@/types/query.type'
 @Component({
   components: {
     TeamToolbar,
-    TeamTable
-  }
+    TeamTable,
+  },
 })
 export default class TeamsPage extends mixins(PageMixin) {
-  protected mounted() {
+  protected mounted(): void {
     if (!this.$route.query.sort) this.onSortChange('name')
     if (!this.$route.query.order) this.onOrderChange(SortType.Ascending)
   }
 
-  private onCreate() {
+  private onCreate(): void {
     ;(this.$refs.items as TeamTable).createEntity()
   }
 }

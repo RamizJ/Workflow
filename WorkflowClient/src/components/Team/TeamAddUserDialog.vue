@@ -65,13 +65,13 @@ import Query from '@/types/query.type'
 @Component({ components: { BaseDialog } })
 export default class TeamAddUserDialog extends mixins(DialogMixin) {
   private form = {
-    userId: ''
+    userId: '',
   }
 
   private get usersToAdd(): { value: string | undefined; id: string | undefined }[] {
     const allUsers = this.users
     const existingUsers = this.existingUsers
-    return allUsers.filter(user => {
+    return allUsers.filter((user) => {
       return !existingUsers.find(
         (existingUser: { value: string | undefined; id: string | undefined }) =>
           existingUser.id === user.id
@@ -79,10 +79,10 @@ export default class TeamAddUserDialog extends mixins(DialogMixin) {
     })
   }
   private get existingUsers(): { value: string | undefined; id: string | undefined }[] {
-    return teamsModule.teamUsers.map(user => {
+    return teamsModule.teamUsers.map((user) => {
       return {
         value: `${user.lastName} ${user.firstName}`,
-        id: user.id
+        id: user.id,
       }
     })
   }
@@ -93,7 +93,7 @@ export default class TeamAddUserDialog extends mixins(DialogMixin) {
     await teamsModule.findUsers({
       teamId: parseInt(this.$route.params.teamId),
       pageNumber: 0,
-      pageSize: 100
+      pageSize: 100,
     } as Query)
     setTimeout(() => (this.$refs.input as Input).focus(), 150)
   }

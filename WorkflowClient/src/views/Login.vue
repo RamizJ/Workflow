@@ -36,16 +36,16 @@ export default class LoginPage extends Vue {
   private form: Credentials = {
     userName: '',
     password: '',
-    rememberMe: false
+    rememberMe: false,
   }
   private rules = {
     userName: [{ required: true, message: '!', trigger: 'blur' }],
-    password: [{ required: true, message: '!', trigger: 'blur' }]
+    password: [{ required: true, message: '!', trigger: 'blur' }],
   }
 
   private async submit(): Promise<void> {
     const formCredentials = { ...this.form }
-    this.formComponent.validate(async valid => {
+    this.formComponent.validate(async (valid) => {
       if (valid) {
         try {
           this.loading = true
@@ -58,14 +58,14 @@ export default class LoginPage extends Vue {
           this.$message({
             showClose: true,
             message: 'Неверный логин или пароль',
-            type: 'error'
+            type: 'error',
           })
         }
       } else {
         this.$message({
           showClose: true,
           message: 'Форма заполнена некорректно',
-          type: 'error'
+          type: 'error',
         })
       }
       this.formComponent.resetFields()

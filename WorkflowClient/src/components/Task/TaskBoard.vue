@@ -116,7 +116,7 @@ export default class TaskBoard extends mixins(TableMixin) {
       ghostClass: 'ghost',
       handle: '.list__header',
       disabled: false,
-      group: 'lists'
+      group: 'lists',
     }
   }
   private get itemsDragOptions() {
@@ -124,7 +124,7 @@ export default class TaskBoard extends mixins(TableMixin) {
       animation: '200',
       ghostClass: 'ghost',
       group: 'list-items',
-      disabled: false
+      disabled: false,
     }
   }
   private get boardLists(): { label: string; name: string; items?: Task[] }[] {
@@ -136,15 +136,15 @@ export default class TaskBoard extends mixins(TableMixin) {
         { label: 'Проверяется', name: 'Testing' },
         { label: 'Отложено', name: 'Delay' },
         { label: 'Выполнено', name: 'Succeed' },
-        { label: 'Отклонено', name: 'Rejected' }
+        { label: 'Отклонено', name: 'Rejected' },
       ]
   }
 
   private async onListMove(): Promise<void> {
-    const newBoardLists = this.lists.map(list => {
+    const newBoardLists = this.lists.map((list) => {
       return {
         label: list.label,
-        name: list.name
+        name: list.name,
       }
     })
     localStorage.boardLists = JSON.stringify(newBoardLists)
@@ -163,7 +163,7 @@ export default class TaskBoard extends mixins(TableMixin) {
       this.lists.push({
         label: list.label,
         name: list.name,
-        items: this.data.filter(item => item.state === list.name)
+        items: this.data.filter((item) => item.state === list.name),
       })
     })
   }
