@@ -7,7 +7,7 @@
       trigger="click"
     >
       <el-button slot="reference" size="mini">
-        <feather type="sliders" size="18"></feather>
+        <feather type="sliders" size="16"></feather>
       </el-button>
       <slot />
     </el-popover>
@@ -26,8 +26,12 @@ export default class ToolbarFiltersExtra extends Vue {}
   float: right;
   margin-top: 26px;
   .el-button--mini {
-    padding: 7.25px 8px;
-    border-radius: 8px;
+    padding: 7.5px 8px;
+    border-radius: 5px;
+    &:hover:not(:focus) {
+      background: var(--button-background);
+      color: var(--text);
+    }
   }
 }
 </style>

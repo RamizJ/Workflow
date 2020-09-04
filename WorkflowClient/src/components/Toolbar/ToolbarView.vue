@@ -3,7 +3,6 @@
     <div class="toolbar-view__sort">
       <el-button type="text" size="mini" @click="onOrderChange">
         <feather :class="order" type="bar-chart" size="15"></feather>
-        <!--feather(:class="order" type="code" size="13")-->
       </el-button>
       <el-select v-model="sort" size="small" placeholder="По умолчанию" @change="onSortChange">
         <el-option
@@ -53,13 +52,13 @@ import { View } from '@/types/view.type'
 
 @Component
 export default class ToolbarView extends Vue {
-  @Prop() readonly sortFields: [] | undefined
+  @Prop() readonly sortFields: { value: string; label: string }[] | undefined
   @Prop() readonly board: boolean | undefined
   @Prop() readonly grid: boolean | undefined
   @Prop() readonly list: boolean | undefined
 
   private order = (this.$route.query.order as SortType) || SortType.Descending
-  private sort = this.$route.query.sort || ''
+  private sort = this.$route.query.sort || (this.sortFields ? this.sortFields[0].value : '')
   private view = (this.$route.query.view as View) || View.List
 
   private onOrderChange(): void {
@@ -87,6 +86,9 @@ export default class ToolbarView extends Vue {
   align-items: center;
   margin-top: 20px;
 }
+.toolbar-view__display .el-button:first-child {
+  margin-left: 20px;
+}
 .toolbar-view__sort,
 .toolbar-view__display {
   display: flex;
@@ -103,10 +105,11 @@ export default class ToolbarView extends Vue {
     margin-right: -5px;
   }
   .el-select {
-    width: 160px;
-    margin-bottom: 3px;
+    width: 128px;
+    margin-bottom: 1px;
     .el-input__inner {
-      padding: 0 5px;
+      padding: 0;
+      padding-left: 5px;
       font-size: 14px;
       line-height: 21px;
       height: 21px;

@@ -34,6 +34,9 @@ export default class ToolbarFilters extends Vue {}
 
 <style lang="scss">
 .toolbar-filters {
+  .el-select {
+    width: 100%;
+  }
   .el-select .el-input__icon::before {
     content: '\e6e1' !important;
   }

@@ -23,8 +23,6 @@
       :sort-fields="sortFields"
       @order="onOrderChange"
       @sort="onSortChange"
-      @view="onViewChange"
-      list="list"
     ></toolbar-view>
   </toolbar>
 </template>
