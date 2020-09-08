@@ -17,6 +17,16 @@
       <el-form-item>
         <el-button type="primary" :loading="loading" @click="submit">Войти</el-button>
       </el-form-item>
+      <el-form-item prop="rememberMe">
+        <el-checkbox v-model="form.rememberMe">Запомнить меня</el-checkbox>
+      </el-form-item>
+      <el-form-item>
+        <div class="support">
+          По всем вопросам обращайтесь по указанному адресу электронной почты. Специалист службы
+          технической поддержки свяжется с Вами.
+        </div>
+        <el-link class="support" href="mailto:support@girngm.ru">support@girngm.ru</el-link>
+      </el-form-item>
     </el-form>
   </el-card>
 </template>
@@ -33,11 +43,7 @@ export default class LoginPage extends Vue {
   @Ref('form') readonly formComponent!: ElForm
 
   private loading = false
-  private form: Credentials = {
-    userName: '',
-    password: '',
-    rememberMe: false,
-  }
+  private form: Credentials = new Credentials('', '')
   private rules = {
     userName: [{ required: true, message: '!', trigger: 'blur' }],
     password: [{ required: true, message: '!', trigger: 'blur' }],
@@ -77,21 +83,21 @@ export default class LoginPage extends Vue {
 <style lang="scss" scoped>
 .el-card {
   text-align: center;
-  width: 350px;
+  width: 375px;
   padding: 20px 28px;
-  margin-bottom: 20vh;
+  margin-top: 5vh;
   border-radius: 6px;
   color: var(--text);
   border-color: transparent;
   background-color: transparent;
   .logo {
-    height: 110px;
+    height: 100px;
     margin-bottom: 40px;
   }
   .title {
     text-align: center;
     font-size: 28px;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 24px;
   }
   .el-button {
@@ -99,6 +105,7 @@ export default class LoginPage extends Vue {
   }
   .support {
     font-size: 13px;
+    line-height: normal;
   }
 }
 </style>
