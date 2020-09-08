@@ -1,6 +1,9 @@
 <template>
   <div class="toolbar-filters-extra">
-    <el-popover
+    <el-button size="mini">
+      <feather type="sliders" size="16"></feather>
+    </el-button>
+    <!--<el-popover
       popper-class="filters-panel"
       placement="bottom-start"
       transition="fade"
@@ -10,7 +13,7 @@
         <feather type="sliders" size="16"></feather>
       </el-button>
       <slot />
-    </el-popover>
+    </el-popover>-->
   </div>
 </template>
 

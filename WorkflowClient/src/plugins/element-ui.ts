@@ -14,6 +14,8 @@ import {
   RadioButton,
   Checkbox,
   CheckboxButton,
+  Collapse,
+  CollapseItem,
   Switch,
   Select,
   Option,
@@ -70,6 +72,8 @@ Vue.use(Radio)
 Vue.use(RadioButton)
 Vue.use(Checkbox)
 Vue.use(CheckboxButton)
+Vue.use(Collapse)
+Vue.use(CollapseItem)
 Vue.use(Switch)
 Vue.use(Select)
 Vue.use(Option)

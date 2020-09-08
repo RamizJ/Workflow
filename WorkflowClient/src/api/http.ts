@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { Message } from 'element-ui'
 
 const getToken = () => localStorage.getItem('workflow_access_token')
@@ -6,8 +6,8 @@ const getToken = () => localStorage.getItem('workflow_access_token')
 const http: AxiosInstance = axios.create({
   baseURL: process.env.VUE_APP_API_URL,
   headers: {
-    'Content-Type': 'application/json'
-  }
+    'Content-Type': 'application/json',
+  },
 })
 
 const authInterceptor = (config: AxiosRequestConfig) => {
@@ -27,7 +27,7 @@ const pushErrorMessage = (error: any) => {
     Message({
       message: `Неизвестная ошибка при запросе к «${url}»`,
       type: 'error',
-      duration: 5000
+      duration: 5000,
     })
 
   switch (statusCode) {
@@ -35,35 +35,35 @@ const pushErrorMessage = (error: any) => {
       Message({
         message: `Синтаксическая ошибка в запросе к «${url}»`,
         type: 'error',
-        duration: 5000
+        duration: 5000,
       })
       break
     case 401:
       Message({
         message: `Для выполнения запроса к «${url}» требуется аутентификация`,
         type: 'error',
-        duration: 5000
+        duration: 5000,
       })
       break
     case 403:
       Message({
         message: `Доступ к «${url}» запрещён`,
         type: 'error',
-        duration: 5000
+        duration: 5000,
       })
       break
     case 404:
       Message({
         message: `Запрашиваемый ресурс «${url}» не найден`,
         type: 'error',
-        duration: 5000
+        duration: 5000,
       })
       break
     case 405:
       Message({
         message: `API метод по адресу «${url}» неактивен`,
         type: 'error',
-        duration: 5000
+        duration: 5000,
       })
       break
     default:
@@ -81,12 +81,12 @@ const errorResponseHandler = (error: any) => {
     Message({
       message: `Ошибка отправки запроса`,
       type: 'error',
-      duration: 5000
+      duration: 5000,
     })
   if (isDebugMode) pushErrorMessage(error)
 }
 
 http.interceptors.request.use(authInterceptor)
-http.interceptors.response.use(response => response, errorResponseHandler)
+http.interceptors.response.use((response) => response, errorResponseHandler)
 
 export default http

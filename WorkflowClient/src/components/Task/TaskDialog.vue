@@ -91,7 +91,7 @@
                 remote
               >
                 <el-option
-                  v-if="!users.some((user) => user.id.toString() === form.performerId.toString())"
+                  v-if="form.performerId && !users.some((user) => user.id === form.performerId)"
                   :key="form.performerId"
                   :label="shortenFullName(form.performerFio)"
                   :value="form.performerId"

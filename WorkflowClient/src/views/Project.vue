@@ -106,7 +106,7 @@ export default class ProjectPage extends Vue {
     return parseInt(this.$route.params.projectId)
   }
 
-  protected async mounted() {
+  protected async mounted(): Promise<void> {
     this.loading = true
     this.loadTab()
     const project = await projectsModule.findOneById(this.id)

@@ -89,7 +89,7 @@ export default class TeamPage extends Vue {
     return parseInt(this.$route.params.teamId)
   }
 
-  protected async mounted(): void {
+  protected async mounted(): Promise<void> {
     this.loading = true
     this.loadTab()
     const team = await teamsModule.findOneById(this.id)

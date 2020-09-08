@@ -1,7 +1,7 @@
 import { Route } from 'vue-router'
 import authModule from '@/store/modules/auth.module'
 
-export const authGuard = async (to: Route, from: Route, next: Function) => {
+export const authGuard = async (to: Route, from: Route, next: CallableFunction): Promise<void> => {
   if (!authModule.token) await authModule.logout()
   if (!authModule.me) await authModule.fetchMe()
 

@@ -30,7 +30,7 @@ a {
   width: 100%;
   flex-direction: column;
   .header {
-    padding: 25px 0 25px;
+    padding-top: 20px;
     display: flex;
     align-items: flex-start;
     &__title {
@@ -48,9 +48,8 @@ a {
     }
     &__action {
       margin-left: 6px;
-      height: 29px;
-      display: inline-flex;
-      align-items: flex-end;
+      margin-top: auto;
+      margin-bottom: 4px;
       .el-button--text {
         padding: 0;
       }
@@ -139,17 +138,17 @@ a {
 }
 .el-select-dropdown__list,
 .el-dropdown-menu {
-  padding: 6px 0;
+  padding: 5px 0;
   border-radius: 5px;
   border: none;
 }
 .el-select-dropdown__item,
 .el-dropdown-menu__item {
-  height: 33px;
-  line-height: 33px;
+  height: 32px;
+  line-height: 32px;
   font-size: 13px;
   padding: 0 27px 0 15px;
-  margin: 0 6px;
+  margin: 0 5px;
   color: var(--text);
   border-radius: 4px;
   .el-button {
@@ -414,6 +413,7 @@ a {
   flex-direction: column;
   overflow: hidden;
   flex: 1;
+  margin-top: 12px;
 }
 .el-tab-pane {
   height: 100%;

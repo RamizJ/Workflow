@@ -1,29 +1,36 @@
 <template>
-  <toolbar>
-    <toolbar-filters>
-      <div class="filter">
-        <div class="label">Поиск</div>
-        <el-input v-model="search" size="medium" placeholder="Искать..." @change="onSearch">
-          <el-button slot="prefix" type="text" size="mini" @click="onSearch(search || '')">
-            <feather type="search" size="16"></feather>
-          </el-button>
-        </el-input>
-      </div>
-    </toolbar-filters>
-    <toolbar-filters-extra v-if="!$route.params.projectId && !$route.params.teamId">
-      <el-row :gutter="20">
-        <el-col :span="24">
-          <el-checkbox v-model="filters.showOnlyDeleted" @change="onFiltersChange"
-            >Только удалённые</el-checkbox
-          >
-        </el-col>
-      </el-row>
-    </toolbar-filters-extra>
-    <toolbar-view
-      :sort-fields="sortFields"
-      @order="onOrderChange"
-      @sort="onSortChange"
-    ></toolbar-view>
+  <toolbar
+    :sort-fields="sortFields"
+    @order="onOrderChange"
+    @sort="onSortChange"
+    @filters-collapse="onFiltersCollapse"
+  >
+    <el-collapse slot="filters" v-model="activeCollapseItems">
+      <el-collapse-item name="filters">
+        <div class="toolbar__filters">
+          <div class="toolbar__filters-wrapper">
+            <div class="filter">
+              <div class="label">Поиск</div>
+              <el-input v-model="search" size="medium" placeholder="Искать..." @change="onSearch">
+                <el-button slot="prefix" type="text" size="mini" @click="onSearch(search || '')">
+                  <feather type="search" size="16"></feather>
+                </el-button>
+              </el-input>
+            </div>
+            <div class="filter">
+              <div class="label">Архив</div>
+              <el-checkbox
+                v-model="filters.showOnlyDeleted"
+                size="medium"
+                @change="onFiltersChange"
+                border
+                >Только удалённые</el-checkbox
+              >
+            </div>
+          </div>
+        </div>
+      </el-collapse-item>
+    </el-collapse>
   </toolbar>
 </template>
 
@@ -33,18 +40,8 @@ import { mixins } from 'vue-class-component'
 
 import ToolbarMixin from '@/mixins/toolbar.mixin'
 import Toolbar from '@/components/Toolbar/Toolbar.vue'
-import ToolbarFilters from '@/components/Toolbar/ToolbarFilters.vue'
-import ToolbarFiltersExtra from '@/components/Toolbar/ToolbarFiltersExtra.vue'
-import ToolbarView from '@/components/Toolbar/ToolbarView.vue'
 
-@Component({
-  components: {
-    Toolbar,
-    ToolbarFilters,
-    ToolbarFiltersExtra,
-    ToolbarView,
-  },
-})
+@Component({ components: { Toolbar } })
 export default class ProjectToolbar extends mixins(ToolbarMixin) {
   private sortFields = [
     { value: 'creationDate', label: 'По дате создания' },

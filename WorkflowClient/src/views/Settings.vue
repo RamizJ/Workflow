@@ -205,7 +205,7 @@ export default class SettingsPage extends Vue {
     localStorage.debugMode = value
   }
 
-  private validatePassword(rule: never, value: string, callback: Function): void {
+  private validatePassword(rule: never, value: string, callback: CallableFunction): void {
     const length = value?.trim().length
     const symbolsLeft = 6 - length
     if (!value) callback(new Error('!'))

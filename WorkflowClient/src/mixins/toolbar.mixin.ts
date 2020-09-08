@@ -12,6 +12,7 @@ export default class ToolbarMixin extends Vue {
   public order = this.$route.query.order || 'Descending'
   public sort = this.$route.query.sort || ''
   public view = this.$route.query.view || 'list'
+  public activeCollapseItems: string[] = []
   public filters = {
     statuses: [],
     priorities: [],
@@ -116,6 +117,10 @@ export default class ToolbarMixin extends Vue {
     this.$emit('view', value)
   }
 
+  public onFiltersCollapse(value: boolean): void {
+    this.activeCollapseItems = value ? [] : ['filters']
+  }
+
   public async onProjectsFocus(): Promise<void> {
     await this.searchProjects()
   }
@@ -144,7 +149,7 @@ export default class ToolbarMixin extends Vue {
     document.querySelectorAll('.el-select.remote').forEach((element) => {
       const dropdownElement = element as HTMLElement
       const arrow = element.children[1].children[1] as HTMLSpanElement
-      arrow.addEventListener('click', function() {
+      arrow.addEventListener('click', function () {
         arrow.click()
         dropdownElement.click()
       })
