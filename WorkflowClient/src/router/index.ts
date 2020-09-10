@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
-import { authGuard } from '@/router/guards'
-import { routes } from '@/router/routes'
+import { authGuard } from './guards'
+import { routes } from './routes'
 
 Vue.use(VueRouter)
 

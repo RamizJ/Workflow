@@ -120,7 +120,7 @@ export default class Toolbar extends Vue {
   justify-content: space-between;
   align-items: flex-end;
   display: inline-flex;
-  margin-top: 10px;
+  margin-top: 15px;
   margin-bottom: 15px;
 }
 .toolbar__filters-wrapper {
@@ -129,9 +129,10 @@ export default class Toolbar extends Vue {
   grid-template-columns: repeat(5, 200px);
   .label {
     color: var(--text);
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
+    opacity: 0.9;
   }
   .filter {
     display: flex;
@@ -159,6 +160,7 @@ export default class Toolbar extends Vue {
     .filters__button {
       line-height: 16px;
       margin-right: 20px;
+      font-weight: 400;
     }
     .Ascending {
       transform: rotate(90deg);
@@ -171,7 +173,7 @@ export default class Toolbar extends Vue {
       margin-right: -5px;
     }
     .el-select {
-      width: 128px;
+      width: 135px;
       margin-bottom: 1px;
       .el-input__inner {
         padding: 0;
@@ -179,7 +181,7 @@ export default class Toolbar extends Vue {
         font-size: 14px;
         line-height: 21px;
         height: 21px;
-        font-weight: 500;
+        font-weight: 400;
       }
       .el-input__suffix {
         display: none;

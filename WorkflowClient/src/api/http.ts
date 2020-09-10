@@ -75,9 +75,12 @@ const errorResponseHandler = (error: any) => {
   const isDebugMode = localStorage.debugMode === 'true'
 
   // If error when fetch current user, then unauthorized > return
-  if (error.config.url.includes('GetCurrent')) return
+  if (error.config.url.includes('GetCurrent')) {
+    console.clear()
+    return
+  }
 
-  if (error.response)
+  if (!isDebugMode && error.response)
     Message({
       message: `Ошибка отправки запроса`,
       type: 'error',

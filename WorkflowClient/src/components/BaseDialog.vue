@@ -134,17 +134,22 @@ export default class BaseDialog extends Vue {
     padding: 15px 20px 5px !important;
   }
   .el-upload-dragger {
-    border-color: var(--popover-border);
+    border-color: var(--text-muted);
     background-color: var(--card-background);
   }
   .el-upload,
   .el-upload-dragger {
     width: 100%;
-    height: 120px;
+    height: 90px;
+  }
+  .el-upload-dragger .el-upload__text {
+    line-height: 20px;
   }
   .el-upload-dragger .el-icon-upload {
-    font-size: 50px;
-    margin: 10px 0 10px;
+    font-size: 40px;
+    line-height: 40px;
+    margin-top: 5px;
+    margin-bottom: 0;
   }
   .extra {
     display: flex;

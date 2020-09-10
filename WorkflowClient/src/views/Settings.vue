@@ -174,7 +174,7 @@ export default class SettingsPage extends Vue {
         else await authModule.changePassword({ currentPassword, newPassword })
       }
       await usersModule.updateOne(this.form)
-      await authModule.fetchMe()
+      await authModule.getMe()
       this.$message.success('Данные профиля успешно обновлены')
     } catch (e) {
       this.$message.error('Не удалось обновить данные профиля')

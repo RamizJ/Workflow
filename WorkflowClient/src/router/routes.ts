@@ -1,19 +1,19 @@
 import LayoutDefault from '@/layouts/LayoutDefault.vue'
-import LayoutLogin from '@/layouts/LayoutLogin.vue'
+import LayoutEmpty from '@/layouts/LayoutEmpty.vue'
 
 export const routes = [
   { path: '/', redirect: '/tasks' },
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/views/Login.vue'),
+    meta: { layout: LayoutEmpty },
+  },
   {
     path: '/tasks',
     name: 'Tasks',
     component: () => import('@/views/Tasks.vue'),
     meta: { layout: LayoutDefault },
-  },
-  {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/views/Login.vue'),
-    meta: { layout: LayoutLogin },
   },
   {
     path: '/projects',

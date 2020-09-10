@@ -10,6 +10,7 @@ body {
   transition: background-color 0.25s, color 0.25s;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
 }
 a {
   color: var(--link);
@@ -38,6 +39,7 @@ a {
       display: flex;
       align-items: baseline;
       font-size: 28px;
+      font-family: var(--header-font);
       line-height: 34px;
       font-weight: 800;
     }
@@ -67,6 +69,7 @@ a {
       &.title {
         font-size: 28px;
         font-weight: 800;
+        font-family: var(--header-font);
         height: auto;
       }
       &.subtitle {
@@ -344,11 +347,17 @@ a {
   background-color: transparent;
 }
 
+.el-checkbox {
+  font-weight: 400;
+}
 .el-checkbox__inner,
 .el-checkbox__input.is-disabled .el-checkbox__inner,
 .el-checkbox__input.is-disabled.is-checked .el-checkbox__inner {
   border-color: var(--checkbox-border);
   background-color: var(--checkbox-background);
+}
+.el-checkbox.is-bordered.el-checkbox--medium {
+  padding: 9px 20px 7px 10px;
 }
 
 .el-divider {
@@ -459,4 +468,8 @@ a {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.el-checkbox.is-bordered {
+  border: 1px solid var(--input-background);
 }
