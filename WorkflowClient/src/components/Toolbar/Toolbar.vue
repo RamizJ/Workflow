@@ -158,9 +158,10 @@ export default class Toolbar extends Vue {
     justify-content: flex-end;
     align-items: flex-start;
     .filters__button {
+      font-size: 13px;
       line-height: 16px;
       margin-right: 20px;
-      font-weight: 400;
+      font-weight: 500;
     }
     .Ascending {
       transform: rotate(90deg);
@@ -178,10 +179,10 @@ export default class Toolbar extends Vue {
       .el-input__inner {
         padding: 0;
         padding-left: 5px;
-        font-size: 14px;
+        font-size: 13px;
+        font-weight: 500;
         line-height: 21px;
         height: 21px;
-        font-weight: 400;
       }
       .el-input__suffix {
         display: none;

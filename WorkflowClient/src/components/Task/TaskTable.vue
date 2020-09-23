@@ -11,7 +11,8 @@
       @row-dblclick="onRowDoubleClick"
       @row-contextmenu="onRowRightClick"
       highlight-current-row="highlight-current-row"
-      border="border"
+      border
+      show-overflow-tooltip
     >
       <el-table-column type="selection" width="42"></el-table-column>
       <el-table-column prop="title" label="Задача"></el-table-column>

@@ -12,7 +12,14 @@ export default class User extends Entity {
   positionId?: number
   position?: string
   isRemoved?: boolean
-  roles?: string[]
+  roles?: Role[]
 
   teamIds?: number[]
+}
+
+export enum Role {
+  EDIT_PROJECTS,
+  EDIT_TASKS,
+  EDIT_TEAMS,
+  EDIT_USERS,
 }

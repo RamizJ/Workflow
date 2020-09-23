@@ -75,7 +75,7 @@ export default class AppSidebar extends Vue {}
   color: var(--sidebar-text);
   height: auto;
   line-height: 38px;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 400;
   letter-spacing: 0.1px;
   padding: 0 8px !important;

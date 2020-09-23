@@ -70,7 +70,7 @@ export default class BaseDialog extends Vue {
 }
 .title {
   font-size: 24px;
-  font-weight: 800;
+  font-weight: 700;
   cursor: default;
 }
 .submit,

@@ -10,7 +10,7 @@
         />
       </div>
       <div class="header__action">
-        <el-dropdown placement="bottom" :show-timeout="0">
+        <el-dropdown v-if="!loading" placement="bottom" :show-timeout="0">
           <el-button type="text" size="mini">
             <feather type="chevron-down" size="22"></feather>
           </el-button>

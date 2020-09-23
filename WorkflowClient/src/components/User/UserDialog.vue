@@ -88,9 +88,12 @@
           </el-col>
         </transition>
         <transition name="fade">
-          <el-col v-if="rolesVisible || (form.roles && form.roles.length)" :span="24">
+          <el-col
+            v-if="$route.params.teamId && (rolesVisible || (form.roles && form.roles.length))"
+            :span="24"
+          >
             <el-form-item prop="roles">
-              <el-select v-model="form.roles" placeholder="Права" multiple="multiple">
+              <el-select v-model="form.roles" placeholder="Права" multiple>
                 <el-option
                   v-for="item in roles"
                   :key="item.value"
@@ -109,10 +112,19 @@
       el-button(v-if="!(form.teamIds && form.teamIds.length)" type="text" @click="teamsVisible = !teamsVisible" circle)
         feather(type="users")
       -->
-        <!--el-tooltip(v-if="!(form.roles && form.roles.length)" content="Права" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-      el-button(type="text" @click="rolesVisible = !rolesVisible" circle)
-        feather(type="shield")
-      -->
+        <el-tooltip
+          v-if="$route.params.teamId && !(form.roles && form.roles.length)"
+          content="Права"
+          effect="dark"
+          placement="top"
+          transition="fade"
+          :visible-arrow="false"
+          :open-delay="500"
+        >
+          <el-button type="text" @click="rolesVisible = !rolesVisible" circle="circle">
+            <feather type="shield"></feather>
+          </el-button>
+        </el-tooltip>
         <el-tooltip
           v-if="!form.position"
           content="Должность"
@@ -165,7 +177,7 @@ import { mixins } from 'vue-class-component'
 import usersModule from '@/store/modules/users.module'
 import DialogMixin from '@/mixins/dialog.mixin'
 import BaseDialog from '@/components/BaseDialog.vue'
-import User from '@/types/user.type'
+import User, { Role } from '@/types/user.type'
 import { Input, Message } from 'element-ui'
 import { ElForm } from 'element-ui/types/form'
 import Project from '@/types/project.type'
@@ -203,7 +215,12 @@ export default class UserDialog extends mixins(DialogMixin) {
       { validator: this.validateEmail, trigger: 'blur' },
     ],
   }
-  private roles: string[] = []
+  private roles: { value: Role; label: string }[] = [
+    { value: Role.EDIT_PROJECTS, label: 'Редактирование проектов' },
+    { value: Role.EDIT_TASKS, label: 'Редактирование задач' },
+    { value: Role.EDIT_TEAMS, label: 'Редактирование команд' },
+    { value: Role.EDIT_USERS, label: 'Редактирование пользователей' },
+  ]
   private teamsVisible = null
   private rolesVisible = null
   private positionVisible = null
