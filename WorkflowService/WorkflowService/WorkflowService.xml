@@ -453,20 +453,32 @@
             <param name="ids">Идентификаторы команд</param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.AddUser(System.Int32,System.String)">
+        <member name="M:WorkflowService.Controllers.TeamsController.AddUser(Workflow.VM.ViewModels.VmTeamUserBind)">
             <summary>
             Добавление пользователя в команду
             </summary>
-            <param name="teamId"></param>
-            <param name="userId">Идентификатор добавляемого пользователя</param>
+            <param name="teamUserBind">Параметры пользователя в команде</param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.AddUsers(System.Int32,System.Collections.Generic.IEnumerable{System.String})">
+        <member name="M:WorkflowService.Controllers.TeamsController.AddUsers(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmTeamUserBind})">
             <summary>
             Добавление пользователей в команду
             </summary>
-            <param name="teamId"></param>
-            <param name="userIds">Идентификаторы добавляемых пользователей</param>
+            <param name="teamUserBinds">Параметры пользовтаелей в командах</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.UpdateUser(Workflow.VM.ViewModels.VmTeamUserBind)">
+            <summary>
+            Обновление пользователей в команде
+            </summary>
+            <param name="teamUserBind">Параметры пользователя в команде</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.UpdateUsers(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmTeamUserBind})">
+            <summary>
+            Обновление пользователей в команде
+            </summary>
+            <param name="teamUserBinds">Параметры пользователей в команде</param>
             <returns></returns>
         </member>
         <member name="M:WorkflowService.Controllers.TeamsController.RemoveUser(System.Int32,System.String)">
@@ -475,6 +487,14 @@
             </summary>
             <param name="teamId">Идентификатор команды</param>
             <param name="userId">Идентификатор пользователя</param>
+            <returns>Удаленный пользователь</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.RemoveUsers(System.Int32,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Удаление пользователя из команды
+            </summary>
+            <param name="teamId">Идентификатор команды</param>
+            <param name="userIds">Идентификаторы пользователей</param>
             <returns>Удаленный пользователь</returns>
         </member>
         <member name="M:WorkflowService.Controllers.TeamsController.AddProject(System.Int32,System.Int32)">

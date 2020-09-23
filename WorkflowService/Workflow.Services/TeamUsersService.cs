@@ -10,7 +10,7 @@ using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
 using Workflow.Share.Extensions;
 using Workflow.VM.Common;
-using Workflow.VM.ViewModelConverters;
+using Workflow.VM.ViewModelConverters.Absract;
 using Workflow.VM.ViewModels;
 
 namespace Workflow.Services
@@ -19,8 +19,8 @@ namespace Workflow.Services
     public class TeamUsersService : ITeamUsersService
     {
         public TeamUsersService(DataContext dataContext, 
-            VmUserConverter vmUserConverter,
-            VmTeamUserBindConverter vmTeamUserBindConverter)
+            IViewModelConverter<ApplicationUser, VmUser> vmUserConverter,
+            IViewModelConverter<TeamUser, VmTeamUserBind> vmTeamUserBindConverter)
         {
             _dataContext = dataContext;
             _vmUserConverter = vmUserConverter;
@@ -255,7 +255,7 @@ namespace Workflow.Services
 
 
         private readonly DataContext _dataContext;
-        private readonly VmUserConverter _vmUserConverter;
-        private readonly VmTeamUserBindConverter _vmTeamUserBindConverter;
+        private readonly IViewModelConverter<ApplicationUser, VmUser> _vmUserConverter;
+        private readonly IViewModelConverter<TeamUser, VmTeamUserBind> _vmTeamUserBindConverter;
     }
 }
