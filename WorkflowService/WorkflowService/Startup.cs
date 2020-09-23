@@ -111,7 +111,7 @@ namespace WorkflowService
 
             services.AddSwaggerGen(setup =>
             {
-                setup.SwaggerDoc("v1", new OpenApiInfo {Title = "Workflow API", Version = "25.08.2020"});
+                setup.SwaggerDoc("v1", new OpenApiInfo {Title = "Workflow API", Version = "31.08.2020"});
                 setup.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
 
                 setup.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

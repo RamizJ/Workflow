@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Workflow.DAL.Models;
-using Workflow.VM.Common;
 using Workflow.VM.ViewModels;
 
 namespace Workflow.Services.Abstract
@@ -18,24 +17,36 @@ namespace Workflow.Services.Abstract
         /// <param name="teamId">Идентификатор команды</param>
         /// <param name="pageOptions">Параметры страницы</param>
         /// <returns>Коллеция пользователей команды</returns>
-        Task<IEnumerable<VmUser>> GetPage(ApplicationUser currentUser,
+        Task<IEnumerable<VmTeamUser>> GetPage(ApplicationUser currentUser,
             int teamId, PageOptions pageOptions);
 
         /// <summary>
         /// Добавить пользователя в команду
         /// </summary>
-        /// <param name="teamId">Идентификатор команды</param>
-        /// <param name="userId">Добавляемый пользователь</param>
+        /// <param name="teamUserBind">Параметры связи пользователя с командой</param>
         /// <returns>Добавленный пользователь</returns>
-        Task Add(int teamId, string userId);
+        Task Add(VmTeamUserBind teamUserBind);
 
         /// <summary>
         /// Добавление пользователей в команду
         /// </summary>
-        /// <param name="teamId"></param>
-        /// <param name="userIds"></param>
+        /// <param name="teamUserBinds">Параметры связей пользователей с командами</param>
         /// <returns></returns>
-        Task AddRange(int teamId, IEnumerable<string> userIds);
+        Task AddRange(IEnumerable<VmTeamUserBind> teamUserBinds);
+
+        /// <summary>
+        /// Обновление связи пользователя с командой
+        /// </summary>
+        /// <param name="teamUserBind"></param>
+        /// <returns></returns>
+        Task Update(VmTeamUserBind teamUserBind);
+
+        /// <summary>
+        /// Обновление связей пользователей с командами
+        /// </summary>
+        /// <param name="teamUserBinds"></param>
+        /// <returns></returns>
+        Task UpdateRange(IEnumerable<VmTeamUserBind> teamUserBinds);
 
         /// <summary>
         /// Удаление пользователя из команды
@@ -44,5 +55,13 @@ namespace Workflow.Services.Abstract
         /// <param name="userId">Идентификатор удаляемого пользователя</param>
         /// <returns>Удаленный пользователь</returns>
         Task Remove(int teamId, string userId);
+
+        /// <summary>
+        /// Удаление пользователей из команды
+        /// </summary>
+        /// <param name="teamId">Идентификатор команды</param>
+        /// <param name="userIds">Идентификаторы пользователей</param>
+        /// <returns>Удаленный пользователь</returns>
+        Task RemoveRange(int teamId, IEnumerable<string> userIds);
     }
 }

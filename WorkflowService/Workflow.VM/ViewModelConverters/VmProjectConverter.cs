@@ -11,15 +11,10 @@ namespace Workflow.VM.ViewModelConverters
             if (viewModel == null)
                 return null;
 
-            return new Project
-            {
-                Id = viewModel.Id,
-                Name = viewModel.Name,
-                Description = viewModel.Description,
-                ExpectedCompletedDate = viewModel.ExpectedCompletedDate,
-                OwnerId = viewModel.OwnerId,
-                GroupId = viewModel.GroupId,
-            };
+            var model = new Project();
+            SetModel(viewModel, model);
+
+            return model;
         }
 
         public VmProject ToViewModel(Project model)
@@ -27,19 +22,40 @@ namespace Workflow.VM.ViewModelConverters
             if (model == null)
                 return null;
 
-            return new VmProject
-            {
-                Id = model.Id,
-                Name = model.Name,
-                Description = model.Description,
-                OwnerId = model.OwnerId,
-                OwnerFio = model.Owner?.Fio,
-                GroupId = model.GroupId,
-                GroupName = model.Group?.Name,
-                CreationDate = model.CreationDate,
-                ExpectedCompletedDate = model.ExpectedCompletedDate,
-                IsRemoved = model.IsRemoved
-            };
+            var viewModel = new VmProject();
+            SetViewModel(model, viewModel);
+
+            return viewModel;
+        }
+
+        public void SetModel(VmProject viewModel, Project model)
+        {
+            if(viewModel == null || model == null)
+                return;
+
+            model.Id = viewModel.Id;
+            model.Name = viewModel.Name;
+            model.Description = viewModel.Description;
+            model.ExpectedCompletedDate = viewModel.ExpectedCompletedDate;
+            model.OwnerId = viewModel.OwnerId;
+            model.GroupId = viewModel.GroupId;
+        }
+
+        public void SetViewModel(Project model, VmProject viewModel)
+        {
+            if (viewModel == null || model == null)
+                return;
+
+            viewModel.Id = model.Id;
+            viewModel.Name = model.Name;
+            viewModel.Description = model.Description;
+            viewModel.OwnerId = model.OwnerId;
+            viewModel.OwnerFio = model.Owner?.Fio;
+            viewModel.GroupId = model.GroupId;
+            viewModel.GroupName = model.Group?.Name;
+            viewModel.CreationDate = model.CreationDate;
+            viewModel.ExpectedCompletedDate = model.ExpectedCompletedDate;
+            viewModel.IsRemoved = model.IsRemoved;
         }
     }
 }

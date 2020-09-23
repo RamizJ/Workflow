@@ -1,5 +1,4 @@
-﻿using System;
-using Workflow.DAL.Models;
+﻿using Workflow.DAL.Models;
 using Workflow.VM.ViewModelConverters.Absract;
 using Workflow.VM.ViewModels;
 
@@ -13,20 +12,11 @@ namespace Workflow.VM.ViewModelConverters
                 return null;
 
             var id = string.IsNullOrWhiteSpace(viewModel.Id) ? null : viewModel.Id;
-            return new ApplicationUser
-            {
-                Id = id,
-                UserName = viewModel.UserName,
-                Email = viewModel.Email,
-                NormalizedEmail = viewModel.Email.ToUpper(),
-                NormalizedUserName = viewModel.Email.ToUpper(),
-                PhoneNumber = viewModel.Phone,
-                PositionId = viewModel.PositionId,
-                PositionCustom = viewModel.PositionId == null ? viewModel.Position : null,
-                FirstName = viewModel.FirstName,
-                MiddleName = viewModel.MiddleName,
-                LastName = viewModel.LastName
-            };
+            var model = new ApplicationUser {Id = id};
+
+            SetModel(viewModel, model);
+
+            return model;
         }
 
         public VmUser ToViewModel(ApplicationUser model)
@@ -34,19 +24,44 @@ namespace Workflow.VM.ViewModelConverters
             if (model == null)
                 return null;
 
-            return new VmUser
-            {
-                Id = model.Id,
-                UserName = model.UserName,
-                Email = model.Email,
-                Phone = model.PhoneNumber,
-                PositionId = model.PositionId,
-                Position = model.Position?.Name ?? model.PositionCustom,
-                FirstName = model.FirstName,
-                MiddleName = model.MiddleName,
-                LastName = model.LastName,
-                IsRemoved = model.IsRemoved
-            };
+            var viewModel =  new VmUser();
+            SetViewModel(model, viewModel);
+
+            return viewModel;
+        }
+
+        public void SetModel(VmUser viewModel, ApplicationUser model)
+        {
+            if(viewModel == null || model == null)
+                return;
+
+            model.UserName = viewModel.UserName;
+            model.Email = viewModel.Email;
+            model.NormalizedEmail = viewModel.Email.ToUpper();
+            model.NormalizedUserName = viewModel.Email.ToUpper();
+            model.PhoneNumber = viewModel.Phone;
+            model.PositionId = viewModel.PositionId;
+            model.PositionCustom = viewModel.PositionId == null ? viewModel.Position : null;
+            model.FirstName = viewModel.FirstName;
+            model.MiddleName = viewModel.MiddleName;
+            model.LastName = viewModel.LastName;
+        }
+
+        public void SetViewModel(ApplicationUser model, VmUser viewModel)
+        {
+            if (model == null || viewModel == null)
+                return;
+
+            viewModel.Id = model.Id;
+            viewModel.UserName = model.UserName;
+            viewModel.Email = model.Email;
+            viewModel.Phone = model.PhoneNumber;
+            viewModel.PositionId = model.PositionId;
+            viewModel.Position = model.Position?.Name ?? model.PositionCustom;
+            viewModel.FirstName = model.FirstName;
+            viewModel.MiddleName = model.MiddleName;
+            viewModel.LastName = model.LastName;
+            viewModel.IsRemoved = model.IsRemoved;
         }
     }
 }
