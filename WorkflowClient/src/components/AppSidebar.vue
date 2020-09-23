@@ -53,7 +53,7 @@ export default class AppSidebar extends Vue {}
   height: 100%;
   background-color: var(--sidebar-background);
   border-right: 1px solid var(--sidebar-border);
-  transition: background-color 0.25s;
+  transition: background-color 0.25s, border-color 0.25s;
   position: relative;
   width: var(--sidebar-width);
 }
@@ -64,7 +64,7 @@ export default class AppSidebar extends Vue {}
   position: relative;
   background-color: transparent;
   padding: 15px 10px;
-  transition: border-color 0.25s;
+  //transition: border-color 0.25s;
 }
 .el-menu:not(.el-menu--collapse) {
   //width: var(--sidebar-width);
@@ -138,15 +138,6 @@ export default class AppSidebar extends Vue {}
   bottom: 0;
   left: 0;
   z-index: 2;
-  background: linear-gradient(
-    0deg,
-    rgba(var(--sidebar-background-rgb), 1) 0%,
-    rgba(var(--sidebar-background-rgb), 0.99) 50%,
-    rgba(var(--sidebar-background-rgb), 0.95) 50%,
-    rgba(var(--sidebar-background-rgb), 0.9) 60%,
-    rgba(var(--sidebar-background-rgb), 0.8) 70%,
-    rgba(var(--sidebar-background-rgb), 0) 100%
-  );
   img {
     opacity: 0.8;
     height: 80px;

@@ -473,3 +473,6 @@ a {
 .el-checkbox.is-bordered {
   border: 1px solid var(--input-background);
 }
+.el-checkbox__inner {
+  transition: 0.25s;
+}
