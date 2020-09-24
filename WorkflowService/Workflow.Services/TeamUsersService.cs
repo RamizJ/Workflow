@@ -15,19 +15,20 @@ using Workflow.VM.ViewModels;
 
 namespace Workflow.Services
 {
-
-
     /// <inheritdoc />
     public class TeamUsersService : ITeamUsersService
     {
-        public TeamUsersService(DataContext dataContext)
+        public TeamUsersService(DataContext dataContext, 
+            VmUserConverter vmUserConverter,
+            VmTeamUserBindConverter vmTeamUserBindConverter)
         {
             _dataContext = dataContext;
-            _vmConverter = new VmUserConverter();
+            _vmUserConverter = vmUserConverter;
+            _vmTeamUserBindConverter = vmTeamUserBindConverter;
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<VmUser>> GetPage(ApplicationUser currentUser, 
+        public async Task<IEnumerable<VmTeamUser>> GetPage(ApplicationUser currentUser, 
             int teamId, PageOptions pageOptions)
         {
             if (currentUser == null)
@@ -42,32 +43,83 @@ namespace Workflow.Services
             query = FilterByFields(pageOptions.FilterFields, query);
             query = SortByFields(pageOptions.SortFields, query);
 
-            return await query
+            var teamUsers = await query
                 .Skip(pageOptions.PageNumber * pageOptions.PageSize)
                 .Take(pageOptions.PageSize)
-                .Select(tu => _vmConverter.ToViewModel(tu.User))
                 .ToArrayAsync();
+
+            var viewModels = teamUsers.Select(tu =>
+            {
+                var vm = new VmTeamUser();
+                _vmUserConverter.SetViewModel(tu.User, vm);
+
+                vm.CanEditUsers = tu.CanEditUsers;
+                vm.CanEditGoals = tu.CanEditGoals;
+                vm.CanCloseGoals = tu.CanCloseGoals;
+
+                return vm;
+            });
+
+            return viewModels;
         }
 
         /// <inheritdoc />
-        public async Task Add(int teamId, string userId)
+        public async Task Add(VmTeamUserBind teamUserBind)
         {
-            await _dataContext.TeamUsers.AddAsync(new TeamUser(teamId, userId));
+            var model = _vmTeamUserBindConverter.ToModel(teamUserBind);
+
+            await _dataContext.TeamUsers.AddAsync(model);
             await _dataContext.SaveChangesAsync();
         }
 
         /// <inheritdoc />
-        public async Task AddRange(int teamId, IEnumerable<string> userIds)
+        public async Task AddRange(IEnumerable<VmTeamUserBind> teamUserBinds)
         {
-            await _dataContext.TeamUsers.AddRangeAsync(
-                userIds.Select(uId => new TeamUser(teamId, uId)));
+            if (teamUserBinds == null)
+                return;
+
+            var teamUsers = teamUserBinds.Select(_vmTeamUserBindConverter.ToModel);
+
+            await _dataContext.TeamUsers.AddRangeAsync(teamUsers);
+            await _dataContext.SaveChangesAsync();
+        }
+
+        public async Task Update(VmTeamUserBind teamUserBind)
+        {
+            var model = _vmTeamUserBindConverter.ToModel(teamUserBind);
+
+            _dataContext.Entry(model).State = EntityState.Modified;
+            await _dataContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateRange(IEnumerable<VmTeamUserBind> teamUserBinds)
+        {
+            foreach (var teamUserBind in teamUserBinds)
+            {
+                var model = _vmTeamUserBindConverter.ToModel(teamUserBind);
+                _dataContext.Entry(model).State = EntityState.Modified;
+            }
+
             await _dataContext.SaveChangesAsync();
         }
 
         /// <inheritdoc />
         public async Task Remove(int teamId, string userId)
         {
-            _dataContext.TeamUsers.Remove(new TeamUser(teamId, userId));
+            var model = new TeamUser(teamId, userId);
+
+            _dataContext.Entry(model).State = EntityState.Deleted;
+            await _dataContext.SaveChangesAsync();
+        }
+
+        public async Task RemoveRange(int teamId, IEnumerable<string> userIds)
+        {
+            foreach (var userId in userIds)
+            {
+                var model = new TeamUser(teamId, userId);
+                _dataContext.Entry(model).State = EntityState.Deleted;
+            }
+
             await _dataContext.SaveChangesAsync();
         }
 
@@ -203,6 +255,7 @@ namespace Workflow.Services
 
 
         private readonly DataContext _dataContext;
-        private readonly VmUserConverter _vmConverter;
+        private readonly VmUserConverter _vmUserConverter;
+        private readonly VmTeamUserBindConverter _vmTeamUserBindConverter;
     }
 }

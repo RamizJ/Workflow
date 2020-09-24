@@ -525,7 +525,6 @@ namespace Workflow.Services
                 }
             }
 
-            //await _dataContext.BulkInsertAsync(creatingGoals);
             await _dataContext.Goals.AddRangeAsync(creatingGoals);
             await _dataContext.SaveChangesAsync();
             return model;

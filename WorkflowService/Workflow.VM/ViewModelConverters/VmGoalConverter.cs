@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.VM.ViewModelConverters.Absract;
 using Workflow.VM.ViewModels;
@@ -13,24 +12,10 @@ namespace Workflow.VM.ViewModelConverters
             if (viewModel == null)
                 return null;
 
-            return new Goal
-            {
-                Id = viewModel.Id,
-                ParentGoalId = viewModel.ParentGoalId,
-                OwnerId = viewModel.OwnerId,
-                CreationDate = viewModel.CreationDate,
-                Title = viewModel.Title,
-                Description = viewModel.Description,
-                GoalNumber = viewModel.GoalNumber,
-                PerformerId = viewModel.PerformerId,
-                //Observers = viewModel.Observers?.Select(oId => new GoalObserver(viewModel.Id, oId)).ToList(),
-                ProjectId = viewModel.ProjectId,
-                State = viewModel.State,
-                Priority = viewModel.Priority,
-                ExpectedCompletedDate = viewModel.ExpectedCompletedDate,
-                EstimatedPerformingTime = viewModel.EstimatedPerformingTime,
-                IsRemoved = viewModel.IsRemoved
-            };
+            var model = new Goal();
+            SetModel(viewModel, model);
+
+            return model;
         }
 
         public VmGoal ToViewModel(Goal model)
@@ -38,28 +23,55 @@ namespace Workflow.VM.ViewModelConverters
             if (model == null)
                 return null;
 
-            return new VmGoal
-            {
-                Id = model.Id,
-                ParentGoalId = model.ParentGoalId,
-                OwnerId = model.OwnerId,
-                CreationDate = model.CreationDate,
-                Title = model.Title,
-                Description = model.Description,
-                GoalNumber = model.GoalNumber,
-                PerformerId = model.PerformerId,
-                //PerformerFio = model.Performer.LastName + " " + model.Performer.FirstName + " " + model.Performer.MiddleName,
-                PerformerFio = model.Performer?.Fio,
-                ProjectId = model.ProjectId,
-                ProjectName = model.Project?.Name,
-                State = model.State,
-                Priority = model.Priority,
-                ExpectedCompletedDate = model.ExpectedCompletedDate,
-                EstimatedPerformingTime = model.EstimatedPerformingTime,
-                IsRemoved = model.IsRemoved,
-                IsChildsExist = model.ChildGoals.Any(),
-                IsAttachmentsExist = model.Attachments.Any()
-            };
+            var viewModel = new VmGoal();
+            SetViewModel(model, viewModel);
+
+            return viewModel;
+        }
+
+        public void SetModel(VmGoal viewModel, Goal model)
+        {
+            model.Id = viewModel.Id;
+            model.ParentGoalId = viewModel.ParentGoalId;
+            model.OwnerId = viewModel.OwnerId;
+            model.CreationDate = viewModel.CreationDate;
+            model.Title = viewModel.Title;
+            model.Description = viewModel.Description;
+            model.GoalNumber = viewModel.GoalNumber;
+            model.PerformerId = viewModel.PerformerId;
+            //Observers = viewModel.Observers?.Select(oId => new GoalObserver(viewModel.Id, oId)).ToList(),
+            model.ProjectId = viewModel.ProjectId;
+            model.State = viewModel.State;
+            model.Priority = viewModel.Priority;
+            model.ExpectedCompletedDate = viewModel.ExpectedCompletedDate;
+            model.EstimatedPerformingTime = viewModel.EstimatedPerformingTime;
+            model.IsRemoved = viewModel.IsRemoved;
+        }
+
+        public void SetViewModel(Goal model, VmGoal viewModel)
+        {
+            if (model == null || viewModel == null)
+                return;
+
+            viewModel.Id = model.Id;
+            viewModel.ParentGoalId = model.ParentGoalId;
+            viewModel.OwnerId = model.OwnerId;
+            viewModel.CreationDate = model.CreationDate;
+            viewModel.Title = model.Title;
+            viewModel.Description = model.Description;
+            viewModel.GoalNumber = model.GoalNumber;
+            viewModel.PerformerId = model.PerformerId;
+            //PerformerFio = model.Performer.LastName + " " + model.Performer.FirstName + " " + model.Performer.MiddleName,
+            viewModel.PerformerFio = model.Performer?.Fio;
+            viewModel.ProjectId = model.ProjectId;
+            viewModel.ProjectName = model.Project?.Name;
+            viewModel.State = model.State;
+            viewModel.Priority = model.Priority;
+            viewModel.ExpectedCompletedDate = model.ExpectedCompletedDate;
+            viewModel.EstimatedPerformingTime = model.EstimatedPerformingTime;
+            viewModel.IsRemoved = model.IsRemoved;
+            viewModel.IsChildsExist = model.ChildGoals.Any();
+            viewModel.IsAttachmentsExist = model.Attachments.Any();
         }
     }
 }

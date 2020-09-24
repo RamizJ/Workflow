@@ -13,6 +13,9 @@ namespace Workflow.VM.ViewModelConverters
 
         public VmAttachment ToViewModel(Attachment model)
         {
+            if (model == null)
+                return null;
+
             return new VmAttachment
             {
                 Id = model.Id,
@@ -22,6 +25,22 @@ namespace Workflow.VM.ViewModelConverters
                 FileSize = model.FileSize,
                 FileType = model.FileType
             };
+        }
+
+        public void SetModel(VmAttachment viewModel, Attachment model)
+        { }
+
+        public void SetViewModel(Attachment model, VmAttachment viewModel)
+        {
+            if (model == null || viewModel == null)
+                return;
+
+            viewModel.Id = model.Id;
+            viewModel.FileDataId = model.FileDataId;
+            viewModel.CreationDate = model.CreationDate;
+            viewModel.FileName = model.FileName;
+            viewModel.FileSize = model.FileSize;
+            viewModel.FileType = model.FileType;
         }
     }
 }
