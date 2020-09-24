@@ -85,9 +85,9 @@
       </template>
     </vue-context>
     <task-dialog
-      v-if="modalVisible"
-      :id="modalData"
-      @close="modalVisible = false"
+      v-if="dialogVisible"
+      :id="dialogData"
+      @close="dialogVisible = false"
       @submit="reloadData"
     ></task-dialog>
   </div>
@@ -181,13 +181,13 @@ export default class TaskBoard extends mixins(TableMixin) {
   }
 
   public createEntity(): void {
-    this.modalData = undefined
-    this.modalVisible = true
+    this.dialogData = undefined
+    this.dialogVisible = true
   }
 
   public editEntity(entity: Task): void {
-    this.modalData = entity.id
-    this.modalVisible = true
+    this.dialogData = entity.id
+    this.dialogVisible = true
   }
 
   private async deleteEntity(entity: Task, multiple = false): Promise<void> {

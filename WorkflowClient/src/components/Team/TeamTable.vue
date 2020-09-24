@@ -35,6 +35,9 @@
         <li>
           <a v-if="isRowEditable" @click.prevent="editEntity(child.data.row)">Изменить</a>
         </li>
+        <!--<li>
+          <a v-if="isRowEditable" @click.prevent="editTeamRights(child.data.row)">Изменить права</a>
+        </li>-->
         <el-divider v-if="isRowEditable"></el-divider>
         <li>
           <a v-if="isRowEditable && !$route.params.projectId" @click.prevent="createEntity"
@@ -69,16 +72,20 @@
       </template>
     </vue-context>
     <team-dialog
-      v-if="modalVisible"
-      :id="modalData"
-      @close="modalVisible = false"
+      v-if="dialogVisible"
+      :id="dialogData"
+      @close="dialogVisible = false"
       @submit="reloadData"
     ></team-dialog>
     <project-add-team-dialog
-      v-if="modalAddTeamVisible"
-      @close="modalAddTeamVisible = false"
+      v-if="dialogAddTeamVisible"
+      @close="dialogAddTeamVisible = false"
       @submit="reloadData"
-    ></project-add-team-dialog>
+    />
+    <project-edit-team-rights-dialog
+      v-if="dialogEditTeamRightsVisible"
+      @close="dialogEditTeamRightsVisible = false"
+    />
   </div>
 </template>
 
@@ -90,15 +97,17 @@ import { StateChanger } from 'vue-infinite-loading'
 import teamsModule from '@/store/modules/teams.module'
 import projectsModule from '@/store/modules/projects.module'
 import TeamDialog from '@/components/Team/TeamDialog.vue'
+import ProjectAddTeamDialog from '@/components/Project/ProjectAddTeamDialog.vue'
+import ProjectEditTeamRightsDialog from '@/components/Project/ProjectEditTeamRightsDialog.vue'
 import TableMixin from '@/mixins/table.mixin'
 import Team from '@/types/team.type'
-import ProjectAddTeamDialog from '@/components/Project/ProjectAddTeamDialog.vue'
 
-@Component({ components: { ProjectAddTeamDialog, TeamDialog } })
+@Component({ components: { ProjectEditTeamRightsDialog, ProjectAddTeamDialog, TeamDialog } })
 export default class TeamTable extends mixins(TableMixin) {
   public data: Team[] = []
   private loading = false
-  private modalAddTeamVisible = false
+  private dialogAddTeamVisible = false
+  private dialogEditTeamRightsVisible = false
 
   private async loadData($state: StateChanger): Promise<void> {
     const isFirstLoad = !this.data.length
@@ -114,13 +123,13 @@ export default class TeamTable extends mixins(TableMixin) {
   }
 
   public createEntity(): void {
-    this.modalData = undefined
-    this.modalVisible = true
+    this.dialogData = undefined
+    this.dialogVisible = true
   }
 
   public editEntity(entity: Team): void {
-    this.modalData = entity.id
-    this.modalVisible = true
+    this.dialogData = entity.id
+    this.dialogVisible = true
   }
 
   private async deleteEntity(entity: Team, multiple = false): Promise<void> {
@@ -149,7 +158,11 @@ export default class TeamTable extends mixins(TableMixin) {
   }
 
   private addTeam(): void {
-    this.modalAddTeamVisible = true
+    this.dialogAddTeamVisible = true
+  }
+
+  private editTeamRights(): void {
+    this.dialogEditTeamRightsVisible = true
   }
 }
 </script>

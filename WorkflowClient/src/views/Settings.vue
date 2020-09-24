@@ -17,6 +17,11 @@
               >А</el-button
             >
           </el-tooltip>
+          <el-tooltip content="Системное" placement="top">
+            <el-button class="theme-preview system" type="text" @click="switchTheme('system')">
+              <span class="text">A</span>
+            </el-button>
+          </el-tooltip>
         </div>
         <div class="section">
           <h2>Диалоговые окна</h2>
@@ -237,14 +242,15 @@ export default class SettingsPage extends Vue {
 }
 .theme-preview {
   border-radius: 3px;
-  border: solid 3px var(--color-primary);
+  border: none;
+  box-shadow: inset 0 0 0 3px var(--color-primary);
   cursor: pointer;
   display: inline-block;
-  font-weight: 500;
+  font-weight: 600;
   height: 40px;
   margin-right: 10px;
-  padding-left: 4px;
-  padding-top: 14px;
+  padding-left: 9px;
+  padding-top: 15px;
   width: 40px;
   font-size: 18px;
   text-align: left;
@@ -255,6 +261,19 @@ export default class SettingsPage extends Vue {
   &.light {
     background: #f6f6f6;
     color: #303030;
+  }
+  &.system {
+    background: linear-gradient(
+      135deg,
+      rgba(27, 27, 27, 1) 0%,
+      rgba(27, 27, 27, 1) 50%,
+      rgba(246, 246, 246, 1) 50%,
+      rgba(246, 246, 246, 1) 100%
+    );
+    .text {
+      color: #f6f6f6;
+      text-shadow: 1.5px 1px 0 #1b1b1b;
+    }
   }
 }
 </style>

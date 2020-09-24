@@ -7,14 +7,14 @@
       @sort="onSortChange"
       @view="onViewChange"
     ></team-toolbar>
-    <team-list
+    <team-table
       v-if="view === 'list'"
       ref="items"
       :search="search"
       :filters="filters"
       :order="order"
       :sort="sort"
-    ></team-list>
+    ></team-table>
   </div>
 </template>
 
@@ -24,12 +24,12 @@ import { mixins } from 'vue-class-component'
 
 import PageMixin from '@/mixins/page.mixin'
 import TeamToolbar from '@/components/Team/TeamToolbar.vue'
-import TeamList from '@/components/Team/TeamTable.vue'
+import TeamTable from '@/components/Team/TeamTable.vue'
 import { SortType } from '@/types/query.type'
 
 @Component({
   components: {
-    TeamList,
+    TeamTable,
     TeamToolbar,
   },
 })

@@ -36,8 +36,8 @@ export default class TableMixin extends Vue {
   public data: Entity[] = []
   public lists: { label: string; name: string; items: Entity[] }[] = []
   public selectedRow: Entity | undefined
-  public modalData: number | string | undefined
-  public modalVisible = false
+  public dialogData: number | string | undefined
+  public dialogVisible = false
   public isShiftPressed = false
 
   public get isRowEditable(): boolean {
@@ -123,7 +123,7 @@ export default class TableMixin extends Vue {
     this.data = []
     this.query.pageNumber = 0
     this.infiniteLoader.stateChanger.reset()
-    this.modalVisible = false
+    this.dialogVisible = false
   }
 
   public setIndex({ row, rowIndex }: { row: Entity; rowIndex: number }): void {
@@ -161,8 +161,8 @@ export default class TableMixin extends Vue {
 
   public onRowDoubleClick(row: Entity): void {
     if (!row.isRemoved) {
-      this.modalData = row.id
-      this.modalVisible = true
+      this.dialogData = row.id
+      this.dialogVisible = true
     }
   }
 

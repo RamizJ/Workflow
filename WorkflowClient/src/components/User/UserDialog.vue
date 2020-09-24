@@ -65,7 +65,7 @@
           </el-col>
         </transition>
         <transition name="fade">
-          <el-col v-if="teamsVisible || (form.teamIds && form.teamIds.length)" :span="24">
+          <!--<el-col v-if="teamsVisible || (form.teamIds && form.teamIds.length)" :span="24">
             <el-form-item prop="teams">
               <el-select
                 v-model="form.teamIds"
@@ -85,22 +85,20 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-          </el-col>
+          </el-col>-->
         </transition>
         <transition name="fade">
           <el-col
-            v-if="$route.params.teamId && (rolesVisible || (form.roles && form.roles.length))"
+            v-if="
+              $route.params.teamId &&
+              (rolesVisible || form.canEditGoals || form.canCloseGoals || form.canEditUsers)
+            "
             :span="24"
           >
-            <el-form-item prop="roles">
-              <el-select v-model="form.roles" placeholder="Права" multiple>
-                <el-option
-                  v-for="item in roles"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
+            <el-form-item>
+              <el-checkbox v-model="form.canEditGoals">Изменение задач</el-checkbox>
+              <el-checkbox v-model="form.canCloseGoals">Завершение задач</el-checkbox>
+              <el-checkbox v-model="form.canEditUsers">Изменение пользователей</el-checkbox>
             </el-form-item>
           </el-col>
         </transition>
@@ -113,7 +111,9 @@
         feather(type="users")
       -->
         <el-tooltip
-          v-if="$route.params.teamId && !(form.roles && form.roles.length)"
+          v-if="
+            $route.params.teamId && !(form.canEditGoals || form.canCloseGoals || form.canEditUsers)
+          "
           content="Права"
           effect="dark"
           placement="top"

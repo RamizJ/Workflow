@@ -72,16 +72,20 @@
       </template>
     </vue-context>
     <user-dialog
-      v-if="modalVisible"
-      :id="modalData"
-      @close="modalVisible = false"
+      v-if="dialogVisible"
+      :id="dialogData"
+      @close="dialogVisible = false"
       @submit="reloadData"
     ></user-dialog>
     <team-add-user-dialog
-      v-if="modalAddUserVisible"
-      @close="modalAddUserVisible = false"
+      v-if="dialogAddUserVisible"
+      @close="dialogAddUserVisible = false"
       @submit="reloadData"
     ></team-add-user-dialog>
+    <project-edit-user-rights-dialog
+      v-if="dialogEditUserRightsVisible"
+      @close="dialogEditUserRightsVisible = false"
+    />
   </div>
 </template>
 
@@ -95,14 +99,16 @@ import teamsModule from '@/store/modules/teams.module'
 import TableMixin from '@/mixins/table.mixin'
 import UserDialog from '@/components/User/UserDialog.vue'
 import TeamAddUserDialog from '@/components/Team/TeamAddUserDialog.vue'
+import ProjectEditUserRightsDialog from '@/components/Project/ProjectEditUserRightsDialog.vue'
 import User from '@/types/user.type'
 import Project from '@/types/project.type'
 
-@Component({ components: { UserDialog, TeamAddUserDialog } })
+@Component({ components: { ProjectEditUserRightsDialog, UserDialog, TeamAddUserDialog } })
 export default class UserTable extends mixins(TableMixin) {
   public data: User[] = []
   private loading = false
-  private modalAddUserVisible = false
+  private dialogAddUserVisible = false
+  private dialogEditUserRightsVisible = false
 
   private async loadData($state: StateChanger): Promise<void> {
     const isFirstLoad = !this.data.length
@@ -118,13 +124,13 @@ export default class UserTable extends mixins(TableMixin) {
   }
 
   public createEntity(): void {
-    this.modalData = undefined
-    this.modalVisible = true
+    this.dialogData = undefined
+    this.dialogVisible = true
   }
 
   public editEntity(entity: Project): void {
-    this.modalData = entity.id
-    this.modalVisible = true
+    this.dialogData = entity.id
+    this.dialogVisible = true
   }
 
   private async deleteEntity(entity: User, multiple = false): Promise<void> {
@@ -150,7 +156,7 @@ export default class UserTable extends mixins(TableMixin) {
   }
 
   private addUser(): void {
-    this.modalAddUserVisible = true
+    this.dialogAddUserVisible = true
   }
 }
 </script>
