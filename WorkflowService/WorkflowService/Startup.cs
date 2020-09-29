@@ -161,11 +161,14 @@ namespace WorkflowService
             services.AddTransient<IGoalAttachmentsService, GoalAttachmentsService>();
             services.AddTransient<IFileService, FileService>();
             services.AddTransient<IFormFilesService, FormFilesService>();
+            services.AddTransient<IProjectTeamRolesService, ProjectTeamRolesService>();
+            services.AddTransient<IProjectUserRolesService, ProjectUserRolesService>();
 
-            services.AddTransient<IViewModelConverter<TeamUser, VmTeamUserBind>, VmTeamUserBindConverter>();
             services.AddTransient<IViewModelConverter<ApplicationUser, VmUser>, VmUserConverter>();
             services.AddTransient<IViewModelConverter<Team, VmTeam>, VmTeamConverter>();
             services.AddTransient<IViewModelConverter<Project, VmProject>, VmProjectConverter>();
+            services.AddTransient<IViewModelConverter<ProjectUserRole, VmProjectUserRole>, VmProjectUserRoleConverter>();
+            services.AddTransient<IViewModelConverter<ProjectTeamRole, VmProjectTeamRole>, VmProjectTeamRoleConverter>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

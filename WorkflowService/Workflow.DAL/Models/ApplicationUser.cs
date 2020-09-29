@@ -13,6 +13,7 @@ namespace Workflow.DAL.Models
 
         public List<TeamUser> TeamUsers { get; set; } = new List<TeamUser>();
         public List<GoalObserver> GoalObserver { get; set; } = new List<GoalObserver>();
+        public List<ProjectUserRole> ProjectsRoles { get; set; } = new List<ProjectUserRole>();
 
         public int? PositionId { get; set; }
         public Position Position { get; set; }

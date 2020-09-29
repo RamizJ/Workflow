@@ -234,48 +234,26 @@ namespace WorkflowService.Controllers
         /// <summary>
         /// Добавление пользователя в команду
         /// </summary>
-        /// <param name="teamUserBind">Параметры пользователя в команде</param>
+        /// <param name="teamId">Идентификатор команнды</param>
+        /// <param name="userId">Идентификатор пользователя</param>
         /// <returns></returns>
-        [HttpPatch]
-        public async Task<IActionResult> AddUser([FromBody]VmTeamUserBind teamUserBind)
+        [HttpPatch("{teamId}")]
+        public async Task<IActionResult> AddUser(int teamId, [FromBody]string userId)
         {
-            await _teamUsersService.Add(teamUserBind);
+            await _teamUsersService.Add(teamId, userId);
             return NoContent();
         }
 
         /// <summary>
         /// Добавление пользователей в команду
         /// </summary>
-        /// <param name="teamUserBinds">Параметры пользовтаелей в командах</param>
+        /// <param name="teamId"></param>
+        /// <param name="userIds">Идентификаторы пользователей</param>
         /// <returns></returns>
-        [HttpPatch]
-        public async Task<IActionResult> AddUsers([FromBody] IEnumerable<VmTeamUserBind> teamUserBinds)
+        [HttpPatch("{teamId}")]
+        public async Task<IActionResult> AddUsers(int teamId, [FromBody] IEnumerable<string> userIds)
         {
-            await _teamUsersService.AddRange(teamUserBinds);
-            return NoContent();
-        }
-
-        /// <summary>
-        /// Обновление пользователей в команде
-        /// </summary>
-        /// <param name="teamUserBind">Параметры пользователя в команде</param>
-        /// <returns></returns>
-        [HttpPatch]
-        public async Task<IActionResult> UpdateUser([FromBody] VmTeamUserBind teamUserBind)
-        {
-            await _teamUsersService.Update(teamUserBind);
-            return NoContent();
-        }
-
-        /// <summary>
-        /// Обновление пользователей в команде
-        /// </summary>
-        /// <param name="teamUserBinds">Параметры пользователей в команде</param>
-        /// <returns></returns>
-        [HttpPatch]
-        public async Task<IActionResult> UpdateUsers([FromBody] IEnumerable<VmTeamUserBind> teamUserBinds)
-        {
-            await _teamUsersService.UpdateRange(teamUserBinds);
+            await _teamUsersService.AddRange(teamId, userIds);
             return NoContent();
         }
 
