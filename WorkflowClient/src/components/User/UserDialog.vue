@@ -65,29 +65,6 @@
           </el-col>
         </transition>
         <transition name="fade">
-          <!--<el-col v-if="teamsVisible || (form.teamIds && form.teamIds.length)" :span="24">
-            <el-form-item prop="teams">
-              <el-select
-                v-model="form.teamIds"
-                placeholder="Команды"
-                :remote-method="searchTeams"
-                multiple="multiple"
-                filterable="filterable"
-                remote="remote"
-                clearable="clearable"
-                default-first-option="default-first-option"
-              >
-                <el-option
-                  v-for="item in teams"
-                  :key="item.id"
-                  :label="item.value"
-                  :value="item.id"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>-->
-        </transition>
-        <transition name="fade">
           <el-col
             v-if="
               $route.params.teamId &&
@@ -106,10 +83,6 @@
     </el-form>
     <template slot="footer">
       <div class="extra">
-        <!--el-tooltip(content="Команды" effect="dark" placement="top" transition="fade" :visible-arrow="false" :open-delay="500")
-      el-button(v-if="!(form.teamIds && form.teamIds.length)" type="text" @click="teamsVisible = !teamsVisible" circle)
-        feather(type="users")
-      -->
         <el-tooltip
           v-if="
             $route.params.teamId && !(form.canEditGoals || form.canCloseGoals || form.canEditUsers)
@@ -221,7 +194,6 @@ export default class UserDialog extends mixins(DialogMixin) {
     { value: Role.EDIT_TEAMS, label: 'Редактирование команд' },
     { value: Role.EDIT_USERS, label: 'Редактирование пользователей' },
   ]
-  private teamsVisible = null
   private rolesVisible = null
   private positionVisible = null
   private phoneVisible = null
@@ -230,8 +202,11 @@ export default class UserDialog extends mixins(DialogMixin) {
     this.visible = true
 
     this.loading = true
-    if (this.id) this.form = await usersModule.findOneById(this.id.toString())
-    await this.searchTeams()
+    try {
+      if (this.id) this.form = await usersModule.findOneById(this.id.toString())
+    } catch (e) {
+      Message.error('Не удаётся загрузить пользователя')
+    }
     this.loading = false
 
     this.title?.focus()

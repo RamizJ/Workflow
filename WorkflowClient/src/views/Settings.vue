@@ -103,13 +103,15 @@
             </el-form-item>
           </div>
           <div class="section">
-            <el-button type="primary" @click="updateAccount">Сохранить</el-button>
+            <el-button type="primary" @click="updateAccount" :loading="loading"
+              >Сохранить</el-button
+            >
             <el-button @click="exit">Выйти</el-button>
           </div>
         </el-form>
       </el-tab-pane>
       <el-tab-pane label="Обновления" name="updates">
-        <changelog></changelog>
+        <changelog />
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -129,6 +131,7 @@ import User from '@/types/user.type'
   },
 })
 export default class SettingsPage extends Vue {
+  private loading = false
   private form: User = {
     lastName: '',
     firstName: '',
@@ -166,24 +169,36 @@ export default class SettingsPage extends Vue {
   }
 
   private async updateAccount(): Promise<void> {
-    if (JSON.stringify(this.form) === JSON.stringify(authModule.me)) {
+    const currentPassword = this.credentials.currentPassword
+    const newPassword = this.credentials.newPassword
+
+    if (JSON.stringify(this.form) === JSON.stringify(authModule.me) && !newPassword) {
       this.$message.warning('Внесите правки для сохранения изменений')
       return
     }
+
     try {
-      const currentPassword = this.credentials.currentPassword
-      const newPassword = this.credentials.newPassword
-      if (newPassword) {
-        if (!currentPassword)
-          this.$message.warning('Введите текущий пароль для сохранения настроек')
-        else await authModule.changePassword({ currentPassword, newPassword })
+      this.loading = true
+      // Updating password
+      if (newPassword && currentPassword) {
+        const success = await authModule.changePassword({ currentPassword, newPassword })
+        if (!success) this.$message.error('Не удалось обновить пароль')
+        this.credentials.currentPassword = ''
+        this.credentials.newPassword = ''
+      } else if (newPassword && !currentPassword)
+        this.$message.warning('Введите старый и новый пароль для смены пароля')
+
+      // Updating account data
+      if (JSON.stringify(this.form) !== JSON.stringify(authModule.me)) {
+        await usersModule.updateOne(this.form)
+        await authModule.getMe()
+        this.$message.success('Данные профиля успешно обновлены')
       }
-      await usersModule.updateOne(this.form)
-      await authModule.getMe()
-      this.$message.success('Данные профиля успешно обновлены')
+      this.loading = false
     } catch (e) {
       this.$message.error('Не удалось обновить данные профиля')
       console.error(e)
+      this.loading = false
     }
   }
 
