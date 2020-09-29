@@ -360,7 +360,7 @@ export default class TaskDialog extends mixins(DialogMixin) {
     const entity: Task = { ...this.form } as Task
     entity.isChildsExist = !!entity.childTasks?.length
     entity.isAttachmentsExist = !!entity.attachments?.length
-    if (!this.performerVisible) delete entity.performerId
+    if (!this.performerVisible && !this.form.performerId) delete entity.performerId
     if (this.id) await tasksModule.updateOne(entity)
     else this.form = await tasksModule.createOne(entity)
     this.loading = false
