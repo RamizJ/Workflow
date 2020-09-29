@@ -30,15 +30,23 @@
     <vue-context ref="contextMenu">
       <template slot-scope="child">
         <li>
-          <a v-if="isRowEditable" @click.prevent="onRowDoubleClick(child.data.row)">Открыть</a>
+          <a
+            v-if="isRowEditable && !$route.params.projectId"
+            @click.prevent="onRowDoubleClick(child.data.row)"
+            >Открыть</a
+          >
         </li>
         <li>
-          <a v-if="isRowEditable" @click.prevent="editEntity(child.data.row)">Изменить</a>
+          <a
+            v-if="isRowEditable && !$route.params.projectId"
+            @click.prevent="editEntity(child.data.row)"
+            >Изменить</a
+          >
         </li>
         <!--<li>
           <a v-if="isRowEditable" @click.prevent="editTeamRights(child.data.row)">Изменить права</a>
         </li>-->
-        <el-divider v-if="isRowEditable"></el-divider>
+        <el-divider v-if="isRowEditable && !$route.params.projectId"></el-divider>
         <li>
           <a v-if="isRowEditable && !$route.params.projectId" @click.prevent="createEntity"
             >Новая команда</a
@@ -145,7 +153,7 @@ export default class TeamTable extends mixins(TableMixin) {
   }
 
   public async onRowDoubleClick(row: Team): Promise<void> {
-    if (!row.isRemoved) await this.$router.push(`/teams/${row.id}`)
+    if (!row.isRemoved && !this.$route.params.projectId) await this.$router.push(`/teams/${row.id}`)
   }
 
   private async removeEntityFromProject(row: Team): Promise<void> {

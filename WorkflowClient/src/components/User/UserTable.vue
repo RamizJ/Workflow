@@ -36,9 +36,13 @@
     <vue-context ref="contextMenu">
       <template slot-scope="child">
         <li>
-          <a v-if="isRowEditable" @click.prevent="editEntity(child.data.row)">Изменить</a>
+          <a
+            v-if="isRowEditable && !$route.params.teamId"
+            @click.prevent="editEntity(child.data.row)"
+            >Изменить</a
+          >
         </li>
-        <el-divider v-if="isRowEditable"></el-divider>
+        <el-divider v-if="isRowEditable && !$route.params.teamId"></el-divider>
         <li>
           <a v-if="isRowEditable && !$route.params.teamId" @click.prevent="createEntity"
             >Новый пользователь</a

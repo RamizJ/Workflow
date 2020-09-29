@@ -37,9 +37,19 @@
     <vue-context ref="contextMenu">
       <template slot-scope="child">
         <li>
-          <a v-if="isRowEditable" @click.prevent="onRowDoubleClick(child.data.row)">Открыть</a>
+          <a
+            v-if="isRowEditable && !$route.params.teamId"
+            @click.prevent="onRowDoubleClick(child.data.row)"
+            >Открыть</a
+          >
         </li>
-        <li><a v-if="isRowEditable" @click.prevent="editEntity(child.data.row)">Изменить</a></li>
+        <li>
+          <a
+            v-if="isRowEditable && !$route.params.teamId"
+            @click.prevent="editEntity(child.data.row)"
+            >Изменить</a
+          >
+        </li>
         <el-divider v-if="isRowEditable && !$route.params.teamId"></el-divider>
         <li>
           <a v-if="isRowEditable && !$route.params.teamId" @click.prevent="createEntity"
@@ -126,7 +136,7 @@ export default class ProjectTable extends mixins(TableMixin) {
   }
 
   public async onRowDoubleClick(row: Project): Promise<void> {
-    if (!row.isRemoved) await this.$router.push(`/projects/${row.id}`)
+    if (!row.isRemoved && !this.$route.params.teamId) await this.$router.push(`/projects/${row.id}`)
   }
 }
 </script>
