@@ -389,10 +389,25 @@ export default class TaskDialog extends mixins(DialogMixin) {
     const id = this.id || this.form.id
     if (!id) return
     const files = new FormData()
-    files.append('files', request.file)
+    const filename = this.shortenFilename(request.file.name)
+    const file = this.renameFile(request.file, filename)
+    files.append('files', file)
     await tasksModule.uploadAttachments({ id, files })
     this.form.isAttachmentsExist = true
     this.loading = false
+  }
+
+  private renameFile(originalFile: File, newName: string): File {
+    return new File([originalFile], newName, {
+      type: originalFile.type,
+      lastModified: originalFile.lastModified,
+    })
+  }
+
+  private shortenFilename(filename: string): string {
+    const format = filename.slice(filename.lastIndexOf('.') + 1)
+    const name = filename.slice(0, 85)
+    return `${name}.${format}`
   }
 
   private async onAttachmentClick(attachment: Attachment): Promise<void> {
