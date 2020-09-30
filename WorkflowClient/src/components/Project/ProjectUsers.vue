@@ -1,20 +1,20 @@
 <template>
-  <div class="project-teams">
-    <team-toolbar
+  <div class="project-users">
+    <user-toolbar
       @search="onSearch"
       @filters="onFiltersChange"
       @order="onOrderChange"
       @sort="onSortChange"
       @view="onViewChange"
-    ></team-toolbar>
-    <team-table
+    ></user-toolbar>
+    <user-table
       v-if="view === 'list'"
       ref="items"
       :search="search"
       :filters="filters"
       :order="order"
       :sort="sort"
-    ></team-table>
+    ></user-table>
   </div>
 </template>
 
@@ -23,17 +23,17 @@ import { Component } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
 
 import PageMixin from '@/mixins/page.mixin'
-import TeamToolbar from '@/components/Team/TeamToolbar.vue'
-import TeamTable from '@/components/Team/TeamTable.vue'
+import UserToolbar from '@/components/User/UserToolbar.vue'
+import UserTable from '@/components/User/UserTable.vue'
 import { SortType } from '@/types/query.type'
 
 @Component({
   components: {
-    TeamTable,
-    TeamToolbar,
+    UserToolbar,
+    UserTable,
   },
 })
-export default class ProjectTeams extends mixins(PageMixin) {
+export default class ProjectUsers extends mixins(PageMixin) {
   protected mounted(): void {
     if (!this.$route.query.sort) this.onSortChange('name')
     if (!this.$route.query.order) this.onOrderChange(SortType.Ascending)
@@ -42,7 +42,7 @@ export default class ProjectTeams extends mixins(PageMixin) {
 </script>
 
 <style lang="scss" scoped>
-.project-teams {
+.project-users {
   height: 100%;
   display: flex;
   flex-direction: column;

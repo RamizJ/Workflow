@@ -17,8 +17,34 @@ export default {
   restoreOne: (id: number) => http.patch(`/api/Teams/Restore/${id}`),
   restoreMany: (ids: number[]) => http.patch(`/api/Teams/RestoreRange`, ids),
   findUsers: (query: Query) => http.post(`/api/Teams/GetUsersPage?teamId=${query.teamId}`, query),
-  addUser: (teamId: number, userId: string) =>
-    http.patch(`/api/Teams/AddUser/${teamId}`, JSON.stringify(userId)),
+  addUser: (
+    teamId: number,
+    userId: string,
+    canEditUsers: boolean,
+    canEditGoals: boolean,
+    canCloseGoals: boolean
+  ) =>
+    http.patch(`/api/Teams/AddUser`, {
+      teamId,
+      userId,
+      canEditUsers,
+      canEditGoals,
+      canCloseGoals,
+    }),
+  updateUser: (
+    teamId: number,
+    userId: string,
+    canEditUsers: boolean,
+    canEditGoals: boolean,
+    canCloseGoals: boolean
+  ) =>
+    http.patch(`/api/Teams/AddUser`, {
+      teamId,
+      userId,
+      canEditUsers,
+      canEditGoals,
+      canCloseGoals,
+    }),
   addUsers: (teamId: number, userIds: string[]) =>
     http.patch(`/api/Teams/AddUser/${teamId}`, userIds),
   removeUser: (teamId: number, userId: string) =>
@@ -28,5 +54,5 @@ export default {
   addProject: (teamId: number, projectId: number) =>
     http.patch(`/api/Teams/AddProject/${teamId}`, projectId),
   removeProject: (teamId: number, projectId: number) =>
-    http.patch(`/api/Teams/RemoveProject/${teamId}/${projectId}`)
+    http.patch(`/api/Teams/RemoveProject/${teamId}/${projectId}`),
 }

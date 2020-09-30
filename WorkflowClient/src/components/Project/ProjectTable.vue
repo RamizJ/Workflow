@@ -37,9 +37,19 @@
     <vue-context ref="contextMenu">
       <template slot-scope="child">
         <li>
-          <a v-if="isRowEditable" @click.prevent="onRowDoubleClick(child.data.row)">Открыть</a>
+          <a
+            v-if="isRowEditable && !$route.params.teamId"
+            @click.prevent="onRowDoubleClick(child.data.row)"
+            >Открыть</a
+          >
         </li>
-        <li><a v-if="isRowEditable" @click.prevent="editEntity(child.data.row)">Изменить</a></li>
+        <li>
+          <a
+            v-if="isRowEditable && !$route.params.teamId"
+            @click.prevent="editEntity(child.data.row)"
+            >Изменить</a
+          >
+        </li>
         <el-divider v-if="isRowEditable && !$route.params.teamId"></el-divider>
         <li>
           <a v-if="isRowEditable && !$route.params.teamId" @click.prevent="createEntity"
@@ -64,9 +74,9 @@
       </template>
     </vue-context>
     <project-dialog
-      v-if="modalVisible"
-      :id="modalData"
-      @close="modalVisible = false"
+      v-if="dialogVisible"
+      :id="dialogData"
+      @close="dialogVisible = false"
       @submit="reloadData"
     ></project-dialog>
   </div>
@@ -102,13 +112,13 @@ export default class ProjectTable extends mixins(TableMixin) {
   }
 
   public createEntity(): void {
-    this.modalData = undefined
-    this.modalVisible = true
+    this.dialogData = undefined
+    this.dialogVisible = true
   }
 
   public editEntity(entity: Project): void {
-    this.modalData = entity.id
-    this.modalVisible = true
+    this.dialogData = entity.id
+    this.dialogVisible = true
   }
 
   private async deleteEntity(entity: Project, multiple = false): Promise<void> {
@@ -126,7 +136,7 @@ export default class ProjectTable extends mixins(TableMixin) {
   }
 
   public async onRowDoubleClick(row: Project): Promise<void> {
-    if (!row.isRemoved) await this.$router.push(`/projects/${row.id}`)
+    if (!row.isRemoved && !this.$route.params.teamId) await this.$router.push(`/projects/${row.id}`)
   }
 }
 </script>

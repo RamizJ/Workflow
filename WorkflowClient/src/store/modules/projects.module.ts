@@ -6,6 +6,7 @@ import Project from '@/types/project.type'
 import Team from '@/types/team.type'
 import Query from '@/types/query.type'
 import { Status } from '@/types/task.type'
+import User from '@/types/user.type'
 
 @Module({
   dynamic: true,
@@ -17,6 +18,7 @@ class ProjectsModule extends VuexModule {
   _project: Project | null = null
   _projects: Project[] = []
   _projectTeams: Team[] = []
+  _projectUsers: User[] = []
 
   public get project() {
     return this._project
@@ -28,6 +30,10 @@ class ProjectsModule extends VuexModule {
 
   public get projectTeams() {
     return this._projectTeams
+  }
+
+  public get projectUsers() {
+    return this._projectUsers
   }
 
   @Mutation
@@ -43,6 +49,11 @@ class ProjectsModule extends VuexModule {
   @Mutation
   setProjectTeams(teams: Team[]) {
     this._projectTeams = teams
+  }
+
+  @Mutation
+  setProjectUsers(users: User[]) {
+    this._projectUsers = users
   }
 
   @Action
@@ -165,6 +176,14 @@ class ProjectsModule extends VuexModule {
     for (const teamId of teamIds) {
       await projectsAPI.removeTeam(projectId, teamId)
     }
+  }
+
+  @Action
+  async findUsers(query: Query): Promise<User[]> {
+    const response = await projectsAPI.findUsers(query)
+    const results = response.data as User[]
+    this.context.commit('setProjectUsers', results)
+    return results
   }
 
   @Action

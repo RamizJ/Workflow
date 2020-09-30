@@ -71,8 +71,14 @@ class AuthModule extends VuexModule {
   }: {
     currentPassword: string
     newPassword: string
-  }): Promise<void> {
-    await authAPI.changePassword(currentPassword, newPassword)
+  }): Promise<boolean> {
+    try {
+      const response = await authAPI.changePassword(currentPassword, newPassword)
+      return !!response
+    } catch (e) {
+      console.log(e)
+      return false
+    }
   }
 }
 

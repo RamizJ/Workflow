@@ -42,8 +42,11 @@
       <el-tab-pane name="tasks" label="Задачи">
         <project-tasks ref="projectTasks" v-if="activeTab === 'tasks'"></project-tasks>
       </el-tab-pane>
-      <el-tab-pane name="team" label="Команды">
-        <project-teams ref="projectTeams" v-if="activeTab === 'team'"></project-teams>
+      <el-tab-pane name="teams" label="Команды">
+        <project-teams ref="projectTeams" v-if="activeTab === 'teams'"></project-teams>
+      </el-tab-pane>
+      <el-tab-pane name="users" label="Пользователи">
+        <project-users ref="projectUsers" v-if="activeTab === 'users'"></project-users>
       </el-tab-pane>
       <el-tab-pane name="reports" label="Отчёты">
         <project-reports ref="projectReports" v-if="activeTab === 'reports'" />
@@ -78,9 +81,11 @@ import TaskDialog from '@/components/Task/TaskDialog.vue'
 import TaskTable from '@/components/Task/TaskTable.vue'
 import Project from '@/types/project.type'
 import TeamTable from '@/components/Team/TeamTable.vue'
+import ProjectUsers from '@/components/Project/ProjectUsers.vue'
 
 @Component({
   components: {
+    ProjectUsers,
     ProjectOverview,
     ProjectTasks,
     ProjectTeams,

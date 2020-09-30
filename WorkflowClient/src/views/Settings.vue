@@ -17,6 +17,11 @@
               >А</el-button
             >
           </el-tooltip>
+          <el-tooltip content="Системное" placement="top">
+            <el-button class="theme-preview system" type="text" @click="switchTheme('system')">
+              <span class="text">A</span>
+            </el-button>
+          </el-tooltip>
         </div>
         <div class="section">
           <h2>Диалоговые окна</h2>
@@ -98,13 +103,15 @@
             </el-form-item>
           </div>
           <div class="section">
-            <el-button type="primary" @click="updateAccount">Сохранить</el-button>
+            <el-button type="primary" @click="updateAccount" :loading="loading"
+              >Сохранить</el-button
+            >
             <el-button @click="exit">Выйти</el-button>
           </div>
         </el-form>
       </el-tab-pane>
       <el-tab-pane label="Обновления" name="updates">
-        <changelog></changelog>
+        <changelog />
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -124,6 +131,7 @@ import User from '@/types/user.type'
   },
 })
 export default class SettingsPage extends Vue {
+  private loading = false
   private form: User = {
     lastName: '',
     firstName: '',
@@ -161,24 +169,36 @@ export default class SettingsPage extends Vue {
   }
 
   private async updateAccount(): Promise<void> {
-    if (JSON.stringify(this.form) === JSON.stringify(authModule.me)) {
+    const currentPassword = this.credentials.currentPassword
+    const newPassword = this.credentials.newPassword
+
+    if (JSON.stringify(this.form) === JSON.stringify(authModule.me) && !newPassword) {
       this.$message.warning('Внесите правки для сохранения изменений')
       return
     }
+
     try {
-      const currentPassword = this.credentials.currentPassword
-      const newPassword = this.credentials.newPassword
-      if (newPassword) {
-        if (!currentPassword)
-          this.$message.warning('Введите текущий пароль для сохранения настроек')
-        else await authModule.changePassword({ currentPassword, newPassword })
+      this.loading = true
+      // Updating password
+      if (newPassword && currentPassword) {
+        const success = await authModule.changePassword({ currentPassword, newPassword })
+        if (!success) this.$message.error('Не удалось обновить пароль')
+        this.credentials.currentPassword = ''
+        this.credentials.newPassword = ''
+      } else if (newPassword && !currentPassword)
+        this.$message.warning('Введите старый и новый пароль для смены пароля')
+
+      // Updating account data
+      if (JSON.stringify(this.form) !== JSON.stringify(authModule.me)) {
+        await usersModule.updateOne(this.form)
+        await authModule.getMe()
+        this.$message.success('Данные профиля успешно обновлены')
       }
-      await usersModule.updateOne(this.form)
-      await authModule.getMe()
-      this.$message.success('Данные профиля успешно обновлены')
+      this.loading = false
     } catch (e) {
       this.$message.error('Не удалось обновить данные профиля')
       console.error(e)
+      this.loading = false
     }
   }
 
@@ -237,14 +257,15 @@ export default class SettingsPage extends Vue {
 }
 .theme-preview {
   border-radius: 3px;
-  border: solid 3px var(--color-primary);
+  border: none;
+  box-shadow: inset 0 0 0 3px var(--color-primary);
   cursor: pointer;
   display: inline-block;
-  font-weight: 500;
+  font-weight: 600;
   height: 40px;
   margin-right: 10px;
-  padding-left: 4px;
-  padding-top: 14px;
+  padding-left: 9px;
+  padding-top: 15px;
   width: 40px;
   font-size: 18px;
   text-align: left;
@@ -255,6 +276,19 @@ export default class SettingsPage extends Vue {
   &.light {
     background: #f6f6f6;
     color: #303030;
+  }
+  &.system {
+    background: linear-gradient(
+      135deg,
+      rgba(27, 27, 27, 1) 0%,
+      rgba(27, 27, 27, 1) 50%,
+      rgba(246, 246, 246, 1) 50%,
+      rgba(246, 246, 246, 1) 100%
+    );
+    .text {
+      color: #f6f6f6;
+      text-shadow: 1.5px 1px 0 #1b1b1b;
+    }
   }
 }
 </style>

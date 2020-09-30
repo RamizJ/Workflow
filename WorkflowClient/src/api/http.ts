@@ -80,12 +80,12 @@ const errorResponseHandler = (error: any) => {
     return
   }
 
-  if (!isDebugMode && error.response)
-    Message({
-      message: `Ошибка отправки запроса`,
-      type: 'error',
-      duration: 5000,
-    })
+  // if (!isDebugMode && error.response)
+  //   Message({
+  //     message: `Ошибка отправки запроса`,
+  //     type: 'error',
+  //     duration: 5000,
+  //   })
   if (isDebugMode) pushErrorMessage(error)
 }
 

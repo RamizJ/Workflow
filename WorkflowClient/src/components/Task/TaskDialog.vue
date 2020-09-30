@@ -360,7 +360,7 @@ export default class TaskDialog extends mixins(DialogMixin) {
     const entity: Task = { ...this.form } as Task
     entity.isChildsExist = !!entity.childTasks?.length
     entity.isAttachmentsExist = !!entity.attachments?.length
-    if (!this.performerVisible) delete entity.performerId
+    if (!this.performerVisible && !this.form.performerId) delete entity.performerId
     if (this.id) await tasksModule.updateOne(entity)
     else this.form = await tasksModule.createOne(entity)
     this.loading = false
@@ -389,10 +389,30 @@ export default class TaskDialog extends mixins(DialogMixin) {
     const id = this.id || this.form.id
     if (!id) return
     const files = new FormData()
-    files.append('files', request.file)
+
+    let file: File = request.file
+    if (request.file.name.length > 96) {
+      const filename = this.shortenFilename(request.file.name)
+      file = this.renameFile(request.file, filename)
+    }
+
+    files.append('files', file)
     await tasksModule.uploadAttachments({ id, files })
     this.form.isAttachmentsExist = true
     this.loading = false
+  }
+
+  private renameFile(originalFile: File, newName: string): File {
+    return new File([originalFile], newName, {
+      type: originalFile.type,
+      lastModified: originalFile.lastModified,
+    })
+  }
+
+  private shortenFilename(filename: string): string {
+    const format = filename.slice(filename.lastIndexOf('.') + 1)
+    const name = filename.slice(0, 85)
+    return `${name}.${format}`
   }
 
   private async onAttachmentClick(attachment: Attachment): Promise<void> {

@@ -22,6 +22,8 @@ export default {
     http.patch(`/api/Projects/AddTeam/${projectId}/${teamId}`),
   removeTeam: (projectId: number, teamId: number) =>
     http.patch(`/api/Projects/RemoveTeam/${projectId}/${teamId}`),
+  findUsers: (query: Query) =>
+    http.post(`/api/Projects/GetUsersPage?projectId=${query.projectId}`, query),
   getTasksCount: (projectId: number) =>
     http.get(`/api/Goals/GetTotalProjectGoalsCount/${projectId}`),
   getTasksCountByStatus: (projectId: number, status: string) =>

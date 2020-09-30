@@ -36,11 +36,19 @@
     <vue-context ref="contextMenu">
       <template slot-scope="child">
         <li>
-          <a v-if="isRowEditable" @click.prevent="editEntity(child.data.row)">Изменить</a>
+          <a
+            v-if="isRowEditable && !$route.params.teamId && !$route.params.projectId"
+            @click.prevent="editEntity(child.data.row)"
+            >Изменить</a
+          >
         </li>
-        <el-divider v-if="isRowEditable"></el-divider>
+        <el-divider
+          v-if="isRowEditable && !$route.params.teamId && !$route.params.projectId"
+        ></el-divider>
         <li>
-          <a v-if="isRowEditable && !$route.params.teamId" @click.prevent="createEntity"
+          <a
+            v-if="isRowEditable && !$route.params.teamId && !$route.params.projectId"
+            @click.prevent="createEntity"
             >Новый пользователь</a
           >
         </li>
@@ -49,7 +57,19 @@
             >Добавить участника</a
           >
         </li>
-        <el-divider v-if="isRowEditable"></el-divider>
+        <li>
+          <a
+            v-if="isRowEditable && $route.params.projectId"
+            @click.prevent="editProjectUserRights(child.data.row)"
+            >Изменить права</a
+          >
+        </li>
+        <el-divider
+          v-if="
+            isRowEditable &&
+            ((!$route.params.teamId && !$route.params.projectId) || $route.params.teamId)
+          "
+        ></el-divider>
         <li>
           <a v-if="$route.params.teamId" @click.prevent="removeEntityFromTeam(child.data.row)"
             >Убрать из команды</a
@@ -57,7 +77,7 @@
         </li>
         <li>
           <a
-            v-if="isRowEditable && !$route.params.teamId"
+            v-if="isRowEditable && !$route.params.teamId && !$route.params.projectId"
             @click.prevent="deleteEntity(child.data.row, isMultipleSelected)"
             >Переместить в корзину</a
           >
@@ -72,16 +92,21 @@
       </template>
     </vue-context>
     <user-dialog
-      v-if="modalVisible"
-      :id="modalData"
-      @close="modalVisible = false"
+      v-if="dialogVisible"
+      :id="dialogData"
+      @close="dialogVisible = false"
       @submit="reloadData"
     ></user-dialog>
     <team-add-user-dialog
-      v-if="modalAddUserVisible"
-      @close="modalAddUserVisible = false"
+      v-if="dialogAddUserVisible"
+      @close="dialogAddUserVisible = false"
       @submit="reloadData"
     ></team-add-user-dialog>
+    <project-edit-user-rights-dialog
+      v-if="dialogEditUserRightsVisible"
+      :user="selectedRow"
+      @close="dialogEditUserRightsVisible = false"
+    />
   </div>
 </template>
 
@@ -92,24 +117,33 @@ import { StateChanger } from 'vue-infinite-loading'
 
 import usersModule from '@/store/modules/users.module'
 import teamsModule from '@/store/modules/teams.module'
+import projectsModule from '@/store/modules/projects.module'
 import TableMixin from '@/mixins/table.mixin'
 import UserDialog from '@/components/User/UserDialog.vue'
 import TeamAddUserDialog from '@/components/Team/TeamAddUserDialog.vue'
+import ProjectEditUserRightsDialog from '@/components/Project/ProjectEditUserRightsDialog.vue'
 import User from '@/types/user.type'
 import Project from '@/types/project.type'
 
-@Component({ components: { UserDialog, TeamAddUserDialog } })
+@Component({ components: { ProjectEditUserRightsDialog, UserDialog, TeamAddUserDialog } })
 export default class UserTable extends mixins(TableMixin) {
   public data: User[] = []
   private loading = false
-  private modalAddUserVisible = false
+  private dialogAddUserVisible = false
+  private dialogEditUserRightsVisible = false
 
   private async loadData($state: StateChanger): Promise<void> {
     const isFirstLoad = !this.data.length
     this.loading = isFirstLoad
-    let data: User[]
-    if (this.$route.params.teamId) data = await teamsModule.findUsers(this.query)
-    else data = await usersModule.findAll(this.query)
+    let data: User[] = []
+    try {
+      if (this.$route.params.teamId) data = await teamsModule.findUsers(this.query)
+      else if (this.$route.params.projectId) data = await projectsModule.findUsers(this.query)
+      else data = await usersModule.findAll(this.query)
+    } catch (e) {
+      this.$message.error('Не удаётся загрузить пользователей')
+      this.loading = false
+    }
     if (this.query.pageNumber !== undefined) this.query.pageNumber++
     if (data.length) $state.loaded()
     else $state.complete()
@@ -118,13 +152,13 @@ export default class UserTable extends mixins(TableMixin) {
   }
 
   public createEntity(): void {
-    this.modalData = undefined
-    this.modalVisible = true
+    this.dialogData = undefined
+    this.dialogVisible = true
   }
 
   public editEntity(entity: Project): void {
-    this.modalData = entity.id
-    this.modalVisible = true
+    this.dialogData = entity.id
+    this.dialogVisible = true
   }
 
   private async deleteEntity(entity: User, multiple = false): Promise<void> {
@@ -150,7 +184,11 @@ export default class UserTable extends mixins(TableMixin) {
   }
 
   private addUser(): void {
-    this.modalAddUserVisible = true
+    this.dialogAddUserVisible = true
+  }
+
+  private editProjectUserRights(): void {
+    this.dialogEditUserRightsVisible = true
   }
 }
 </script>

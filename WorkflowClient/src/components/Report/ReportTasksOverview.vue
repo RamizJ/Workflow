@@ -23,45 +23,55 @@ export default class ReportTasksOverview extends Vue {
     const projectId = parseInt(this.$route.params.projectId)
     if (!projectId) return
     const data: number[] = []
+    const labels: string[] = []
     const newTasks = await projectsModule.getTasksCountByStatus({
       projectId,
       status: Status.New,
     })
-    data.push(newTasks)
+    if (newTasks) {
+      data.push(newTasks)
+      labels.push('Новые')
+    }
     const performTasks = await projectsModule.getTasksCountByStatus({
       projectId,
       status: Status.Perform,
     })
-    data.push(performTasks)
+    if (performTasks) {
+      data.push(performTasks)
+      labels.push('Выполняется')
+    }
     const testingTasks = await projectsModule.getTasksCountByStatus({
       projectId,
       status: Status.Testing,
     })
-    data.push(testingTasks)
+    if (testingTasks) {
+      data.push(testingTasks)
+      labels.push('Проверяется')
+    }
     const delayTasks = await projectsModule.getTasksCountByStatus({
       projectId,
       status: Status.Delay,
     })
-    data.push(delayTasks)
+    if (delayTasks) {
+      data.push(delayTasks)
+      labels.push('Отложено')
+    }
     const succeedTasks = await projectsModule.getTasksCountByStatus({
       projectId,
       status: Status.Succeed,
     })
-    data.push(succeedTasks)
+    if (succeedTasks) {
+      data.push(succeedTasks)
+      labels.push('Выполнено')
+    }
     const rejectedTasks = await projectsModule.getTasksCountByStatus({
       projectId,
       status: Status.Rejected,
     })
-    data.push(rejectedTasks)
-
-    const labels: string[] = [
-      'Новые',
-      'Выполняется',
-      'Проверяется',
-      'Отложено',
-      'Выполнено',
-      'Отклонено',
-    ]
+    if (rejectedTasks) {
+      data.push(rejectedTasks)
+      labels.push('Отклонено')
+    }
 
     const colors: string[] = [
       'rgba(33, 150, 243, 0.5)',

@@ -29,6 +29,11 @@
               ></el-option>
             </el-select>
           </el-form-item>
+          <el-form-item v-if="form.userId">
+            <el-checkbox v-model="form.canEditTasks">Изменение задач</el-checkbox>
+            <el-checkbox v-model="form.canCloseTasks">Завершение задач</el-checkbox>
+            <el-checkbox v-model="form.canEditUsers">Изменение пользователей</el-checkbox>
+          </el-form-item>
         </el-col>
       </el-row>
     </el-form>
@@ -66,6 +71,9 @@ import Query from '@/types/query.type'
 export default class TeamAddUserDialog extends mixins(DialogMixin) {
   private form = {
     userId: '',
+    canEditUsers: false,
+    canEditTasks: true,
+    canCloseTasks: true,
   }
 
   private get usersToAdd(): { value: string | undefined; id: string | undefined }[] {
@@ -99,11 +107,16 @@ export default class TeamAddUserDialog extends mixins(DialogMixin) {
   }
 
   public async submit(): Promise<void> {
-    const teamId = parseInt(this.$route.params.teamId)
     const userId = this.form.userId.trim()
     if (userId) {
       this.loading = true
-      await teamsModule.addUser({ teamId, userId })
+      await teamsModule.addUser({
+        teamId: parseInt(this.$route.params.teamId),
+        userId: userId,
+        canEditUsers: this.form.canEditUsers,
+        canEditTasks: this.form.canEditTasks,
+        canCloseTasks: this.form.canCloseTasks,
+      })
       this.$emit('submit')
       this.loading = false
     }
