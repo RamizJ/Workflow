@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
 using Workflow.VM.ViewModels;
 using WorkflowService.Services.Abstract;
@@ -237,6 +238,19 @@ namespace WorkflowService.Controllers
         {
             await _projectTeamsService.Remove(projectId, teamId);
             return NoContent();
+        }
+
+        /// <summary>
+        /// Получение ролей пользователя в проекте
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="userId">Идентификатор пользователя</param>
+        /// <returns></returns>
+        [HttpGet("{projectId/userId}")] 
+        public async Task<ActionResult<ProjectUserRole>> GetUserRole(int projectId, string userId)
+        {
+            var userRole = await _projectsService.GetUserRole(projectId, userId);
+            return Ok(userRole);
         }
 
 

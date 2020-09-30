@@ -114,5 +114,13 @@ namespace Workflow.Services.Abstract
         /// <param name="ids">Идентификаторы проектов</param>
         /// <returns></returns>
         Task<IEnumerable<VmProject>> RestoreRange(ApplicationUser currentUser, IEnumerable<int> ids);
+        
+        /// <summary>
+        /// Получение ролей пользователя для проекта
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="userId">Идентификатор пользователя</param>
+        /// <returns></returns>
+        Task<ProjectUserRole> GetUserRole(int projectId, string userId);
     }
 }

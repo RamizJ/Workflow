@@ -29,21 +29,4 @@ namespace Workflow.VM.ViewModels
         /// </summary>
         public string Password { get; set; }
     }
-
-    public class VmTeamUser : VmUser
-    {
-        public bool CanEditUsers { get; set; }
-        public bool CanEditGoals { get; set; }
-        public bool CanCloseGoals { get; set; }
-    }
-
-    public class VmTeamUserBind
-    {
-        public int TeamId { get; set; }
-        public string UserId { get; set; }
-
-        public bool CanEditUsers { get; set; }
-        public bool CanEditGoals { get; set; }
-        public bool CanCloseGoals { get; set; }
-    }
 }

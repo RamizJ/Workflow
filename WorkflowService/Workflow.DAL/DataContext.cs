@@ -17,6 +17,9 @@ namespace Workflow.DAL
         public DbSet<FileData> FileData { get; set; }
         public DbSet<Position> Positions { get; set; }
 
+        public DbSet<ProjectUserRole> ProjectUserRoles { get; set; }
+        public DbSet<ProjectTeamRole> ProjectTeamRoles { get; set; }
+
 
         public DataContext(DbContextOptions options) : base(options)
         { }
@@ -93,9 +96,29 @@ namespace Workflow.DAL
         private void SetupProject(ModelBuilder builder)
         {
             var entity = builder.Entity<Project>();
-            entity.Property(t => t.Name)
+            entity.Property(p => p.Name)
                 .HasMaxLength(100)
                 .IsRequired();
+
+            var projectTeamRoleEntity = builder.Entity<ProjectTeamRole>();
+            projectTeamRoleEntity
+                .HasKey(ptr => new {ptr.ProjectId, ptr.TeamId});
+            projectTeamRoleEntity
+                .HasOne(ptr => ptr.Project)
+                .WithMany(p => p.TeamsRoles);
+            projectTeamRoleEntity
+                .HasOne(ptr => ptr.Team)
+                .WithMany(t => t.ProjectsRoles);
+
+            var projectUserRole = builder.Entity<ProjectUserRole>();
+            projectUserRole
+                .HasKey(ptr => new { ptr.ProjectId, ptr.UserId });
+            projectUserRole
+                .HasOne(pur => pur.Project)
+                .WithMany(p => p.UsersRoles);
+            projectUserRole
+                .HasOne(pur => pur.User)
+                .WithMany(p => p.ProjectsRoles);
         }
 
         private void SetupGoal(ModelBuilder builder)

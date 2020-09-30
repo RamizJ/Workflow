@@ -8,6 +8,7 @@ using NUnit.Framework;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
+using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 
 namespace Workflow.Tests.Services
@@ -36,7 +37,7 @@ namespace Workflow.Tests.Services
 
             _serviceProvider = ContextHelper.Initialize(_dbConnection, true);
             _dataContext = _serviceProvider.GetService<DataContext>();
-            _service = new TeamUsersService(_dataContext);
+            _service = new TeamUsersService(_dataContext, new VmUserConverter());
             _currentUser = _testData.Users.First();
         }
 
