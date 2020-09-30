@@ -47,12 +47,13 @@ import { Component, Mixins, Prop } from 'vue-property-decorator'
 import DialogMixin from '@/mixins/dialog.mixin'
 import BaseDialog from '@/components/BaseDialog.vue'
 import teamsModule from '@/store/modules/teams.module'
+import Team from '@/types/team.type'
 
 @Component({
   components: { BaseDialog },
 })
 export default class ProjectEditTeamRightsDialog extends Mixins(DialogMixin) {
-  @Prop() readonly teamId!: number
+  @Prop() readonly team!: Team
 
   private form = {
     teamId: 0,
@@ -63,7 +64,7 @@ export default class ProjectEditTeamRightsDialog extends Mixins(DialogMixin) {
 
   protected mounted(): void {
     this.visible = true
-    this.form.teamId = this.teamId
+    this.form.teamId = this.team.id || this.form.teamId
   }
 
   public async submit(): Promise<void> {

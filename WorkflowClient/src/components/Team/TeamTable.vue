@@ -43,9 +43,13 @@
             >Изменить</a
           >
         </li>
-        <!--<li>
-          <a v-if="isRowEditable" @click.prevent="editTeamRights(child.data.row)">Изменить права</a>
-        </li>-->
+        <li>
+          <a
+            v-if="isRowEditable && $route.params.projectId"
+            @click.prevent="editProjectTeamRights(child.data.row)"
+            >Изменить права</a
+          >
+        </li>
         <el-divider v-if="isRowEditable && !$route.params.projectId"></el-divider>
         <li>
           <a v-if="isRowEditable && !$route.params.projectId" @click.prevent="createEntity"
@@ -92,6 +96,7 @@
     />
     <project-edit-team-rights-dialog
       v-if="dialogEditTeamRightsVisible"
+      :team="selectedRow"
       @close="dialogEditTeamRightsVisible = false"
     />
   </div>
@@ -169,7 +174,7 @@ export default class TeamTable extends mixins(TableMixin) {
     this.dialogAddTeamVisible = true
   }
 
-  private editTeamRights(): void {
+  private editProjectTeamRights(): void {
     this.dialogEditTeamRightsVisible = true
   }
 }

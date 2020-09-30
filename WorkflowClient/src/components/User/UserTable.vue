@@ -37,14 +37,18 @@
       <template slot-scope="child">
         <li>
           <a
-            v-if="isRowEditable && !$route.params.teamId"
+            v-if="isRowEditable && !$route.params.teamId && !$route.params.projectId"
             @click.prevent="editEntity(child.data.row)"
             >Изменить</a
           >
         </li>
-        <el-divider v-if="isRowEditable && !$route.params.teamId"></el-divider>
+        <el-divider
+          v-if="isRowEditable && !$route.params.teamId && !$route.params.projectId"
+        ></el-divider>
         <li>
-          <a v-if="isRowEditable && !$route.params.teamId" @click.prevent="createEntity"
+          <a
+            v-if="isRowEditable && !$route.params.teamId && !$route.params.projectId"
+            @click.prevent="createEntity"
             >Новый пользователь</a
           >
         </li>
@@ -53,7 +57,19 @@
             >Добавить участника</a
           >
         </li>
-        <el-divider v-if="isRowEditable"></el-divider>
+        <li>
+          <a
+            v-if="isRowEditable && $route.params.projectId"
+            @click.prevent="editProjectUserRights(child.data.row)"
+            >Изменить права</a
+          >
+        </li>
+        <el-divider
+          v-if="
+            isRowEditable &&
+            ((!$route.params.teamId && !$route.params.projectId) || $route.params.teamId)
+          "
+        ></el-divider>
         <li>
           <a v-if="$route.params.teamId" @click.prevent="removeEntityFromTeam(child.data.row)"
             >Убрать из команды</a
@@ -61,7 +77,7 @@
         </li>
         <li>
           <a
-            v-if="isRowEditable && !$route.params.teamId"
+            v-if="isRowEditable && !$route.params.teamId && !$route.params.projectId"
             @click.prevent="deleteEntity(child.data.row, isMultipleSelected)"
             >Переместить в корзину</a
           >
@@ -88,6 +104,7 @@
     ></team-add-user-dialog>
     <project-edit-user-rights-dialog
       v-if="dialogEditUserRightsVisible"
+      :user="selectedRow"
       @close="dialogEditUserRightsVisible = false"
     />
   </div>
@@ -100,6 +117,7 @@ import { StateChanger } from 'vue-infinite-loading'
 
 import usersModule from '@/store/modules/users.module'
 import teamsModule from '@/store/modules/teams.module'
+import projectsModule from '@/store/modules/projects.module'
 import TableMixin from '@/mixins/table.mixin'
 import UserDialog from '@/components/User/UserDialog.vue'
 import TeamAddUserDialog from '@/components/Team/TeamAddUserDialog.vue'
@@ -117,9 +135,15 @@ export default class UserTable extends mixins(TableMixin) {
   private async loadData($state: StateChanger): Promise<void> {
     const isFirstLoad = !this.data.length
     this.loading = isFirstLoad
-    let data: User[]
-    if (this.$route.params.teamId) data = await teamsModule.findUsers(this.query)
-    else data = await usersModule.findAll(this.query)
+    let data: User[] = []
+    try {
+      if (this.$route.params.teamId) data = await teamsModule.findUsers(this.query)
+      else if (this.$route.params.projectId) data = await projectsModule.findUsers(this.query)
+      else data = await usersModule.findAll(this.query)
+    } catch (e) {
+      this.$message.error('Не удаётся загрузить пользователей')
+      this.loading = false
+    }
     if (this.query.pageNumber !== undefined) this.query.pageNumber++
     if (data.length) $state.loaded()
     else $state.complete()
@@ -161,6 +185,10 @@ export default class UserTable extends mixins(TableMixin) {
 
   private addUser(): void {
     this.dialogAddUserVisible = true
+  }
+
+  private editProjectUserRights(): void {
+    this.dialogEditUserRightsVisible = true
   }
 }
 </script>
