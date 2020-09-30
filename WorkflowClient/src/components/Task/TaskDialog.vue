@@ -389,8 +389,13 @@ export default class TaskDialog extends mixins(DialogMixin) {
     const id = this.id || this.form.id
     if (!id) return
     const files = new FormData()
-    const filename = this.shortenFilename(request.file.name)
-    const file = this.renameFile(request.file, filename)
+
+    let file: File = request.file
+    if (request.file.name.length > 96) {
+      const filename = this.shortenFilename(request.file.name)
+      file = this.renameFile(request.file, filename)
+    }
+
     files.append('files', file)
     await tasksModule.uploadAttachments({ id, files })
     this.form.isAttachmentsExist = true
