@@ -43,13 +43,13 @@
             >Изменить</a
           >
         </li>
-        <li>
+        <!--<li>
           <a
             v-if="isRowEditable && $route.params.projectId"
             @click.prevent="editProjectTeamRights(child.data.row)"
             >Изменить права</a
           >
-        </li>
+        </li>-->
         <el-divider v-if="isRowEditable && !$route.params.projectId"></el-divider>
         <li>
           <a v-if="isRowEditable && !$route.params.projectId" @click.prevent="createEntity"
