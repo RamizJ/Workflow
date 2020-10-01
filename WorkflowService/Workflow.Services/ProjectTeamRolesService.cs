@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
@@ -21,13 +23,29 @@ namespace Workflow.Services
 
         public async Task<VmProjectTeamRole> Get(int projectId, int teamId)
         {
-            var projectUserRole = await _dataContext.ProjectTeamRoles
+            var teamRole = await _dataContext.ProjectTeamRoles
+                .AsNoTracking()
                 .FirstOrDefaultAsync(pur => pur.ProjectId == projectId && pur.TeamId == teamId);
 
-            if (projectUserRole == null)
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+            if (teamRole == null)
+            {
+                var isTeamInProject = await _dataContext.ProjectTeams
+                    .AsNoTracking()
+                    .AnyAsync(pt => pt.ProjectId == projectId
+                                    && pt.TeamId == teamId);
 
-            return _vmConverter.ToViewModel(projectUserRole);
+                if (!isTeamInProject)
+                {
+                    throw new HttpResponseException(HttpStatusCode.BadRequest,
+                        "Cannot get team roles. Team not in the project");
+                }
+
+                teamRole = new ProjectTeamRole(projectId, teamId);
+                await _dataContext.ProjectTeamRoles.AddAsync(teamRole);
+                await _dataContext.SaveChangesAsync();
+            }
+
+            return _vmConverter.ToViewModel(teamRole);
         }
 
         public async Task<VmProjectTeamRole> Add(VmProjectTeamRole viewModel)
@@ -62,6 +80,8 @@ namespace Workflow.Services
         {
             try
             {
+                if()
+
                 _dataContext.Entry(new ProjectTeamRole(projectId, teamId)).State = EntityState.Deleted;
                 await _dataContext.SaveChangesAsync();
             }

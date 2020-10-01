@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
@@ -22,7 +24,8 @@ namespace Workflow.Services
         public async Task<ProjectUserRole> Get(int projectId, string userId)
         {
             var projectUserRole = await _dataContext.ProjectUserRoles
-                .FirstOrDefaultAsync(pur => pur.ProjectId == projectId && pur.UserId == userId);
+                .FirstOrDefaultAsync(pur => pur.ProjectId == projectId
+                                            && pur.UserId == userId);
 
             if (projectUserRole == null)
                 throw new HttpResponseException(HttpStatusCode.NotFound);
@@ -38,6 +41,27 @@ namespace Workflow.Services
             await _dataContext.SaveChangesAsync();
 
             return _vmConverter.ToViewModel(model);
+        }
+
+        public async Task AddRange(IEnumerable<VmProjectUserRole> viewModels)
+        {
+            var models = viewModels.Select(_vmConverter.ToModel);
+
+            await _dataContext.ProjectUserRoles.AddRangeAsync(models);
+            await _dataContext.SaveChangesAsync();
+        }
+
+        public async Task AddForTeam(int projectId, int teamId)
+        {
+            var teamUsers = await _dataContext.TeamUsers
+                .Where(tu => tu.TeamId == teamId)
+                .ToArrayAsync();
+
+            var projectUserRoles = teamUsers
+                .Select(tu => new ProjectUserRole(projectId, tu.UserId));
+
+            await _dataContext.ProjectUserRoles.AddRangeAsync(projectUserRoles);
+            await _dataContext.SaveChangesAsync();
         }
 
         public async Task Update(VmProjectUserRole viewModel)
@@ -58,6 +82,14 @@ namespace Workflow.Services
             }
         }
 
+        public async Task UpdateRange(IEnumerable<VmProjectUserRole> viewModels)
+        {
+            var models = viewModels.Select(_vmConverter.ToModel);
+
+            _dataContext.ProjectUserRoles.UpdateRange(models);
+            await _dataContext.SaveChangesAsync();
+        }
+
         public async Task Delete(int projectId, string userId)
         {
             try
@@ -72,6 +104,14 @@ namespace Workflow.Services
 
                 throw;
             }
+        }
+
+        public async Task DeleteRange(int projectId, IEnumerable<string> userIds)
+        {
+            var models = userIds.Select(uId => new ProjectUserRole(projectId, uId));
+            _dataContext.ProjectUserRoles.RemoveRange(models);
+            
+            await _dataContext.SaveChangesAsync();
         }
 
         public async Task<bool> IsExist(int projectId, string userId)

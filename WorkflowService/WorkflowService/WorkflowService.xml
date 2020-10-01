@@ -215,7 +215,7 @@
             </summary>
             <param name="currentUserService"></param>
             <param name="projectsService"></param>
-            <param name="projectTeamsService"></param>
+            <param name="teamsService"></param>
         </member>
         <member name="M:WorkflowService.Controllers.ProjectsController.Get(System.Int32)">
             <summary>

@@ -172,16 +172,6 @@ namespace Workflow.Services
             return await RemoveRestore(currentUser, ids, false);
         }
 
-        public async Task<ProjectUserRole> GetUserRole(int projectId, string userId)
-        {
-            var projectUserRole = await _dataContext.ProjectUserRoles
-                .FirstOrDefaultAsync(pur => pur.ProjectId == projectId && pur.UserId == userId);
-
-            if (projectUserRole == null)
-                throw new HttpResponseException(NotFound);
-
-            return projectUserRole;
-        }
 
         private async Task<IEnumerable<VmProject>> RemoveRestore(ApplicationUser user, 
             IEnumerable<int> projectIds, bool isRemoved)

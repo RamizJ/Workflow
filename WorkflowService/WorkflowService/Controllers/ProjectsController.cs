@@ -21,14 +21,20 @@ namespace WorkflowService.Controllers
         /// </summary>
         /// <param name="currentUserService"></param>
         /// <param name="projectsService"></param>
-        /// <param name="projectTeamsService"></param>
+        /// <param name="teamsService"></param>
+        /// <param name="teamRolesService"></param>
+        /// <param name="userRolesService"></param>
         public ProjectsController(ICurrentUserService currentUserService, 
             IProjectsService projectsService,
-            IProjectTeamsService projectTeamsService)
+            IProjectTeamsService teamsService, 
+            IProjectTeamRolesService teamRolesService, 
+            IProjectUserRolesService userRolesService)
         {
             _currentUserService = currentUserService;
             _projectsService = projectsService;
-            _projectTeamsService = projectTeamsService;
+            _teamsService = teamsService;
+            _teamRolesService = teamRolesService;
+            _userRolesService = userRolesService;
         }
 
 
@@ -67,7 +73,7 @@ namespace WorkflowService.Controllers
             [FromBody]PageOptions pageOptions)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
-            return await _projectTeamsService.GetPage(currentUser, projectId, pageOptions);
+            return await _teamsService.GetPage(currentUser, projectId, pageOptions);
         }
 
         /// <summary>
@@ -223,7 +229,7 @@ namespace WorkflowService.Controllers
         [HttpPatch("{projectId}/{teamId}")]
         public async Task<IActionResult> AddTeam(int projectId, int teamId)
         {
-            await _projectTeamsService.Add(projectId, teamId);
+            await _teamsService.Add(projectId, teamId);
             return NoContent();
         }
 
@@ -236,8 +242,22 @@ namespace WorkflowService.Controllers
         [HttpPatch("{projectId}/{teamId}")]
         public async Task<IActionResult> RemoveTeam(int projectId, int teamId)
         {
-            await _projectTeamsService.Remove(projectId, teamId);
+            await _teamsService.Remove(projectId, teamId);
+            await _teamRolesService.Delete(projectId, teamId);
             return NoContent();
+        }
+
+        /// <summary>
+        /// Получение ролей команды в проекте
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="teamId"></param>
+        /// <returns></returns>
+        [HttpGet("{projectId}/{teamId}")]
+        public async Task<ActionResult<VmProjectTeamRole>> GetTeamRole(int projectId, int teamId)
+        {
+            var teamRole = await _teamRolesService.Get(projectId, teamId);
+            return Ok(teamRole);
         }
 
         /// <summary>
@@ -249,13 +269,39 @@ namespace WorkflowService.Controllers
         [HttpGet("{projectId/userId}")] 
         public async Task<ActionResult<ProjectUserRole>> GetUserRole(int projectId, string userId)
         {
-            var userRole = await _projectsService.GetUserRole(projectId, userId);
+            var userRole = await _userRolesService.Get(projectId, userId);
             return Ok(userRole);
+        }
+
+        /// <summary>
+        /// Добавление ролей пользователя в проекте
+        /// </summary>
+        /// <param name="userRole"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> AddUserRole([FromBody]VmProjectUserRole userRole)
+        {
+            await _userRolesService.Add(userRole);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Добавление ролей пользователей в проекте
+        /// </summary>
+        /// <param name="userRoles"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> AddUserRoles([FromBody] IEnumerable<VmProjectUserRole> userRoles)
+        {
+            await _userRolesService.AddRange(userRoles);
+            return NoContent();
         }
 
 
         private readonly ICurrentUserService _currentUserService;
         private readonly IProjectsService _projectsService;
-        private readonly IProjectTeamsService _projectTeamsService;
+        private readonly IProjectTeamsService _teamsService;
+        private readonly IProjectTeamRolesService _teamRolesService;
+        private readonly IProjectUserRolesService _userRolesService;
     }
 }

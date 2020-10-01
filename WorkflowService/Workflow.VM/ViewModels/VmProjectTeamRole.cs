@@ -8,5 +8,15 @@
         public bool CanEditUsers { get; set; }
         public bool CanEditGoals { get; set; }
         public bool CanCloseGoals { get; set; }
+
+
+        public VmProjectTeamRole()
+        { }
+
+        public VmProjectTeamRole(int projectId, int teamId)
+        {
+            ProjectId = projectId;
+            TeamId = teamId;
+        }
     }
 }

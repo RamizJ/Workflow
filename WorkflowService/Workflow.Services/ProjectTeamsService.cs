@@ -59,6 +59,7 @@ namespace Workflow.Services
         public async Task Add(int projectId, int teamId)
         {
             await _dataContext.ProjectTeams.AddAsync(new ProjectTeam(projectId, teamId));
+            await _dataContext.ProjectTeamRoles.AddAsync(new ProjectTeamRole(projectId, teamId));
             await _dataContext.SaveChangesAsync();
         }
 
@@ -66,6 +67,16 @@ namespace Workflow.Services
         public async Task Remove(int projectId, int teamId)
         {
             _dataContext.ProjectTeams.Remove(new ProjectTeam(projectId, teamId));
+
+            bool isTeamRoleExist = await _dataContext.ProjectTeamRoles
+                .AsNoTracking()
+                .AnyAsync(ptr => ptr.ProjectId == projectId && ptr.TeamId == teamId);
+
+            if (isTeamRoleExist)
+            {
+                _dataContext.ProjectTeamRoles.Remove(new ProjectTeamRole(projectId, teamId));
+            }
+                
             await _dataContext.SaveChangesAsync();
         }
 
