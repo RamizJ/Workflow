@@ -125,12 +125,17 @@ export default class TeamTable extends mixins(TableMixin) {
   private async loadData($state: StateChanger): Promise<void> {
     const isFirstLoad = !this.data.length
     this.loading = isFirstLoad
-    let data: Team[]
-    if (this.$route.params.projectId) data = await projectsModule.findTeams(this.query)
-    else data = await teamsModule.findAll(this.query)
-    if (this.query.pageNumber !== undefined) this.query.pageNumber++
-    if (data.length) $state.loaded()
-    else $state.complete()
+    let data: Team[] = []
+    try {
+      if (this.$route.params.projectId) data = await projectsModule.findTeams(this.query)
+      else data = await teamsModule.findAll(this.query)
+      if (this.query.pageNumber !== undefined) this.query.pageNumber++
+      if (data.length) $state.loaded()
+      else $state.complete()
+    } catch (e) {
+      this.$message.error('Не удаётся загрузить список команд')
+      $state.error()
+    }
     this.data = isFirstLoad ? data : this.data.concat(data)
     this.loading = false
   }
