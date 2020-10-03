@@ -71,7 +71,6 @@ namespace Workflow.Services
         public async Task Remove(int teamId, string userId)
         {
             var model = new TeamUser(teamId, userId);
-
             _dataContext.Entry(model).State = EntityState.Deleted;
             await _dataContext.SaveChangesAsync();
         }

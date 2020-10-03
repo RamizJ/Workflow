@@ -21,14 +21,18 @@ namespace WorkflowService.Controllers
         /// <param name="teamsService"></param>
         /// <param name="teamUsersService"></param>
         /// <param name="teamProjectsService"></param>
+        /// <param name="projectUserRolesService"></param>
         public TeamsController(ICurrentUserService currentUserService,
-            ITeamsService teamsService, ITeamUsersService teamUsersService,
-            ITeamProjectsService teamProjectsService)
+            ITeamsService teamsService, 
+            ITeamUsersService teamUsersService,
+            ITeamProjectsService teamProjectsService,
+            IProjectUserRolesService projectUserRolesService)
         {
             _currentUserService = currentUserService;
             _teamsService = teamsService;
             _teamUsersService = teamUsersService;
             _teamProjectsService = teamProjectsService;
+            _projectUserRolesService = projectUserRolesService;
         }
 
         /// <summary>
@@ -267,6 +271,7 @@ namespace WorkflowService.Controllers
         public async Task<IActionResult> RemoveUser(int teamId, [FromBody] string userId)
         {
             await _teamUsersService.Remove(teamId, userId);
+            await _projectUserRolesService.DeleteForTeam(teamId, userId);
             return NoContent();
         }
 
@@ -316,5 +321,6 @@ namespace WorkflowService.Controllers
         private readonly ITeamsService _teamsService;
         private readonly ITeamUsersService _teamUsersService;
         private readonly ITeamProjectsService _teamProjectsService;
+        private readonly IProjectUserRolesService _projectUserRolesService;
     }
 }

@@ -4,19 +4,19 @@ using Workflow.VM.ViewModels;
 
 namespace Workflow.VM.ViewModelConverters
 {
-    public class VmProjectTeamRoleConverter : IViewModelConverter<ProjectTeamRole, VmProjectTeamRole>
+    public class VmProjectTeamRoleConverter : IViewModelConverter<ProjectTeam, VmProjectTeamRole>
     {
-        public ProjectTeamRole ToModel(VmProjectTeamRole viewModel)
+        public ProjectTeam ToModel(VmProjectTeamRole viewModel)
         {
             if (viewModel == null)
                 return null;
 
-            var model = new ProjectTeamRole();
+            var model = new ProjectTeam();
             SetModel(viewModel, model);
             return model;
         }
 
-        public VmProjectTeamRole ToViewModel(ProjectTeamRole model)
+        public VmProjectTeamRole ToViewModel(ProjectTeam model)
         {
             if (model == null)
                 return null;
@@ -26,7 +26,7 @@ namespace Workflow.VM.ViewModelConverters
             return viewModel;
         }
 
-        public void SetModel(VmProjectTeamRole viewModel, ProjectTeamRole model)
+        public void SetModel(VmProjectTeamRole viewModel, ProjectTeam model)
         {
             if (viewModel == null || model == null)
                 return;
@@ -36,7 +36,7 @@ namespace Workflow.VM.ViewModelConverters
             model.CanEditUsers = viewModel.CanEditUsers;
         }
 
-        public void SetViewModel(ProjectTeamRole model, VmProjectTeamRole viewModel)
+        public void SetViewModel(ProjectTeam model, VmProjectTeamRole viewModel)
         {
             if (viewModel == null || model == null)
                 return;

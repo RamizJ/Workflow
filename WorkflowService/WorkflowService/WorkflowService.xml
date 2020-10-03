@@ -209,13 +209,16 @@
             API-методы работы с проектами
             </summary>
         </member>
-        <member name="M:WorkflowService.Controllers.ProjectsController.#ctor(WorkflowService.Services.Abstract.ICurrentUserService,Workflow.Services.Abstract.IProjectsService,Workflow.Services.Abstract.IProjectTeamsService)">
+        <member name="M:WorkflowService.Controllers.ProjectsController.#ctor(WorkflowService.Services.Abstract.ICurrentUserService,Workflow.Services.Abstract.IProjectsService,Workflow.Services.Abstract.IProjectTeamsService,Workflow.Services.Abstract.IProjectUserRolesService,Workflow.VM.ViewModelConverters.Absract.IViewModelConverter{Workflow.DAL.Models.ProjectTeam,Workflow.VM.ViewModels.VmProjectTeamRole},Workflow.VM.ViewModelConverters.Absract.IViewModelConverter{Workflow.DAL.Models.ProjectUserRole,Workflow.VM.ViewModels.VmProjectUserRole})">
             <summary>
             Конструктор
             </summary>
             <param name="currentUserService"></param>
             <param name="projectsService"></param>
             <param name="teamsService"></param>
+            <param name="userRolesService"></param>
+            <param name="vmTeamRoleConverter"></param>
+            <param name="vmUserRoleConverter"></param>
         </member>
         <member name="M:WorkflowService.Controllers.ProjectsController.Get(System.Int32)">
             <summary>
@@ -332,12 +335,42 @@
             <param name="teamId">Идентификатор команды</param>
             <returns></returns>
         </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.GetTeamRole(System.Int32,System.Int32)">
+            <summary>
+            Получение ролей команды в проекте
+            </summary>
+            <param name="projectId"></param>
+            <param name="teamId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.UpdateTeamRole(Workflow.VM.ViewModels.VmProjectTeamRole)">
+            <summary>
+            Обновление ролей команды в проекте
+            </summary>
+            <param name="projectTeamRole">Роли команды в проекте</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.GetUserRole(System.Int32,System.String)">
+            <summary>
+            Получение ролей пользователя в проекте
+            </summary>
+            <param name="projectId">Идентификатор проекта</param>
+            <param name="userId">Идентификатор пользователя</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.UpdateUserRole(Workflow.VM.ViewModels.VmProjectUserRole)">
+            <summary>
+            Обновление ролей пользователя
+            </summary>
+            <param name="userRole">Роли пользователя в проекте</param>
+            <returns></returns>
+        </member>
         <member name="T:WorkflowService.Controllers.TeamsController">
             <summary>
             API-методы работы с командами
             </summary>
         </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.#ctor(WorkflowService.Services.Abstract.ICurrentUserService,Workflow.Services.Abstract.ITeamsService,Workflow.Services.Abstract.ITeamUsersService,Workflow.Services.Abstract.ITeamProjectsService)">
+        <member name="M:WorkflowService.Controllers.TeamsController.#ctor(WorkflowService.Services.Abstract.ICurrentUserService,Workflow.Services.Abstract.ITeamsService,Workflow.Services.Abstract.ITeamUsersService,Workflow.Services.Abstract.ITeamProjectsService,Workflow.Services.Abstract.IProjectUserRolesService)">
             <summary>
             Конструктор
             </summary>
@@ -345,6 +378,7 @@
             <param name="teamsService"></param>
             <param name="teamUsersService"></param>
             <param name="teamProjectsService"></param>
+            <param name="projectUserRolesService"></param>
         </member>
         <member name="M:WorkflowService.Controllers.TeamsController.Get(System.Int32)">
             <summary>
@@ -453,32 +487,20 @@
             <param name="ids">Идентификаторы команд</param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.AddUser(Workflow.VM.ViewModels.VmTeamUserBind)">
+        <member name="M:WorkflowService.Controllers.TeamsController.AddUser(System.Int32,System.String)">
             <summary>
             Добавление пользователя в команду
             </summary>
-            <param name="teamUserBind">Параметры пользователя в команде</param>
+            <param name="teamId">Идентификатор команнды</param>
+            <param name="userId">Идентификатор пользователя</param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.AddUsers(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmTeamUserBind})">
+        <member name="M:WorkflowService.Controllers.TeamsController.AddUsers(System.Int32,System.Collections.Generic.IEnumerable{System.String})">
             <summary>
             Добавление пользователей в команду
             </summary>
-            <param name="teamUserBinds">Параметры пользовтаелей в командах</param>
-            <returns></returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.UpdateUser(Workflow.VM.ViewModels.VmTeamUserBind)">
-            <summary>
-            Обновление пользователей в команде
-            </summary>
-            <param name="teamUserBind">Параметры пользователя в команде</param>
-            <returns></returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.UpdateUsers(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmTeamUserBind})">
-            <summary>
-            Обновление пользователей в команде
-            </summary>
-            <param name="teamUserBinds">Параметры пользователей в команде</param>
+            <param name="teamId"></param>
+            <param name="userIds">Идентификаторы пользователей</param>
             <returns></returns>
         </member>
         <member name="M:WorkflowService.Controllers.TeamsController.RemoveUser(System.Int32,System.String)">

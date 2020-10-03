@@ -16,7 +16,6 @@ namespace Workflow.DAL.Models
         public DateTime? ExpectedCompletedDate { get; set; }
 
         public List<ProjectTeam> ProjectTeams { get; set; } = new List<ProjectTeam>();
-        public List<ProjectTeamRole> TeamsRoles { get; set; } = new List<ProjectTeamRole>();
         public List<ProjectUserRole> UsersRoles { get; set; } = new List<ProjectUserRole>();
 
         public List<Goal> Goals { get; set; } = new List<Goal>();

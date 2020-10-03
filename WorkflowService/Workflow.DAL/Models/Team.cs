@@ -13,7 +13,6 @@ namespace Workflow.DAL.Models
 
         public List<TeamUser> TeamUsers { get; set; }
         public List<ProjectTeam> TeamProjects { get; set; } = new List<ProjectTeam>();
-        public List<ProjectTeamRole> ProjectsRoles { get; set; } = new List<ProjectTeamRole>();
 
 
         public List<Project> Projects { get; set; } = new List<Project>();

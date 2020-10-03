@@ -22,18 +22,15 @@ namespace WorkflowService.Controllers
         /// <param name="currentUserService"></param>
         /// <param name="projectsService"></param>
         /// <param name="teamsService"></param>
-        /// <param name="teamRolesService"></param>
         /// <param name="userRolesService"></param>
         public ProjectsController(ICurrentUserService currentUserService, 
             IProjectsService projectsService,
-            IProjectTeamsService teamsService, 
-            IProjectTeamRolesService teamRolesService, 
+            IProjectTeamsService teamsService,
             IProjectUserRolesService userRolesService)
         {
             _currentUserService = currentUserService;
             _projectsService = projectsService;
             _teamsService = teamsService;
-            _teamRolesService = teamRolesService;
             _userRolesService = userRolesService;
         }
 
@@ -243,7 +240,6 @@ namespace WorkflowService.Controllers
         public async Task<IActionResult> RemoveTeam(int projectId, int teamId)
         {
             await _teamsService.Remove(projectId, teamId);
-            await _teamRolesService.Delete(projectId, teamId);
             return NoContent();
         }
 
@@ -256,9 +252,22 @@ namespace WorkflowService.Controllers
         [HttpGet("{projectId}/{teamId}")]
         public async Task<ActionResult<VmProjectTeamRole>> GetTeamRole(int projectId, int teamId)
         {
-            var teamRole = await _teamRolesService.Get(projectId, teamId);
+            var teamRole = await _teamsService.GetRole(projectId, teamId);
             return Ok(teamRole);
         }
+
+        /// <summary>
+        /// Обновление ролей команды в проекте
+        /// </summary>
+        /// <param name="projectTeamRole">Роли команды в проекте</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> UpdateTeamRole([FromBody]VmProjectTeamRole projectTeamRole)
+        {
+            await _teamsService.UpdateTeamRole(projectTeamRole);
+            return NoContent();
+        }
+
 
         /// <summary>
         /// Получение ролей пользователя в проекте
@@ -274,34 +283,23 @@ namespace WorkflowService.Controllers
         }
 
         /// <summary>
-        /// Добавление ролей пользователя в проекте
+        /// Обновление ролей пользователя
         /// </summary>
-        /// <param name="userRole"></param>
+        /// <param name="userRole">Роли пользователя в проекте</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> AddUserRole([FromBody]VmProjectUserRole userRole)
+        public async Task<IActionResult> UpdateUserRole([FromBody]VmProjectUserRole userRole)
         {
-            await _userRolesService.Add(userRole);
+            await _userRolesService.Update(userRole);
             return NoContent();
         }
 
-        /// <summary>
-        /// Добавление ролей пользователей в проекте
-        /// </summary>
-        /// <param name="userRoles"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task<IActionResult> AddUserRoles([FromBody] IEnumerable<VmProjectUserRole> userRoles)
-        {
-            await _userRolesService.AddRange(userRoles);
-            return NoContent();
-        }
+
 
 
         private readonly ICurrentUserService _currentUserService;
         private readonly IProjectsService _projectsService;
         private readonly IProjectTeamsService _teamsService;
-        private readonly IProjectTeamRolesService _teamRolesService;
         private readonly IProjectUserRolesService _userRolesService;
     }
 }

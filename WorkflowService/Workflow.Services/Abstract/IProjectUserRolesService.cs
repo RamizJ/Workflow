@@ -7,7 +7,7 @@ namespace Workflow.Services.Abstract
 {
     public interface IProjectUserRolesService
     {
-        Task<ProjectUserRole> Get(int projectId, string userId);
+        Task<VmProjectUserRole> Get(int projectId, string userId);
 
         Task<VmProjectUserRole> Add(VmProjectUserRole viewModel);
         Task AddRange(IEnumerable<VmProjectUserRole> viewModels);
@@ -17,7 +17,9 @@ namespace Workflow.Services.Abstract
         Task UpdateRange(IEnumerable<VmProjectUserRole> viewModels);
 
         Task Delete(int projectId, string userId);
+        Task DeleteForTeam(int teamId, string userId);
         Task DeleteRange(int projectId, IEnumerable<string> userIds);
+        Task DeleteRangeForTeam(int teamId, IEnumerable<string> userIds);
 
         Task<bool> IsExist(int projectId, string userId);
     }

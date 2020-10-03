@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -21,16 +22,37 @@ namespace Workflow.Services
             _vmConverter = vmConverter;
         }
 
-        public async Task<ProjectUserRole> Get(int projectId, string userId)
+        public async Task<VmProjectUserRole> Get(int projectId, string userId)
         {
             var projectUserRole = await _dataContext.ProjectUserRoles
                 .FirstOrDefaultAsync(pur => pur.ProjectId == projectId
                                             && pur.UserId == userId);
 
-            if (projectUserRole == null)
+            if (projectUserRole != null) 
+                return _vmConverter.ToViewModel(projectUserRole);
+
+            var projectTeam = await _dataContext.ProjectTeams
+                .Include(pt => pt.Project.ProjectTeams)
+                .Include(pt => pt.Team)
+                .ThenInclude(t => t.TeamUsers)
+                .Where(x => x.ProjectId == projectId
+                            && x.Project.ProjectTeams
+                                .Any(pt => pt.Team.TeamUsers
+                                    .Any(tu => tu.UserId == userId)))
+                .SelectMany(x => x.Project.ProjectTeams)
+                .FirstOrDefaultAsync();
+
+            if(projectTeam == null)
                 throw new HttpResponseException(HttpStatusCode.NotFound);
 
-            return projectUserRole;
+            return new VmProjectUserRole
+            {
+                ProjectId = projectId,
+                UserId = userId,
+                CanCloseGoals = projectTeam.CanCloseGoals,
+                CanEditGoals = projectTeam.CanEditGoals,
+                CanEditUsers = projectTeam.CanEditUsers
+            };
         }
 
         public async Task<VmProjectUserRole> Add(VmProjectUserRole viewModel)
@@ -70,23 +92,39 @@ namespace Workflow.Services
 
             try
             {
-                _dataContext.Entry(model).State = EntityState.Modified;
+                var isExist = await IsExist(viewModel.ProjectId, viewModel.UserId);
+
+                _dataContext.Entry(model).State = isExist 
+                    ? EntityState.Modified
+                    : EntityState.Added;
+
                 await _dataContext.SaveChangesAsync();
             }
-            catch (DbUpdateException)
+            catch (Exception)
             {
-                if (!await IsExist(viewModel.ProjectId, viewModel.UserId))
-                    throw new HttpResponseException(HttpStatusCode.NotFound);
-
-                throw;
+                throw new HttpResponseException(HttpStatusCode.BadRequest);
             }
         }
 
         public async Task UpdateRange(IEnumerable<VmProjectUserRole> viewModels)
         {
-            var models = viewModels.Select(_vmConverter.ToModel);
+            var models = viewModels.Select(_vmConverter.ToModel).ToArray();
+            var modelIds = models.Select(x => new {x.ProjectId, x.UserId});
 
-            _dataContext.ProjectUserRoles.UpdateRange(models);
+            var existedModels = _dataContext.ProjectUserRoles
+                .AsNoTracking()
+                .Where(x => modelIds.Any(y => x.ProjectId == y.ProjectId 
+                                              && x.UserId == y.UserId));
+
+            var updatedModels = models.Intersect(existedModels);
+            var addedModels = models.Except(existedModels);
+
+            foreach (var updatedModel in updatedModels) 
+                _dataContext.Entry(updatedModel).State = EntityState.Modified;
+
+            foreach (var addedModel in addedModels)
+                _dataContext.Entry(addedModel).State = EntityState.Added;
+
             await _dataContext.SaveChangesAsync();
         }
 
@@ -106,6 +144,20 @@ namespace Workflow.Services
             }
         }
 
+        public async Task DeleteForTeam(int teamId, string userId)
+        {
+            var role = await _dataContext.ProjectUserRoles
+                .AsNoTracking()
+                .Include(x => x.Project)
+                .Include(x => x.Project.ProjectTeams)
+                .Where(x => x.Project.ProjectTeams.Any(pt => pt.TeamId == teamId))
+                .FirstOrDefaultAsync(x => x.UserId == userId);
+
+            _dataContext.Entry(role).State = EntityState.Deleted;
+
+            await _dataContext.SaveChangesAsync();
+        }
+
         public async Task DeleteRange(int projectId, IEnumerable<string> userIds)
         {
             var models = userIds.Select(uId => new ProjectUserRole(projectId, uId));
@@ -114,9 +166,26 @@ namespace Workflow.Services
             await _dataContext.SaveChangesAsync();
         }
 
+        public async Task DeleteRangeForTeam(int teamId, IEnumerable<string> userIds)
+        {
+            var projectUserRoles = await _dataContext.ProjectUserRoles
+                .AsNoTracking()
+                .Include(x => x.Project)
+                .Include(x => x.Project.ProjectTeams)
+                .Where(x => x.Project.ProjectTeams.Any(pt => pt.TeamId == teamId))
+                .Where(x => userIds.Any(uId => uId == x.UserId))
+                .ToArrayAsync();
+
+            foreach (var role in projectUserRoles) 
+                _dataContext.Entry(role).State = EntityState.Deleted;
+
+            await _dataContext.SaveChangesAsync();
+        }
+
         public async Task<bool> IsExist(int projectId, string userId)
         {
             return await _dataContext.ProjectUserRoles
+                .AsNoTracking()
                 .AnyAsync(pur => pur.ProjectId == projectId
                                  && pur.UserId == userId);
         }

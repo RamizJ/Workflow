@@ -65,12 +65,14 @@ namespace Workflow.Services
             }
             catch (DbUpdateException)
             {
-                bool isExist = await _dataContext.ProjectTeams.AnyAsync(pt => 
-                    pt.ProjectId == projectId && pt.TeamId == teamId);
+                bool isExist = await _dataContext.ProjectTeams
+                    .AnyAsync(pt =>
+                        pt.ProjectId == projectId
+                        && pt.TeamId == teamId);
 
-                throw new InvalidOperationException(isExist 
-                    ? "Cannot add project to team. The project already added to team"
-                    : "Cannot add project to team");
+                throw new HttpResponseException(isExist 
+                    ? HttpStatusCode.Conflict
+                    : HttpStatusCode.BadRequest);
             }
         }
 
@@ -84,12 +86,14 @@ namespace Workflow.Services
             }
             catch (DbUpdateException)
             {
-                bool isExist = await _dataContext.ProjectTeams.AnyAsync(pt =>
-                    pt.ProjectId == projectId && pt.TeamId == teamId);
+                bool isExist = await _dataContext.ProjectTeams
+                    .AnyAsync(pt =>
+                        pt.ProjectId == projectId
+                        && pt.TeamId == teamId);
 
-                throw new InvalidOperationException(isExist
-                    ? "Cannot remove project from team. The project was not added to team"
-                    : "Cannot romove project from team");
+                throw new HttpResponseException(isExist 
+                    ? HttpStatusCode.BadRequest 
+                    : HttpStatusCode.NotFound);
             }
         }
 
@@ -133,7 +137,7 @@ namespace Workflow.Services
 
             foreach (var field in filterFields.Where(ff => ff != null))
             {
-                var strValues = field.Values?.Select(v => v.ToString().ToLower()).ToList()
+                var strValues = field.Values?.Select(v => v.ToString()?.ToLower()).ToList()
                                 ?? new List<string>();
 
                 if (field.SameAs(nameof(VmProject.Name)))

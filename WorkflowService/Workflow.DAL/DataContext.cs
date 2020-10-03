@@ -18,7 +18,6 @@ namespace Workflow.DAL
         public DbSet<Position> Positions { get; set; }
 
         public DbSet<ProjectUserRole> ProjectUserRoles { get; set; }
-        public DbSet<ProjectTeamRole> ProjectTeamRoles { get; set; }
 
 
         public DataContext(DbContextOptions options) : base(options)
@@ -100,15 +99,15 @@ namespace Workflow.DAL
                 .HasMaxLength(100)
                 .IsRequired();
 
-            var projectTeamRoleEntity = builder.Entity<ProjectTeamRole>();
-            projectTeamRoleEntity
-                .HasKey(ptr => new {ptr.ProjectId, ptr.TeamId});
-            projectTeamRoleEntity
-                .HasOne(ptr => ptr.Project)
-                .WithMany(p => p.TeamsRoles);
-            projectTeamRoleEntity
-                .HasOne(ptr => ptr.Team)
-                .WithMany(t => t.ProjectsRoles);
+            //var projectTeamRoleEntity = builder.Entity<ProjectTeamRole>();
+            //projectTeamRoleEntity
+            //    .HasKey(ptr => new {ptr.ProjectId, ptr.TeamId});
+            //projectTeamRoleEntity
+            //    .HasOne(ptr => ptr.Project)
+            //    .WithMany(p => p.TeamsRoles);
+            //projectTeamRoleEntity
+            //    .HasOne(ptr => ptr.Team)
+            //    .WithMany(t => t.ProjectsRoles);
 
             var projectUserRole = builder.Entity<ProjectUserRole>();
             projectUserRole
