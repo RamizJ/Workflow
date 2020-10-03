@@ -348,6 +348,13 @@
             <param name="projectTeamRole">Роли команды в проекте</param>
             <returns></returns>
         </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.UpdateTeamsRoles(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmProjectTeamRole})">
+            <summary>
+            Обновление ролей команд в проектах
+            </summary>
+            <param name="roles">Роли команд в проектах</param>
+            <returns></returns>
+        </member>
         <member name="M:WorkflowService.Controllers.ProjectsController.GetUserRole(System.Int32,System.String)">
             <summary>
             Получение ролей пользователя в проекте
@@ -361,6 +368,13 @@
             Обновление ролей пользователя
             </summary>
             <param name="userRole">Роли пользователя в проекте</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.UpdateUsersRoles(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmProjectUserRole})">
+            <summary>
+            Обновление ролей пользователей
+            </summary>
+            <param name="userRoles">Роли пользователей в проекте</param>
             <returns></returns>
         </member>
         <member name="T:WorkflowService.Controllers.TeamsController">

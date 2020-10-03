@@ -46,8 +46,15 @@ namespace Workflow.Services.Abstract
         /// <summary>
         /// Обновление ролей команды
         /// </summary>
-        /// <param name="projectTeamRole">Роли команды</param>
+        /// <param name="role">Роли команды</param>
         /// <returns></returns>
-        Task UpdateTeamRole(VmProjectTeamRole projectTeamRole);
+        Task UpdateTeamRole(VmProjectTeamRole role);
+
+        /// <summary>
+        /// Обновление ролей команд
+        /// </summary>
+        /// <param name="roles">Роли команд</param>
+        /// <returns></returns>
+        Task UpdateTeamsRoles(IEnumerable<VmProjectTeamRole> roles);
     }
 }

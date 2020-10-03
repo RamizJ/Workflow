@@ -83,13 +83,34 @@ namespace Workflow.Services
             return _vmTeamRoleConverter.ToViewModel(projectTeam);
         }
 
-        public async Task UpdateTeamRole(VmProjectTeamRole projectTeamRole)
+        public async Task UpdateTeamRole(VmProjectTeamRole role)
         {
-            var projectTeam = _vmTeamRoleConverter.ToModel(projectTeamRole);
+            var projectTeam = _vmTeamRoleConverter.ToModel(role);
 
             try
             {
                 _dataContext.Entry(projectTeam).State = EntityState.Modified;
+                await _dataContext.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                throw new HttpResponseException(HttpStatusCode.NotFound);
+            }
+            catch (Exception)
+            {
+                throw new HttpResponseException(HttpStatusCode.BadRequest);
+            }
+        }
+
+        public async Task UpdateTeamsRoles(IEnumerable<VmProjectTeamRole> roles)
+        {
+            var models = roles.Select(_vmTeamRoleConverter.ToModel);
+
+            try
+            {
+                foreach (var model in models) 
+                    _dataContext.Entry(model).State = EntityState.Modified;
+
                 await _dataContext.SaveChangesAsync();
             }
             catch (DbUpdateException)

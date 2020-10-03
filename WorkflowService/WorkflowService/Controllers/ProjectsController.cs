@@ -262,12 +262,23 @@ namespace WorkflowService.Controllers
         /// <param name="projectTeamRole">Роли команды в проекте</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> UpdateTeamRole([FromBody]VmProjectTeamRole projectTeamRole)
+        public async Task<NoContentResult> UpdateTeamRole([FromBody]VmProjectTeamRole projectTeamRole)
         {
             await _teamsService.UpdateTeamRole(projectTeamRole);
             return NoContent();
         }
 
+        /// <summary>
+        /// Обновление ролей команд в проектах
+        /// </summary>
+        /// <param name="roles">Роли команд в проектах</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<NoContentResult> UpdateTeamsRoles([FromBody] IEnumerable<VmProjectTeamRole> roles)
+        {
+            await _teamsService.UpdateTeamsRoles(roles);
+            return NoContent();
+        }
 
         /// <summary>
         /// Получение ролей пользователя в проекте
@@ -288,13 +299,23 @@ namespace WorkflowService.Controllers
         /// <param name="userRole">Роли пользователя в проекте</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> UpdateUserRole([FromBody]VmProjectUserRole userRole)
+        public async Task<NoContentResult> UpdateUserRole([FromBody]VmProjectUserRole userRole)
         {
             await _userRolesService.Update(userRole);
             return NoContent();
         }
 
-
+        /// <summary>
+        /// Обновление ролей пользователей
+        /// </summary>
+        /// <param name="userRoles">Роли пользователей в проекте</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<NoContentResult> UpdateUsersRoles([FromBody] IEnumerable<VmProjectUserRole> userRoles)
+        {
+            await _userRolesService.UpdateRange(userRoles);
+            return NoContent();
+        }
 
 
         private readonly ICurrentUserService _currentUserService;
