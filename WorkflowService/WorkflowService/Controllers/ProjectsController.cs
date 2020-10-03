@@ -275,7 +275,7 @@ namespace WorkflowService.Controllers
         /// <param name="projectId">Идентификатор проекта</param>
         /// <param name="userId">Идентификатор пользователя</param>
         /// <returns></returns>
-        [HttpGet("{projectId/userId}")] 
+        [HttpGet("{projectId}/{userId}")] 
         public async Task<ActionResult<ProjectUserRole>> GetUserRole(int projectId, string userId)
         {
             var userRole = await _userRolesService.Get(projectId, userId);

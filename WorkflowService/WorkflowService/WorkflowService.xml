@@ -209,7 +209,7 @@
             API-методы работы с проектами
             </summary>
         </member>
-        <member name="M:WorkflowService.Controllers.ProjectsController.#ctor(WorkflowService.Services.Abstract.ICurrentUserService,Workflow.Services.Abstract.IProjectsService,Workflow.Services.Abstract.IProjectTeamsService,Workflow.Services.Abstract.IProjectUserRolesService,Workflow.VM.ViewModelConverters.Absract.IViewModelConverter{Workflow.DAL.Models.ProjectTeam,Workflow.VM.ViewModels.VmProjectTeamRole},Workflow.VM.ViewModelConverters.Absract.IViewModelConverter{Workflow.DAL.Models.ProjectUserRole,Workflow.VM.ViewModels.VmProjectUserRole})">
+        <member name="M:WorkflowService.Controllers.ProjectsController.#ctor(WorkflowService.Services.Abstract.ICurrentUserService,Workflow.Services.Abstract.IProjectsService,Workflow.Services.Abstract.IProjectTeamsService,Workflow.Services.Abstract.IProjectUserRolesService)">
             <summary>
             Конструктор
             </summary>
@@ -217,8 +217,6 @@
             <param name="projectsService"></param>
             <param name="teamsService"></param>
             <param name="userRolesService"></param>
-            <param name="vmTeamRoleConverter"></param>
-            <param name="vmUserRoleConverter"></param>
         </member>
         <member name="M:WorkflowService.Controllers.ProjectsController.Get(System.Int32)">
             <summary>
