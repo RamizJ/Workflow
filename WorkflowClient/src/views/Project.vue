@@ -45,9 +45,9 @@
       <el-tab-pane name="teams" label="Команды">
         <project-teams ref="projectTeams" v-if="activeTab === 'teams'"></project-teams>
       </el-tab-pane>
-      <el-tab-pane name="users" label="Пользователи">
+      <!--<el-tab-pane name="users" label="Пользователи">
         <project-users ref="projectUsers" v-if="activeTab === 'users'"></project-users>
-      </el-tab-pane>
+      </el-tab-pane>-->
       <el-tab-pane name="reports" label="Отчёты">
         <project-reports ref="projectReports" v-if="activeTab === 'reports'" />
       </el-tab-pane>

@@ -103,6 +103,8 @@ export default class ReportDailyStatistics extends Vue {
         this.getRandomInt(10),
         this.getRandomInt(10),
         this.getRandomInt(10),
+        this.getRandomInt(10),
+        this.getRandomInt(10),
       ],
       fill: false,
     }
@@ -111,6 +113,8 @@ export default class ReportDailyStatistics extends Vue {
       label: `Созданные задачи`,
       borderColor: this.colors[this.getRandomInt(this.colors.length)],
       data: [
+        this.getRandomInt(10),
+        this.getRandomInt(10),
         this.getRandomInt(10),
         this.getRandomInt(10),
         this.getRandomInt(10),

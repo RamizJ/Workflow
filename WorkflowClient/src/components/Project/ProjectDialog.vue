@@ -136,31 +136,43 @@ export default class ProjectDialog extends mixins(DialogMixin) {
   private rules = {
     name: [{ required: true, message: '!', trigger: 'blur' }],
   }
-  private descriptionVisible = null
-  private teamsVisible = null
+  private descriptionVisible: boolean | null = null
+  private teamsVisible: boolean | null = null
 
   protected async mounted(): Promise<void> {
     this.visible = true
     this.loading = true
-    if (this.id) {
-      const id: number = parseInt(this.id.toString())
-      this.form = await projectsModule.findOneById(id)
 
-      await projectsModule.findTeams({
-        projectId: this.id,
-        pageNumber: 0,
-        pageSize: 10,
-      })
-      this.form.teamIds = []
-      this.form.teamIds = projectsModule.projectTeams.map(team => (team.id ? team.id : -1))
+    try {
+      if (this.id) {
+        const id: number = parseInt(this.id.toString())
+        this.form = await projectsModule.findOneById(id)
+        await projectsModule.findTeams({
+          projectId: this.id,
+          pageNumber: 0,
+          pageSize: 10,
+        })
+        this.form.teamIds = []
+        this.form.teamIds = projectsModule.projectTeams.map((team) => (team.id ? team.id : -1))
+      }
+    } catch (e) {
+      this.$message.error('Не удаётся загрузить проект')
+      this.loading = false
     }
-    await this.searchTeams()
+
+    try {
+      await this.searchTeams()
+    } catch (e) {
+      this.$message.error('Не удаётся подгрузить список команд')
+      this.loading = false
+    }
+
     this.loading = false
   }
 
   private async submit(): Promise<void> {
     const form = this.$refs.form as ElForm
-    await form.validate(async valid => {
+    await form.validate(async (valid) => {
       if (valid) {
         await this.sendForm()
         this.$emit('submit')
