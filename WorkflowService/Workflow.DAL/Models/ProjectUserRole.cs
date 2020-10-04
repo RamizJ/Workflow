@@ -1,25 +1,25 @@
 ﻿namespace Workflow.DAL.Models
 {
-    public class ProjectTeam
+    public class ProjectUserRole : IUserRole
     {
         public int ProjectId { get; set; }
         public Project Project { get; set; }
 
-        public int TeamId { get; set; }
-        public Team Team { get; set; }
+        public string UserId { get; set; }
+        public ApplicationUser User { get; set; }
 
         public bool CanEditUsers { get; set; }
         public bool CanEditGoals { get; set; }
         public bool CanCloseGoals { get; set; }
 
 
-        public ProjectTeam()
+        public ProjectUserRole()
         { }
 
-        public ProjectTeam(int projectId, int teamId)
+        public ProjectUserRole(int projectId, string userId)
         {
             ProjectId = projectId;
-            TeamId = teamId;
+            UserId = userId;
         }
     }
 }

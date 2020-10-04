@@ -10,7 +10,7 @@ using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
 using Workflow.Share.Extensions;
 using Workflow.VM.Common;
-using Workflow.VM.ViewModelConverters;
+using Workflow.VM.ViewModelConverters.Absract;
 using Workflow.VM.ViewModels;
 
 namespace Workflow.Services
@@ -19,16 +19,14 @@ namespace Workflow.Services
     public class TeamUsersService : ITeamUsersService
     {
         public TeamUsersService(DataContext dataContext, 
-            VmUserConverter vmUserConverter,
-            VmTeamUserBindConverter vmTeamUserBindConverter)
+            IViewModelConverter<ApplicationUser, VmUser> vmUserConverter)
         {
             _dataContext = dataContext;
             _vmUserConverter = vmUserConverter;
-            _vmTeamUserBindConverter = vmTeamUserBindConverter;
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<VmTeamUser>> GetPage(ApplicationUser currentUser, 
+        public async Task<IEnumerable<VmUser>> GetPage(ApplicationUser currentUser, 
             int teamId, PageOptions pageOptions)
         {
             if (currentUser == null)
@@ -48,58 +46,24 @@ namespace Workflow.Services
                 .Take(pageOptions.PageSize)
                 .ToArrayAsync();
 
-            var viewModels = teamUsers.Select(tu =>
-            {
-                var vm = new VmTeamUser();
-                _vmUserConverter.SetViewModel(tu.User, vm);
-
-                vm.CanEditUsers = tu.CanEditUsers;
-                vm.CanEditGoals = tu.CanEditGoals;
-                vm.CanCloseGoals = tu.CanCloseGoals;
-
-                return vm;
-            });
+            var viewModels = teamUsers.Select(tu => _vmUserConverter.ToViewModel(tu.User));
 
             return viewModels;
         }
 
         /// <inheritdoc />
-        public async Task Add(VmTeamUserBind teamUserBind)
+        public async Task Add(int teamId, string userId)
         {
-            var model = _vmTeamUserBindConverter.ToModel(teamUserBind);
-
-            await _dataContext.TeamUsers.AddAsync(model);
+            await _dataContext.TeamUsers.AddAsync(new TeamUser(teamId, userId));
             await _dataContext.SaveChangesAsync();
         }
 
         /// <inheritdoc />
-        public async Task AddRange(IEnumerable<VmTeamUserBind> teamUserBinds)
+        public async Task AddRange(int teamId, IEnumerable<string> userIds)
         {
-            if (teamUserBinds == null)
-                return;
-
-            var teamUsers = teamUserBinds.Select(_vmTeamUserBindConverter.ToModel);
+            var teamUsers = userIds.Select(uId => new TeamUser(teamId, uId));
 
             await _dataContext.TeamUsers.AddRangeAsync(teamUsers);
-            await _dataContext.SaveChangesAsync();
-        }
-
-        public async Task Update(VmTeamUserBind teamUserBind)
-        {
-            var model = _vmTeamUserBindConverter.ToModel(teamUserBind);
-
-            _dataContext.Entry(model).State = EntityState.Modified;
-            await _dataContext.SaveChangesAsync();
-        }
-
-        public async Task UpdateRange(IEnumerable<VmTeamUserBind> teamUserBinds)
-        {
-            foreach (var teamUserBind in teamUserBinds)
-            {
-                var model = _vmTeamUserBindConverter.ToModel(teamUserBind);
-                _dataContext.Entry(model).State = EntityState.Modified;
-            }
-
             await _dataContext.SaveChangesAsync();
         }
 
@@ -107,7 +71,6 @@ namespace Workflow.Services
         public async Task Remove(int teamId, string userId)
         {
             var model = new TeamUser(teamId, userId);
-
             _dataContext.Entry(model).State = EntityState.Deleted;
             await _dataContext.SaveChangesAsync();
         }
@@ -255,7 +218,6 @@ namespace Workflow.Services
 
 
         private readonly DataContext _dataContext;
-        private readonly VmUserConverter _vmUserConverter;
-        private readonly VmTeamUserBindConverter _vmTeamUserBindConverter;
+        private readonly IViewModelConverter<ApplicationUser, VmUser> _vmUserConverter;
     }
 }

@@ -172,6 +172,7 @@ namespace Workflow.Services
             return await RemoveRestore(currentUser, ids, false);
         }
 
+
         private async Task<IEnumerable<VmProject>> RemoveRestore(ApplicationUser user, 
             IEnumerable<int> projectIds, bool isRemoved)
         {

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Workflow.DAL.Models;
-using Workflow.VM.Common;
 using Workflow.VM.ViewModels;
 
 namespace Workflow.Services.Abstract
@@ -35,5 +34,27 @@ namespace Workflow.Services.Abstract
         /// <param name="teamId">Идентификатор команды</param>
         /// <returns>Удаленный проект</returns>
         Task Remove(int projectId, int teamId);
+
+        /// <summary>
+        /// Получение ролей команды
+        /// </summary>
+        /// <param name="projectId">Идентификатор роли</param>
+        /// <param name="teamId">Идентификатор команды</param>
+        /// <returns></returns>
+        Task<VmProjectTeamRole> GetRole(int projectId, int teamId);
+
+        /// <summary>
+        /// Обновление ролей команды
+        /// </summary>
+        /// <param name="role">Роли команды</param>
+        /// <returns></returns>
+        Task UpdateTeamRole(VmProjectTeamRole role);
+
+        /// <summary>
+        /// Обновление ролей команд
+        /// </summary>
+        /// <param name="roles">Роли команд</param>
+        /// <returns></returns>
+        Task UpdateTeamsRoles(IEnumerable<VmProjectTeamRole> roles);
     }
 }

@@ -20,14 +20,17 @@ namespace WorkflowService.Controllers
         /// </summary>
         /// <param name="currentUserService"></param>
         /// <param name="projectsService"></param>
-        /// <param name="projectTeamsService"></param>
+        /// <param name="teamsService"></param>
+        /// <param name="userRolesService"></param>
         public ProjectsController(ICurrentUserService currentUserService, 
             IProjectsService projectsService,
-            IProjectTeamsService projectTeamsService)
+            IProjectTeamsService teamsService,
+            IProjectUserRolesService userRolesService)
         {
             _currentUserService = currentUserService;
             _projectsService = projectsService;
-            _projectTeamsService = projectTeamsService;
+            _teamsService = teamsService;
+            _userRolesService = userRolesService;
         }
 
 
@@ -66,7 +69,7 @@ namespace WorkflowService.Controllers
             [FromBody]PageOptions pageOptions)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
-            return await _projectTeamsService.GetPage(currentUser, projectId, pageOptions);
+            return await _teamsService.GetPage(currentUser, projectId, pageOptions);
         }
 
         /// <summary>
@@ -222,7 +225,7 @@ namespace WorkflowService.Controllers
         [HttpPatch("{projectId}/{teamId}")]
         public async Task<IActionResult> AddTeam(int projectId, int teamId)
         {
-            await _projectTeamsService.Add(projectId, teamId);
+            await _teamsService.Add(projectId, teamId);
             return NoContent();
         }
 
@@ -235,13 +238,100 @@ namespace WorkflowService.Controllers
         [HttpPatch("{projectId}/{teamId}")]
         public async Task<IActionResult> RemoveTeam(int projectId, int teamId)
         {
-            await _projectTeamsService.Remove(projectId, teamId);
+            await _teamsService.Remove(projectId, teamId);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Получение ролей команды в проекте
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="teamId"></param>
+        /// <returns></returns>
+        [HttpGet("{projectId}/{teamId}")]
+        public async Task<ActionResult<VmProjectTeamRole>> GetTeamRole(int projectId, int teamId)
+        {
+            var teamRole = await _teamsService.GetRole(projectId, teamId);
+            return Ok(teamRole);
+        }
+
+        /// <summary>
+        /// Обновление ролей команды в проекте
+        /// </summary>
+        /// <param name="projectTeamRole">Роли команды в проекте</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<NoContentResult> UpdateTeamRole([FromBody]VmProjectTeamRole projectTeamRole)
+        {
+            await _teamsService.UpdateTeamRole(projectTeamRole);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Обновление ролей команд в проектах
+        /// </summary>
+        /// <param name="roles">Роли команд в проектах</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<NoContentResult> UpdateTeamsRoles([FromBody] IEnumerable<VmProjectTeamRole> roles)
+        {
+            await _teamsService.UpdateTeamsRoles(roles);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Получение ролей пользователя в проекте
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="userId">Идентификатор пользователя</param>
+        /// <returns></returns>
+        [HttpGet("{projectId}/{userId}")] 
+        public async Task<ActionResult<VmProjectUserRole>> GetUserRole(int projectId, string userId)
+        {
+            var userRole = await _userRolesService.Get(projectId, userId);
+            return Ok(userRole);
+        }
+
+        /// <summary>
+        /// Получение ролей пользователей команды в проекте
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="teamId">Идентификатор команды</param>
+        /// <returns></returns>
+        [HttpGet("{projectId}/{teamId}")]
+        public async Task<IEnumerable<VmProjectUserRole>> GetUsersRoles(int projectId, int teamId)
+        {
+            return await _userRolesService.GetForTeam(projectId, teamId);
+        }
+
+        /// <summary>
+        /// Обновление ролей пользователя
+        /// </summary>
+        /// <param name="userRole">Роли пользователя в проекте</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<NoContentResult> UpdateUserRole([FromBody]VmProjectUserRole userRole)
+        {
+            await _userRolesService.Update(userRole);
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Обновление ролей пользователей
+        /// </summary>
+        /// <param name="userRoles">Роли пользователей в проекте</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<NoContentResult> UpdateUsersRoles([FromBody] IEnumerable<VmProjectUserRole> userRoles)
+        {
+            await _userRolesService.UpdateRange(userRoles);
             return NoContent();
         }
 
 
         private readonly ICurrentUserService _currentUserService;
         private readonly IProjectsService _projectsService;
-        private readonly IProjectTeamsService _projectTeamsService;
+        private readonly IProjectTeamsService _teamsService;
+        private readonly IProjectUserRolesService _userRolesService;
     }
 }

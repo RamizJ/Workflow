@@ -11,6 +11,7 @@ using Workflow.Services.Exceptions;
 using Workflow.Share.Extensions;
 using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
+using Workflow.VM.ViewModelConverters.Absract;
 using Workflow.VM.ViewModels;
 
 namespace Workflow.Services
@@ -18,17 +19,16 @@ namespace Workflow.Services
     /// <inheritdoc />
     public class ProjectTeamsService : IProjectTeamsService
     {
-        private readonly DataContext _dataContext;
-        private readonly VmTeamConverter _vmConverter;
-
-
         /// <summary>
         /// Конструктор
         /// </summary>
         /// <param name="dataContext"></param>
-        public ProjectTeamsService(DataContext dataContext)
+        /// <param name="vmTeamRoleConverter"></param>
+        public ProjectTeamsService(DataContext dataContext, 
+            IViewModelConverter<ProjectTeam, VmProjectTeamRole> vmTeamRoleConverter)
         {
             _dataContext = dataContext;
+            _vmTeamRoleConverter = vmTeamRoleConverter;
             _vmConverter = new VmTeamConverter();
         }
 
@@ -69,7 +69,61 @@ namespace Workflow.Services
             await _dataContext.SaveChangesAsync();
         }
 
-        
+        public async Task<VmProjectTeamRole> GetRole(int projectId, int teamId)
+        {
+            var projectTeam = await _dataContext.ProjectTeams
+                .FirstOrDefaultAsync(pt => pt.ProjectId == projectId
+                                           && pt.TeamId == teamId);
+
+            if (projectTeam == null)
+            {
+                throw new HttpResponseException(HttpStatusCode.NotFound);
+            }
+
+            return _vmTeamRoleConverter.ToViewModel(projectTeam);
+        }
+
+        public async Task UpdateTeamRole(VmProjectTeamRole role)
+        {
+            var projectTeam = _vmTeamRoleConverter.ToModel(role);
+
+            try
+            {
+                _dataContext.Entry(projectTeam).State = EntityState.Modified;
+                await _dataContext.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                throw new HttpResponseException(HttpStatusCode.NotFound);
+            }
+            catch (Exception)
+            {
+                throw new HttpResponseException(HttpStatusCode.BadRequest);
+            }
+        }
+
+        public async Task UpdateTeamsRoles(IEnumerable<VmProjectTeamRole> roles)
+        {
+            var models = roles.Select(_vmTeamRoleConverter.ToModel);
+
+            try
+            {
+                foreach (var model in models) 
+                    _dataContext.Entry(model).State = EntityState.Modified;
+
+                await _dataContext.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                throw new HttpResponseException(HttpStatusCode.NotFound);
+            }
+            catch (Exception)
+            {
+                throw new HttpResponseException(HttpStatusCode.BadRequest);
+            }
+        }
+
+
         private IQueryable<ProjectTeam> GetQuery(int projectId, in bool withRemoved)
         {
             var query = _dataContext.ProjectTeams.AsNoTracking()
@@ -163,5 +217,11 @@ namespace Workflow.Services
 
             return query;
         }
+
+
+
+        private readonly DataContext _dataContext;
+        private readonly IViewModelConverter<ProjectTeam, VmProjectTeamRole> _vmTeamRoleConverter;
+        private readonly VmTeamConverter _vmConverter;
     }
 }

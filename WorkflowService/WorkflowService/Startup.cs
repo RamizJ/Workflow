@@ -18,6 +18,9 @@ using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
 using Workflow.Services.Abstract;
+using Workflow.VM.ViewModelConverters;
+using Workflow.VM.ViewModelConverters.Absract;
+using Workflow.VM.ViewModels;
 using WorkflowService.Filters;
 using WorkflowService.Services;
 using WorkflowService.Services.Abstract;
@@ -158,6 +161,13 @@ namespace WorkflowService
             services.AddTransient<IGoalAttachmentsService, GoalAttachmentsService>();
             services.AddTransient<IFileService, FileService>();
             services.AddTransient<IFormFilesService, FormFilesService>();
+            services.AddTransient<IProjectUserRolesService, ProjectUserRolesService>();
+
+            services.AddTransient<IViewModelConverter<ApplicationUser, VmUser>, VmUserConverter>();
+            services.AddTransient<IViewModelConverter<Team, VmTeam>, VmTeamConverter>();
+            services.AddTransient<IViewModelConverter<Project, VmProject>, VmProjectConverter>();
+            services.AddTransient<IViewModelConverter<ProjectUserRole, VmProjectUserRole>, VmProjectUserRoleConverter>();
+            services.AddTransient<IViewModelConverter<ProjectTeam, VmProjectTeamRole>, VmProjectTeamRoleConverter>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

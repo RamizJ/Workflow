@@ -1,22 +1,19 @@
-﻿namespace Workflow.DAL.Models
+﻿namespace Workflow.VM.ViewModels
 {
-    public class ProjectTeam
+    public class VmProjectTeamRole
     {
         public int ProjectId { get; set; }
-        public Project Project { get; set; }
-
         public int TeamId { get; set; }
-        public Team Team { get; set; }
 
         public bool CanEditUsers { get; set; }
         public bool CanEditGoals { get; set; }
         public bool CanCloseGoals { get; set; }
 
 
-        public ProjectTeam()
+        public VmProjectTeamRole()
         { }
 
-        public ProjectTeam(int projectId, int teamId)
+        public VmProjectTeamRole(int projectId, int teamId)
         {
             ProjectId = projectId;
             TeamId = teamId;

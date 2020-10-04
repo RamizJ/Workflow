@@ -10,8 +10,8 @@ using Workflow.DAL;
 namespace Workflow.DAL.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200922062214_TeamUserRoles")]
-    partial class TeamUserRoles
+    [Migration("20201003222254_TeamsUsersRolesForProject")]
+    partial class TeamsUsersRolesForProject
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -475,11 +475,44 @@ namespace Workflow.DAL.Migrations
                     b.Property<int>("TeamId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("CanCloseGoals")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("CanEditGoals")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("CanEditUsers")
+                        .HasColumnType("bit");
+
                     b.HasKey("ProjectId", "TeamId");
 
                     b.HasIndex("TeamId");
 
                     b.ToTable("ProjectTeams");
+                });
+
+            modelBuilder.Entity("Workflow.DAL.Models.ProjectUserRole", b =>
+                {
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("CanCloseGoals")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("CanEditGoals")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("CanEditUsers")
+                        .HasColumnType("bit");
+
+                    b.HasKey("ProjectId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ProjectUserRoles");
                 });
 
             modelBuilder.Entity("Workflow.DAL.Models.Team", b =>
@@ -522,15 +555,6 @@ namespace Workflow.DAL.Migrations
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("CanCloseGoals")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("CanEditGoals")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("CanEditUsers")
-                        .HasColumnType("bit");
 
                     b.HasKey("TeamId", "UserId");
 
@@ -679,6 +703,21 @@ namespace Workflow.DAL.Migrations
                     b.HasOne("Workflow.DAL.Models.Team", "Team")
                         .WithMany("TeamProjects")
                         .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Workflow.DAL.Models.ProjectUserRole", b =>
+                {
+                    b.HasOne("Workflow.DAL.Models.Project", "Project")
+                        .WithMany("UsersRoles")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Workflow.DAL.Models.ApplicationUser", "User")
+                        .WithMany("ProjectsRoles")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

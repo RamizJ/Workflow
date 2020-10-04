@@ -21,14 +21,18 @@ namespace WorkflowService.Controllers
         /// <param name="teamsService"></param>
         /// <param name="teamUsersService"></param>
         /// <param name="teamProjectsService"></param>
+        /// <param name="projectUserRolesService"></param>
         public TeamsController(ICurrentUserService currentUserService,
-            ITeamsService teamsService, ITeamUsersService teamUsersService,
-            ITeamProjectsService teamProjectsService)
+            ITeamsService teamsService, 
+            ITeamUsersService teamUsersService,
+            ITeamProjectsService teamProjectsService,
+            IProjectUserRolesService projectUserRolesService)
         {
             _currentUserService = currentUserService;
             _teamsService = teamsService;
             _teamUsersService = teamUsersService;
             _teamProjectsService = teamProjectsService;
+            _projectUserRolesService = projectUserRolesService;
         }
 
         /// <summary>
@@ -234,48 +238,26 @@ namespace WorkflowService.Controllers
         /// <summary>
         /// Добавление пользователя в команду
         /// </summary>
-        /// <param name="teamUserBind">Параметры пользователя в команде</param>
+        /// <param name="teamId">Идентификатор команнды</param>
+        /// <param name="userId">Идентификатор пользователя</param>
         /// <returns></returns>
-        [HttpPatch]
-        public async Task<IActionResult> AddUser([FromBody]VmTeamUserBind teamUserBind)
+        [HttpPatch("{teamId}")]
+        public async Task<IActionResult> AddUser(int teamId, [FromBody]string userId)
         {
-            await _teamUsersService.Add(teamUserBind);
+            await _teamUsersService.Add(teamId, userId);
             return NoContent();
         }
 
         /// <summary>
         /// Добавление пользователей в команду
         /// </summary>
-        /// <param name="teamUserBinds">Параметры пользовтаелей в командах</param>
+        /// <param name="teamId"></param>
+        /// <param name="userIds">Идентификаторы пользователей</param>
         /// <returns></returns>
-        [HttpPatch]
-        public async Task<IActionResult> AddUsers([FromBody] IEnumerable<VmTeamUserBind> teamUserBinds)
+        [HttpPatch("{teamId}")]
+        public async Task<IActionResult> AddUsers(int teamId, [FromBody] IEnumerable<string> userIds)
         {
-            await _teamUsersService.AddRange(teamUserBinds);
-            return NoContent();
-        }
-
-        /// <summary>
-        /// Обновление пользователей в команде
-        /// </summary>
-        /// <param name="teamUserBind">Параметры пользователя в команде</param>
-        /// <returns></returns>
-        [HttpPatch]
-        public async Task<IActionResult> UpdateUser([FromBody] VmTeamUserBind teamUserBind)
-        {
-            await _teamUsersService.Update(teamUserBind);
-            return NoContent();
-        }
-
-        /// <summary>
-        /// Обновление пользователей в команде
-        /// </summary>
-        /// <param name="teamUserBinds">Параметры пользователей в команде</param>
-        /// <returns></returns>
-        [HttpPatch]
-        public async Task<IActionResult> UpdateUsers([FromBody] IEnumerable<VmTeamUserBind> teamUserBinds)
-        {
-            await _teamUsersService.UpdateRange(teamUserBinds);
+            await _teamUsersService.AddRange(teamId, userIds);
             return NoContent();
         }
 
@@ -289,6 +271,7 @@ namespace WorkflowService.Controllers
         public async Task<IActionResult> RemoveUser(int teamId, [FromBody] string userId)
         {
             await _teamUsersService.Remove(teamId, userId);
+            await _projectUserRolesService.DeleteForTeam(teamId, userId);
             return NoContent();
         }
 
@@ -338,5 +321,6 @@ namespace WorkflowService.Controllers
         private readonly ITeamsService _teamsService;
         private readonly ITeamUsersService _teamUsersService;
         private readonly ITeamProjectsService _teamProjectsService;
+        private readonly IProjectUserRolesService _projectUserRolesService;
     }
 }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Workflow.DAL;
 
 namespace Workflow.DAL.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20200928201113_UserProjectTeamRoles")]
+    partial class UserProjectTeamRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -473,6 +475,21 @@ namespace Workflow.DAL.Migrations
                     b.Property<int>("TeamId")
                         .HasColumnType("int");
 
+                    b.HasKey("ProjectId", "TeamId");
+
+                    b.HasIndex("TeamId");
+
+                    b.ToTable("ProjectTeams");
+                });
+
+            modelBuilder.Entity("Workflow.DAL.Models.ProjectTeamRole", b =>
+                {
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeamId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("CanCloseGoals")
                         .HasColumnType("bit");
 
@@ -486,7 +503,7 @@ namespace Workflow.DAL.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("ProjectTeams");
+                    b.ToTable("ProjectTeamRoles");
                 });
 
             modelBuilder.Entity("Workflow.DAL.Models.ProjectUserRole", b =>
@@ -700,6 +717,21 @@ namespace Workflow.DAL.Migrations
 
                     b.HasOne("Workflow.DAL.Models.Team", "Team")
                         .WithMany("TeamProjects")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Workflow.DAL.Models.ProjectTeamRole", b =>
+                {
+                    b.HasOne("Workflow.DAL.Models.Project", "Project")
+                        .WithMany("TeamsRoles")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Workflow.DAL.Models.Team", "Team")
+                        .WithMany("ProjectsRoles")
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
