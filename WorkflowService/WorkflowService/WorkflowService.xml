@@ -363,6 +363,14 @@
             <param name="userId">Идентификатор пользователя</param>
             <returns></returns>
         </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.GetUsersRoles(System.Int32,System.Int32)">
+            <summary>
+            Получение ролей пользователей команды в проекте
+            </summary>
+            <param name="projectId">Идентификатор проекта</param>
+            <param name="teamId">Идентификатор команды</param>
+            <returns></returns>
+        </member>
         <member name="M:WorkflowService.Controllers.ProjectsController.UpdateUserRole(Workflow.VM.ViewModels.VmProjectUserRole)">
             <summary>
             Обновление ролей пользователя

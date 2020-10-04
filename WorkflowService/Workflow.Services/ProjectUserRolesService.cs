@@ -55,6 +55,41 @@ namespace Workflow.Services
             };
         }
 
+        public async Task<IEnumerable<VmProjectUserRole>> GetForTeam(int projectId, int teamId)
+        {
+            //TODO it must be only one query
+            var teamUserIds = await _dataContext.ProjectTeams
+                .Where(pt => pt.ProjectId == projectId
+                             && pt.TeamId == teamId)
+                .SelectMany(pt => pt.Team.TeamUsers.Select(tu => tu.UserId))
+                .ToArrayAsync();
+
+            var userRoles = await _dataContext.ProjectUserRoles
+                .Where(r => r.ProjectId == projectId
+                            && teamUserIds.Any(uId => uId == r.UserId))
+                .ToArrayAsync();
+
+            if (userRoles.Length == teamUserIds.Length)
+                return userRoles.Select(_vmConverter.ToViewModel);
+
+            var projectTeam = await _dataContext.ProjectTeams
+                .FirstOrDefaultAsync(pt => pt.ProjectId == projectId
+                                           && pt.TeamId == teamId);
+
+            var notExistedRoleUserIds = teamUserIds
+                .Except(userRoles.Select(r => r.UserId))
+                .ToArray();
+
+            return notExistedRoleUserIds.Select(userId => new VmProjectUserRole
+            {
+                ProjectId = projectId,
+                UserId = userId,
+                CanCloseGoals = projectTeam.CanCloseGoals,
+                CanEditGoals = projectTeam.CanEditGoals,
+                CanEditUsers = projectTeam.CanEditUsers
+            });
+        }
+
         public async Task<VmProjectUserRole> Add(VmProjectUserRole viewModel)
         {
             var model = _vmConverter.ToModel(viewModel);

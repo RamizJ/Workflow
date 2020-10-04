@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
 using Workflow.VM.ViewModels;
 using WorkflowService.Services.Abstract;
@@ -287,10 +286,22 @@ namespace WorkflowService.Controllers
         /// <param name="userId">Идентификатор пользователя</param>
         /// <returns></returns>
         [HttpGet("{projectId}/{userId}")] 
-        public async Task<ActionResult<ProjectUserRole>> GetUserRole(int projectId, string userId)
+        public async Task<ActionResult<VmProjectUserRole>> GetUserRole(int projectId, string userId)
         {
             var userRole = await _userRolesService.Get(projectId, userId);
             return Ok(userRole);
+        }
+
+        /// <summary>
+        /// Получение ролей пользователей команды в проекте
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="teamId">Идентификатор команды</param>
+        /// <returns></returns>
+        [HttpGet("{projectId}/{teamId}")]
+        public async Task<IEnumerable<VmProjectUserRole>> GetUsersRoles(int projectId, int teamId)
+        {
+            return await _userRolesService.GetForTeam(projectId, teamId);
         }
 
         /// <summary>

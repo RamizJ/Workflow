@@ -8,6 +8,7 @@ namespace Workflow.Services.Abstract
     public interface IProjectUserRolesService
     {
         Task<VmProjectUserRole> Get(int projectId, string userId);
+        Task<IEnumerable<VmProjectUserRole>> GetForTeam(int projectId, int teamId);
 
         Task<VmProjectUserRole> Add(VmProjectUserRole viewModel);
         Task AddRange(IEnumerable<VmProjectUserRole> viewModels);
