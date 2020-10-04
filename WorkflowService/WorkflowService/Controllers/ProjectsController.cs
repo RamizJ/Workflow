@@ -329,6 +329,21 @@ namespace WorkflowService.Controllers
         }
 
 
+        /// <summary>
+        /// Получение статистики по проекту
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="options">Параметры статистики</param>
+        /// <returns></returns>
+        [HttpPost("{projectId}")]
+        public async Task<ActionResult<VmProjectStatistic>> GetProjectStatistic(int projectId, 
+            [FromBody] ProjectStatisticOptions options)
+        {
+            var statistic = await _projectsService.GetStatistic(projectId, options);
+            return Ok(statistic);
+        }
+
+
         private readonly ICurrentUserService _currentUserService;
         private readonly IProjectsService _projectsService;
         private readonly IProjectTeamsService _teamsService;

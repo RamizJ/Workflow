@@ -172,6 +172,41 @@ namespace Workflow.Services
             return await RemoveRestore(currentUser, ids, false);
         }
 
+        /// <inheritdoc />
+        public async Task<VmProjectStatistic> GetStatistic(int projectId, ProjectStatisticOptions options)
+        {
+            var query = _dataContext.Goals
+                .Where(g => g.ProjectId == projectId);
+
+            if (options != null)
+            {
+                query = query.Where(g => g.CreationDate >= options.DateBegin
+                                         && g.CreationDate <= options.DateEnd);
+            }
+
+            var statistic = await query.GroupBy(g => g.State)
+                .Select(x => new
+                {
+                    State = x.Key,
+                    Count = x.Count()
+                })
+                .ToArrayAsync();
+
+            var vm = new VmProjectStatistic
+            {
+                GoalsCountForState =
+                {
+                    [(int) GoalState.New] = statistic.FirstOrDefault(s => s.State == GoalState.New)?.Count ?? 0,
+                    [(int) GoalState.Perform] = statistic.FirstOrDefault(s => s.State == GoalState.Perform)?.Count ?? 0,
+                    [(int) GoalState.Delay] = statistic.FirstOrDefault(s => s.State == GoalState.Delay)?.Count ?? 0,
+                    [(int) GoalState.Testing] = statistic.FirstOrDefault(s => s.State == GoalState.Testing)?.Count ?? 0,
+                    [(int) GoalState.Succeed] = statistic.FirstOrDefault(s => s.State == GoalState.Succeed)?.Count ?? 0,
+                    [(int) GoalState.Rejected] = statistic.FirstOrDefault(s => s.State == GoalState.Rejected)?.Count ?? 0
+                }
+            };
+            return vm;
+        }
+
 
         private async Task<IEnumerable<VmProject>> RemoveRestore(ApplicationUser user, 
             IEnumerable<int> projectIds, bool isRemoved)

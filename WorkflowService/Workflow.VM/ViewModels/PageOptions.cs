@@ -1,7 +1,14 @@
-﻿using Workflow.VM.Common;
+﻿using System;
+using Workflow.VM.Common;
 
 namespace Workflow.VM.ViewModels
 {
+    public class ProjectStatisticOptions
+    {
+        public DateTime DateBegin { get; set; }
+        public DateTime DateEnd { get; set; }
+    }
+    
     /// <summary>
     /// Параметры загрузки страницы
     /// </summary>

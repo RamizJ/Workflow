@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Workflow.DAL.Models;
-using Workflow.VM.Common;
 using Workflow.VM.ViewModels;
 
 namespace Workflow.Services.Abstract
@@ -114,5 +113,13 @@ namespace Workflow.Services.Abstract
         /// <param name="ids">Идентификаторы проектов</param>
         /// <returns></returns>
         Task<IEnumerable<VmProject>> RestoreRange(ApplicationUser currentUser, IEnumerable<int> ids);
+
+        /// <summary>
+        /// Получение статистики проекта
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="options">Параметры статистики</param>
+        /// <returns></returns>
+        Task<VmProjectStatistic> GetStatistic(int projectId, ProjectStatisticOptions options);
     }
 }
