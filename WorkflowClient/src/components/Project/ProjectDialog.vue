@@ -194,5 +194,11 @@ export default class ProjectDialog extends mixins(DialogMixin) {
     else await projectsModule.createOne(entity)
     this.loading = false
   }
+
+  public exit(): void {
+    this.visible = false
+    projectsModule.closeProjectDialog()
+    this.$emit('close')
+  }
 }
 </script>

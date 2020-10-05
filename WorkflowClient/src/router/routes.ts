@@ -45,10 +45,4 @@ export const routes = [
     component: () => import('@/views/Users.vue'),
     meta: { layout: LayoutDefault },
   },
-  {
-    path: '/settings',
-    name: 'Settings',
-    component: () => import('@/views/Settings.vue'),
-    meta: { layout: LayoutDefault },
-  },
 ]

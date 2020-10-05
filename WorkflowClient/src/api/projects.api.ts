@@ -2,6 +2,8 @@ import qs from 'qs'
 import http from './http'
 import Query from '@/types/query.type'
 import Project from '@/types/project.type'
+import { TeamRole } from '@/types/team-role.type'
+import { UserRole } from '@/types/user-role.type'
 
 export default {
   findAll: (query: Query) => http.post(`/api/Projects/GetPage`, query),
@@ -22,8 +24,19 @@ export default {
     http.patch(`/api/Projects/AddTeam/${projectId}/${teamId}`),
   removeTeam: (projectId: number, teamId: number) =>
     http.patch(`/api/Projects/RemoveTeam/${projectId}/${teamId}`),
+  getTeamRole: (projectId, teamId) => http.get(`/api/Projects/GetTeamRole/${projectId}/${teamId}`),
+  updateTeamRole: (teamRole: TeamRole) => http.post(`/api/Projects/UpdateTeamRole`, teamRole),
+  updateTeamRoles: (teamRoles: TeamRole[]) => http.post(`/api/Projects/UpdateTeamRoles`, teamRoles),
   findUsers: (query: Query) =>
     http.post(`/api/Projects/GetUsersPage?projectId=${query.projectId}`, query),
+  getUserRole: (projectId: number, userId: string) =>
+    http.get(`/api/Projects/GetUserRole/${projectId}/${userId}`),
+  getUserRoles: (projectId: number, teamId: number) =>
+    http.get(`/api/Projects/GetUserRole/${projectId}/${teamId}`),
+  updateUserRole: (userRole: UserRole) => http.post(`/api/Projects/UpdateUserRole`, userRole),
+  updateUserRoles: (userRoles: UserRole[]) => http.post(`/api/Projects/UpdateUserRoles`, userRoles),
+  getStatistics: (projectId: number, dateBegin: string, dateEnd: string) =>
+    http.post(`/api/Projects/GetProjectStatistic/${projectId}`, { dateBegin, dateEnd }),
   getTasksCount: (projectId: number) =>
     http.get(`/api/Goals/GetTotalProjectGoalsCount/${projectId}`),
   getTasksCountByStatus: (projectId: number, status: string) =>

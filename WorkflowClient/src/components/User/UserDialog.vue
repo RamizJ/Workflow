@@ -271,5 +271,11 @@ export default class UserDialog extends mixins(DialogMixin) {
     else if (!/[a-z]/.test(value)) callback(new Error('нужна буква'))
     else callback()
   }
+
+  public exit(): void {
+    this.visible = false
+    usersModule.closeUserDialog()
+    this.$emit('close')
+  }
 }
 </script>

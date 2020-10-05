@@ -1,10 +1,10 @@
 <template>
-  <div class="changelog">
+  <div class="settings-about">
     <div class="section">
       <h2>Текущая версия</h2>
       <h1>{{ currentVersion }}</h1>
     </div>
-    <div class="section">
+    <div class="section changelog">
       <h2>История версий</h2>
       <el-timeline>
         <el-timeline-item
@@ -26,26 +26,15 @@
 import { Component, Vue } from 'vue-property-decorator'
 
 @Component
-export default class Changelog extends Vue {
+export default class SettingsDialogAbout extends Vue {
   private changelog = require('./changelog.json')
   private currentVersion = require('../../../package.json').version
 }
 </script>
 
 <style lang="scss" scoped>
-.section {
-  margin-bottom: 30px;
-  h2 {
-    font-size: 14px;
-    font-weight: 500;
-    margin-top: 10px;
-    margin-bottom: 15px;
-  }
-  h1 {
-    font-size: 28px;
-    font-weight: 600;
-    margin-top: 15px;
-  }
+.changelog {
+  height: 30vh;
 }
 .el-timeline {
   padding: 10px 2px;

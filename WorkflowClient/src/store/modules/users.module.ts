@@ -1,4 +1,11 @@
-import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
+import {
+  Action,
+  getModule,
+  Module,
+  Mutation,
+  MutationAction,
+  VuexModule,
+} from 'vuex-module-decorators'
 import { Message } from 'element-ui'
 
 import store from '@/store'
@@ -13,14 +20,32 @@ import Query from '@/types/query.type'
   store,
 })
 class UsersModule extends VuexModule {
+  _userDialogOpened = false
   _user: User | null = null
   _users: User[] = []
 
+  public get isUserDialogOpened() {
+    return this._userDialogOpened
+  }
   public get user() {
     return this._user
   }
   public get users() {
     return this._users
+  }
+
+  @MutationAction({ mutate: ['_userDialogOpened'] })
+  public async closeUserDialog() {
+    return {
+      _userDialogOpened: false,
+    }
+  }
+
+  @MutationAction({ mutate: ['_userDialogOpened'] })
+  public async openUserDialog() {
+    return {
+      _userDialogOpened: true,
+    }
   }
 
   @Mutation

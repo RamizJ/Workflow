@@ -56,7 +56,7 @@
           <el-col
             v-if="
               !$route.params.projectId &&
-                (projectsVisible || (form.projectIds && form.projectIds.length))
+              (projectsVisible || (form.projectIds && form.projectIds.length))
             "
             :span="24"
           >
@@ -277,6 +277,12 @@ export default class TeamDialog extends mixins(DialogMixin) {
     if (this.id) await teamsModule.updateOne(entity)
     else await teamsModule.createOne(entity)
     this.loading = false
+  }
+
+  public exit(): void {
+    this.visible = false
+    teamsModule.closeTeamDialog()
+    this.$emit('close')
   }
 }
 </script>

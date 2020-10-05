@@ -1,4 +1,11 @@
-import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
+import {
+  Action,
+  getModule,
+  Module,
+  Mutation,
+  MutationAction,
+  VuexModule,
+} from 'vuex-module-decorators'
 
 import store from '@/store'
 import projectsAPI from '@/api/projects.api'
@@ -7,6 +14,8 @@ import Team from '@/types/team.type'
 import Query from '@/types/query.type'
 import { Status } from '@/types/task.type'
 import User from '@/types/user.type'
+import { TeamRole } from '@/types/team-role.type'
+import { UserRole } from '@/types/user-role.type'
 
 @Module({
   dynamic: true,
@@ -19,21 +28,36 @@ class ProjectsModule extends VuexModule {
   _projects: Project[] = []
   _projectTeams: Team[] = []
   _projectUsers: User[] = []
+  _projectDialogOpened = false
 
+  public get isProjectDialogOpened(): boolean {
+    return this._projectDialogOpened
+  }
   public get project() {
     return this._project
   }
-
   public get projects() {
     return this._projects
   }
-
   public get projectTeams() {
     return this._projectTeams
   }
-
   public get projectUsers() {
     return this._projectUsers
+  }
+
+  @MutationAction({ mutate: ['_projectDialogOpened'] })
+  public async closeProjectDialog() {
+    return {
+      _projectDialogOpened: false,
+    }
+  }
+
+  @MutationAction({ mutate: ['_projectDialogOpened'] })
+  public async openProjectDialog() {
+    return {
+      _projectDialogOpened: true,
+    }
   }
 
   @Mutation
@@ -167,6 +191,29 @@ class ProjectsModule extends VuexModule {
   }
 
   @Action
+  async getTeamRole({
+    projectId,
+    teamId,
+  }: {
+    projectId: number
+    teamId: number
+  }): Promise<TeamRole> {
+    const response = await projectsAPI.getTeamRole(projectId, teamId)
+    const results = response.data as TeamRole
+    return results
+  }
+
+  @Action
+  async updateTeamRole(teamRole: TeamRole) {
+    await projectsAPI.updateTeamRole(teamRole)
+  }
+
+  @Action
+  async updateTeamRoles(teamRoles: TeamRole[]) {
+    await projectsAPI.updateTeamRoles(teamRoles)
+  }
+
+  @Action
   async removeTeam({ projectId, teamId }: { projectId: number; teamId: number }) {
     await projectsAPI.removeTeam(projectId, teamId)
   }
@@ -184,6 +231,29 @@ class ProjectsModule extends VuexModule {
     const results = response.data as User[]
     this.context.commit('setProjectUsers', results)
     return results
+  }
+
+  @Action
+  async getUserRole({
+    projectId,
+    userId,
+  }: {
+    projectId: number
+    userId: string
+  }): Promise<UserRole> {
+    const response = await projectsAPI.getUserRole(projectId, userId)
+    const results = response.data as UserRole
+    return results
+  }
+
+  @Action
+  async updateUserRole(userRole: UserRole) {
+    await projectsAPI.updateUserRole(userRole)
+  }
+
+  @Action
+  async updateUserRoles(userRoles: UserRole[]) {
+    await projectsAPI.updateUserRoles(userRoles)
   }
 
   @Action

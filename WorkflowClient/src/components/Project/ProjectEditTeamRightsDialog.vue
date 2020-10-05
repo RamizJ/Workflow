@@ -11,10 +11,10 @@
       <el-row :gutter="20">
         <el-col :span="24">
           <el-form-item>
-            <el-checkbox v-model="form.canEditTasks">Изменение задач</el-checkbox>
+            <el-checkbox v-model="form.canEditGoals">Изменение задач</el-checkbox>
           </el-form-item>
           <el-form-item>
-            <el-checkbox v-model="form.canCloseTasks">Завершение задач</el-checkbox>
+            <el-checkbox v-model="form.canCloseGoals">Завершение задач</el-checkbox>
           </el-form-item>
           <el-form-item>
             <el-checkbox v-model="form.canEditUsers">Изменение пользователей</el-checkbox>
@@ -47,7 +47,9 @@ import { Component, Mixins, Prop } from 'vue-property-decorator'
 import DialogMixin from '@/mixins/dialog.mixin'
 import BaseDialog from '@/components/BaseDialog.vue'
 import teamsModule from '@/store/modules/teams.module'
+import projectsModule from '@/store/modules/projects.module'
 import Team from '@/types/team.type'
+import { TeamRole } from '@/types/team-role.type'
 
 @Component({
   components: { BaseDialog },
@@ -55,21 +57,39 @@ import Team from '@/types/team.type'
 export default class ProjectEditTeamRightsDialog extends Mixins(DialogMixin) {
   @Prop() readonly team!: Team
 
-  private form = {
-    teamId: 0,
+  private form: TeamRole = {
+    projectId: parseInt(this.$route.params.projectId),
+    teamId: this.team.id || 0,
     canEditUsers: false,
-    canEditTasks: true,
-    canCloseTasks: true,
+    canEditGoals: false,
+    canCloseGoals: false,
   }
 
-  protected mounted(): void {
+  private get teamId(): number {
+    return this.team.id || 0
+  }
+
+  private get projectId(): number {
+    return parseInt(this.$route.params.projectId)
+  }
+
+  protected async mounted(): Promise<void> {
     this.visible = true
-    this.form.teamId = this.team.id || this.form.teamId
+    this.loading = true
+    if (this.team.id) {
+      this.form = await projectsModule.getTeamRole({
+        projectId: this.projectId,
+        teamId: this.teamId,
+      })
+    }
+    this.loading = false
   }
 
   public async submit(): Promise<void> {
     this.loading = true
-    // await teamsModule.addUser()
+    this.form.projectId = this.projectId
+    this.form.teamId = this.teamId
+    await projectsModule.updateTeamRole(this.form)
     this.$emit('submit')
     this.loading = false
     this.exit()
