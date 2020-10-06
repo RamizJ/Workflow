@@ -272,8 +272,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Ref } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
+import { Component, Prop, Ref, Mixins } from 'vue-property-decorator'
 import { ElUpload, HttpRequestOptions } from 'element-ui/types/upload'
 import { ElForm } from 'element-ui/types/form'
 import { Input, Message } from 'element-ui'
@@ -287,7 +286,7 @@ import Task, { Priority, Status } from '@/types/task.type'
 import Attachment from '@/types/attachment.type'
 
 @Component({ components: { Checklist, BaseDialog } })
-export default class TaskDialog extends mixins(DialogMixin) {
+export default class TaskDialog extends Mixins(DialogMixin) {
   @Prop() readonly id: number | undefined
   @Ref() readonly title?: Input
 

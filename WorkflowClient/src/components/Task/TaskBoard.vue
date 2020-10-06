@@ -105,10 +105,8 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
+import { Component, Mixins } from 'vue-property-decorator'
 import Draggable from 'vuedraggable'
-
 import TableMixin from '@/mixins/table.mixin'
 import TaskDialog from '@/components/Task/TaskDialog.vue'
 import { StateChanger } from 'vue-infinite-loading'
@@ -117,7 +115,7 @@ import Task, { Status } from '@/types/task.type'
 import Entity from '@/types/entity.type'
 
 @Component({ components: { Draggable, TaskDialog } })
-export default class TaskBoard extends mixins(TableMixin) {
+export default class TaskBoard extends Mixins(TableMixin) {
   public data: Task[] = []
   public lists: { label: string; name: string; items: Task[] }[] = []
   private loading = false

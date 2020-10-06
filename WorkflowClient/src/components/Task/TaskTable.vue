@@ -17,13 +17,22 @@
       show-overflow-tooltip
     >
       <el-table-column type="selection" width="42"></el-table-column>
-      <el-table-column prop="title" label="Задача"></el-table-column>
-      <el-table-column
-        prop="performerFio"
-        label="Ответственный"
-        width="150"
-        :formatter="formatFio"
-      ></el-table-column>
+      <el-table-column prop="title" label="Задача">
+        <template slot-scope="scope">
+          <span class="cell-text">{{ scope.row.title }}</span>
+          <span class="cell-icon" v-if="scope.row.description">
+            <unicon name="file-alt" />
+          </span>
+          <span class="cell-icon" v-if="scope.row.isChildsExist">
+            <unicon name="list-ul" />
+          </span>
+          <span class="cell-icon" v-if="scope.row.isAttachmentsExist">
+            <unicon name="paperclip" />
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="performerFio" label="Ответственный" width="150" :formatter="formatFio">
+      </el-table-column>
       <el-table-column
         v-if="!$route.params.projectId"
         prop="projectName"
@@ -124,8 +133,7 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
+import { Component, Mixins } from 'vue-property-decorator'
 import { StateChanger } from 'vue-infinite-loading'
 
 import tasksModule from '@/store/modules/tasks.module'
@@ -135,7 +143,7 @@ import Task, { Status } from '@/types/task.type'
 import Entity from '@/types/entity.type'
 
 @Component({ components: { TaskDialog } })
-export default class TaskTable extends mixins(TableMixin) {
+export default class TaskTable extends Mixins(TableMixin) {
   public data: Task[] = []
   private loading = false
 

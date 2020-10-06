@@ -91,8 +91,7 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
+import { Component, Mixins } from 'vue-property-decorator'
 import { StateChanger } from 'vue-infinite-loading'
 
 import projectsModule from '@/store/modules/projects.module'
@@ -102,7 +101,7 @@ import Project from '@/types/project.type'
 import teamsModule from '@/store/modules/teams.module'
 
 @Component({ components: { ProjectDialog } })
-export default class ProjectTable extends mixins(TableMixin) {
+export default class ProjectTable extends Mixins(TableMixin) {
   public data: Project[] = []
   private loading = false
 

@@ -111,8 +111,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Ref } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
+import { Component, Prop, Ref, Mixins } from 'vue-property-decorator'
 import { ElForm } from 'element-ui/types/form'
 import { Message } from 'element-ui'
 
@@ -122,7 +121,7 @@ import BaseDialog from '@/components/BaseDialog.vue'
 import Project from '@/types/project.type'
 
 @Component({ components: { BaseDialog } })
-export default class ProjectDialog extends mixins(DialogMixin) {
+export default class ProjectDialog extends Mixins(DialogMixin) {
   @Prop() readonly id: number | undefined
   @Ref() readonly title?: HTMLInputElement
 

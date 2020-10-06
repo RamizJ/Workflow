@@ -125,8 +125,7 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
+import { Component, Mixins } from 'vue-property-decorator'
 import { StateChanger } from 'vue-infinite-loading'
 
 import usersModule from '@/store/modules/users.module'
@@ -140,7 +139,7 @@ import User from '@/types/user.type'
 import Project from '@/types/project.type'
 
 @Component({ components: { ProjectEditUserRightsDialog, UserDialog, TeamAddUserDialog } })
-export default class UserTable extends mixins(TableMixin) {
+export default class UserTable extends Mixins(TableMixin) {
   public data: User[] = []
   private loading = false
   private dialogAddUserVisible = false

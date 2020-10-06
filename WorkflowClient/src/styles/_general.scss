@@ -80,6 +80,23 @@ a {
   }
 }
 
+.cell-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: break-all;
+}
+.cell-icon {
+  float: right;
+  height: 23px;
+  margin-left: 7px;
+  fill: var(--text-muted);
+  svg {
+    height: 24px;
+    width: 18px;
+  }
+}
+
 .el-dialog {
   width: 46%;
   border-color: var(--card-border);
@@ -301,6 +318,7 @@ a {
 }
 .el-table td .cell {
   cursor: default;
+  display: flex;
 }
 .el-table td, .el-table th {
   padding: 5px 0;

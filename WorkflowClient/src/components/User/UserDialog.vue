@@ -145,8 +145,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Ref } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
+import { Component, Prop, Ref, Mixins } from 'vue-property-decorator'
 import { Input, Message } from 'element-ui'
 import { ElForm } from 'element-ui/types/form'
 
@@ -157,7 +156,7 @@ import User, { Role } from '@/types/user.type'
 import { ValidationRule } from '@/types/validation-rule.type'
 
 @Component({ components: { BaseDialog } })
-export default class UserDialog extends mixins(DialogMixin) {
+export default class UserDialog extends Mixins(DialogMixin) {
   @Prop() readonly id: string | undefined
   @Ref() readonly title?: Input
 

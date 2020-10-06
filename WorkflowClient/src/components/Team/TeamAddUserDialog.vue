@@ -53,17 +53,15 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
+import { Component, Mixins } from 'vue-property-decorator'
 import { Input } from 'element-ui'
-
 import teamsModule from '@/store/modules/teams.module'
 import DialogMixin from '@/mixins/dialog.mixin'
 import BaseDialog from '@/components/BaseDialog.vue'
 import Query from '@/types/query.type'
 
 @Component({ components: { BaseDialog } })
-export default class TeamAddUserDialog extends mixins(DialogMixin) {
+export default class TeamAddUserDialog extends Mixins(DialogMixin) {
   private form = {
     userId: '',
   }

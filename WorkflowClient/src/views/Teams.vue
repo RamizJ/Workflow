@@ -25,9 +25,7 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
-
+import { Component, Mixins } from 'vue-property-decorator'
 import PageMixin from '@/mixins/page.mixin'
 import TeamToolbar from '@/components/Team/TeamToolbar.vue'
 import TeamTable from '@/components/Team/TeamTable.vue'
@@ -39,7 +37,7 @@ import { SortType } from '@/types/query.type'
     TeamTable,
   },
 })
-export default class TeamsPage extends mixins(PageMixin) {
+export default class TeamsPage extends Mixins(PageMixin) {
   protected mounted(): void {
     if (!this.$route.query.sort) this.onSortChange('name')
     if (!this.$route.query.order) this.onOrderChange(SortType.Ascending)

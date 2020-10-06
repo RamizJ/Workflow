@@ -35,14 +35,12 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
-
+import { Component, Mixins } from 'vue-property-decorator'
 import ToolbarMixin from '@/mixins/toolbar.mixin'
 import Toolbar from '@/components/Toolbar/Toolbar.vue'
 
 @Component({ components: { Toolbar } })
-export default class ProjectToolbar extends mixins(ToolbarMixin) {
+export default class ProjectToolbar extends Mixins(ToolbarMixin) {
   private sortFields = [
     { value: 'creationDate', label: 'По дате создания' },
     { value: 'name', label: 'По названию' },

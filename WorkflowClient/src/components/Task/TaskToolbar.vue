@@ -122,14 +122,12 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
-
+import { Component, Mixins } from 'vue-property-decorator'
 import Toolbar from '@/components/Toolbar/Toolbar.vue'
 import ToolbarMixin from '@/mixins/toolbar.mixin.ts'
 
 @Component({ components: { Toolbar } })
-export default class TaskToolbar extends mixins(ToolbarMixin) {
+export default class TaskToolbar extends Mixins(ToolbarMixin) {
   private sortFields = [
     { value: 'creationDate', label: 'По дате создания' },
     { value: 'title', label: 'По названию' },
