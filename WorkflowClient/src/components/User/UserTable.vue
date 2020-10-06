@@ -37,9 +37,9 @@
       <template slot-scope="child">
         <li>
           <a
-            v-if="isRowEditable && !$route.params.teamId && !$route.params.projectId"
+            v-if="!$route.params.teamId && !$route.params.projectId"
             @click.prevent="editEntity(child.data.row)"
-            >Изменить</a
+            >{{ isRowEditable ? 'Изменить' : 'Информация' }}</a
           >
         </li>
         <el-divider
@@ -76,11 +76,23 @@
           >
         </li>
         <li>
-          <a
-            v-if="isRowEditable && !$route.params.teamId && !$route.params.projectId"
-            @click.prevent="deleteEntity(child.data.row, isMultipleSelected)"
-            >Переместить в корзину</a
+          <el-popconfirm
+            v-if="
+              isRowEditable && !$route.params.teamId && !$route.params.projectId && isConfirmDelete
+            "
+            title="Удалить элемент?"
+            @onConfirm="deleteEntity"
           >
+            <a slot="reference">Переместить в корзину</a>
+          </el-popconfirm>
+          <a
+            v-if="
+              isRowEditable && !$route.params.teamId && !$route.params.projectId && !isConfirmDelete
+            "
+            @click.prevent="deleteEntity"
+          >
+            Переместить в корзину
+          </a>
         </li>
         <li>
           <a
@@ -124,6 +136,7 @@ import TeamAddUserDialog from '@/components/Team/TeamAddUserDialog.vue'
 import ProjectEditUserRightsDialog from '@/components/Project/ProjectEditUserRightsDialog.vue'
 import User from '@/types/user.type'
 import Project from '@/types/project.type'
+import Team from '@/types/team.type'
 
 @Component({ components: { ProjectEditUserRightsDialog, UserDialog, TeamAddUserDialog } })
 export default class UserTable extends mixins(TableMixin) {
@@ -161,8 +174,10 @@ export default class UserTable extends mixins(TableMixin) {
     this.dialogVisible = true
   }
 
-  private async deleteEntity(entity: User, multiple = false): Promise<void> {
-    if (multiple) await usersModule.deleteMany(this.table.selection.map((item: User) => item.id))
+  private async deleteEntity(): Promise<void> {
+    const entity = this.selectedRow as User
+    if (this.isMultipleSelected)
+      await usersModule.deleteMany(this.table.selection.map((item: User) => item.id))
     else await usersModule.deleteOne(entity.id as string)
     this.reloadData()
   }

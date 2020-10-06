@@ -28,6 +28,7 @@ import {
   TimeSelect,
   TimePicker,
   Popover,
+  Popconfirm,
   Tooltip,
   Form,
   FormItem,
@@ -86,6 +87,7 @@ Vue.use(DatePicker)
 Vue.use(TimeSelect)
 Vue.use(TimePicker)
 Vue.use(Popover)
+Vue.use(Popconfirm)
 Vue.use(Tooltip)
 Vue.use(Form)
 Vue.use(FormItem)

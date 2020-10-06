@@ -37,11 +37,9 @@
           >
         </li>
         <li>
-          <a
-            v-if="isRowEditable && !$route.params.projectId"
-            @click.prevent="editEntity(child.data.row)"
-            >Изменить</a
-          >
+          <a v-if="!$route.params.projectId" @click.prevent="editEntity(child.data.row)">
+            {{ isRowEditable ? 'Изменить' : 'Информация' }}
+          </a>
         </li>
         <li>
           <a v-if="isRowEditable && $route.params.projectId" @click.prevent="editProjectTeamRights"
@@ -66,11 +64,19 @@
           >
         </li>
         <li>
-          <a
-            v-if="isRowEditable && !$route.params.projectId"
-            @click.prevent="deleteEntity(child.data.row, isMultipleSelected)"
-            >Переместить в корзину</a
+          <el-popconfirm
+            v-if="isRowEditable && !$route.params.projectId && isConfirmDelete"
+            title="Удалить элемент?"
+            @onConfirm="deleteEntity"
           >
+            <a slot="reference">Переместить в корзину</a>
+          </el-popconfirm>
+          <a
+            v-if="isRowEditable && !$route.params.projectId && !isConfirmDelete"
+            @click.prevent="deleteEntity"
+          >
+            Переместить в корзину
+          </a>
         </li>
         <li>
           <a
@@ -112,6 +118,7 @@ import ProjectAddTeamDialog from '@/components/Project/ProjectAddTeamDialog.vue'
 import ProjectEditTeamRightsDialog from '@/components/Project/ProjectEditTeamRightsDialog.vue'
 import TableMixin from '@/mixins/table.mixin'
 import Team from '@/types/team.type'
+import Task from '@/types/task.type'
 
 @Component({ components: { ProjectEditTeamRightsDialog, ProjectAddTeamDialog, TeamDialog } })
 export default class TeamTable extends mixins(TableMixin) {
@@ -148,8 +155,10 @@ export default class TeamTable extends mixins(TableMixin) {
     this.dialogVisible = true
   }
 
-  private async deleteEntity(entity: Team, multiple = false): Promise<void> {
-    if (multiple) await teamsModule.deleteMany(this.table.selection.map((item: Team) => item.id))
+  private async deleteEntity(): Promise<void> {
+    const entity = this.selectedRow as Team
+    if (this.isMultipleSelected)
+      await teamsModule.deleteMany(this.table.selection.map((item: Team) => item.id))
     else await teamsModule.deleteOne(entity.id as number)
     this.reloadData()
   }

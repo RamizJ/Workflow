@@ -25,6 +25,14 @@
       ></el-checkbox>
     </div>
     <div class="section">
+      <h2>Удаление</h2>
+      <el-checkbox
+        v-model="confirmDelete"
+        label="Подтверждать удаление элементов таблицы"
+        @change="switchConfirmDelete"
+      ></el-checkbox>
+    </div>
+    <div class="section">
       <h2>Отладка</h2>
       <el-checkbox
         v-model="debugMode"
@@ -43,6 +51,7 @@ import { Theme } from '@/types/theme.type'
 @Component
 export default class SettingsDialogGeneral extends Vue {
   private confirmDialogClose = settingsModule.confirmDialogClose
+  private confirmDelete = settingsModule.confirmDelete
   private debugMode = settingsModule.debugMode
 
   private switchTheme(theme: string): void {
@@ -51,6 +60,10 @@ export default class SettingsDialogGeneral extends Vue {
 
   private switchConfirmDialogClose(): void {
     settingsModule.setConfirmDialogClose(this.confirmDialogClose)
+  }
+
+  private switchConfirmDelete(): void {
+    settingsModule.setConfirmDelete(this.confirmDelete)
   }
 
   private switchDebugMode(): void {

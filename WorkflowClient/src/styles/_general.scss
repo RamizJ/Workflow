@@ -286,6 +286,9 @@ a {
   .el-table {
     overflow: hidden;
     position: unset !important;
+    &:focus {
+      outline-width: 0;
+    }
   }
 }
 .el-table {
@@ -475,4 +478,10 @@ a {
 }
 .el-checkbox__inner {
   transition: 0.25s;
+}
+
+.el-popconfirm {
+  &__main {
+    margin: 10px 5px;
+  }
 }

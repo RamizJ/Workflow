@@ -3,10 +3,11 @@
     <h1 slot="title">Пользователь</h1>
     <el-form
       slot="body"
-      :model="form"
-      :rules="rules"
       ref="form"
       v-loading="loading"
+      :model="form"
+      :rules="rules"
+      :disabled="form.id && form.isRemoved"
       @submit.native.prevent="submit"
     >
       <el-row :gutter="20">
@@ -81,7 +82,7 @@
         </transition>
       </el-row>
     </el-form>
-    <template slot="footer">
+    <template v-if="!loading && (!form.id || !form.isRemoved)" slot="footer">
       <div class="extra">
         <el-tooltip
           v-if="
@@ -172,6 +173,7 @@ export default class UserDialog extends mixins(DialogMixin) {
     position: '',
     teamIds: this.$route.params.teamId ? [parseInt(this.$route.params.teamId)] : [],
     roles: [],
+    isRemoved: true,
   }
   private rules = {
     name: [{ required: true, message: '!', trigger: 'blur' }],

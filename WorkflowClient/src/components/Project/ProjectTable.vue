@@ -44,11 +44,9 @@
           >
         </li>
         <li>
-          <a
-            v-if="isRowEditable && !$route.params.teamId"
-            @click.prevent="editEntity(child.data.row)"
-            >Изменить</a
-          >
+          <a v-if="!$route.params.teamId" @click.prevent="editEntity(child.data.row)">
+            {{ isRowEditable ? 'Изменить' : 'Информация' }}
+          </a>
         </li>
         <el-divider v-if="isRowEditable && !$route.params.teamId"></el-divider>
         <li>
@@ -58,11 +56,19 @@
         </li>
         <el-divider v-if="isRowEditable && !$route.params.teamId"></el-divider>
         <li>
-          <a
-            v-if="isRowEditable && !$route.params.teamId"
-            @click.prevent="deleteEntity(child.data.row, isMultipleSelected)"
-            >Переместить в корзину</a
+          <el-popconfirm
+            v-if="isRowEditable && !$route.params.teamId && isConfirmDelete"
+            title="Удалить элемент?"
+            @onConfirm="deleteEntity"
           >
+            <a slot="reference">Переместить в корзину</a>
+          </el-popconfirm>
+          <a
+            v-if="isRowEditable && !$route.params.teamId && !isConfirmDelete"
+            @click.prevent="deleteEntity"
+          >
+            Переместить в корзину
+          </a>
         </li>
         <li>
           <a
@@ -92,6 +98,7 @@ import TableMixin from '@/mixins/table.mixin'
 import ProjectDialog from '@/components/Project/ProjectDialog.vue'
 import Project from '@/types/project.type'
 import teamsModule from '@/store/modules/teams.module'
+import Team from '@/types/team.type'
 
 @Component({ components: { ProjectDialog } })
 export default class ProjectTable extends mixins(TableMixin) {
@@ -121,8 +128,9 @@ export default class ProjectTable extends mixins(TableMixin) {
     this.dialogVisible = true
   }
 
-  private async deleteEntity(entity: Project, multiple = false): Promise<void> {
-    if (multiple)
+  private async deleteEntity(): Promise<void> {
+    const entity = this.selectedRow as Project
+    if (this.isMultipleSelected)
       await projectsModule.deleteMany(this.table.selection.map((item: Project) => item.id))
     else await projectsModule.deleteOne(entity.id as number)
     this.reloadData()

@@ -8,6 +8,7 @@
       ref="form"
       v-loading="loading"
       @submit.native.prevent="submit"
+      :disabled="form.id && form.isRemoved"
     >
       <el-row :gutter="20">
         <el-col :span="24">
@@ -54,7 +55,7 @@
         </transition>
       </el-row>
     </el-form>
-    <template slot="footer">
+    <template v-if="!loading && (!form.id || !form.isRemoved)" slot="footer">
       <div class="extra">
         <el-tooltip
           content="Описание"
@@ -132,6 +133,7 @@ export default class ProjectDialog extends mixins(DialogMixin) {
     ownerFio: '',
     creationDate: new Date(),
     teamIds: [],
+    isRemoved: true,
   }
   private rules = {
     name: [{ required: true, message: '!', trigger: 'blur' }],

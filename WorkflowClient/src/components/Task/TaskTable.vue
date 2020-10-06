@@ -6,6 +6,8 @@
       v-loading="loading"
       :data="data"
       :row-class-name="setIndex"
+      tabindex="0"
+      @keydown.space.native.prevent="onSpaceClick"
       @select="onRowSelect"
       @row-click="onRowSingleClick"
       @row-dblclick="onRowDoubleClick"
@@ -60,7 +62,9 @@
     <vue-context ref="contextMenu">
       <template slot-scope="child">
         <li>
-          <a v-if="isRowEditable" @click.prevent="editEntity(child.data.row)">Изменить</a>
+          <a @click.prevent="editEntity(child.data.row)">
+            {{ isRowEditable ? 'Изменить' : 'Информация' }}
+          </a>
         </li>
         <el-divider v-if="isRowEditable"></el-divider>
         <li><a v-if="isRowEditable" @click.prevent="createEntity">Новая задача</a></li>
@@ -88,9 +92,16 @@
           </ul>
         </li>
         <li>
-          <a v-if="isRowEditable" @click.prevent="deleteEntity(child.data.row, isMultipleSelected)"
-            >Переместить в корзину</a
+          <el-popconfirm
+            v-if="isRowEditable && isConfirmDelete"
+            title="Удалить элемент?"
+            @onConfirm="deleteEntity"
           >
+            <a slot="reference">Переместить в корзину</a>
+          </el-popconfirm>
+          <a v-if="isRowEditable && !isConfirmDelete" @click.prevent="deleteEntity">
+            Переместить в корзину
+          </a>
         </li>
         <li>
           <a
@@ -146,8 +157,10 @@ export default class TaskTable extends mixins(TableMixin) {
     this.dialogVisible = true
   }
 
-  private async deleteEntity(entity: Task, multiple = false): Promise<void> {
-    if (multiple) await tasksModule.deleteMany(this.table.selection.map((item: Task) => item.id))
+  private async deleteEntity(): Promise<void> {
+    const entity = this.selectedRow as Task
+    if (this.isMultipleSelected)
+      await tasksModule.deleteMany(this.table.selection.map((item: Task) => item.id))
     else await tasksModule.deleteOne(entity.id as number)
     this.reloadData()
   }
@@ -171,6 +184,16 @@ export default class TaskTable extends mixins(TableMixin) {
       await tasksModule.updateOne(item)
     }
     this.reloadData()
+  }
+
+  private onSpaceClick(e: KeyboardEvent): void {
+    if (
+      !this.dialogVisible &&
+      (this.$route.path === '/tasks' || this.$route.query.tab === 'tasks')
+    ) {
+      this.dialogData = undefined
+      this.dialogVisible = true
+    }
   }
 }
 </script>

@@ -3,10 +3,11 @@
     <h1 slot="title">Команда</h1>
     <el-form
       slot="body"
-      :model="form"
-      :rules="rules"
       ref="form"
       v-loading="loading"
+      :model="form"
+      :rules="rules"
+      :disabled="form.id && form.isRemoved"
       @submit.native.prevent="submit"
     >
       <el-row :gutter="20">
@@ -83,7 +84,7 @@
         </transition>
       </el-row>
     </el-form>
-    <template slot="footer">
+    <template v-if="!loading && (!form.id || !form.isRemoved)" slot="footer">
       <div class="extra">
         <el-tooltip
           content="Описание"
@@ -179,6 +180,7 @@ export default class TeamDialog extends mixins(DialogMixin) {
     description: '',
     userIds: [],
     projectIds: [],
+    isRemoved: true,
   }
   private rules = {
     name: [{ required: true, message: '!', trigger: 'blur' }],

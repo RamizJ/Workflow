@@ -13,20 +13,21 @@ class SettingsModule extends VuexModule {
   _opened = false
   _theme = localStorage.theme || Theme.SYSTEM
   _confirmDialogClose = localStorage.confirmDialogClose === 'true'
+  _confirmDelete = localStorage.confirmDelete === 'true'
   _debugMode = localStorage.debugMode === 'true'
 
   public get isSettingsOpened(): boolean {
     return this._opened
   }
-
   public get theme(): Theme {
     return this._theme
   }
-
   public get confirmDialogClose(): boolean {
     return this._confirmDialogClose
   }
-
+  public get confirmDelete(): boolean {
+    return this._confirmDelete
+  }
   public get debugMode(): boolean {
     return this._debugMode
   }
@@ -59,6 +60,14 @@ class SettingsModule extends VuexModule {
     localStorage.confirmDialogClose = state
     return {
       _confirmDialogClose: state,
+    }
+  }
+
+  @MutationAction({ mutate: ['_confirmDelete'] })
+  public async setConfirmDelete(state: boolean) {
+    localStorage.confirmDelete = state
+    return {
+      _confirmDelete: state,
     }
   }
 
