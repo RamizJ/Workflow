@@ -58,7 +58,9 @@
         <li>
           <el-popconfirm
             v-if="isRowEditable && !$route.params.teamId && isConfirmDelete"
-            title="Удалить элемент?"
+            :title="
+              isMultipleSelected ? 'Удалить выбранные элементы?' : 'Удалить выбранный элемент?'
+            "
             @onConfirm="deleteEntity"
           >
             <a slot="reference">Переместить в корзину</a>
@@ -98,7 +100,6 @@ import TableMixin from '@/mixins/table.mixin'
 import ProjectDialog from '@/components/Project/ProjectDialog.vue'
 import Project from '@/types/project.type'
 import teamsModule from '@/store/modules/teams.module'
-import Team from '@/types/team.type'
 
 @Component({ components: { ProjectDialog } })
 export default class ProjectTable extends mixins(TableMixin) {
@@ -130,15 +131,13 @@ export default class ProjectTable extends mixins(TableMixin) {
 
   private async deleteEntity(): Promise<void> {
     const entity = this.selectedRow as Project
-    if (this.isMultipleSelected)
-      await projectsModule.deleteMany(this.table.selection.map((item: Project) => item.id))
+    if (this.isMultipleSelected) await projectsModule.deleteMany(this.selectionIds as number[])
     else await projectsModule.deleteOne(entity.id as number)
     this.reloadData()
   }
 
   private async restoreEntity(entity: Project, multiple = false): Promise<void> {
-    if (multiple)
-      await projectsModule.restoreMany(this.table.selection.map((item: Project) => item.id))
+    if (multiple) await projectsModule.restoreMany(this.selectionIds as number[])
     else await projectsModule.restoreOne(entity.id as number)
     this.reloadData()
   }

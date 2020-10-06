@@ -169,55 +169,14 @@ class TeamsModule extends VuexModule {
   }
 
   @Action
-  async addUser({
-    teamId,
-    userId,
-    canEditUsers,
-    canEditTasks,
-    canCloseTasks,
-  }: {
-    teamId: number
-    userId: string
-    canEditUsers: boolean
-    canEditTasks: boolean
-    canCloseTasks: boolean
-  }) {
-    await teamsAPI.addUser(teamId, userId, canEditUsers, canEditTasks, canCloseTasks)
+  async addUser({ teamId, userId }: { teamId: number; userId: string }) {
+    await teamsAPI.addUser(teamId, userId)
   }
 
   @Action
-  async updateUser({
-    teamId,
-    userId,
-    canEditUsers,
-    canEditTasks,
-    canCloseTasks,
-  }: {
-    teamId: number
-    userId: string
-    canEditUsers: boolean
-    canEditTasks: boolean
-    canCloseTasks: boolean
-  }) {
-    await teamsAPI.updateUser(teamId, userId, canEditUsers, canEditTasks, canCloseTasks)
-  }
-
-  @Action
-  async addUsers({
-    teamId,
-    userIds,
-    canEditUsers,
-    canEditTasks,
-    canCloseTasks,
-  }: {
-    teamId: number
-    userIds: string[]
-    canEditUsers: boolean
-    canEditTasks: boolean
-    canCloseTasks: boolean
-  }) {
+  async addUsers({ teamId, userIds }: { teamId: number; userIds: string[] }) {
     for (const userId of userIds) {
-      await teamsAPI.addUser(teamId, userId, canEditUsers, canEditTasks, canCloseTasks)
+      await teamsAPI.addUser(teamId, userId)
     }
   }
 

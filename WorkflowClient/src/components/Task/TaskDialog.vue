@@ -301,7 +301,7 @@ export default class TaskDialog extends mixins(DialogMixin) {
     state: Status.New,
     priority: Priority.Normal,
     isChildsExist: false,
-    isRemoved: true,
+    isRemoved: false,
     attachments: [],
   }
 

@@ -94,7 +94,9 @@
         <li>
           <el-popconfirm
             v-if="isRowEditable && isConfirmDelete"
-            title="Удалить элемент?"
+            :title="
+              isMultipleSelected ? 'Удалить выбранные элементы?' : 'Удалить выбранный элемент?'
+            "
             @onConfirm="deleteEntity"
           >
             <a slot="reference">Переместить в корзину</a>
@@ -130,6 +132,7 @@ import tasksModule from '@/store/modules/tasks.module'
 import TableMixin from '@/mixins/table.mixin.ts'
 import TaskDialog from '@/components/Task/TaskDialog.vue'
 import Task, { Status } from '@/types/task.type'
+import Entity from '@/types/entity.type'
 
 @Component({ components: { TaskDialog } })
 export default class TaskTable extends mixins(TableMixin) {
@@ -159,23 +162,23 @@ export default class TaskTable extends mixins(TableMixin) {
 
   private async deleteEntity(): Promise<void> {
     const entity = this.selectedRow as Task
-    if (this.isMultipleSelected)
-      await tasksModule.deleteMany(this.table.selection.map((item: Task) => item.id))
+    if (this.isMultipleSelected) await tasksModule.deleteMany(this.selectionIds as number[])
     else await tasksModule.deleteOne(entity.id as number)
     this.reloadData()
   }
 
   private async restoreEntity(entity: Task, multiple = false): Promise<void> {
-    if (multiple) await tasksModule.restoreMany(this.table.selection.map((item: Task) => item.id))
+    if (multiple) await tasksModule.restoreMany(this.selectionIds as number[])
     else await tasksModule.restoreOne(entity.id as number)
     this.reloadData()
   }
 
   private async editEntityStatus(entity: Task, status: string): Promise<void> {
     if (this.isMultipleSelected) {
-      const items = this.table.selection.map((item: Task) => {
-        item.state = status as Status
-        return item
+      const items = this.table.selection.map((entity: Entity) => {
+        const modifiedEntity = entity as Task
+        modifiedEntity.state = status as Status
+        return modifiedEntity
       })
       await tasksModule.updateMany(items)
     } else {
@@ -186,7 +189,7 @@ export default class TaskTable extends mixins(TableMixin) {
     this.reloadData()
   }
 
-  private onSpaceClick(e: KeyboardEvent): void {
+  private onSpaceClick(): void {
     if (
       !this.dialogVisible &&
       (this.$route.path === '/tasks' || this.$route.query.tab === 'tasks')

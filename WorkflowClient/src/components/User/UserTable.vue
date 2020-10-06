@@ -80,7 +80,9 @@
             v-if="
               isRowEditable && !$route.params.teamId && !$route.params.projectId && isConfirmDelete
             "
-            title="Удалить элемент?"
+            :title="
+              isMultipleSelected ? 'Удалить выбранные элементы?' : 'Удалить выбранный элемент?'
+            "
             @onConfirm="deleteEntity"
           >
             <a slot="reference">Переместить в корзину</a>
@@ -136,7 +138,6 @@ import TeamAddUserDialog from '@/components/Team/TeamAddUserDialog.vue'
 import ProjectEditUserRightsDialog from '@/components/Project/ProjectEditUserRightsDialog.vue'
 import User from '@/types/user.type'
 import Project from '@/types/project.type'
-import Team from '@/types/team.type'
 
 @Component({ components: { ProjectEditUserRightsDialog, UserDialog, TeamAddUserDialog } })
 export default class UserTable extends mixins(TableMixin) {
@@ -176,14 +177,13 @@ export default class UserTable extends mixins(TableMixin) {
 
   private async deleteEntity(): Promise<void> {
     const entity = this.selectedRow as User
-    if (this.isMultipleSelected)
-      await usersModule.deleteMany(this.table.selection.map((item: User) => item.id))
+    if (this.isMultipleSelected) await usersModule.deleteMany(this.selectionIds as string[])
     else await usersModule.deleteOne(entity.id as string)
     this.reloadData()
   }
 
   private async restoreEntity(entity: User, multiple = false): Promise<void> {
-    if (multiple) await usersModule.restoreMany(this.table.selection.map((item: User) => item.id))
+    if (multiple) await usersModule.restoreMany(this.selectionIds as string[])
     else await usersModule.restoreOne(entity.id as string)
     this.reloadData()
   }
@@ -192,7 +192,7 @@ export default class UserTable extends mixins(TableMixin) {
     const teamId = parseInt(this.$route.params.teamId)
     const userId = entity.id?.toString() || ''
     if (this.isMultipleSelected) {
-      const userIds = this.table.selection.map((item: User) => item.id)
+      const userIds = this.selectionIds as string[]
       await teamsModule.removeUsers({ teamId, userIds })
     } else await teamsModule.removeUser({ teamId, userId })
     this.reloadData()

@@ -66,7 +66,9 @@
         <li>
           <el-popconfirm
             v-if="isRowEditable && !$route.params.projectId && isConfirmDelete"
-            title="Удалить элемент?"
+            :title="
+              isMultipleSelected ? 'Удалить выбранные элементы?' : 'Удалить выбранный элемент?'
+            "
             @onConfirm="deleteEntity"
           >
             <a slot="reference">Переместить в корзину</a>
@@ -118,7 +120,6 @@ import ProjectAddTeamDialog from '@/components/Project/ProjectAddTeamDialog.vue'
 import ProjectEditTeamRightsDialog from '@/components/Project/ProjectEditTeamRightsDialog.vue'
 import TableMixin from '@/mixins/table.mixin'
 import Team from '@/types/team.type'
-import Task from '@/types/task.type'
 
 @Component({ components: { ProjectEditTeamRightsDialog, ProjectAddTeamDialog, TeamDialog } })
 export default class TeamTable extends mixins(TableMixin) {
@@ -157,14 +158,13 @@ export default class TeamTable extends mixins(TableMixin) {
 
   private async deleteEntity(): Promise<void> {
     const entity = this.selectedRow as Team
-    if (this.isMultipleSelected)
-      await teamsModule.deleteMany(this.table.selection.map((item: Team) => item.id))
+    if (this.isMultipleSelected) await teamsModule.deleteMany(this.selectionIds as number[])
     else await teamsModule.deleteOne(entity.id as number)
     this.reloadData()
   }
 
   private async restoreEntity(entity: Team, multiple = false): Promise<void> {
-    if (multiple) await teamsModule.restoreMany(this.table.selection.map((item: Team) => item.id))
+    if (multiple) await teamsModule.restoreMany(this.selectionIds as number[])
     else await teamsModule.restoreOne(entity.id as number)
     this.reloadData()
   }
@@ -176,7 +176,7 @@ export default class TeamTable extends mixins(TableMixin) {
   private async removeEntityFromProject(row: Team): Promise<void> {
     const projectId = parseInt(this.$route.params.projectId)
     const teamId = row.id || -1
-    const teamIds = this.table.selection.map((item: Team) => item.id)
+    const teamIds = this.selectionIds as number[]
     if (this.isMultipleSelected) await projectsModule.removeTeams({ projectId, teamIds })
     else await projectsModule.removeTeam({ projectId, teamId })
     this.reloadData()

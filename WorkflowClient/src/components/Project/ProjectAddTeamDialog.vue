@@ -75,8 +75,8 @@ export default class ProjectAddTeamDialog extends mixins(DialogMixin) {
   private get teamsToAdd(): { id: number | undefined; value: string | undefined }[] {
     const allTeams = this.teams
     const existingTeams = this.existingTeams
-    return allTeams.filter(team => {
-      return !existingTeams.find(existingTeam => existingTeam.id === team.id)
+    return allTeams.filter((team) => {
+      return !existingTeams.find((existingTeam) => existingTeam.id === team.id)
     })
   }
   private get existingTeams(): { id: number | undefined; value: string | undefined }[] {

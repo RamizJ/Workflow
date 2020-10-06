@@ -13,7 +13,6 @@
         <el-dropdown v-if="!loading" placement="bottom" :show-timeout="0">
           <el-button type="text" size="mini">
             <unicon name="ellipsis-h" />
-            <!--            <feather type="chevron-down" size="22"></feather>-->
           </el-button>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item>

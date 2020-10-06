@@ -133,7 +133,7 @@ export default class ProjectDialog extends mixins(DialogMixin) {
     ownerFio: '',
     creationDate: new Date(),
     teamIds: [],
-    isRemoved: true,
+    isRemoved: false,
   }
   private rules = {
     name: [{ required: true, message: '!', trigger: 'blur' }],

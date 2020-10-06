@@ -50,7 +50,7 @@ class AuthModule extends VuexModule {
 
   @MutationAction({ mutate: ['_user', '_token'] })
   public async getMe() {
-    const response: AxiosResponse = await authAPI.getMe()
+    const response = await authAPI.getMe()
     if (!response || response.status === 401)
       return {
         _user: null,

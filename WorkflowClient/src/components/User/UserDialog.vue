@@ -147,15 +147,14 @@
 <script lang="ts">
 import { Component, Prop, Ref } from 'vue-property-decorator'
 import { mixins } from 'vue-class-component'
+import { Input, Message } from 'element-ui'
+import { ElForm } from 'element-ui/types/form'
 
 import usersModule from '@/store/modules/users.module'
 import DialogMixin from '@/mixins/dialog.mixin'
 import BaseDialog from '@/components/BaseDialog.vue'
 import User, { Role } from '@/types/user.type'
-import { Input, Message } from 'element-ui'
-import { ElForm } from 'element-ui/types/form'
-import Project from '@/types/project.type'
-import projectsModule from '@/store/modules/projects.module'
+import { ValidationRule } from '@/types/validation-rule.type'
 
 @Component({ components: { BaseDialog } })
 export default class UserDialog extends mixins(DialogMixin) {
@@ -173,7 +172,7 @@ export default class UserDialog extends mixins(DialogMixin) {
     position: '',
     teamIds: this.$route.params.teamId ? [parseInt(this.$route.params.teamId)] : [],
     roles: [],
-    isRemoved: true,
+    isRemoved: false,
   }
   private rules = {
     name: [{ required: true, message: '!', trigger: 'blur' }],
@@ -240,7 +239,12 @@ export default class UserDialog extends mixins(DialogMixin) {
     this.loading = false
   }
 
-  private async validateLogin(rule: any, value: string, callback: any): Promise<void> {
+  private async validateLogin(
+    rule: ValidationRule,
+    value: string,
+    callback: CallableFunction
+  ): Promise<void> {
+    console.log(rule)
     const loginPattern = /^[a-zA-Z0-9_-]+$/
     const isLoginChanged = usersModule.user?.userName !== value
     const isLoginValid = loginPattern.test(value)
@@ -254,13 +258,17 @@ export default class UserDialog extends mixins(DialogMixin) {
     }
   }
 
-  private async validateEmail(rule: any, value: string, callback: any): Promise<void> {
+  private async validateEmail(
+    rule: ValidationRule,
+    value: string,
+    callback: CallableFunction
+  ): Promise<void> {
     const emailAlreadyExist = await usersModule.isEmailExist(value)
     if (emailAlreadyExist && usersModule.user?.email !== value) callback(new Error('занято'))
     else callback()
   }
 
-  private validatePassword(rule: any, value: string, callback: any): void {
+  private validatePassword(rule: ValidationRule, value: string, callback: CallableFunction): void {
     const length = value?.trim().length
     const symbolsLeft = 6 - length
     if (!value && this.id) callback()

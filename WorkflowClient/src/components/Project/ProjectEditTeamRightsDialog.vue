@@ -46,7 +46,6 @@
 import { Component, Mixins, Prop } from 'vue-property-decorator'
 import DialogMixin from '@/mixins/dialog.mixin'
 import BaseDialog from '@/components/BaseDialog.vue'
-import teamsModule from '@/store/modules/teams.module'
 import projectsModule from '@/store/modules/projects.module'
 import Team from '@/types/team.type'
 import { TeamRole } from '@/types/team-role.type'

@@ -180,7 +180,7 @@ export default class TeamDialog extends mixins(DialogMixin) {
     description: '',
     userIds: [],
     projectIds: [],
-    isRemoved: true,
+    isRemoved: false,
   }
   private rules = {
     name: [{ required: true, message: '!', trigger: 'blur' }],

@@ -259,7 +259,7 @@ class ProjectsModule extends VuexModule {
   @Action
   async getTasksCount(projectId: number): Promise<number> {
     const response = await projectsAPI.getTasksCount(projectId)
-    return parseInt(response.data) as number
+    return response.data
   }
 
   @Action
@@ -271,7 +271,7 @@ class ProjectsModule extends VuexModule {
     status: Status
   }): Promise<number> {
     const response = await projectsAPI.getTasksCountByStatus(projectId, status)
-    return parseInt(response.data) as number
+    return response.data
   }
 }
 
