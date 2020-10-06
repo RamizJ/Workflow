@@ -83,7 +83,7 @@
             <el-form-item prop="performerId">
               <el-select
                 v-model="form.performerId"
-                placeholder="Ответственный"
+                placeholder="Исполнитель"
                 :remote-method="searchUsers"
                 @blur="searchUsers()"
                 default-first-option
@@ -202,7 +202,7 @@
           </el-button>
         </el-tooltip>
         <el-tooltip
-          content="Ответственный"
+          content="Исполнитель"
           effect="dark"
           placement="top"
           transition="fade"

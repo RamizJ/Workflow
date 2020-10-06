@@ -31,7 +31,7 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column prop="performerFio" label="Ответственный" width="150" :formatter="formatFio">
+      <el-table-column prop="performerFio" label="Исполнитель" width="150" :formatter="formatFio">
       </el-table-column>
       <el-table-column
         v-if="!$route.params.projectId"

@@ -81,7 +81,7 @@
               </el-select>
             </div>
             <div class="filter">
-              <div class="label">Ответственный</div>
+              <div class="label">Исполнитель</div>
               <el-select
                 class="remote"
                 v-model="filters.performers"
