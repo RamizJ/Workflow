@@ -1,76 +1,42 @@
 <template>
-  <el-card class="card" shadow="never" v-loading="loading">
+  <el-card class="card" shadow="never">
     <div class="card__title">Обзор задач</div>
     <chart-doughnut v-if="!loading" :data="chartPieData" :options="chartPieOptions" />
   </el-card>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
-
-import projectsModule from '@/store/modules/projects.module'
+import { Component, Prop, Vue } from 'vue-property-decorator'
 import ChartDoughnut from '@/components/Chart/ChartDoughnut.vue'
-import { Status } from '@/types/task.type'
+import { ChartData, ChartOptions } from 'chart.js'
 
 @Component({ components: { ChartDoughnut } })
 export default class ReportTasksOverview extends Vue {
-  private chartPieData = {}
-  private chartPieOptions = {}
-  private loading = true
+  @Prop() readonly data!: number[]
 
-  protected async mounted(): Promise<void> {
+  private loading = true
+  private chartPieData: ChartData = {}
+  private chartPieOptions: ChartOptions = {}
+
+  protected mounted(): void {
     this.loading = true
-    const projectId = parseInt(this.$route.params.projectId)
-    if (!projectId) return
-    const data: number[] = []
-    const labels: string[] = []
-    const newTasks = await projectsModule.getTasksCountByStatus({
-      projectId,
-      status: Status.New,
+    const data: number[] = [...this.data]
+    const labels: string[] = [
+      'Новые',
+      'Выполняется',
+      'Отложено',
+      'Проверяется',
+      'Выполнено',
+      'Отклонено',
+    ]
+
+    const emptyIndexes: number[] = []
+    this.data.forEach((value, index) => {
+      if (!value) emptyIndexes.push(index)
     })
-    if (newTasks) {
-      data.push(newTasks)
-      labels.push('Новые')
-    }
-    const performTasks = await projectsModule.getTasksCountByStatus({
-      projectId,
-      status: Status.Perform,
-    })
-    if (performTasks) {
-      data.push(performTasks)
-      labels.push('Выполняется')
-    }
-    const testingTasks = await projectsModule.getTasksCountByStatus({
-      projectId,
-      status: Status.Testing,
-    })
-    if (testingTasks) {
-      data.push(testingTasks)
-      labels.push('Проверяется')
-    }
-    const delayTasks = await projectsModule.getTasksCountByStatus({
-      projectId,
-      status: Status.Delay,
-    })
-    if (delayTasks) {
-      data.push(delayTasks)
-      labels.push('Отложено')
-    }
-    const succeedTasks = await projectsModule.getTasksCountByStatus({
-      projectId,
-      status: Status.Succeed,
-    })
-    if (succeedTasks) {
-      data.push(succeedTasks)
-      labels.push('Выполнено')
-    }
-    const rejectedTasks = await projectsModule.getTasksCountByStatus({
-      projectId,
-      status: Status.Rejected,
-    })
-    if (rejectedTasks) {
-      data.push(rejectedTasks)
-      labels.push('Отклонено')
+    for (let i = emptyIndexes.length - 1; i >= 0; i--) {
+      data.splice(emptyIndexes[i], 1)
+      labels.splice(emptyIndexes[i], 1)
     }
 
     const colors: string[] = [
