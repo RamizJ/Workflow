@@ -22,15 +22,18 @@ namespace WorkflowService.Controllers
         /// <param name="projectsService"></param>
         /// <param name="teamsService"></param>
         /// <param name="userRolesService"></param>
+        /// <param name="statisticService"></param>
         public ProjectsController(ICurrentUserService currentUserService, 
             IProjectsService projectsService,
             IProjectTeamsService teamsService,
-            IProjectUserRolesService userRolesService)
+            IProjectUserRolesService userRolesService,
+            IStatisticService statisticService)
         {
             _currentUserService = currentUserService;
             _projectsService = projectsService;
             _teamsService = teamsService;
             _userRolesService = userRolesService;
+            _statisticService = statisticService;
         }
 
 
@@ -336,10 +339,10 @@ namespace WorkflowService.Controllers
         /// <param name="options">Параметры статистики</param>
         /// <returns></returns>
         [HttpPost("{projectId}")]
-        public async Task<ActionResult<VmProjectStatistic>> GetProjectStatistic(int projectId, 
+        public async Task<ActionResult<ProjectStatistic>> GetProjectStatistic(int projectId, 
             [FromBody] ProjectStatisticOptions options)
         {
-            var statistic = await _projectsService.GetStatistic(projectId, options);
+            var statistic = await _statisticService.GetStatistic(projectId, options);
             return Ok(statistic);
         }
 
@@ -348,5 +351,6 @@ namespace WorkflowService.Controllers
         private readonly IProjectsService _projectsService;
         private readonly IProjectTeamsService _teamsService;
         private readonly IProjectUserRolesService _userRolesService;
+        private readonly IStatisticService _statisticService;
     }
 }

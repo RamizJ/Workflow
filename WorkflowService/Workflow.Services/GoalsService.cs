@@ -547,6 +547,9 @@ namespace Workflow.Services
                 if(model == null)
                     throw new HttpResponseException(NotFound, $"Goal with id='{vmGoal.Id}' not found");
 
+                if (model.State != vmGoal.State) 
+                    model.StateChangedDate = DateTime.Now;
+
                 model.Id = vmGoal.Id;
                 model.ProjectId = vmGoal.ProjectId;
                 model.Title = vmGoal.Title;
@@ -557,6 +560,8 @@ namespace Workflow.Services
                 model.PerformerId = vmGoal.PerformerId;
                 model.ExpectedCompletedDate = vmGoal.ExpectedCompletedDate;
                 model.EstimatedPerformingTime = vmGoal.EstimatedPerformingTime;
+
+
 
                 updateAction?.Invoke(model);
 

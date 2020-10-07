@@ -162,6 +162,7 @@ namespace WorkflowService
             services.AddTransient<IFileService, FileService>();
             services.AddTransient<IFormFilesService, FormFilesService>();
             services.AddTransient<IProjectUserRolesService, ProjectUserRolesService>();
+            services.AddTransient<IStatisticService, StatisticService>();
 
             services.AddTransient<IViewModelConverter<ApplicationUser, VmUser>, VmUserConverter>();
             services.AddTransient<IViewModelConverter<Team, VmTeam>, VmTeamConverter>();
