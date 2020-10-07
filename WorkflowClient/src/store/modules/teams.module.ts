@@ -1,4 +1,11 @@
-import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
+import {
+  Action,
+  getModule,
+  Module,
+  Mutation,
+  MutationAction,
+  VuexModule,
+} from 'vuex-module-decorators'
 
 import store from '@/store'
 import teamsAPI from '@/api/teams.api'
@@ -14,11 +21,15 @@ import User from '@/types/user.type'
   store,
 })
 class TeamsModule extends VuexModule {
+  _teamDialogOpened = false
   _team: Team | null = null
   _teams: Team[] = []
   _teamUsers: User[] = []
   _teamProjects: Project[] = []
 
+  public get isTeamDialogOpened() {
+    return this._teamDialogOpened
+  }
   public get team() {
     return this._team
   }
@@ -30,6 +41,20 @@ class TeamsModule extends VuexModule {
   }
   public get teamProjects() {
     return this._teamProjects
+  }
+
+  @MutationAction({ mutate: ['_teamDialogOpened'] })
+  public async closeTeamDialog() {
+    return {
+      _teamDialogOpened: false,
+    }
+  }
+
+  @MutationAction({ mutate: ['_teamDialogOpened'] })
+  public async openTeamDialog() {
+    return {
+      _teamDialogOpened: true,
+    }
   }
 
   @Mutation
@@ -144,55 +169,14 @@ class TeamsModule extends VuexModule {
   }
 
   @Action
-  async addUser({
-    teamId,
-    userId,
-    canEditUsers,
-    canEditTasks,
-    canCloseTasks,
-  }: {
-    teamId: number
-    userId: string
-    canEditUsers: boolean
-    canEditTasks: boolean
-    canCloseTasks: boolean
-  }) {
-    await teamsAPI.addUser(teamId, userId, canEditUsers, canEditTasks, canCloseTasks)
+  async addUser({ teamId, userId }: { teamId: number; userId: string }) {
+    await teamsAPI.addUser(teamId, userId)
   }
 
   @Action
-  async updateUser({
-    teamId,
-    userId,
-    canEditUsers,
-    canEditTasks,
-    canCloseTasks,
-  }: {
-    teamId: number
-    userId: string
-    canEditUsers: boolean
-    canEditTasks: boolean
-    canCloseTasks: boolean
-  }) {
-    await teamsAPI.updateUser(teamId, userId, canEditUsers, canEditTasks, canCloseTasks)
-  }
-
-  @Action
-  async addUsers({
-    teamId,
-    userIds,
-    canEditUsers,
-    canEditTasks,
-    canCloseTasks,
-  }: {
-    teamId: number
-    userIds: string[]
-    canEditUsers: boolean
-    canEditTasks: boolean
-    canCloseTasks: boolean
-  }) {
+  async addUsers({ teamId, userIds }: { teamId: number; userIds: string[] }) {
     for (const userId of userIds) {
-      await teamsAPI.addUser(teamId, userId, canEditUsers, canEditTasks, canCloseTasks)
+      await teamsAPI.addUser(teamId, userId)
     }
   }
 

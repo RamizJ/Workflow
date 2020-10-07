@@ -191,9 +191,8 @@ class TasksModule extends VuexModule {
   }
 
   @Action
-  async uploadAttachments({ id, files }: { id: number; files: FormData }): Promise<Attachment[]> {
-    const response = await tasksAPI.uploadAttachments(id, files)
-    return response.data as Attachment[]
+  async uploadAttachments({ id, files }: { id: number; files: FormData }): Promise<void> {
+    await tasksAPI.uploadAttachments(id, files)
   }
 
   @Action

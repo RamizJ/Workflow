@@ -1,10 +1,19 @@
 <template>
   <el-card class="checklist" shadow="never" :body-style="{ padding: '0px 10px' }">
-    <el-input v-model="input" placeholder="Новый пункт" @keyup.enter.native="onAdd">
-      <el-button slot="prefix" type="text" size="mini" @click="onAdd">
-        <feather type="plus" size="18"></feather>
+    <div class="checklist__input">
+      <el-button type="text" size="mini" @click="onAdd">
+        <unicon name="plus" />
       </el-button>
-    </el-input>
+      <el-input
+        v-model="input"
+        type="textarea"
+        :rows="1"
+        placeholder="Новый пункт"
+        autosize
+        @keydown.enter.exact.native.prevent
+        @keyup.enter.exact.native.prevent="onAdd"
+      />
+    </div>
     <div
       class="item"
       v-for="(item, index) in checklist"
@@ -15,6 +24,9 @@
         <el-checkbox v-model="checklist[index].completed" @change="onCheck(index)"></el-checkbox>
         <el-input
           v-model="checklist[index].title"
+          type="textarea"
+          :rows="1"
+          autosize
           @keyup.delete.native="onDelete(index)"
           @change="onChange"
           @blur="onBlur(index)"
@@ -64,10 +76,11 @@ export default class Checklist extends Vue {
     this.$forceUpdate()
   }
 
-  private onAdd(): void {
+  private onAdd(event?: KeyboardEvent): void {
+    console.log(event)
     if (!this.input) return
     const entity: Task = {
-      title: this.input,
+      title: this.input.trim(),
       projectId: this.task.projectId,
       creationDate: moment.utc(moment()).format(),
       state: Status.New,
@@ -98,16 +111,27 @@ export default class Checklist extends Vue {
 
 <style lang="scss">
 .checklist {
-  .el-input__inner,
-  .el-input__inner:hover,
-  .el-input__inner:focus {
+  &__input {
+    display: flex;
+    align-items: center;
+    .el-button svg {
+      width: 18px;
+    }
+    .el-textarea__inner {
+      padding: 4px 6px;
+    }
+  }
+
+  .el-textarea__inner,
+  .el-textarea__inner:hover,
+  .el-textarea__inner:focus {
     background-color: transparent;
   }
   .el-input__prefix {
     left: 0;
   }
-  .el-input--prefix .el-input__inner {
-    padding-left: 25px;
+  .el-input--prefix .el-textarea__inner {
+    //padding-left: 25px;
   }
   .el-input .el-button {
     height: 100%;
@@ -125,10 +149,10 @@ export default class Checklist extends Vue {
   .item__wrapper {
     display: flex;
   }
-  .el-input__inner {
-    padding-left: 9px;
+  .el-textarea__inner {
+    padding: 7px 10px;
   }
-  &.completed .el-input__inner {
+  &.completed .el-textarea__inner {
     text-decoration: line-through;
   }
   &:last-child {

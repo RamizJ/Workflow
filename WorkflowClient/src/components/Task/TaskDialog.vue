@@ -3,10 +3,11 @@
     <h1 slot="title">Задача</h1>
     <el-form
       slot="body"
-      :model="form"
-      :rules="rules"
       ref="form"
       v-loading="loading"
+      :model="form"
+      :rules="rules"
+      :disabled="form.id && form.isRemoved"
       @submit.native.prevent="submit"
     >
       <el-row :gutter="20">
@@ -82,7 +83,7 @@
             <el-form-item prop="performerId">
               <el-select
                 v-model="form.performerId"
-                placeholder="Ответственный"
+                placeholder="Исполнитель"
                 :remote-method="searchUsers"
                 @blur="searchUsers()"
                 default-first-option
@@ -147,7 +148,7 @@
         </transition>
       </el-row>
     </el-form>
-    <template slot="footer">
+    <template v-if="!loading && (!form.id || !form.isRemoved)" slot="footer">
       <div class="extra">
         <el-tooltip
           content="Описание"
@@ -201,7 +202,7 @@
           </el-button>
         </el-tooltip>
         <el-tooltip
-          content="Ответственный"
+          content="Исполнитель"
           effect="dark"
           placement="top"
           transition="fade"
@@ -271,8 +272,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Ref } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
+import { Component, Prop, Ref, Mixins } from 'vue-property-decorator'
 import { ElUpload, HttpRequestOptions } from 'element-ui/types/upload'
 import { ElForm } from 'element-ui/types/form'
 import { Input, Message } from 'element-ui'
@@ -286,7 +286,7 @@ import Task, { Priority, Status } from '@/types/task.type'
 import Attachment from '@/types/attachment.type'
 
 @Component({ components: { Checklist, BaseDialog } })
-export default class TaskDialog extends mixins(DialogMixin) {
+export default class TaskDialog extends Mixins(DialogMixin) {
   @Prop() readonly id: number | undefined
   @Ref() readonly title?: Input
 

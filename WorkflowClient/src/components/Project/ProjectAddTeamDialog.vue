@@ -53,8 +53,7 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
+import { Component, Mixins } from 'vue-property-decorator'
 
 import projectsModule from '@/store/modules/projects.module'
 import DialogMixin from '@/mixins/dialog.mixin'
@@ -67,7 +66,7 @@ import { Input } from 'element-ui'
     BaseDialog,
   },
 })
-export default class ProjectAddTeamDialog extends mixins(DialogMixin) {
+export default class ProjectAddTeamDialog extends Mixins(DialogMixin) {
   private form = {
     teamId: '',
   }
@@ -75,8 +74,8 @@ export default class ProjectAddTeamDialog extends mixins(DialogMixin) {
   private get teamsToAdd(): { id: number | undefined; value: string | undefined }[] {
     const allTeams = this.teams
     const existingTeams = this.existingTeams
-    return allTeams.filter(team => {
-      return !existingTeams.find(existingTeam => existingTeam.id === team.id)
+    return allTeams.filter((team) => {
+      return !existingTeams.find((existingTeam) => existingTeam.id === team.id)
     })
   }
   private get existingTeams(): { id: number | undefined; value: string | undefined }[] {

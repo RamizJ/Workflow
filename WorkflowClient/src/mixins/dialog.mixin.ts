@@ -69,7 +69,6 @@ export default class DialogMixin extends Vue {
   }
 
   public exit(): void {
-    ;(this.$refs.form as ElForm).resetFields()
     this.visible = false
     this.$emit('close')
   }

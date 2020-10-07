@@ -29,11 +29,6 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item v-if="form.userId">
-            <el-checkbox v-model="form.canEditTasks">Изменение задач</el-checkbox>
-            <el-checkbox v-model="form.canCloseTasks">Завершение задач</el-checkbox>
-            <el-checkbox v-model="form.canEditUsers">Изменение пользователей</el-checkbox>
-          </el-form-item>
         </el-col>
       </el-row>
     </el-form>
@@ -58,22 +53,17 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
+import { Component, Mixins } from 'vue-property-decorator'
 import { Input } from 'element-ui'
-
 import teamsModule from '@/store/modules/teams.module'
 import DialogMixin from '@/mixins/dialog.mixin'
 import BaseDialog from '@/components/BaseDialog.vue'
 import Query from '@/types/query.type'
 
 @Component({ components: { BaseDialog } })
-export default class TeamAddUserDialog extends mixins(DialogMixin) {
+export default class TeamAddUserDialog extends Mixins(DialogMixin) {
   private form = {
     userId: '',
-    canEditUsers: false,
-    canEditTasks: true,
-    canCloseTasks: true,
   }
 
   private get usersToAdd(): { value: string | undefined; id: string | undefined }[] {
@@ -113,9 +103,6 @@ export default class TeamAddUserDialog extends mixins(DialogMixin) {
       await teamsModule.addUser({
         teamId: parseInt(this.$route.params.teamId),
         userId: userId,
-        canEditUsers: this.form.canEditUsers,
-        canEditTasks: this.form.canEditTasks,
-        canCloseTasks: this.form.canCloseTasks,
       })
       this.$emit('submit')
       this.loading = false

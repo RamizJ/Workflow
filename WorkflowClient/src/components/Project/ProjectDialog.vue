@@ -8,6 +8,7 @@
       ref="form"
       v-loading="loading"
       @submit.native.prevent="submit"
+      :disabled="form.id && form.isRemoved"
     >
       <el-row :gutter="20">
         <el-col :span="24">
@@ -54,7 +55,7 @@
         </transition>
       </el-row>
     </el-form>
-    <template slot="footer">
+    <template v-if="!loading && (!form.id || !form.isRemoved)" slot="footer">
       <div class="extra">
         <el-tooltip
           content="Описание"
@@ -110,8 +111,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Ref } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
+import { Component, Prop, Ref, Mixins } from 'vue-property-decorator'
 import { ElForm } from 'element-ui/types/form'
 import { Message } from 'element-ui'
 
@@ -121,7 +121,7 @@ import BaseDialog from '@/components/BaseDialog.vue'
 import Project from '@/types/project.type'
 
 @Component({ components: { BaseDialog } })
-export default class ProjectDialog extends mixins(DialogMixin) {
+export default class ProjectDialog extends Mixins(DialogMixin) {
   @Prop() readonly id: number | undefined
   @Ref() readonly title?: HTMLInputElement
 
@@ -132,6 +132,7 @@ export default class ProjectDialog extends mixins(DialogMixin) {
     ownerFio: '',
     creationDate: new Date(),
     teamIds: [],
+    isRemoved: false,
   }
   private rules = {
     name: [{ required: true, message: '!', trigger: 'blur' }],
@@ -193,6 +194,12 @@ export default class ProjectDialog extends mixins(DialogMixin) {
     if (this.id) await projectsModule.updateOne(entity)
     else await projectsModule.createOne(entity)
     this.loading = false
+  }
+
+  public exit(): void {
+    this.visible = false
+    projectsModule.closeProjectDialog()
+    this.$emit('close')
   }
 }
 </script>

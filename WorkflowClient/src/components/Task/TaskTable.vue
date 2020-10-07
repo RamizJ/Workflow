@@ -6,6 +6,8 @@
       v-loading="loading"
       :data="data"
       :row-class-name="setIndex"
+      tabindex="0"
+      @keydown.space.native.prevent="onSpaceClick"
       @select="onRowSelect"
       @row-click="onRowSingleClick"
       @row-dblclick="onRowDoubleClick"
@@ -15,13 +17,22 @@
       show-overflow-tooltip
     >
       <el-table-column type="selection" width="42"></el-table-column>
-      <el-table-column prop="title" label="Задача"></el-table-column>
-      <el-table-column
-        prop="performerFio"
-        label="Ответственный"
-        width="150"
-        :formatter="formatFio"
-      ></el-table-column>
+      <el-table-column prop="title" label="Задача">
+        <template slot-scope="scope">
+          <span class="cell-text">{{ scope.row.title }}</span>
+          <span class="cell-icon" v-if="scope.row.description">
+            <unicon name="file-alt" />
+          </span>
+          <span class="cell-icon" v-if="scope.row.isChildsExist">
+            <unicon name="list-ul" />
+          </span>
+          <span class="cell-icon" v-if="scope.row.isAttachmentsExist">
+            <unicon name="paperclip" />
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="performerFio" label="Исполнитель" width="150" :formatter="formatFio">
+      </el-table-column>
       <el-table-column
         v-if="!$route.params.projectId"
         prop="projectName"
@@ -60,7 +71,9 @@
     <vue-context ref="contextMenu">
       <template slot-scope="child">
         <li>
-          <a v-if="isRowEditable" @click.prevent="editEntity(child.data.row)">Изменить</a>
+          <a @click.prevent="editEntity(child.data.row)">
+            {{ isRowEditable ? 'Изменить' : 'Информация' }}
+          </a>
         </li>
         <el-divider v-if="isRowEditable"></el-divider>
         <li><a v-if="isRowEditable" @click.prevent="createEntity">Новая задача</a></li>
@@ -88,9 +101,18 @@
           </ul>
         </li>
         <li>
-          <a v-if="isRowEditable" @click.prevent="deleteEntity(child.data.row, isMultipleSelected)"
-            >Переместить в корзину</a
+          <el-popconfirm
+            v-if="isRowEditable && isConfirmDelete"
+            :title="
+              isMultipleSelected ? 'Удалить выбранные элементы?' : 'Удалить выбранный элемент?'
+            "
+            @onConfirm="deleteEntity"
           >
+            <a slot="reference">Переместить в корзину</a>
+          </el-popconfirm>
+          <a v-if="isRowEditable && !isConfirmDelete" @click.prevent="deleteEntity">
+            Переместить в корзину
+          </a>
         </li>
         <li>
           <a
@@ -111,17 +133,17 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
+import { Component, Mixins } from 'vue-property-decorator'
 import { StateChanger } from 'vue-infinite-loading'
 
 import tasksModule from '@/store/modules/tasks.module'
 import TableMixin from '@/mixins/table.mixin.ts'
 import TaskDialog from '@/components/Task/TaskDialog.vue'
 import Task, { Status } from '@/types/task.type'
+import Entity from '@/types/entity.type'
 
 @Component({ components: { TaskDialog } })
-export default class TaskTable extends mixins(TableMixin) {
+export default class TaskTable extends Mixins(TableMixin) {
   public data: Task[] = []
   private loading = false
 
@@ -146,23 +168,25 @@ export default class TaskTable extends mixins(TableMixin) {
     this.dialogVisible = true
   }
 
-  private async deleteEntity(entity: Task, multiple = false): Promise<void> {
-    if (multiple) await tasksModule.deleteMany(this.table.selection.map((item: Task) => item.id))
+  private async deleteEntity(): Promise<void> {
+    const entity = this.selectedRow as Task
+    if (this.isMultipleSelected) await tasksModule.deleteMany(this.selectionIds as number[])
     else await tasksModule.deleteOne(entity.id as number)
     this.reloadData()
   }
 
   private async restoreEntity(entity: Task, multiple = false): Promise<void> {
-    if (multiple) await tasksModule.restoreMany(this.table.selection.map((item: Task) => item.id))
+    if (multiple) await tasksModule.restoreMany(this.selectionIds as number[])
     else await tasksModule.restoreOne(entity.id as number)
     this.reloadData()
   }
 
   private async editEntityStatus(entity: Task, status: string): Promise<void> {
     if (this.isMultipleSelected) {
-      const items = this.table.selection.map((item: Task) => {
-        item.state = status as Status
-        return item
+      const items = this.table.selection.map((entity: Entity) => {
+        const modifiedEntity = entity as Task
+        modifiedEntity.state = status as Status
+        return modifiedEntity
       })
       await tasksModule.updateMany(items)
     } else {
@@ -171,6 +195,16 @@ export default class TaskTable extends mixins(TableMixin) {
       await tasksModule.updateOne(item)
     }
     this.reloadData()
+  }
+
+  private onSpaceClick(): void {
+    if (
+      !this.dialogVisible &&
+      (this.$route.path === '/tasks' || this.$route.query.tab === 'tasks')
+    ) {
+      this.dialogData = undefined
+      this.dialogVisible = true
+    }
   }
 }
 </script>

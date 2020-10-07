@@ -25,9 +25,7 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
-
+import { Component, Mixins } from 'vue-property-decorator'
 import PageMixin from '@/mixins/page.mixin'
 import UserToolbar from '@/components/User/UserToolbar.vue'
 import UserTable from '@/components/User/UserTable.vue'
@@ -39,7 +37,7 @@ import { SortType } from '@/types/query.type'
     UserTable,
   },
 })
-export default class UsersPage extends mixins(PageMixin) {
+export default class UsersPage extends Mixins(PageMixin) {
   protected mounted(): void {
     if (!this.$route.query.sort) this.onSortChange('lastName')
     if (!this.$route.query.order) this.onOrderChange(SortType.Ascending)

@@ -37,19 +37,15 @@
           >
         </li>
         <li>
-          <a
-            v-if="isRowEditable && !$route.params.projectId"
-            @click.prevent="editEntity(child.data.row)"
-            >Изменить</a
-          >
+          <a v-if="!$route.params.projectId" @click.prevent="editEntity(child.data.row)">
+            {{ isRowEditable ? 'Изменить' : 'Информация' }}
+          </a>
         </li>
-        <!--<li>
-          <a
-            v-if="isRowEditable && $route.params.projectId"
-            @click.prevent="editProjectTeamRights(child.data.row)"
+        <li>
+          <a v-if="isRowEditable && $route.params.projectId" @click.prevent="editProjectTeamRights"
             >Изменить права</a
           >
-        </li>-->
+        </li>
         <el-divider v-if="isRowEditable && !$route.params.projectId"></el-divider>
         <li>
           <a v-if="isRowEditable && !$route.params.projectId" @click.prevent="createEntity"
@@ -68,11 +64,21 @@
           >
         </li>
         <li>
-          <a
-            v-if="isRowEditable && !$route.params.projectId"
-            @click.prevent="deleteEntity(child.data.row, isMultipleSelected)"
-            >Переместить в корзину</a
+          <el-popconfirm
+            v-if="isRowEditable && !$route.params.projectId && isConfirmDelete"
+            :title="
+              isMultipleSelected ? 'Удалить выбранные элементы?' : 'Удалить выбранный элемент?'
+            "
+            @onConfirm="deleteEntity"
           >
+            <a slot="reference">Переместить в корзину</a>
+          </el-popconfirm>
+          <a
+            v-if="isRowEditable && !$route.params.projectId && !isConfirmDelete"
+            @click.prevent="deleteEntity"
+          >
+            Переместить в корзину
+          </a>
         </li>
         <li>
           <a
@@ -103,8 +109,7 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
+import { Component, Mixins } from 'vue-property-decorator'
 import { StateChanger } from 'vue-infinite-loading'
 
 import teamsModule from '@/store/modules/teams.module'
@@ -116,7 +121,7 @@ import TableMixin from '@/mixins/table.mixin'
 import Team from '@/types/team.type'
 
 @Component({ components: { ProjectEditTeamRightsDialog, ProjectAddTeamDialog, TeamDialog } })
-export default class TeamTable extends mixins(TableMixin) {
+export default class TeamTable extends Mixins(TableMixin) {
   public data: Team[] = []
   private loading = false
   private dialogAddTeamVisible = false
@@ -150,14 +155,15 @@ export default class TeamTable extends mixins(TableMixin) {
     this.dialogVisible = true
   }
 
-  private async deleteEntity(entity: Team, multiple = false): Promise<void> {
-    if (multiple) await teamsModule.deleteMany(this.table.selection.map((item: Team) => item.id))
+  private async deleteEntity(): Promise<void> {
+    const entity = this.selectedRow as Team
+    if (this.isMultipleSelected) await teamsModule.deleteMany(this.selectionIds as number[])
     else await teamsModule.deleteOne(entity.id as number)
     this.reloadData()
   }
 
   private async restoreEntity(entity: Team, multiple = false): Promise<void> {
-    if (multiple) await teamsModule.restoreMany(this.table.selection.map((item: Team) => item.id))
+    if (multiple) await teamsModule.restoreMany(this.selectionIds as number[])
     else await teamsModule.restoreOne(entity.id as number)
     this.reloadData()
   }
@@ -169,7 +175,7 @@ export default class TeamTable extends mixins(TableMixin) {
   private async removeEntityFromProject(row: Team): Promise<void> {
     const projectId = parseInt(this.$route.params.projectId)
     const teamId = row.id || -1
-    const teamIds = this.table.selection.map((item: Team) => item.id)
+    const teamIds = this.selectionIds as number[]
     if (this.isMultipleSelected) await projectsModule.removeTeams({ projectId, teamIds })
     else await projectsModule.removeTeam({ projectId, teamId })
     this.reloadData()

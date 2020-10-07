@@ -3,10 +3,11 @@
     <h1 slot="title">Пользователь</h1>
     <el-form
       slot="body"
-      :model="form"
-      :rules="rules"
       ref="form"
       v-loading="loading"
+      :model="form"
+      :rules="rules"
+      :disabled="form.id && form.isRemoved"
       @submit.native.prevent="submit"
     >
       <el-row :gutter="20">
@@ -81,7 +82,7 @@
         </transition>
       </el-row>
     </el-form>
-    <template slot="footer">
+    <template v-if="!loading && (!form.id || !form.isRemoved)" slot="footer">
       <div class="extra">
         <el-tooltip
           v-if="
@@ -144,20 +145,18 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Ref } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
+import { Component, Prop, Ref, Mixins } from 'vue-property-decorator'
+import { Input, Message } from 'element-ui'
+import { ElForm } from 'element-ui/types/form'
 
 import usersModule from '@/store/modules/users.module'
 import DialogMixin from '@/mixins/dialog.mixin'
 import BaseDialog from '@/components/BaseDialog.vue'
 import User, { Role } from '@/types/user.type'
-import { Input, Message } from 'element-ui'
-import { ElForm } from 'element-ui/types/form'
-import Project from '@/types/project.type'
-import projectsModule from '@/store/modules/projects.module'
+import { ValidationRule } from '@/types/validation-rule.type'
 
 @Component({ components: { BaseDialog } })
-export default class UserDialog extends mixins(DialogMixin) {
+export default class UserDialog extends Mixins(DialogMixin) {
   @Prop() readonly id: string | undefined
   @Ref() readonly title?: Input
 
@@ -172,6 +171,7 @@ export default class UserDialog extends mixins(DialogMixin) {
     position: '',
     teamIds: this.$route.params.teamId ? [parseInt(this.$route.params.teamId)] : [],
     roles: [],
+    isRemoved: false,
   }
   private rules = {
     name: [{ required: true, message: '!', trigger: 'blur' }],
@@ -238,7 +238,12 @@ export default class UserDialog extends mixins(DialogMixin) {
     this.loading = false
   }
 
-  private async validateLogin(rule: any, value: string, callback: any): Promise<void> {
+  private async validateLogin(
+    rule: ValidationRule,
+    value: string,
+    callback: CallableFunction
+  ): Promise<void> {
+    console.log(rule)
     const loginPattern = /^[a-zA-Z0-9_-]+$/
     const isLoginChanged = usersModule.user?.userName !== value
     const isLoginValid = loginPattern.test(value)
@@ -252,13 +257,17 @@ export default class UserDialog extends mixins(DialogMixin) {
     }
   }
 
-  private async validateEmail(rule: any, value: string, callback: any): Promise<void> {
+  private async validateEmail(
+    rule: ValidationRule,
+    value: string,
+    callback: CallableFunction
+  ): Promise<void> {
     const emailAlreadyExist = await usersModule.isEmailExist(value)
     if (emailAlreadyExist && usersModule.user?.email !== value) callback(new Error('занято'))
     else callback()
   }
 
-  private validatePassword(rule: any, value: string, callback: any): void {
+  private validatePassword(rule: ValidationRule, value: string, callback: CallableFunction): void {
     const length = value?.trim().length
     const symbolsLeft = 6 - length
     if (!value && this.id) callback()
@@ -270,6 +279,12 @@ export default class UserDialog extends mixins(DialogMixin) {
       )
     else if (!/[a-z]/.test(value)) callback(new Error('нужна буква'))
     else callback()
+  }
+
+  public exit(): void {
+    this.visible = false
+    usersModule.closeUserDialog()
+    this.$emit('close')
   }
 }
 </script>

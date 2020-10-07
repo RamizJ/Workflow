@@ -37,9 +37,9 @@
       <template slot-scope="child">
         <li>
           <a
-            v-if="isRowEditable && !$route.params.teamId && !$route.params.projectId"
+            v-if="!$route.params.teamId && !$route.params.projectId"
             @click.prevent="editEntity(child.data.row)"
-            >Изменить</a
+            >{{ isRowEditable ? 'Изменить' : 'Информация' }}</a
           >
         </li>
         <el-divider
@@ -76,11 +76,25 @@
           >
         </li>
         <li>
-          <a
-            v-if="isRowEditable && !$route.params.teamId && !$route.params.projectId"
-            @click.prevent="deleteEntity(child.data.row, isMultipleSelected)"
-            >Переместить в корзину</a
+          <el-popconfirm
+            v-if="
+              isRowEditable && !$route.params.teamId && !$route.params.projectId && isConfirmDelete
+            "
+            :title="
+              isMultipleSelected ? 'Удалить выбранные элементы?' : 'Удалить выбранный элемент?'
+            "
+            @onConfirm="deleteEntity"
           >
+            <a slot="reference">Переместить в корзину</a>
+          </el-popconfirm>
+          <a
+            v-if="
+              isRowEditable && !$route.params.teamId && !$route.params.projectId && !isConfirmDelete
+            "
+            @click.prevent="deleteEntity"
+          >
+            Переместить в корзину
+          </a>
         </li>
         <li>
           <a
@@ -111,8 +125,7 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
+import { Component, Mixins } from 'vue-property-decorator'
 import { StateChanger } from 'vue-infinite-loading'
 
 import usersModule from '@/store/modules/users.module'
@@ -126,7 +139,7 @@ import User from '@/types/user.type'
 import Project from '@/types/project.type'
 
 @Component({ components: { ProjectEditUserRightsDialog, UserDialog, TeamAddUserDialog } })
-export default class UserTable extends mixins(TableMixin) {
+export default class UserTable extends Mixins(TableMixin) {
   public data: User[] = []
   private loading = false
   private dialogAddUserVisible = false
@@ -161,14 +174,15 @@ export default class UserTable extends mixins(TableMixin) {
     this.dialogVisible = true
   }
 
-  private async deleteEntity(entity: User, multiple = false): Promise<void> {
-    if (multiple) await usersModule.deleteMany(this.table.selection.map((item: User) => item.id))
+  private async deleteEntity(): Promise<void> {
+    const entity = this.selectedRow as User
+    if (this.isMultipleSelected) await usersModule.deleteMany(this.selectionIds as string[])
     else await usersModule.deleteOne(entity.id as string)
     this.reloadData()
   }
 
   private async restoreEntity(entity: User, multiple = false): Promise<void> {
-    if (multiple) await usersModule.restoreMany(this.table.selection.map((item: User) => item.id))
+    if (multiple) await usersModule.restoreMany(this.selectionIds as string[])
     else await usersModule.restoreOne(entity.id as string)
     this.reloadData()
   }
@@ -177,7 +191,7 @@ export default class UserTable extends mixins(TableMixin) {
     const teamId = parseInt(this.$route.params.teamId)
     const userId = entity.id?.toString() || ''
     if (this.isMultipleSelected) {
-      const userIds = this.table.selection.map((item: User) => item.id)
+      const userIds = this.selectionIds as string[]
       await teamsModule.removeUsers({ teamId, userIds })
     } else await teamsModule.removeUser({ teamId, userId })
     this.reloadData()

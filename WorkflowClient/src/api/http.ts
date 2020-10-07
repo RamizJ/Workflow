@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios'
 import { Message } from 'element-ui'
 
 const getToken = () => localStorage.getItem('workflow_access_token')
@@ -15,7 +15,7 @@ const authInterceptor = (config: AxiosRequestConfig) => {
   return config
 }
 
-const pushErrorMessage = (error: any) => {
+const pushErrorMessage = (error: AxiosError) => {
   const url = error.config.url
   const data = error.response?.data
   const statusCode = error.response?.status

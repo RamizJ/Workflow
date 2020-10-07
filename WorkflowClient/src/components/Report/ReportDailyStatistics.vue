@@ -24,8 +24,6 @@
 import { Component, Vue } from 'vue-property-decorator'
 
 import ChartLine from '@/components/Chart/ChartLine.vue'
-import projectsModule from '@/store/modules/projects.module'
-import { Status } from '@/types/task.type'
 import moment from 'moment'
 
 @Component({ components: { ChartLine } })

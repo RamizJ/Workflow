@@ -36,6 +36,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import { MessageBox } from 'element-ui'
+import { DialogType } from '@/types/dialog.type'
 
 @Component
 export default class BaseDialog extends Vue {
@@ -55,7 +56,7 @@ export default class BaseDialog extends Vue {
   }
 
   private close(): void {
-    ;(this.$refs.dialog as any).hide()
+    ;(this.$refs.dialog as DialogType).hide()
   }
 }
 </script>

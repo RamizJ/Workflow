@@ -1,9 +1,9 @@
 <template>
   <div class="layout-container">
-    <app-sidebar></app-sidebar>
+    <sidebar />
     <main>
       <transition name="page-fade" mode="out-in">
-        <router-view :key="$route.path"></router-view>
+        <router-view :key="$route.path" />
       </transition>
     </main>
   </div>
@@ -11,9 +11,9 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import AppSidebar from '@/components/AppSidebar.vue'
+import Sidebar from '@/components/Sidebar/Sidebar.vue'
 
-@Component({ components: { AppSidebar } })
+@Component({ components: { Sidebar } })
 export default class LayoutLogin extends Vue {}
 </script>
 

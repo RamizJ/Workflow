@@ -3,10 +3,11 @@
     <h1 slot="title">Команда</h1>
     <el-form
       slot="body"
-      :model="form"
-      :rules="rules"
       ref="form"
       v-loading="loading"
+      :model="form"
+      :rules="rules"
+      :disabled="form.id && form.isRemoved"
       @submit.native.prevent="submit"
     >
       <el-row :gutter="20">
@@ -56,7 +57,7 @@
           <el-col
             v-if="
               !$route.params.projectId &&
-                (projectsVisible || (form.projectIds && form.projectIds.length))
+              (projectsVisible || (form.projectIds && form.projectIds.length))
             "
             :span="24"
           >
@@ -83,7 +84,7 @@
         </transition>
       </el-row>
     </el-form>
-    <template slot="footer">
+    <template v-if="!loading && (!form.id || !form.isRemoved)" slot="footer">
       <div class="extra">
         <el-tooltip
           content="Описание"
@@ -158,8 +159,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Ref } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
+import { Component, Prop, Ref, Mixins } from 'vue-property-decorator'
 import { ElForm } from 'element-ui/types/form'
 import { Message } from 'element-ui'
 
@@ -170,7 +170,7 @@ import Team from '@/types/team.type'
 import Query from '@/types/query.type'
 
 @Component({ components: { BaseDialog } })
-export default class TeamDialog extends mixins(DialogMixin) {
+export default class TeamDialog extends Mixins(DialogMixin) {
   @Prop() readonly id: number | undefined
   @Ref() readonly title?: HTMLInputElement
 
@@ -179,6 +179,7 @@ export default class TeamDialog extends mixins(DialogMixin) {
     description: '',
     userIds: [],
     projectIds: [],
+    isRemoved: false,
   }
   private rules = {
     name: [{ required: true, message: '!', trigger: 'blur' }],
@@ -277,6 +278,12 @@ export default class TeamDialog extends mixins(DialogMixin) {
     if (this.id) await teamsModule.updateOne(entity)
     else await teamsModule.createOne(entity)
     this.loading = false
+  }
+
+  public exit(): void {
+    this.visible = false
+    teamsModule.closeTeamDialog()
+    this.$emit('close')
   }
 }
 </script>

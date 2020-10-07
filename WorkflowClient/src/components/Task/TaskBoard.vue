@@ -45,7 +45,9 @@
     <vue-context ref="contextMenu">
       <template slot-scope="child">
         <li>
-          <a v-if="isRowEditable" @click.prevent="editEntity(child.data.row)">Изменить</a>
+          <a @click.prevent="editEntity(child.data.row)">
+            {{ isRowEditable ? 'Изменить' : 'Информация' }}
+          </a>
         </li>
         <el-divider v-if="isRowEditable"></el-divider>
         <li><a @click.prevent="createEntity">Новая задача</a></li>
@@ -71,9 +73,18 @@
           </ul>
         </li>
         <li>
-          <a v-if="isRowEditable" @click.prevent="deleteEntity(child.data.row, isMultipleSelected)"
-            >Переместить в корзину</a
+          <el-popconfirm
+            v-if="isRowEditable && isConfirmDelete"
+            :title="
+              isMultipleSelected ? 'Удалить выбранные элементы?' : 'Удалить выбранный элемент?'
+            "
+            @onConfirm="deleteEntity"
           >
+            <a slot="reference">Переместить в корзину</a>
+          </el-popconfirm>
+          <a v-if="isRowEditable && !isConfirmDelete" @click.prevent="deleteEntity">
+            Переместить в корзину
+          </a>
         </li>
         <li>
           <a
@@ -94,18 +105,17 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
+import { Component, Mixins } from 'vue-property-decorator'
 import Draggable from 'vuedraggable'
-
 import TableMixin from '@/mixins/table.mixin'
 import TaskDialog from '@/components/Task/TaskDialog.vue'
 import { StateChanger } from 'vue-infinite-loading'
 import tasksModule from '@/store/modules/tasks.module'
 import Task, { Status } from '@/types/task.type'
+import Entity from '@/types/entity.type'
 
 @Component({ components: { Draggable, TaskDialog } })
-export default class TaskBoard extends mixins(TableMixin) {
+export default class TaskBoard extends Mixins(TableMixin) {
   public data: Task[] = []
   public lists: { label: string; name: string; items: Task[] }[] = []
   private loading = false
@@ -190,23 +200,25 @@ export default class TaskBoard extends mixins(TableMixin) {
     this.dialogVisible = true
   }
 
-  private async deleteEntity(entity: Task, multiple = false): Promise<void> {
-    if (multiple) await tasksModule.deleteMany(this.table.selection.map((item: Task) => item.id))
+  private async deleteEntity(): Promise<void> {
+    const entity = this.selectedRow as Task
+    if (this.isMultipleSelected) await tasksModule.deleteMany(this.selectionIds as number[])
     else await tasksModule.deleteOne(entity.id as number)
     this.reloadData()
   }
 
   private async restoreEntity(entity: Task, multiple = false): Promise<void> {
-    if (multiple) await tasksModule.restoreMany(this.table.selection.map((item: Task) => item.id))
+    if (multiple) await tasksModule.restoreMany(this.selectionIds as number[])
     else await tasksModule.restoreOne(entity.id as number)
     this.reloadData()
   }
 
   private async editEntityStatus(entity: Task, status: string, reload = true): Promise<void> {
     if (this.isMultipleSelected) {
-      const items = this.table.selection.map((item: Task) => {
-        item.state = status as Status
-        return item
+      const items = this.table.selection.map((entity: Entity) => {
+        const modifiedEntity = entity as Task
+        modifiedEntity.state = status as Status
+        return modifiedEntity
       })
       await tasksModule.updateMany(items)
     } else {

@@ -3,9 +3,12 @@ import { ElTableColumn } from 'element-ui/types/table-column'
 import InfiniteLoading from 'vue-infinite-loading'
 import moment from 'moment'
 
+import settingsModule from '@/store/modules/settings.module'
 import Entity from '@/types/entity.type'
 import { Priority, Status } from '@/types/task.type'
 import Query, { FilterField, SortType } from '@/types/query.type'
+import TableType from '@/types/table.type'
+import { ContextMenu } from '@/types/context-menu.type'
 
 @Component
 export default class TableMixin extends Vue {
@@ -44,24 +47,30 @@ export default class TableMixin extends Vue {
     const filter = this.filters?.find((filter) => filter.fieldName === 'isRemoved')
     return !filter || filter.values[0] == false
   }
-
+  public get isConfirmDelete(): boolean {
+    return settingsModule.confirmDelete
+  }
   public get isMultipleSelected(): boolean {
     return this.table?.selection?.length > 1
   }
-
-  public get table(): any {
-    if (Array.isArray(this.$refs.table)) return this.$refs.table[0]
-    else return this.$refs.table
+  public get selectionIds(): (string | number)[] {
+    const ids: (string | number)[] = []
+    for (const entity of this.table.selection) {
+      if (entity.id) ids.push(entity.id)
+    }
+    return ids
   }
-
+  public get table(): TableType {
+    if (Array.isArray(this.$refs.table)) return this.$refs.table[0] as TableType
+    else return this.$refs.table as TableType
+  }
   public get infiniteLoader(): InfiniteLoading {
     if (Array.isArray(this.$refs.loader)) return this.$refs.loader[0] as InfiniteLoading
     else return this.$refs.loader as InfiniteLoading
   }
-
-  public get contextMenu(): any {
-    if (Array.isArray(this.$refs.contextMenu)) return this.$refs.contextMenu[0]
-    else return this.$refs.contextMenu
+  public get contextMenu(): ContextMenu {
+    if (this.$refs.contextMenu instanceof Array) return this.$refs.contextMenu[0] as ContextMenu
+    else return this.$refs.contextMenu as ContextMenu
   }
 
   @Watch('filters', { deep: true })
@@ -160,10 +169,8 @@ export default class TableMixin extends Vue {
   }
 
   public onRowDoubleClick(row: Entity): void {
-    if (!row.isRemoved) {
-      this.dialogData = row.id
-      this.dialogVisible = true
-    }
+    this.dialogData = row.id
+    this.dialogVisible = true
   }
 
   public onRowRightClick(row: Entity, column: ElTableColumn, event: Event): void {

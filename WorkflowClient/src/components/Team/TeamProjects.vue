@@ -19,16 +19,14 @@
 </template>
 
 <script lang="ts">
-import { Component } from 'vue-property-decorator'
-import { mixins } from 'vue-class-component'
-
+import { Component, Mixins } from 'vue-property-decorator'
 import PageMixin from '@/mixins/page.mixin'
 import ProjectToolbar from '@/components/Project/ProjectToolbar.vue'
 import ProjectTable from '@/components/Project/ProjectTable.vue'
 import { SortType } from '@/types/query.type'
 
 @Component({ components: { ProjectToolbar, ProjectTable } })
-export default class TeamProjects extends mixins(PageMixin) {
+export default class TeamProjects extends Mixins(PageMixin) {
   protected mounted(): void {
     if (!this.$route.query.sort) this.onSortChange('creationDate')
     if (!this.$route.query.order) this.onOrderChange(SortType.Descending)
