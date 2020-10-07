@@ -31,6 +31,9 @@ namespace Workflow.VM.ViewModelConverters
             if (viewModel == null || model == null)
                 return;
 
+            model.ProjectId = viewModel.ProjectId;
+            model.TeamId = viewModel.TeamId;
+
             model.CanCloseGoals = viewModel.CanCloseGoals;
             model.CanEditGoals = viewModel.CanEditGoals;
             model.CanEditUsers = viewModel.CanEditUsers;
@@ -40,6 +43,9 @@ namespace Workflow.VM.ViewModelConverters
         {
             if (viewModel == null || model == null)
                 return;
+
+            viewModel.ProjectId = model.ProjectId;
+            viewModel.TeamId = model.TeamId;
 
             viewModel.CanCloseGoals = model.CanCloseGoals;
             viewModel.CanEditGoals = model.CanEditGoals;

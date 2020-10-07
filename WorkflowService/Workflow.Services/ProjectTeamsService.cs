@@ -94,7 +94,9 @@ namespace Workflow.Services
             }
             catch (DbUpdateException)
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+                throw new HttpResponseException(HttpStatusCode.NotFound, 
+                    $"Cannot remove team with id: {projectTeam.TeamId} " +
+                    $"from project with id: {projectTeam.ProjectId}");
             }
             catch (Exception)
             {

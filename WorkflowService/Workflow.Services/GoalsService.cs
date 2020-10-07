@@ -601,10 +601,7 @@ namespace Workflow.Services
                 goal.IsRemoved = isRemoved;
                 _dataContext.Entry(goal).State = EntityState.Modified;
 
-                if (isRemoved)
-                {
-                    SetIsRemoved(goal.ChildGoals, true);
-                }
+                SetIsRemoved(goal.ChildGoals, isRemoved);
             }
         }
 
