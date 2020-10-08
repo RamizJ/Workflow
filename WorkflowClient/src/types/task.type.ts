@@ -35,10 +35,11 @@ export default class Task extends Entity {
   state: Status = Status.New
   priority?: Priority
   isChildsExist?: boolean
+  hasChildren?: boolean
   isAttachmentsExist?: boolean
   isRemoved?: boolean
 
-  childTasks?: Task[]
+  children?: Task[]
   attachments?: Attachment[]
   parent?: Task[]
   completed?: boolean
