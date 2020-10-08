@@ -503,3 +503,53 @@ a {
     margin: 10px 5px;
   }
 }
+
+.el-checkbox {
+  &:hover &__inner {
+    box-shadow: 0 0 0 3px rgba(234,76,137,0.1);
+  }
+  &__label {
+    font-size: 14px;
+    font-weight: 400;
+    color: #3d3d4e;
+  }
+  &__inner {
+    width: 17px;
+    height: 17px;
+    border-radius: 4px;
+    border: 1px solid #dbdbde;
+    outline: none;
+    transition: 0.2s;
+    &:hover {
+      border-color: #dbdbde;
+    }
+    &::after {
+      height: 7px;
+      top: 2px;
+      left: 6px;
+    }
+  }
+}
+.el-checkbox__input.is-indeterminate .el-checkbox__inner::before {
+  top: 7px;
+}
+.el-checkbox__input.is-focus .el-checkbox__inner {
+  border-color: #dbdbde;
+}
+.el-checkbox__input.is-checked .el-checkbox__inner {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.el-checkbox__input.is-checked + .el-checkbox__label {
+  color: #3d3d4e;
+}
+.el-checkbox + .el-checkbox {
+  margin-top: 5px;
+}
+
+.el-tabs, .el-tabs__content, .el-tab-pane {
+  padding-left: 3px;
+  padding-right: 3px;
+  margin-left: -3px;
+  margin-right: -3px;
+}

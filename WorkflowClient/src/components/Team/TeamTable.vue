@@ -105,6 +105,10 @@
       :team="selectedRow"
       @close="dialogEditTeamRightsVisible = false"
     />
+    <project-team-users-dialog
+      v-if="dialogTeamUsersVisible"
+      @close="dialogTeamUsersVisible = false"
+    />
   </div>
 </template>
 
@@ -119,13 +123,22 @@ import ProjectAddTeamDialog from '@/components/Project/ProjectAddTeamDialog.vue'
 import ProjectEditTeamRightsDialog from '@/components/Project/ProjectEditTeamRightsDialog.vue'
 import TableMixin from '@/mixins/table.mixin'
 import Team from '@/types/team.type'
+import ProjectTeamUsersDialog from '@/components/Project/ProjectTeamUsersDialog.vue'
 
-@Component({ components: { ProjectEditTeamRightsDialog, ProjectAddTeamDialog, TeamDialog } })
+@Component({
+  components: {
+    ProjectTeamUsersDialog,
+    ProjectEditTeamRightsDialog,
+    ProjectAddTeamDialog,
+    TeamDialog,
+  },
+})
 export default class TeamTable extends Mixins(TableMixin) {
   public data: Team[] = []
   private loading = false
   private dialogAddTeamVisible = false
   private dialogEditTeamRightsVisible = false
+  private dialogTeamUsersVisible = false
 
   private async loadData($state: StateChanger): Promise<void> {
     const isFirstLoad = !this.data.length
@@ -170,6 +183,7 @@ export default class TeamTable extends Mixins(TableMixin) {
 
   public async onRowDoubleClick(row: Team): Promise<void> {
     if (!row.isRemoved && !this.$route.params.projectId) await this.$router.push(`/teams/${row.id}`)
+    if (this.$route.params.projectId) this.dialogTeamUsersVisible = true
   }
 
   private async removeEntityFromProject(row: Team): Promise<void> {

@@ -1,6 +1,6 @@
 {
   "name": "workflow",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "private": true,
   "scripts": {
     "dev": "vue-cli-service serve --mode development",
@@ -19,6 +19,7 @@
     "qs": "^6.9.4",
     "v-click-outside": "^3.1.2",
     "vue": "^2.6.12",
+    "vue-class-component": "^7.2.6",
     "vue-chartjs": "^3.5.1",
     "vue-class-component": "^7.2.6",
     "vue-context": "^6.0.0",

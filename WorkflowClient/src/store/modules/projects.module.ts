@@ -16,6 +16,7 @@ import { Status } from '@/types/task.type'
 import User from '@/types/user.type'
 import { TeamRole } from '@/types/team-role.type'
 import { UserRole } from '@/types/user-role.type'
+import { ProjectStatistics } from '@/types/project-statistics.type'
 
 @Module({
   dynamic: true,
@@ -254,6 +255,20 @@ class ProjectsModule extends VuexModule {
   @Action
   async updateUserRoles(userRoles: UserRole[]) {
     await projectsAPI.updateUserRoles(userRoles)
+  }
+
+  @Action
+  async getStatistics({
+    projectId,
+    dateBegin,
+    dateEnd,
+  }: {
+    projectId: number
+    dateBegin: string
+    dateEnd: string
+  }): Promise<ProjectStatistics> {
+    const response = await projectsAPI.getStatistics(projectId, dateBegin, dateEnd)
+    return response.data
   }
 
   @Action

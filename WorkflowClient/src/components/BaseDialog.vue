@@ -4,6 +4,7 @@
     custom-class="base-dialog"
     :visible.sync="showDialog"
     :before-close="confirmClose"
+    :append-to-body="appendToBody"
     @closed="$emit('close')"
   >
     <div class="header" slot="title">
@@ -34,12 +35,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Prop, Vue } from 'vue-property-decorator'
 import { MessageBox } from 'element-ui'
 import { DialogType } from '@/types/dialog.type'
 
 @Component
 export default class BaseDialog extends Vue {
+  @Prop() readonly appendToBody?: boolean
   private showDialog = true
 
   private confirmClose(done: CallableFunction): void {

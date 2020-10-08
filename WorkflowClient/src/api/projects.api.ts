@@ -7,6 +7,7 @@ import { TeamRole } from '@/types/team-role.type'
 import { UserRole } from '@/types/user-role.type'
 import Team from '@/types/team.type'
 import User from '@/types/user.type'
+import { ProjectStatistics } from '@/types/project-statistics.type'
 
 export default {
   findAll(query: Query): Promise<AxiosResponse<Project[]>> {
@@ -69,6 +70,12 @@ export default {
   updateUserRoles(userRoles: UserRole[]): Promise<AxiosResponse<void>> {
     return http.post(`/api/Projects/UpdateUserRoles`, userRoles)
   },
+  getStatistics: (
+    projectId: number,
+    dateBegin: string,
+    dateEnd: string
+  ): Promise<AxiosResponse<ProjectStatistics>> =>
+    http.post(`/api/Projects/GetProjectStatistic/${projectId}`, { dateBegin, dateEnd }),
   getTasksCount: (projectId: number): Promise<AxiosResponse<number>> =>
     http.get(`/api/Goals/GetTotalProjectGoalsCount/${projectId}`),
   getTasksCountByStatus(projectId: number, status: string): Promise<AxiosResponse<number>> {

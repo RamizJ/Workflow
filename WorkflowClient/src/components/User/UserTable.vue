@@ -119,13 +119,14 @@
     <project-edit-user-rights-dialog
       v-if="dialogEditUserRightsVisible"
       :user="selectedRow"
+      :team-id="parseInt($route.params.teamId) || this.teamId"
       @close="dialogEditUserRightsVisible = false"
     />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Mixins } from 'vue-property-decorator'
+import { Component, Mixins, Prop } from 'vue-property-decorator'
 import { StateChanger } from 'vue-infinite-loading'
 
 import usersModule from '@/store/modules/users.module'
@@ -137,9 +138,12 @@ import TeamAddUserDialog from '@/components/Team/TeamAddUserDialog.vue'
 import ProjectEditUserRightsDialog from '@/components/Project/ProjectEditUserRightsDialog.vue'
 import User from '@/types/user.type'
 import Project from '@/types/project.type'
+import Entity from '@/types/entity.type'
 
 @Component({ components: { ProjectEditUserRightsDialog, UserDialog, TeamAddUserDialog } })
 export default class UserTable extends Mixins(TableMixin) {
+  @Prop() readonly teamId: number | undefined
+
   public data: User[] = []
   private loading = false
   private dialogAddUserVisible = false
@@ -150,9 +154,10 @@ export default class UserTable extends Mixins(TableMixin) {
     this.loading = isFirstLoad
     let data: User[] = []
     try {
-      if (this.$route.params.teamId) data = await teamsModule.findUsers(this.query)
-      else if (this.$route.params.projectId) data = await projectsModule.findUsers(this.query)
-      else data = await usersModule.findAll(this.query)
+      if (this.$route.params.teamId || this.teamId) {
+        this.query.teamId = parseInt(this.$route.params.teamId) || this.teamId
+        data = await teamsModule.findUsers(this.query)
+      } else data = await usersModule.findAll(this.query)
     } catch (e) {
       this.$message.error('Не удаётся загрузить пользователей')
       this.loading = false
@@ -203,6 +208,14 @@ export default class UserTable extends Mixins(TableMixin) {
 
   private editProjectUserRights(): void {
     this.dialogEditUserRightsVisible = true
+  }
+
+  public onRowDoubleClick(row: Entity): void {
+    if (this.$route.params.projectId) this.editProjectUserRights()
+    else {
+      this.dialogData = row.id
+      this.dialogVisible = true
+    }
   }
 }
 </script>
