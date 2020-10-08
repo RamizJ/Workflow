@@ -474,7 +474,7 @@ namespace Workflow.Services
                 Priority = goal.Priority,
                 ExpectedCompletedDate = goal.ExpectedCompletedDate,
                 EstimatedPerformingTime = goal.EstimatedPerformingTime,
-                IsChildsExist = _dataContext.Goals.Any(childGoal => childGoal.ParentGoalId == goal.Id),
+                HasChildren = _dataContext.Goals.Any(childGoal => childGoal.ParentGoalId == goal.Id),
                 IsAttachmentsExist = _dataContext.Goals
                     .Where(g => g.Id == goal.Id)
                     .SelectMany(g => g.Attachments)
@@ -585,7 +585,7 @@ namespace Workflow.Services
             var vmGoals = models.Select(m =>
             {
                 var vm = _vmConverter.ToViewModel(m);
-                vm.IsChildsExist = m.ChildGoals?.Any() ?? false;
+                vm.HasChildren = m.ChildGoals?.Any() ?? false;
                 return vm;
             });
             return vmGoals;

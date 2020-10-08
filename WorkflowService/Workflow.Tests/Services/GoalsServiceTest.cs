@@ -64,7 +64,7 @@ namespace Workflow.Tests.Services
             Assert.AreEqual(expectedGoal.Id, vmGoal.Id);
             Assert.AreEqual(expectedGoal.Title, vmGoal.Title);
             Assert.AreEqual(expectedGoal.Description, vmGoal.Description);
-            Assert.AreEqual(isChildsExists, vmGoal.IsChildsExist);
+            Assert.AreEqual(isChildsExists, vmGoal.HasChildren);
         }
 
 
@@ -301,7 +301,7 @@ namespace Workflow.Tests.Services
             Assert.IsNotNull(result);
             Assert.AreEqual(_testData.Goals.Count + 1, result.Id);
             Assert.AreEqual(vmGoal.Title, result.Title);
-            Assert.IsTrue(result.IsChildsExist);
+            Assert.IsTrue(result.HasChildren);
             Assert.AreEqual(2, childsCount);
         }
 
@@ -487,7 +487,7 @@ namespace Workflow.Tests.Services
         }
 
         [Test]
-        public async Task IsChildsExists()
+        public async Task HasChildrenTest()
         {
             //Arrange
             var serviceProvider = ContextHelper.Initialize(_dbConnection, false);
@@ -510,7 +510,7 @@ namespace Workflow.Tests.Services
             var firstPageGoal = page.First();
 
             //Assert
-            Assert.IsTrue(firstPageGoal.IsChildsExist);
+            Assert.IsTrue(firstPageGoal.HasChildren);
         }
 
         [Test]

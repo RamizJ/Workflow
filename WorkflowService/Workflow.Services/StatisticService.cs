@@ -38,7 +38,7 @@ namespace Workflow.Services
                 .ToArray();
 
             var byDayStatistic = queryData
-                .GroupBy(x => x.StateChangedDate ?? x.CreationDate)
+                .GroupBy(x => (x.StateChangedDate ?? x.CreationDate).Date)
                 .OrderBy(x => x.Key)
                 .Select(x => new
                 {

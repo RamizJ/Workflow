@@ -32,7 +32,7 @@ namespace Workflow.VM.ViewModels
 
         public bool IsRemoved { get; set; }
 
-        public bool IsChildsExist { get; set; }
+        public bool HasChildren { get; set; }
         public bool IsAttachmentsExist { get; set; }
     }
 

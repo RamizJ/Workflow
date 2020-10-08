@@ -70,7 +70,7 @@ namespace Workflow.VM.ViewModelConverters
             viewModel.ExpectedCompletedDate = model.ExpectedCompletedDate;
             viewModel.EstimatedPerformingTime = model.EstimatedPerformingTime;
             viewModel.IsRemoved = model.IsRemoved;
-            viewModel.IsChildsExist = model.ChildGoals.Any();
+            viewModel.HasChildren = model.ChildGoals.Any();
             viewModel.IsAttachmentsExist = model.Attachments.Any();
         }
     }
