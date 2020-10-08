@@ -39,9 +39,11 @@ export default class TableMixin extends Vue {
   public data: Entity[] = []
   public lists: { label: string; name: string; items: Entity[] }[] = []
   public selectedRow: Entity | undefined
+  public selectedRows: Entity[] = []
   public dialogData: number | string | undefined
   public dialogVisible = false
   public isShiftPressed = false
+  public isCtrlPressed = false
 
   public get isRowEditable(): boolean {
     const filter = this.filters?.find((filter) => filter.fieldName === 'isRemoved')
@@ -145,7 +147,10 @@ export default class TableMixin extends Vue {
 
   public onRowSingleClick(row: Entity): void {
     this.table.clearSelection()
-    if (this.isShiftPressed) {
+
+    if (this.isCtrlPressed) {
+      this.selectedRows = [...this.selectedRows, row]
+    } else if (this.isShiftPressed) {
       const previousIndex = row.index
       const currentIndex = this.selectedRow?.index
       if (previousIndex === undefined || currentIndex === undefined) return
@@ -160,11 +165,16 @@ export default class TableMixin extends Vue {
       }
       this.data.some((entity: Entity) => {
         if (entity.index === undefined) return
-        if (entity.index >= from && entity.index <= to) this.table.toggleRowSelection(entity)
+        if (entity.index >= from && entity.index <= to) {
+          this.selectedRows = [...this.selectedRows, entity]
+        }
       })
     } else {
-      this.table.toggleRowSelection(row)
+      this.selectedRows = [row]
     }
+    this.selectedRows.map((entity) => {
+      this.table.toggleRowSelection(entity, true)
+    })
     this.selectedRow = row
   }
 
@@ -212,10 +222,12 @@ export default class TableMixin extends Vue {
 
   private onKeyDown(): void {
     const key = (window.event as KeyboardEvent).keyCode
+    if (key === 17 || key === 91) this.isCtrlPressed = true
     if (key === 16) this.isShiftPressed = true
   }
 
   private onKeyUp(): void {
     this.isShiftPressed = false
+    this.isCtrlPressed = false
   }
 }

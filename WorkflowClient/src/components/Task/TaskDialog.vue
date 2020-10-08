@@ -68,10 +68,10 @@
           </el-col>
         </transition>
         <transition name="fade">
-          <el-col v-if="checklistVisible || (form.childTasks && form.childTasks.length)" :span="24">
+          <el-col v-if="checklistVisible || (form.children && form.children.length)" :span="24">
             <el-form-item>
               <checklist
-                :items="form.childTasks"
+                :items="form.children"
                 :task="form"
                 @change="onChecklistChange"
               ></checklist>
@@ -176,7 +176,7 @@
           :open-delay="500"
         >
           <el-button
-            v-if="!(form.childTasks && form.childTasks.length)"
+            v-if="!(form.children && form.children.length)"
             type="text"
             @click="checklistVisible = !checklistVisible"
             circle="circle"
@@ -358,7 +358,7 @@ export default class TaskDialog extends Mixins(DialogMixin) {
   private async sendForm(): Promise<void> {
     this.loading = true
     const entity: Task = { ...this.form } as Task
-    entity.isChildsExist = !!entity.childTasks?.length
+    entity.isChildsExist = !!entity.children?.length
     entity.isAttachmentsExist = !!entity.attachments?.length
     if (!this.performerVisible && !this.form.performerId) delete entity.performerId
     if (this.id) await tasksModule.updateOne(entity)
@@ -374,7 +374,7 @@ export default class TaskDialog extends Mixins(DialogMixin) {
   }
 
   private onChecklistChange(checklist: Task[]): void {
-    this.form.childTasks = checklist
+    this.form.children = checklist
     this.$forceUpdate()
   }
 

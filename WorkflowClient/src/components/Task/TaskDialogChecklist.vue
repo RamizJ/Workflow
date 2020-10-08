@@ -50,8 +50,8 @@ export default class Checklist extends Vue {
   private checklist: Task[] = []
 
   protected mounted(): void {
-    if (!this.task.childTasks) return
-    this.checklist = this.task.childTasks.map((task) => {
+    if (!this.task.children) return
+    this.checklist = this.task.children.map((task) => {
       task.completed = task.state === 'Succeed'
       return task
     })
@@ -59,8 +59,8 @@ export default class Checklist extends Vue {
 
   @Watch('task', { deep: true })
   onItemsChange(task: Task): void {
-    if (!task.childTasks) return
-    this.checklist = task.childTasks.map((task) => {
+    if (!task.children) return
+    this.checklist = task.children.map((task) => {
       task.completed = task.state === 'Succeed'
       return task
     })

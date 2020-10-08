@@ -1,8 +1,8 @@
 <template>
-  <el-card class="card" shadow="never" v-loading="loading">
-    <div class="card__title">Статистика по дням (в разработке)</div>
+  <el-card class="card daily-statistics" shadow="never">
+    <div class="card__title">Статистика по дням</div>
     <el-date-picker
-      v-model="dateRange"
+      v-model="range"
       type="daterange"
       format="dd.MM.yyyy"
       range-separator="-"
@@ -21,37 +21,24 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 
 import ChartLine from '@/components/Chart/ChartLine.vue'
 import moment from 'moment'
+import { ChartData, ChartDataSets, ChartOptions } from 'chart.js'
 
 @Component({ components: { ChartLine } })
 export default class ReportDailyStatistics extends Vue {
-  private chartPieData = {}
-  private chartPieOptions = {
-    maintainAspectRatio: false,
-    scales: {
-      yAxes: [
-        {
-          stacked: true,
-          gridLines: {
-            display: true,
-            color: 'rgba(255,99,132,0.2)',
-          },
-        },
-      ],
-      xAxes: [
-        {
-          gridLines: {
-            display: false,
-          },
-        },
-      ],
-    },
-  }
+  @Prop() readonly data!: { date: string; goalCountForState: number[] }[]
+  @Prop() readonly dateRange!: string[]
+
   private loading = true
-  private dateRange: Date[] = [moment().subtract(1, 'week').toDate(), moment().toDate()]
+  private statistics: { date: string; goalCountForState: number[] }[] = []
+  private range: Date[] = [moment().subtract(1, 'week').toDate(), moment().toDate()]
+  private chartPieData: ChartData = {}
+  private chartPieOptions: ChartOptions = {
+    maintainAspectRatio: false,
+  }
   private colors: string[] = [
     '#FFCC33',
     '#CC9966',
@@ -66,68 +53,74 @@ export default class ReportDailyStatistics extends Vue {
     '#999999',
   ]
 
-  protected async mounted(): Promise<void> {
-    this.loading = true
-    const projectId = parseInt(this.$route.params.projectId)
-    if (!projectId) return
-    await this.renderChart()
-    this.loading = false
+  protected mounted(): void {
+    this.range = [moment(this.dateRange[0]).toDate(), moment(this.dateRange[1]).toDate()]
+    this.statistics = [...this.data]
+    this.renderChart()
   }
 
-  private async onDateRangeChange(): Promise<void> {
-    await this.renderChart()
+  @Watch('data')
+  private onDataChanged(data: { date: string; goalCountForState: number[] }[]): void {
+    this.statistics = [...data]
+    this.renderChart()
   }
 
-  private async renderChart(): Promise<void> {
+  @Watch('dateRange')
+  private onRangeChanged(range: string[]): void {
+    this.range = [moment(range[0]).toDate(), moment(range[1]).toDate()]
+    this.renderChart()
+  }
+
+  private onDateRangeChange(dateRange: Date[]): void {
+    const dateBegin: string = moment.utc(dateRange[0]).format()
+    const dateEnd: string = moment.utc(dateRange[1]).format()
+    this.$emit('rangeChange', [dateBegin, dateEnd])
+  }
+
+  private renderChart(): void {
     this.loading = true
-    const dateFrom: Date = this.dateRange[0]
-    const dateTo: Date = this.dateRange[1]
-    const days = moment(dateTo).diff(moment(dateFrom), 'days')
     const labels: string[] = []
-    let tempDate: Date = dateFrom
-    for (let day = 0; day <= days; day++) {
-      labels.push(moment(tempDate).format('DD.MM.YYYY'))
-      tempDate = moment(tempDate).add(1, 'day').toDate()
+    for (let stat of this.statistics) {
+      labels.push(moment(stat.date).format('DD.MM.YYYY'))
     }
 
-    // TODO: Fetch statistics from API
-
-    const completedTasksDataset = {
-      label: `Завершённые задачи`,
-      borderColor: this.colors[this.getRandomInt(this.colors.length)],
-      data: [
-        this.getRandomInt(10),
-        this.getRandomInt(10),
-        this.getRandomInt(10),
-        this.getRandomInt(10),
-        this.getRandomInt(10),
-        this.getRandomInt(10),
-        this.getRandomInt(10),
-      ],
-      fill: false,
-    }
-
-    const createdTasksDataset = {
-      label: `Созданные задачи`,
-      borderColor: this.colors[this.getRandomInt(this.colors.length)],
-      data: [
-        this.getRandomInt(10),
-        this.getRandomInt(10),
-        this.getRandomInt(10),
-        this.getRandomInt(10),
-        this.getRandomInt(10),
-        this.getRandomInt(10),
-        this.getRandomInt(10),
-      ],
-      fill: false,
+    let datasets: ChartDataSets[] = []
+    for (let i = 0; i <= 5; i++) {
+      const data = this.statistics.map((item) => item.goalCountForState[i])
+      const isNotEmpty = data.some((item) => item !== 0)
+      if (isNotEmpty)
+        datasets.push({
+          label: this.getLabelByStatusIndex(i),
+          borderColor: this.colors[this.getRandomInt(this.colors.length)],
+          data,
+          fill: false,
+        })
     }
 
     this.chartPieData = {
-      datasets: [completedTasksDataset, createdTasksDataset],
+      datasets,
       labels,
     }
-    setTimeout(() => (this.loading = false), 1)
-    // this.loading = false
+    this.loading = false
+  }
+
+  private getLabelByStatusIndex(index: number): string {
+    switch (index) {
+      case 0:
+        return 'Новые'
+      case 1:
+        return 'Выполняется'
+      case 2:
+        return 'Отложено'
+      case 3:
+        return 'Проверяется'
+      case 4:
+        return 'Выполнено'
+      case 5:
+        return 'Отклонено'
+      default:
+        return ''
+    }
   }
 
   private getRandomInt(max: number): number {
@@ -146,6 +139,21 @@ export default class ReportDailyStatistics extends Vue {
     letter-spacing: 0.3px;
     text-transform: uppercase;
     margin-bottom: 15px;
+  }
+}
+</style>
+
+<style lang="scss">
+.daily-statistics {
+  .el-input__inner:hover,
+  .el-range-input:hover {
+    background-color: transparent;
+  }
+  .el-range-editor {
+    width: 290px;
+  }
+  .el-range-editor.is-active {
+    border-color: transparent;
   }
 }
 </style>

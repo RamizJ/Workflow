@@ -1,5 +1,5 @@
 <template>
-  <base-dialog v-if="visible" @close="exit" ref="dialog">
+  <base-dialog v-if="visible" @close="exit" ref="dialog" append-to-body>
     <h1 slot="title">Права пользователя</h1>
     <el-form
       slot="body"
@@ -77,10 +77,15 @@ export default class ProjectEditUserRightsDialog extends Mixins(DialogMixin) {
     this.visible = true
     this.loading = true
     if (this.user.id) {
-      this.form = await projectsModule.getUserRole({
-        projectId: this.projectId,
-        userId: this.userId,
-      })
+      try {
+        this.form = await projectsModule.getUserRole({
+          projectId: this.projectId,
+          userId: this.userId,
+        })
+      } catch (e) {
+        this.$message.error(`Не удалось загрузить права пользователя`)
+        this.loading = false
+      }
     }
     this.loading = false
   }

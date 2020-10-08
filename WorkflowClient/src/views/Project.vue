@@ -81,7 +81,7 @@ import TaskDialog from '@/components/Task/TaskDialog.vue'
 import TaskTable from '@/components/Task/TaskTable.vue'
 import Project from '@/types/project.type'
 import TeamTable from '@/components/Team/TeamTable.vue'
-import ProjectUsers from '@/components/Project/ProjectUsers.vue'
+import ProjectUsers from '@/components/Project/ProjectTeamUsers.vue'
 
 @Component({
   components: {

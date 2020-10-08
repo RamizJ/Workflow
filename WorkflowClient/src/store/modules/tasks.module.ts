@@ -58,7 +58,7 @@ class TasksModule extends VuexModule {
       result.parent = (await this.context.dispatch('findParent', id)) as Task[]
     if (result.isChildsExist) {
       const child = (await this.context.dispatch('findChild', { id })) as Task[]
-      result.childTasks = child.sort(this.compare).reverse()
+      result.children = child.sort(this.compare).reverse()
     }
     if (result.isAttachmentsExist)
       result.attachments = (await this.context.dispatch('findAttachments', id)) as Attachment[]
@@ -76,9 +76,9 @@ class TasksModule extends VuexModule {
     const createdTask = response.data as Task
     createdTask.attachments = entity.attachments
 
-    if (entity.childTasks?.length) {
+    if (entity.children?.length) {
       const child: Task[] = []
-      for (const childTask of entity.childTasks.reverse()) {
+      for (const childTask of entity.children.reverse()) {
         childTask.parentGoalId = createdTask.id
         if (childTask.isRemoved) continue
         const createdChild = await this.context.dispatch('createOne', childTask)
@@ -107,9 +107,9 @@ class TasksModule extends VuexModule {
   async updateOne(entity: Task): Promise<void> {
     await tasksAPI.updateOne(entity)
 
-    if (entity.childTasks?.length) {
+    if (entity.children?.length) {
       const child: Task[] = []
-      for (const childTask of entity.childTasks.reverse()) {
+      for (const childTask of entity.children.reverse()) {
         childTask.parentGoalId = entity.id
         let updatedTask = childTask
         if (childTask.isRemoved && childTask.id)
@@ -169,11 +169,11 @@ class TasksModule extends VuexModule {
   }
 
   @Action
-  async findChild({ id, query }: { id: number; query: Query | undefined }): Promise<Task[]> {
+  async findChild({ id, query }: { id: number; query?: Query }): Promise<Task[]> {
     if (!query)
       query = {
         pageNumber: 0,
-        pageSize: 20,
+        pageSize: 10,
       }
     const response = await tasksAPI.findChild(id, query)
     return response.data as Task[]
