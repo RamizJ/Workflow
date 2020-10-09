@@ -299,7 +299,7 @@ export default class TaskDialog extends Mixins(DialogMixin) {
     creationDate: moment.utc(moment()).format(),
     state: Status.New,
     priority: Priority.Normal,
-    isChildsExist: false,
+    hasChildren: false,
     isRemoved: false,
     attachments: [],
   }
@@ -358,7 +358,7 @@ export default class TaskDialog extends Mixins(DialogMixin) {
   private async sendForm(): Promise<void> {
     this.loading = true
     const entity: Task = { ...this.form } as Task
-    entity.isChildsExist = !!entity.children?.length
+    entity.hasChildren = !!entity.children?.length
     entity.isAttachmentsExist = !!entity.attachments?.length
     if (!this.performerVisible && !this.form.performerId) delete entity.performerId
     if (this.id) await tasksModule.updateOne(entity)

@@ -34,8 +34,8 @@ export default class Task extends Entity {
   estimatedPerformingTime?: string
   state: Status = Status.New
   priority?: Priority
-  isChildsExist?: boolean
   hasChildren?: boolean
+  isSection?: boolean
   isAttachmentsExist?: boolean
   isRemoved?: boolean
 

@@ -56,7 +56,7 @@ class TasksModule extends VuexModule {
     const result = response.data as Task
     if (result.parentGoalId)
       result.parent = (await this.context.dispatch('findParent', id)) as Task[]
-    if (result.isChildsExist) {
+    if (result.hasChildren) {
       const child = (await this.context.dispatch('findChild', { id })) as Task[]
       result.children = child.sort(this.compare).reverse()
     }

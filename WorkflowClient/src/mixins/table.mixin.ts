@@ -22,6 +22,7 @@ export default class TableMixin extends Vue {
   sort: string | undefined
 
   public query: Query = new Query()
+  public queryChildren = new Query()
   private statuses = [
     { value: Status.New, label: 'Новое' },
     { value: Status.Perform, label: 'Выполняется' },
@@ -122,6 +123,13 @@ export default class TableMixin extends Vue {
           sortType: (this.$route.query.order as SortType) || SortType.Descending,
         },
       ],
+    }
+    this.queryChildren = {
+      projectId: parseInt(this.$route.params.projectId) || undefined,
+      teamId: parseInt(this.$route.params.teamId) || undefined,
+      filter: '',
+      pageNumber: 0,
+      pageSize: 20,
     }
     if (this.filters) this.onFiltersChange(this.filters)
     if (this.search) this.onSearchChange(this.search)
