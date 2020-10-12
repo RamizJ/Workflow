@@ -20,8 +20,8 @@
         :visible-arrow="false"
         :open-delay="800"
       >
-        <el-button type="text">
-          <feather type="x" @click="close"></feather>
+        <el-button type="text" @click="close">
+          <unicon name="times" />
         </el-button>
       </el-tooltip>
     </div>
@@ -86,6 +86,7 @@ export default class BaseDialog extends Vue {
 }
 .close {
   right: 35px;
+  
 }
 .body {
   padding-top: 0;
@@ -154,11 +155,26 @@ export default class BaseDialog extends Vue {
     margin-top: 5px;
     margin-bottom: 0;
   }
+  .close,
+  .extra,
+  .send {
+    svg {
+      fill: var(--color-primary);
+    }
+  }
   .extra {
     display: flex;
     justify-content: flex-end;
-    i {
-      height: 18px;
+    svg {
+      height: 20px;
+      width: 20px;
+    }
+  }
+  .close,
+  .send {
+    svg {
+      height: 24px;
+      width: 24px;
     }
   }
 }

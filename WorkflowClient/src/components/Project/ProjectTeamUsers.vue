@@ -7,7 +7,7 @@
     <!--      @sort="onSortChange"-->
     <!--      @view="onViewChange"-->
     <!--    ></user-toolbar>-->
-    <user-table v-if="view === 'list'" ref="items" :team-id="teamId"></user-table>
+    <user-table ref="items" :team-id="teamId"></user-table>
   </div>
 </template>
 

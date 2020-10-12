@@ -164,7 +164,7 @@
             @click="descriptionVisible = !descriptionVisible"
             circle="circle"
           >
-            <feather type="align-left"></feather>
+            <unicon name="file-alt" />
           </el-button>
         </el-tooltip>
         <el-tooltip
@@ -181,7 +181,7 @@
             @click="checklistVisible = !checklistVisible"
             circle="circle"
           >
-            <feather type="check-square"></feather>
+            <unicon name="list-ul" />
           </el-button>
         </el-tooltip>
         <el-tooltip
@@ -215,7 +215,7 @@
             @click="performerVisible = !performerVisible"
             circle="circle"
           >
-            <feather type="user"></feather>
+            <unicon name="user" />
           </el-button>
         </el-tooltip>
         <el-tooltip
@@ -232,7 +232,7 @@
             @click="expectedCompletedDateVisible = !expectedCompletedDateVisible"
             circle="circle"
           >
-            <feather type="calendar"></feather>
+            <unicon name="calendar-alt" />
           </el-button>
         </el-tooltip>
         <el-tooltip
@@ -249,7 +249,7 @@
             @click="attachmentsVisible = !attachmentsVisible"
             circle="circle"
           >
-            <feather type="paperclip"></feather>
+            <unicon name="paperclip" />
           </el-button>
         </el-tooltip>
       </div>
@@ -263,7 +263,7 @@
           :open-delay="500"
         >
           <el-button type="text" @click="submit" circle="circle">
-            <feather type="arrow-right"></feather>
+            <unicon name="save" />
           </el-button>
         </el-tooltip>
       </div>
@@ -358,7 +358,7 @@ export default class TaskDialog extends Mixins(DialogMixin) {
   private async sendForm(): Promise<void> {
     this.loading = true
     const entity: Task = { ...this.form } as Task
-    entity.hasChildren = !!entity.children?.length
+    entity.hasChildren = !!entity.children?.some((task: Task) => !task.isRemoved)
     entity.isAttachmentsExist = !!entity.attachments?.length
     if (!this.performerVisible && !this.form.performerId) delete entity.performerId
     if (this.id) await tasksModule.updateOne(entity)

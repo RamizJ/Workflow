@@ -100,7 +100,7 @@
             @click="descriptionVisible = !descriptionVisible"
             circle="circle"
           >
-            <feather type="align-left"></feather>
+            <unicon name="file-alt" />
           </el-button>
         </el-tooltip>
         <el-tooltip
@@ -118,7 +118,7 @@
             @click="teamMembersVisible = !teamMembersVisible"
             circle="circle"
           >
-            <feather type="users"></feather>
+            <unicon name="users-alt" />
           </el-button>
         </el-tooltip>
         <el-tooltip
@@ -136,7 +136,7 @@
             @click="projectsVisible = !projectsVisible"
             circle="circle"
           >
-            <feather type="layers"></feather>
+            <unicon name="layer-group" />
           </el-button>
         </el-tooltip>
       </div>
@@ -150,7 +150,7 @@
           :open-delay="500"
         >
           <el-button type="text" @click="submit" circle="circle">
-            <feather type="arrow-right"></feather>
+            <unicon name="save" />
           </el-button>
         </el-tooltip>
       </div>

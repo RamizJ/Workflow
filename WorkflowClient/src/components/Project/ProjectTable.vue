@@ -99,6 +99,7 @@ import TableMixin from '@/mixins/table.mixin'
 import ProjectDialog from '@/components/Project/ProjectDialog.vue'
 import Project from '@/types/project.type'
 import teamsModule from '@/store/modules/teams.module'
+import { ElTableColumn } from 'element-ui/types/table-column'
 
 @Component({ components: { ProjectDialog } })
 export default class ProjectTable extends Mixins(TableMixin) {
@@ -143,6 +144,18 @@ export default class ProjectTable extends Mixins(TableMixin) {
 
   public async onRowDoubleClick(row: Project): Promise<void> {
     if (!row.isRemoved && !this.$route.params.teamId) await this.$router.push(`/projects/${row.id}`)
+  }
+
+  public onRowRightClick(row: Project, column: ElTableColumn, event: Event): void {
+    if (!this.isMultipleSelected) {
+      this.table?.clearSelection()
+      this.table?.toggleRowSelection(row)
+    }
+    this.table?.setCurrentRow(row)
+    this.selectedRow = row
+    event.preventDefault()
+    if (this.$route.params.teamId) return
+    this.contextMenu.open(event, { row, column })
   }
 }
 </script>

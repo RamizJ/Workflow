@@ -211,6 +211,7 @@ export default class UserTable extends Mixins(TableMixin) {
   }
 
   public onRowDoubleClick(row: Entity): void {
+    if (this.$route.params.teamId) return
     if (this.$route.params.projectId) this.editProjectUserRights()
     else {
       this.dialogData = row.id

@@ -107,6 +107,7 @@
     />
     <project-team-users-dialog
       v-if="dialogTeamUsersVisible"
+      :team-id="selectedRow.id"
       @close="dialogTeamUsersVisible = false"
     />
   </div>

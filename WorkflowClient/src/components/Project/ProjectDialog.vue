@@ -71,7 +71,7 @@
             @click="descriptionVisible = !descriptionVisible"
             circle="circle"
           >
-            <feather type="align-left"></feather>
+            <unicon name="file-alt" />
           </el-button>
         </el-tooltip>
         <el-tooltip
@@ -88,7 +88,7 @@
             @click="teamsVisible = !teamsVisible"
             circle="circle"
           >
-            <feather type="users"></feather>
+            <unicon name="user-arrows" />
           </el-button>
         </el-tooltip>
       </div>
@@ -102,7 +102,7 @@
           :open-delay="500"
         >
           <el-button type="text" @click="submit" circle="circle">
-            <feather type="arrow-right"></feather>
+            <unicon name="save" />
           </el-button>
         </el-tooltip>
       </div>

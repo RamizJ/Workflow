@@ -84,7 +84,7 @@
     </el-form>
     <template v-if="!loading && (!form.id || !form.isRemoved)" slot="footer">
       <div class="extra">
-        <el-tooltip
+        <!-- <el-tooltip
           v-if="
             $route.params.teamId && !(form.canEditGoals || form.canCloseGoals || form.canEditUsers)
           "
@@ -98,7 +98,7 @@
           <el-button type="text" @click="rolesVisible = !rolesVisible" circle="circle">
             <feather type="shield"></feather>
           </el-button>
-        </el-tooltip>
+        </el-tooltip> -->
         <el-tooltip
           v-if="!form.position"
           content="Должность"
@@ -109,7 +109,7 @@
           :open-delay="500"
         >
           <el-button type="text" @click="positionVisible = !positionVisible" circle="circle">
-            <feather type="briefcase"></feather>
+            <unicon name="suitcase" />
           </el-button>
         </el-tooltip>
         <el-tooltip
@@ -122,7 +122,7 @@
           :open-delay="500"
         >
           <el-button type="text" @click="phoneVisible = !phoneVisible" circle="circle">
-            <feather type="phone"></feather>
+            <unicon name="phone" />
           </el-button>
         </el-tooltip>
       </div>
@@ -136,7 +136,7 @@
           :open-delay="500"
         >
           <el-button type="text" @click="submit" circle="circle">
-            <feather type="arrow-right"></feather>
+            <unicon name="save" />
           </el-button>
         </el-tooltip>
       </div>
