@@ -449,7 +449,8 @@ a {
   height: 100%;
   display: flex;
   flex-direction: column;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .el-tabs__content {
   height: 100%;
