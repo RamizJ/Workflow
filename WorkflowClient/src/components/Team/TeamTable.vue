@@ -67,19 +67,7 @@
           >
         </li>
         <li>
-          <el-popconfirm
-            v-if="isRowEditable && !$route.params.projectId && isConfirmDelete"
-            :title="
-              isMultipleSelected ? 'Удалить выбранные элементы?' : 'Удалить выбранный элемент?'
-            "
-            @onConfirm="deleteEntity"
-          >
-            <a slot="reference">Переместить в корзину</a>
-          </el-popconfirm>
-          <a
-            v-if="isRowEditable && !$route.params.projectId && !isConfirmDelete"
-            @click.prevent="deleteEntity"
-          >
+          <a v-if="isRowEditable && !$route.params.projectId" @click.prevent="deleteEntity">
             Переместить в корзину
           </a>
         </li>
@@ -173,6 +161,8 @@ export default class TeamTable extends Mixins(TableMixin) {
   }
 
   private async deleteEntity(): Promise<void> {
+    const allowDelete = await this.confirmDelete()
+    if (!allowDelete) return
     const entity = this.selectedRow as Team
     if (this.isMultipleSelected) await teamsModule.deleteMany(this.selectionIds as number[])
     else await teamsModule.deleteOne(entity.id as number)

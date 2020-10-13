@@ -106,18 +106,7 @@
           </ul>
         </li>
         <li>
-          <el-popconfirm
-            v-if="isRowEditable && isConfirmDelete"
-            :title="
-              isMultipleSelected ? 'Удалить выбранные элементы?' : 'Удалить выбранный элемент?'
-            "
-            @onConfirm="deleteEntity"
-          >
-            <a slot="reference">Переместить в корзину</a>
-          </el-popconfirm>
-          <a v-if="isRowEditable && !isConfirmDelete" @click.prevent="deleteEntity">
-            Переместить в корзину
-          </a>
+          <a v-if="isRowEditable" @click.prevent="deleteEntity"> Переместить в корзину </a>
         </li>
         <li>
           <a
@@ -287,6 +276,8 @@ export default class TaskTable extends Mixins(TableMixin) {
   }
 
   private async deleteEntity(): Promise<void> {
+    const allowDelete = await this.confirmDelete()
+    if (!allowDelete) return
     const entity = this.selectedRow as Task
     if (this.isMultipleSelected) await tasksModule.deleteMany(this.selectionIds as number[])
     else await tasksModule.deleteOne(entity.id as number)

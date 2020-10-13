@@ -9,6 +9,7 @@ import { Priority, Status } from '@/types/task.type'
 import Query, { FilterField, SortType } from '@/types/query.type'
 import TableType from '@/types/table.type'
 import { ContextMenu } from '@/types/context-menu.type'
+import { MessageBox } from 'element-ui'
 
 @Component
 export default class TableMixin extends Vue {
@@ -237,5 +238,19 @@ export default class TableMixin extends Vue {
   private onKeyUp(): void {
     this.isShiftPressed = false
     this.isCtrlPressed = false
+  }
+
+  protected async confirmDelete(): Promise<boolean> {
+    if (!settingsModule.confirmDelete) return true
+    try {
+      await MessageBox.confirm('Вы действительно хотите удалить элемент?', 'Предупреждение', {
+        confirmButtonText: 'Удалить',
+        cancelButtonText: 'Отменить',
+        type: 'warning',
+      })
+      return true
+    } catch (e) {
+      return false
+    }
   }
 }
