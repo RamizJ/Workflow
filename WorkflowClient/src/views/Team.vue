@@ -1,31 +1,40 @@
 <template>
   <div class="page">
     <div class="header">
-      <div class="header_title">
+      <div class="header__title">
         <input
           class="title"
           v-model="teamItem.name"
           v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
           @change="onTeamUpdate"
         />
+        <div class="header__action">
+          <el-dropdown placement="bottom" :show-timeout="0">
+            <el-button type="text" size="mini">
+              <unicon name="ellipsis-h" />
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item>
+                <el-button type="text" size="mini" @click="onUserAdd">Добавить участника</el-button>
+              </el-dropdown-item>
+              <el-divider></el-divider>
+              <el-dropdown-item>
+                <el-button type="text" size="mini" @click="onTeamDelete"
+                  >Переместить в корзину</el-button
+                >
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
       </div>
-      <div class="header__action">
-        <el-dropdown placement="bottom" :show-timeout="0">
-          <el-button type="text" size="mini">
-            <unicon name="ellipsis-h" />
-          </el-button>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>
-              <el-button type="text" size="mini" @click="onUserAdd">Добавить участника</el-button>
-            </el-dropdown-item>
-            <el-divider></el-divider>
-            <el-dropdown-item>
-              <el-button type="text" size="mini" @click="onTeamDelete"
-                >Переместить в корзину</el-button
-              >
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
+      <div class="header__subtitle">
+        <input
+          class="subtitle"
+          placeholder="Описание"
+          v-model="teamItem.description"
+          v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
+          @change="onTeamUpdate"
+        />
       </div>
     </div>
     <el-tabs v-if="teamItem.id" ref="tabs" v-model="activeTab" @tab-click="setTab">

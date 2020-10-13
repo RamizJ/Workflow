@@ -18,7 +18,7 @@
         </el-col>
       </el-row>
       <el-row :gutter="20">
-        <el-col v-if="descriptionVisible || form.description" :span="24">
+        <el-col :span="24">
           <el-form-item prop="description">
             <el-input
               v-model="form.description"
@@ -29,7 +29,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row :gutter="20">
+      <!--      <el-row :gutter="20">
         <transition name="fade">
           <el-col v-if="teamMembersVisible || (form.userIds && form.userIds.length)" :span="24">
             <el-form-item>
@@ -82,11 +82,11 @@
             </el-form-item>
           </el-col>
         </transition>
-      </el-row>
+      </el-row>-->
     </el-form>
     <template v-if="!loading && (!form.id || !form.isRemoved)" slot="footer">
       <div class="extra">
-        <el-tooltip
+        <!--        <el-tooltip
           content="Описание"
           effect="dark"
           placement="top"
@@ -138,7 +138,7 @@
           >
             <unicon name="layer-group" />
           </el-button>
-        </el-tooltip>
+        </el-tooltip>-->
       </div>
       <div class="send">
         <el-tooltip
@@ -161,13 +161,16 @@
 <script lang="ts">
 import { Component, Prop, Ref, Mixins } from 'vue-property-decorator'
 import { ElForm } from 'element-ui/types/form'
-import { Message } from 'element-ui'
+import { Input, Message } from 'element-ui'
 
 import teamsModule from '@/store/modules/teams.module'
+import usersModule from '@/store/modules/users.module'
+import projectsModule from '@/store/modules/projects.module'
 import DialogMixin from '@/mixins/dialog.mixin'
 import BaseDialog from '@/components/BaseDialog.vue'
 import Team from '@/types/team.type'
 import Query from '@/types/query.type'
+import User from '@/types/user.type'
 
 @Component({ components: { BaseDialog } })
 export default class TeamDialog extends Mixins(DialogMixin) {
@@ -189,20 +192,36 @@ export default class TeamDialog extends Mixins(DialogMixin) {
   private projectsVisible = null
 
   public get projects(): { value: string | undefined; id: number | undefined }[] {
-    return teamsModule.teamProjects.map((project) => {
+    const teamProjects = teamsModule.teamProjects.map((project) => {
       return {
         value: project.name,
         id: project.id,
       }
     })
-  }
-  public get users(): { value: string | undefined; id: string | undefined }[] {
-    return teamsModule.teamUsers.map((user) => {
+    const allProjects = projectsModule.projects.map((project) => {
       return {
-        value: `${user.lastName} ${user.firstName}`,
-        id: user.id,
+        value: project.name,
+        id: project.id,
       }
     })
+    return teamProjects
+  }
+  public get users(): { value: string | undefined; id: string | undefined }[] {
+    if (this.form.id) {
+      return teamsModule.teamUsers.map((user) => {
+        return {
+          value: `${user.lastName} ${user.firstName}`,
+          id: user.id,
+        }
+      })
+    } else {
+      return usersModule.users.map((user) => {
+        return {
+          value: `${user.lastName} ${user.firstName}`,
+          id: user.id,
+        }
+      })
+    }
   }
 
   public async searchProjects(query = ''): Promise<void> {
@@ -217,12 +236,54 @@ export default class TeamDialog extends Mixins(DialogMixin) {
 
   public async searchUsers(query = ''): Promise<void> {
     if (!query && this.users.length) return
-    await teamsModule.findUsers({
+    if (this.form.id) {
+      await teamsModule.findUsers({
+        teamId: this.form.id,
+        filter: query,
+        pageNumber: 0,
+        pageSize: 20,
+      } as Query)
+    } else {
+      await usersModule.findAll({
+        filter: query,
+        pageNumber: 0,
+        pageSize: 20,
+      } as Query)
+    }
+  }
+
+  public async searchTeamUsers(
+    query = ''
+  ): Promise<{ value: string | undefined; id: string | undefined }[]> {
+    const teamUsers = await teamsModule.findUsers({
       teamId: this.form.id,
       filter: query,
       pageNumber: 0,
       pageSize: 20,
     } as Query)
+    return teamUsers.map((user) => {
+      return {
+        value: `${user.lastName} ${user.firstName}`,
+        id: user.id,
+      }
+    })
+  }
+
+  public async searchTeamProjects(
+    query = ''
+  ): Promise<{ value: string | undefined; id: number | undefined }[]> {
+    const teamProjects = await teamsModule.findProjects({
+      teamId: this.form.id,
+      filter: query,
+      pageNumber: 0,
+      pageSize: 20,
+    } as Query)
+    return teamProjects.map((project) => {
+      return {
+        value: project.name,
+        id: project.id,
+      }
+    })
   }
 
   protected async mounted(): Promise<void> {
@@ -238,21 +299,20 @@ export default class TeamDialog extends Mixins(DialogMixin) {
     if (this.id) {
       const id: number = parseInt(this.id.toString())
       this.form = await teamsModule.findOneById(id)
-
+      this.form.userIds = []
+      await this.searchTeamUsers()
       await this.searchUsers()
       await this.searchProjects()
-
-      this.form.userIds = []
-      for (const user of this.users) {
-        if (user.id) this.form.userIds.push(user.id)
-      }
+      // for (const user of this.users) {
+      //   if (user.id) this.form.userIds.push(user.id)
+      // }
       this.form.projectIds = []
       for (const project of this.projects) {
         if (project.id) this.form.projectIds.push(project.id)
       }
     }
     this.loading = false
-    ;(this.$refs.title as HTMLElement).focus()
+    ;(this.$refs.title as Input).focus()
   }
 
   private async submit(): Promise<void> {

@@ -8,27 +8,36 @@
           v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
           @change="updateEntity"
         />
+        <div class="header__action">
+          <el-dropdown v-if="!loading" placement="bottom" :show-timeout="0">
+            <el-button type="text" size="mini">
+              <unicon name="ellipsis-h" />
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item>
+                <el-button type="text" size="mini" @click="createTask">Создать задачу</el-button>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <el-button type="text" size="mini" @click="addTeam">Добавить команду</el-button>
+              </el-dropdown-item>
+              <el-divider></el-divider>
+              <el-dropdown-item>
+                <el-button type="text" size="mini" @click="deleteEntity"
+                  >Переместить в корзину</el-button
+                >
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
       </div>
-      <div class="header__action">
-        <el-dropdown v-if="!loading" placement="bottom" :show-timeout="0">
-          <el-button type="text" size="mini">
-            <unicon name="ellipsis-h" />
-          </el-button>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>
-              <el-button type="text" size="mini" @click="createTask">Создать задачу</el-button>
-            </el-dropdown-item>
-            <el-dropdown-item>
-              <el-button type="text" size="mini" @click="addTeam">Добавить команду</el-button>
-            </el-dropdown-item>
-            <el-divider></el-divider>
-            <el-dropdown-item>
-              <el-button type="text" size="mini" @click="deleteEntity"
-                >Переместить в корзину</el-button
-              >
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
+      <div class="header__subtitle">
+        <input
+          class="subtitle"
+          placeholder="Описание"
+          v-model="projectItem.description"
+          v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
+          @change="updateEntity"
+        />
       </div>
     </div>
     <el-tabs v-if="projectItem.id" ref="tabs" v-model="activeTab" @tab-click="setTab">

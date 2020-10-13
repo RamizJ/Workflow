@@ -37,8 +37,11 @@
           >
         </li>
         <li>
-          <a v-if="!$route.params.projectId" @click.prevent="editEntity(child.data.row)">
-            {{ isRowEditable ? 'Изменить' : 'Информация' }}
+          <a
+            v-if="!isRowEditable && !$route.params.projectId"
+            @click.prevent="editEntity(child.data.row)"
+          >
+            {{ 'Информация' }}
           </a>
         </li>
         <li>

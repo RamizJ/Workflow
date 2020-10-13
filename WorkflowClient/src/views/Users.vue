@@ -1,9 +1,11 @@
 <template>
   <div class="page">
     <div class="header">
-      <div class="header__title">Пользователи</div>
-      <div class="header__action">
-        <el-button type="text" size="mini" @click="onCreate">Создать</el-button>
+      <div class="header__title">
+        Пользователи
+        <div class="header__action">
+          <el-button type="text" size="mini" @click="onCreate">Создать</el-button>
+        </div>
       </div>
     </div>
     <user-toolbar

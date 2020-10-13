@@ -1,9 +1,11 @@
 <template>
   <div class="page">
     <div class="header">
-      <div class="header__title">Проекты</div>
-      <div class="header__action">
-        <el-button type="text" size="mini" @click="onCreate">Создать</el-button>
+      <div class="header__title">
+        Проекты
+        <div class="header__action">
+          <el-button type="text" size="mini" @click="onCreate">Создать</el-button>
+        </div>
       </div>
     </div>
     <project-toolbar

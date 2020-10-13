@@ -1,9 +1,11 @@
 <template>
   <div class="page">
     <div class="header">
-      <div class="header__title">Команды</div>
-      <div class="header__action">
-        <el-button type="text" size="mini" @click="onCreate">Создать</el-button>
+      <div class="header__title">
+        Команды
+        <div class="header__action">
+          <el-button type="text" size="mini" @click="onCreate">Создать</el-button>
+        </div>
       </div>
     </div>
     <team-toolbar

@@ -1,7 +1,7 @@
 <template>
   <div class="project-overview">
     <el-row :gutter="20">
-      <el-col :span="10">
+      <!--      <el-col :span="10">
         <el-card class="card" shadow="never">
           <div class="card__title">Описание</div>
           <div class="card__body">
@@ -14,7 +14,7 @@
             ></el-input>
           </div>
         </el-card>
-      </el-col>
+      </el-col>-->
       <el-col :span="6">
         <el-card class="card" shadow="never">
           <div class="card__title">Задач выполнено</div>

@@ -34,6 +34,7 @@ a {
     padding-top: 20px;
     display: flex;
     align-items: flex-start;
+    flex-direction: column;
     &__title {
       cursor: default;
       display: flex;
@@ -505,6 +506,10 @@ a {
   }
 }
 
+.el-checkbox.is-bordered.el-checkbox--medium .el-checkbox__inner {
+  width: 17px;
+  height: 17px;
+}
 .el-checkbox {
   &:hover &__inner {
     box-shadow: 0 0 0 3px rgba(234,76,137,0.1);
@@ -525,8 +530,8 @@ a {
       border-color: #dbdbde;
     }
     &::after {
-      height: 7px;
-      top: 2px;
+      height: 6px;
+      top: 3px;
       left: 6px;
     }
   }
