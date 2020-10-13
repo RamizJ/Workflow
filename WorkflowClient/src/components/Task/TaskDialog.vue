@@ -133,7 +133,9 @@
                 action="https://demo.girngm.ru/workflow_dev/api/Goals/AddAttachments/"
                 :http-request="uploadAttachment"
                 :on-preview="onAttachmentClick"
-                :on-remove="removeAttachment"
+                :on-remove="onAttachmentRemove"
+                :on-success="onAttachmentsUploaded"
+                :on-change="onAttachmentsChange"
                 :file-list="form.attachments"
                 :auto-upload="false"
                 drag
@@ -342,9 +344,12 @@ export default class TaskDialog extends Mixins(DialogMixin) {
     await form.validate(async (valid) => {
       if (valid) {
         await this.sendForm()
-        if (this.$refs.upload) (this.$refs.upload as ElUpload).submit()
-        this.$emit('submit')
-        this.exit()
+        if (this.form.isAttachmentsExist) {
+          ;(this.$refs.upload as ElUpload).submit()
+        } else {
+          this.$emit('submit')
+          this.exit()
+        }
       } else {
         Message({
           showClose: true,
@@ -358,8 +363,6 @@ export default class TaskDialog extends Mixins(DialogMixin) {
   private async sendForm(): Promise<void> {
     this.loading = true
     const entity: Task = { ...this.form } as Task
-    entity.hasChildren = !!entity.children?.some((task: Task) => !task.isRemoved)
-    entity.isAttachmentsExist = !!entity.attachments?.length
     if (!this.performerVisible && !this.form.performerId) delete entity.performerId
     if (this.id) await tasksModule.updateOne(entity)
     else this.form = await tasksModule.createOne(entity)
@@ -375,6 +378,7 @@ export default class TaskDialog extends Mixins(DialogMixin) {
 
   private onChecklistChange(checklist: Task[]): void {
     this.form.children = checklist
+    this.form.hasChildren = checklist.some((task: Task) => !task.isRemoved)
     this.$forceUpdate()
   }
 
@@ -389,16 +393,13 @@ export default class TaskDialog extends Mixins(DialogMixin) {
     const id = this.id || this.form.id
     if (!id) return
     const files = new FormData()
-
     let file: File = request.file
     if (request.file.name.length > 96) {
       const filename = this.shortenFilename(request.file.name)
       file = this.renameFile(request.file, filename)
     }
-
     files.append('files', file)
     await tasksModule.uploadAttachments({ id, files })
-    this.form.isAttachmentsExist = true
     this.loading = false
   }
 
@@ -420,8 +421,22 @@ export default class TaskDialog extends Mixins(DialogMixin) {
     await tasksModule.downloadAttachment(attachment)
   }
 
-  private async removeAttachment(attachment: Attachment): Promise<void> {
-    if (attachment.id) await tasksModule.removeAttachments([attachment.id])
+  private async onAttachmentsChange(file: File, fileList: FileList): Promise<void> {
+    this.form.isAttachmentsExist = !!fileList.length
+  }
+
+  private async onAttachmentsUploaded(
+    response: Response,
+    file: File,
+    fileList: FileList
+  ): Promise<void> {
+    this.$emit('submit')
+    this.exit()
+  }
+
+  private async onAttachmentRemove(file: Attachment, fileList: FileList): Promise<void> {
+    this.form.isAttachmentsExist = !!fileList.length
+    if (file.id) await tasksModule.removeAttachments([file.id])
   }
 }
 </script>
