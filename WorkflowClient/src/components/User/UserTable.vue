@@ -182,6 +182,8 @@ export default class UserTable extends Mixins(TableMixin) {
   }
 
   private async removeEntityFromTeam(entity: User): Promise<void> {
+    const allowDelete = await this.confirmDelete()
+    if (!allowDelete) return
     const teamId = parseInt(this.$route.params.teamId)
     const userId = entity.id?.toString() || ''
     if (this.isMultipleSelected) {
