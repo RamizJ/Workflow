@@ -60,9 +60,9 @@ export default class Checklist extends Vue {
   @Watch('task', { deep: true })
   onItemsChange(task: Task): void {
     if (!task.children) return
-    this.checklist = task.children.map((task) => {
-      task.completed = task.state === 'Succeed'
-      return task
+    this.checklist = task.children.map((child) => {
+      child.completed = child.state === 'Succeed'
+      return child
     })
   }
 
@@ -77,7 +77,6 @@ export default class Checklist extends Vue {
   }
 
   private onAdd(event?: KeyboardEvent): void {
-    console.log(event)
     if (!this.input) return
     const entity: Task = {
       title: this.input.trim(),

@@ -31,6 +31,7 @@
               remote="remote"
               clearable="clearable"
               default-first-option="default-first-option"
+              @change="onProjectChange"
             >
               <el-option
                 v-for="item in projects"
@@ -378,6 +379,12 @@ export default class TaskDialog extends Mixins(DialogMixin) {
     form.resetFields()
     this.visible = false
     this.$emit('close')
+  }
+
+  private onProjectChange(): void {
+    this.form.children?.forEach((item) => {
+      item.projectId = this.form.projectId
+    })
   }
 
   private onChecklistChange(checklist: Task[]): void {
