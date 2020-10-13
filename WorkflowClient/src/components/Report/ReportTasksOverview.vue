@@ -17,6 +17,18 @@ export default class ReportTasksOverview extends Vue {
   private loading = true
   private chartPieData: ChartData = {}
   private chartPieOptions: ChartOptions = {}
+  private colors: string[] = [
+    '#FFCC33',
+    '#FF0066',
+    '#6666CC',
+    '#00CCFF',
+    '#339999',
+    '#66FFFF',
+    '#00CC99',
+    '#CCFF33',
+    '#999966',
+    '#999999',
+  ]
 
   protected mounted(): void {
     this.loading = true
@@ -29,6 +41,14 @@ export default class ReportTasksOverview extends Vue {
       'Выполнено',
       'Отклонено',
     ]
+    let colors: string[] = [
+      'rgba(33, 150, 243, 0.5)',
+      '#f1de33',
+      'lightgrey',
+      '#ff6d37',
+      '#00cf3a',
+      '#ca0000',
+    ]
 
     const emptyIndexes: number[] = []
     this.data.forEach((value, index) => {
@@ -37,16 +57,8 @@ export default class ReportTasksOverview extends Vue {
     for (let i = emptyIndexes.length - 1; i >= 0; i--) {
       data.splice(emptyIndexes[i], 1)
       labels.splice(emptyIndexes[i], 1)
+      colors.splice(emptyIndexes[i], 1)
     }
-
-    const colors: string[] = [
-      'rgba(33, 150, 243, 0.5)',
-      '#f1de33',
-      '#ff6d37',
-      'lightgrey',
-      '#00cf3a',
-      '#ca0000',
-    ]
 
     const borderColor: string[] = [
       'rgba(255,255,255,0.1)',

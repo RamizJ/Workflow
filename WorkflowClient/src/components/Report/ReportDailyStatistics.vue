@@ -40,17 +40,12 @@ export default class ReportDailyStatistics extends Vue {
     maintainAspectRatio: false,
   }
   private colors: string[] = [
-    '#FFCC33',
-    '#CC9966',
-    '#FF0066',
-    '#6666CC',
-    '#00CCFF',
-    '#339999',
-    '#66FFFF',
-    '#00CC99',
-    '#CCFF33',
-    '#999966',
-    '#999999',
+    'rgba(33, 150, 243, 0.5)',
+    '#f1de33',
+    'lightgrey',
+    '#ff6d37',
+    '#00cf3a',
+    '#ca0000',
   ]
 
   protected mounted(): void {
@@ -91,7 +86,7 @@ export default class ReportDailyStatistics extends Vue {
       if (isNotEmpty)
         datasets.push({
           label: this.getLabelByStatusIndex(i),
-          borderColor: this.colors[this.getRandomInt(this.colors.length)],
+          borderColor: this.colors[i],
           data,
           fill: false,
         })
