@@ -91,6 +91,8 @@ import TaskTable from '@/components/Task/TaskTable.vue'
 import Project from '@/types/project.type'
 import TeamTable from '@/components/Team/TeamTable.vue'
 import ProjectUsers from '@/components/Project/ProjectTeamUsers.vue'
+import settingsModule from '@/store/modules/settings.module'
+import { MessageBox } from 'element-ui'
 
 @Component({
   components: {
@@ -146,6 +148,8 @@ export default class ProjectPage extends Vue {
   }
 
   private async deleteEntity() {
+    const allowDelete = await this.confirmDelete()
+    if (!allowDelete) return
     await projectsModule.deleteOne(this.id)
     await this.$router.replace({ name: 'Project' })
   }
@@ -175,6 +179,20 @@ export default class ProjectPage extends Vue {
     const projectTeams = this.$refs.projectTeams as ProjectTeams
     const projectTeamsTable = projectTeams.$refs.items as TeamTable
     projectTeamsTable.reloadData()
+  }
+
+  protected async confirmDelete(): Promise<boolean> {
+    if (!settingsModule.confirmDelete) return true
+    try {
+      await MessageBox.confirm('Вы действительно хотите удалить элемент?', 'Предупреждение', {
+        confirmButtonText: 'Удалить',
+        cancelButtonText: 'Отменить',
+        type: 'warning',
+      })
+      return true
+    } catch (e) {
+      return false
+    }
   }
 }
 </script>

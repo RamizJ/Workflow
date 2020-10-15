@@ -71,6 +71,8 @@ import TeamAddUserDialog from '@/components/Team/TeamAddUserDialog.vue'
 import UserDialog from '@/components/User/UserDialog.vue'
 import Team from '@/types/team.type'
 import UserTable from '@/components/User/UserTable.vue'
+import settingsModule from '@/store/modules/settings.module'
+import { MessageBox } from 'element-ui'
 
 @Component({
   components: {
@@ -142,9 +144,25 @@ export default class TeamPage extends Vue {
     await teamsModule.updateOne(this.teamItem)
   }
 
-  private async onTeamDelete() {
+  private async onTeamDelete(): Promise<void> {
+    const allowDelete = await this.confirmDelete()
+    if (!allowDelete) return
     await teamsModule.deleteOne(this.id)
     await this.$router.push({ name: 'Team' })
+  }
+
+  protected async confirmDelete(): Promise<boolean> {
+    if (!settingsModule.confirmDelete) return true
+    try {
+      await MessageBox.confirm('Вы действительно хотите удалить элемент?', 'Предупреждение', {
+        confirmButtonText: 'Удалить',
+        cancelButtonText: 'Отменить',
+        type: 'warning',
+      })
+      return true
+    } catch (e) {
+      return false
+    }
   }
 }
 </script>
