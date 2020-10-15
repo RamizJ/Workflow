@@ -181,6 +181,8 @@ export default class TeamTable extends Mixins(TableMixin) {
   }
 
   private async removeEntityFromProject(row: Team): Promise<void> {
+    const allowDelete = await this.confirmDelete()
+    if (!allowDelete) return
     const projectId = parseInt(this.$route.params.projectId)
     const teamId = row.id || -1
     const teamIds = this.selectionIds as number[]
