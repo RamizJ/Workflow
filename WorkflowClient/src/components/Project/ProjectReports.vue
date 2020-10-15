@@ -34,7 +34,7 @@ export default class ProjectReports extends Vue {
   private dailyStatistics: { date: string; goalCountForState: number[] }[] = []
   private dailyStatisticsRange: string[] = [
     moment.utc(moment().subtract('2', 'weeks')).format(),
-    moment.utc(moment()).format(),
+    moment.utc(moment().add('1', 'day')).format(),
   ]
 
   private get projectId(): number {
@@ -48,7 +48,7 @@ export default class ProjectReports extends Vue {
 
   private async loadTasksOverview(): Promise<void> {
     const dateBegin: string = moment.utc(moment().subtract('5', 'years')).format()
-    const dateEnd: string = moment.utc(moment()).format()
+    const dateEnd: string = moment.utc(moment().add('1', 'day')).format()
     this.tasksOverviewLoading = true
     const statistics: ProjectStatistics = await projectsModule.getStatistics({
       projectId: this.projectId,
@@ -69,7 +69,6 @@ export default class ProjectReports extends Vue {
       dateEnd,
     })
     this.dailyStatistics = statistics.byDateStatistics
-    // console.log(JSON.stringify(this.dailyStatistics, null, 2))
     this.dailyStatisticsLoading = false
   }
 
