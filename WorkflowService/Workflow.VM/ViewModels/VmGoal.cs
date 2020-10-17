@@ -34,13 +34,15 @@ namespace Workflow.VM.ViewModels
 
         public bool HasChildren { get; set; }
         public bool IsAttachmentsExist { get; set; }
+
+        public List<VmMetadata> MetadataList { get; set; }
     }
 
     public class VmGoalForm
     {
         public VmGoal Goal { get; set; }
         public List<string> ObserverIds { get; set; }
-        public List<VmGoal> ChildGoals { get; set; }
+        public List<VmGoal> ChildGoals { get;  set; }
 
 
         public VmGoalForm()

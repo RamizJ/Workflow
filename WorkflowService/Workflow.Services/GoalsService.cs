@@ -257,6 +257,7 @@ namespace Workflow.Services
                 .Include(x => x.Observers)
                 .Include(x => x.Performer)
                 .Include(x => x.Project)
+                .Include(x => x.MetadataList)
                 .AsQueryable();
 
             if (withChildren)
@@ -524,6 +525,8 @@ namespace Workflow.Services
                     creatingGoals.Add(childModel);
                 }
             }
+
+
 
             await _dataContext.Goals.AddRangeAsync(creatingGoals);
             await _dataContext.SaveChangesAsync();
