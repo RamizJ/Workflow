@@ -65,12 +65,12 @@ namespace Workflow.Services
                 ByDateStatistics = byDayStatistic
                     .Select(x => new ByDateStatistic(x.Date, new[]
                     {
-                        commonStatistic.FirstOrDefault(s => s.State == GoalState.New)?.Count ?? 0,
-                        commonStatistic.FirstOrDefault(s => s.State == GoalState.Perform)?.Count ?? 0,
-                        commonStatistic.FirstOrDefault(s => s.State == GoalState.Delay)?.Count ?? 0,
-                        commonStatistic.FirstOrDefault(s => s.State == GoalState.Testing)?.Count ?? 0,
-                        commonStatistic.FirstOrDefault(s => s.State == GoalState.Succeed)?.Count ?? 0,
-                        commonStatistic.FirstOrDefault(s => s.State == GoalState.Rejected)?.Count ?? 0
+                        x.Statistic.FirstOrDefault(s => s.State == GoalState.New)?.Count ?? 0,
+                        x.Statistic.FirstOrDefault(s => s.State == GoalState.Perform)?.Count ?? 0,
+                        x.Statistic.FirstOrDefault(s => s.State == GoalState.Delay)?.Count ?? 0,
+                        x.Statistic.FirstOrDefault(s => s.State == GoalState.Testing)?.Count ?? 0,
+                        x.Statistic.FirstOrDefault(s => s.State == GoalState.Succeed)?.Count ?? 0,
+                        x.Statistic.FirstOrDefault(s => s.State == GoalState.Rejected)?.Count ?? 0
                     }))
                     .ToArray()
             };
