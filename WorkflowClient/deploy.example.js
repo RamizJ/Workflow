@@ -1,6 +1,5 @@
 const FtpDeploy = require('ftp-deploy')
 const ftpDeploy = new FtpDeploy()
-
 const config = {
   user: '',
   password: '',
@@ -15,7 +14,6 @@ const config = {
 const description = `FTP: ${config.host}:${config.port} ${config.remoteRoot}`
 const successMessage = `Deploy finished! ${description}`
 const errorMessage = `Deploy failed! ${description}`
-
 console.log(`Deploy in process...`)
 ftpDeploy
   .deploy(config)
