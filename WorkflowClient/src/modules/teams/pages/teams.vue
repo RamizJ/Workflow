@@ -1,0 +1,52 @@
+<template>
+  <div class="page">
+    <div class="header">
+      <div class="header__title">
+        Команды
+        <div class="header__action">
+          <el-button type="text" size="mini" @click="onCreate">Создать</el-button>
+        </div>
+      </div>
+    </div>
+    <team-toolbar
+      @search="onSearch"
+      @filters="onFiltersChange"
+      @order="onOrderChange"
+      @sort="onSortChange"
+      @view="onViewChange"
+    ></team-toolbar>
+    <team-table
+      v-if="view === 'list'"
+      ref="items"
+      :search="search"
+      :filters="filters"
+      :order="order"
+      :sort="sort"
+    ></team-table>
+  </div>
+</template>
+
+<script lang="ts">
+import { Component, Mixins } from 'vue-property-decorator'
+import PageMixin from '@/core/mixins/page.mixin'
+import TeamToolbar from '@/modules/teams/components/team-toolbar.vue'
+import TeamTable from '@/modules/teams/components/team-table.vue'
+import { SortType } from '@/core/types/query.type'
+
+@Component({
+  components: {
+    TeamToolbar,
+    TeamTable,
+  },
+})
+export default class TeamsPage extends Mixins(PageMixin) {
+  protected mounted(): void {
+    if (!this.$route.query.sort) this.onSortChange('name')
+    if (!this.$route.query.order) this.onOrderChange(SortType.Ascending)
+  }
+
+  private onCreate(): void {
+    ;(this.$refs.items as TeamTable).createEntity()
+  }
+}
+</script>
