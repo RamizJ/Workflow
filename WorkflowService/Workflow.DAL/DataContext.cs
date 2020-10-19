@@ -16,6 +16,8 @@ namespace Workflow.DAL
         public DbSet<Attachment> Attachments { get; set; }
         public DbSet<FileData> FileData { get; set; }
         public DbSet<Position> Positions { get; set; }
+        public DbSet<Metadata> Metadata { get; set; }
+
 
         public DbSet<ProjectUserRole> ProjectUserRoles { get; set; }
 

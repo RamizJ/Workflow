@@ -110,18 +110,6 @@ namespace WorkflowService.Controllers
         }
 
         /// <summary>
-        /// Создание задачи по форме
-        /// </summary>
-        /// <param name="goalForm">Форма создаваемой задачи</param>
-        /// <returns>Созданная задача</returns>
-        [HttpPost]
-        public async Task<ActionResult<VmGoal>> CreateByForm([FromBody] VmGoalForm goalForm)
-        {
-            var currentUser = await _currentUserService.GetCurrentUser(User);
-            return await _service.CreateByForm(currentUser, goalForm);
-        }
-
-        /// <summary>
         /// Обновление задачи
         /// </summary>
         /// <param name="goal">Обновляемая задача</param>
@@ -144,45 +132,6 @@ namespace WorkflowService.Controllers
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
             await _service.UpdateRange(currentUser, goals);
-            return NoContent();
-        }
-
-        /// <summary>
-        /// Обновление задачи по форме
-        /// </summary>
-        /// <param name="goalForm">Форма обновляемой задачи</param>
-        /// <returns></returns>
-        [HttpPut]
-        public async Task<IActionResult> UpdateByForm([FromBody] VmGoalForm goalForm)
-        {
-            var currentUser = await _currentUserService.GetCurrentUser(User);
-            await _service.UpdateByForm(currentUser, goalForm);
-            return NoContent();
-        }
-
-        /// <summary>
-        /// Обновление задач по формам
-        /// </summary>
-        /// <param name="goalForms">Формы обновляемых задач</param>
-        /// <returns></returns>
-        [HttpPut]
-        public async Task<IActionResult> UpdateByFormRange([FromBody] IEnumerable<VmGoalForm> goalForms)
-        {
-            var currentUser = await _currentUserService.GetCurrentUser(User);
-            await _service.UpdateByFormRange(currentUser, goalForms);
-            return NoContent();
-        }
-
-        /// <summary>
-        /// Обновление задач по формам
-        /// </summary>
-        /// <param name="goalForm">Форма обновляемой задачи</param>
-        /// <returns></returns>
-        [HttpPut]
-        public async Task<IActionResult> UpdateByFormRange([FromBody] VmGoalForm goalForm)
-        {
-            var currentUser = await _currentUserService.GetCurrentUser(User);
-            await _service.UpdateByForm(currentUser, goalForm);
             return NoContent();
         }
 

@@ -33,8 +33,8 @@ namespace Workflow.DAL.Models
         public ApplicationUser Performer { get; set; }
 
         public List<GoalObserver> Observers { get; set; } = new List<GoalObserver>();
-
         public List<Attachment> Attachments { get; set; } = new List<Attachment>();
+        public List<Metadata> MetadataList { get; set; } = new List<Metadata>();
 
         public bool IsRemoved { get; set; }
     }

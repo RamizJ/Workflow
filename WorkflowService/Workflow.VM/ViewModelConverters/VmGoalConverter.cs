@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Workflow.DAL.Models;
 using Workflow.VM.ViewModelConverters.Absract;
 using Workflow.VM.ViewModels;
@@ -72,6 +73,12 @@ namespace Workflow.VM.ViewModelConverters
             viewModel.IsRemoved = model.IsRemoved;
             viewModel.HasChildren = model.ChildGoals.Any();
             viewModel.IsAttachmentsExist = model.Attachments.Any();
+            viewModel.ObserverIds = model.Observers?.Select(x => x.ObserverId).ToList();
+            viewModel.MetadataList = model.MetadataList?.Select(x => new VmMetadata
+            {
+                Key = x.Key,
+                Value = x.Value
+            }).ToList();
         }
     }
 }

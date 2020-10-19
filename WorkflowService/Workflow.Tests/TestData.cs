@@ -92,6 +92,10 @@ namespace Workflow.Tests
                 .With(x => x.ParentGoalId = null)
                 .With(x => x.IsRemoved = false)
                 .With(x => x.CreationDate = DateTime.Now)
+                .With(x => x.MetadataList = new List<Metadata>
+                {
+                    new Metadata("IsSection", "true")
+                })
                 .TheFirst(6)
                 .With(x => x.ProjectId = Projects.First().Id)
                 .With(x => x.OwnerId = Users[0].Id)

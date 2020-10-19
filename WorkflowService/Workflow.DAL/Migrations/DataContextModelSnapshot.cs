@@ -404,6 +404,39 @@ namespace Workflow.DAL.Migrations
                     b.ToTable("Groups");
                 });
 
+            modelBuilder.Entity("Workflow.DAL.Models.Metadata", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("GoalId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("GroupId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Key")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GoalId");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("Metadata");
+                });
+
             modelBuilder.Entity("Workflow.DAL.Models.Position", b =>
                 {
                     b.Property<int>("Id")
@@ -676,6 +709,21 @@ namespace Workflow.DAL.Migrations
                     b.HasOne("Workflow.DAL.Models.Group", "ParentGroup")
                         .WithMany("ChildGroups")
                         .HasForeignKey("ParentGroupId");
+                });
+
+            modelBuilder.Entity("Workflow.DAL.Models.Metadata", b =>
+                {
+                    b.HasOne("Workflow.DAL.Models.Goal", "Goal")
+                        .WithMany("MetadataList")
+                        .HasForeignKey("GoalId");
+
+                    b.HasOne("Workflow.DAL.Models.Group", "Group")
+                        .WithMany("MetadataList")
+                        .HasForeignKey("GroupId");
+
+                    b.HasOne("Workflow.DAL.Models.Project", "Project")
+                        .WithMany("MetadataList")
+                        .HasForeignKey("ProjectId");
                 });
 
             modelBuilder.Entity("Workflow.DAL.Models.Project", b =>

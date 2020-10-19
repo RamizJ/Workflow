@@ -23,6 +23,8 @@ namespace Workflow.DAL.Models
         public int? GroupId { get; set; }
         public Group Group { get; set; }
 
+        public List<Metadata> MetadataList { get; set; } = new List<Metadata>();
+
         public bool IsRemoved { get; set; }
     }
 }

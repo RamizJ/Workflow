@@ -234,7 +234,12 @@ namespace Workflow.Tests.Services
                 Id = id,
                 Title = "Goal3",
                 ProjectId = _testData.Projects.First().Id,
-                IsRemoved = false
+                IsRemoved = false,
+                MetadataList = new List<VmMetadata>
+                {
+                    new VmMetadata("Key1", "Val1"),
+                    new VmMetadata("Key2", "Val2")
+                }
             };
 
             //Act
@@ -244,6 +249,11 @@ namespace Workflow.Tests.Services
             Assert.IsNotNull(result);
             Assert.AreEqual(_testData.Goals.Count + 1, result.Id);
             Assert.AreEqual(vmGoal.Title, result.Title);
+            Assert.AreEqual(vmGoal.MetadataList.Count, result.MetadataList.Count);
+            Assert.AreEqual(vmGoal.MetadataList[0].Key, result.MetadataList[0].Key);
+            Assert.AreEqual(vmGoal.MetadataList[0].Value, result.MetadataList[0].Value);
+            Assert.AreEqual(vmGoal.MetadataList[1].Key, result.MetadataList[1].Key);
+            Assert.AreEqual(vmGoal.MetadataList[1].Value, result.MetadataList[1].Value);
         }
 
         [TestCase(null)]
@@ -267,7 +277,7 @@ namespace Workflow.Tests.Services
         [TestCase(0)]
         [TestCase(1)]
         [TestCase(-1)]
-        public async Task CreateByFormTest(int id)
+        public async Task CreateHierarchyTest(int id)
         {
             //Arrange
             var vmGoal = new VmGoal
@@ -275,26 +285,23 @@ namespace Workflow.Tests.Services
                 Id = id,
                 Title = "Goal3",
                 ProjectId = _testData.Projects.First().Id,
-                IsRemoved = false
-            };
-            var vmChildGoal = new VmGoal
-            {
-                Id = id,
-                Title = "Goal31",
-                ProjectId = _testData.Projects.First().Id,
-                IsRemoved = false
-            };
-            var vmChildGoal2 = _vmConverter.ToViewModel(_testData.Goals[15]);
+                IsRemoved = false,
 
-            var goalForm = new VmGoalForm(vmGoal, null, new List<VmGoal>
-            {
-                vmChildGoal,
-                vmChildGoal2
-            });
-
+                Children = new List<VmGoal>
+                {
+                    new VmGoal
+                    {
+                        Id = id,
+                        Title = "Goal31",
+                        ProjectId = _testData.Projects.First().Id,
+                        IsRemoved = false
+                    },
+                    _vmConverter.ToViewModel(_testData.Goals[15])
+                }
+            };
 
             //Act
-            var result = await _service.CreateByForm(_currentUser, goalForm);
+            var result = await _service.Create(_currentUser, vmGoal);
             int childsCount = await _dataContext.Goals.CountAsync(g => g.ParentGoalId == result.Id);
 
             //Assert
@@ -369,11 +376,30 @@ namespace Workflow.Tests.Services
             var vmGoal = _vmConverter.ToViewModel(_testData.Goals.First());
             vmGoal.Title = updatedName;
             vmGoal.Description = updatedDescription;
-            var observerIds = _testData.Users.Skip(4).Take(6).Select(u => u.Id).ToList();
-            var vmGoalForm = new VmGoalForm(vmGoal, observerIds, null);
+            vmGoal.ObserverIds = _testData.Users.Skip(4).Take(6).Select(u => u.Id).ToList();
+            vmGoal.MetadataList = new List<VmMetadata>
+            {
+                new VmMetadata("UpdKey1", "UpdVal1"),
+                new VmMetadata("UpdKey2", "UpdVal2"),
+                new VmMetadata("UpdKey3", "UpdVal3")
+            };
 
             //Act
-            await _service.UpdateByFormRange(_currentUser, new[] {vmGoalForm});
+            await _service.UpdateRange(_currentUser, new[] {vmGoal});
+            var metadataCount = await _dataContext.Metadata
+                .AsNoTracking()
+                .CountAsync(x => x.GoalId == vmGoal.Id);
+            var result = await _dataContext.Goals
+                .Include(x => x.MetadataList)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == vmGoal.Id);
+                
+
+            //Assert
+            Assert.AreEqual(updatedName, result.Title);
+            Assert.AreEqual(updatedDescription, result.Description);
+            Assert.AreEqual(3, metadataCount);
+            Assert.AreEqual(3, result.MetadataList.Count);
         }
 
         [Test]
