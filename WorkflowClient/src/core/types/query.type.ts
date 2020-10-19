@@ -8,6 +8,11 @@ export default class Query {
 
   projectId?: number
   teamId?: number
+
+  constructor(pageSize = 20) {
+    this.pageNumber = 0
+    this.pageSize = pageSize
+  }
 }
 
 export interface FilterField {

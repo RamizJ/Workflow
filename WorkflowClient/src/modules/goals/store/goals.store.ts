@@ -1,4 +1,11 @@
-import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
+import {
+  Action,
+  getModule,
+  Module,
+  Mutation,
+  MutationAction,
+  VuexModule,
+} from 'vuex-module-decorators'
 import moment from 'moment' // TODO: Replace with dateFns
 import store from '@/core/store'
 import api from '../api'
@@ -15,12 +22,16 @@ import Attachment from '@/modules/goals/models/attachment.type'
 class GoalsStore extends VuexModule {
   _task: Task | null = null
   _tasks: Task[] = []
+  _goalWindowOpened = false
 
   public get task() {
     return this._task
   }
   public get tasks() {
     return this._tasks
+  }
+  public get isGoalWindowOpened(): boolean {
+    return this._goalWindowOpened
   }
 
   @Mutation
@@ -31,6 +42,20 @@ class GoalsStore extends VuexModule {
   @Mutation
   setTasks(tasks: Task[]) {
     this._tasks = tasks
+  }
+
+  @MutationAction({ mutate: ['_goalWindowOpened'] })
+  public async closeGoalWindow() {
+    return {
+      _goalWindowOpened: false,
+    }
+  }
+
+  @MutationAction({ mutate: ['_goalWindowOpened'] })
+  public async openGoalWindow() {
+    return {
+      _goalWindowOpened: true,
+    }
   }
 
   @Action({ rawError: true })

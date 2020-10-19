@@ -198,7 +198,7 @@ export default class ProjectDialog extends Mixins(DialogMixin) {
 
   public exit(): void {
     this.visible = false
-    projectsModule.closeProjectDialog()
+    projectsModule.closeProjectWindow()
     this.$emit('close')
   }
 }

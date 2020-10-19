@@ -343,7 +343,7 @@ export default class TeamDialog extends Mixins(DialogMixin) {
 
   public exit(): void {
     this.visible = false
-    teamsModule.closeTeamDialog()
+    teamsModule.closeTeamWindow()
     this.$emit('close')
   }
 }

@@ -15,6 +15,7 @@
       @sort="onSortChange"
       @view="onViewChange"
     ></task-toolbar>
+    <!--<GoalTableNew />-->
     <task-table
       v-if="view === 'list'"
       ref="items"
@@ -42,9 +43,11 @@ import TaskTable from '@/modules/goals/components/goal-table.vue'
 import TaskBoard from '@/modules/goals/components/goal-board.vue'
 import { View } from '@/core/types/view.type'
 import { SortType } from '@/core/types/query.type'
+import GoalTableNew from '@/modules/goals/components/goal-table-new.vue'
 
 @Component({
   components: {
+    GoalTableNew,
     TaskToolbar,
     TaskTable,
     TaskBoard,

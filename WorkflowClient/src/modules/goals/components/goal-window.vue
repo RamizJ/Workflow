@@ -332,6 +332,8 @@ export default class GoalWindow extends Mixins(DialogMixin) {
     if (this.id) {
       const id: number = parseInt(this.id.toString())
       this.form = await tasksModule.findOneById(id)
+    } else if (tasksModule.task) {
+      this.form = tasksModule.task
     }
 
     await this.searchUsers()

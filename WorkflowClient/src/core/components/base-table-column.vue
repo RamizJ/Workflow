@@ -1,11 +1,16 @@
 <template>
-  <div></div>
+  <ElTableColumn v-bind="$attrs" v-on="$listeners">
+    <template slot-scope="scope">
+      <slot :row="scope.row"></slot>
+    </template>
+  </ElTableColumn>
 </template>
 
-<script>
-export default {
-  name: 'base-table-column',
-}
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
+
+@Component
+export default class BaseTableColumn extends Vue {}
 </script>
 
-<style scoped></style>
+<style lang="scss"></style>

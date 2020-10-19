@@ -2,37 +2,42 @@
   <div class="sidebar-footer">
     <Popover>
       <PopoverButton icon="cube">Новая область</PopoverButton>
-      <PopoverButton icon="layer-group" @click="openProjectDialog">Новый проект</PopoverButton>
-      <PopoverButton icon="user-arrows" @click="openTeamDialog">Новая команда</PopoverButton>
-      <PopoverButton icon="users-alt" @click="openUserDialog">Новый пользователь</PopoverButton>
+      <PopoverButton icon="user-arrows" @click="openTeamWindow">Новая команда</PopoverButton>
+      <PopoverButton icon="users-alt" @click="openUserWindow">Новый пользователь</PopoverButton>
+      <PopoverButton icon="layer-group" @click="openProjectWindow">Новый проект</PopoverButton>
+      <PopoverButton icon="edit-alt" @click="openGoalWindow">Новая задача</PopoverButton>
       <IconButton slot="reference" icon="plus" />
     </Popover>
     <IconButton icon="sliders-v-alt" @click="openSettings" />
 
-    <ProjectDialog v-if="isProjectDialogOpened" @close="closeProjectDialog" />
-    <TeamDialog v-if="isTeamDialogOpened" @close="closeTeamDialog" />
-    <UserDialog v-if="isUserDialogOpened" @close="closeUserDialog" />
+    <ProjectDialog v-if="isProjectWindowOpened" @close="closeProjectWindow" />
+    <GoalWindow v-if="isGoalWindowOpened" @close="closeGoalWindow" />
+    <TeamDialog v-if="isTeamWindowOpened" @close="closeTeamWindow" />
+    <UserDialog v-if="isUserWindowOpened" @close="closeUserWindow" />
     <SettingsWindow v-if="isSettingsOpened" @closed="closeSettings" />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+import projectsStore from '@/modules/projects/store/projects.store'
+import goalsStore from '@/modules/goals/store/goals.store'
+import teamsStore from '@/modules/teams/store/teams.store'
+import usersStore from '@/modules/users/store/users.store'
+import settingsStore from '@/modules/settings/store/settings.store'
+
 import Popover from '@/core/components/base-popover.vue'
 import PopoverButton from '@/core/components/base-popover-button.vue'
 import IconButton from '@/core/components/base-icon-button.vue'
 import ProjectDialog from '@/modules/projects/components/project-window.vue'
+import GoalWindow from '@/modules/goals/components/goal-window.vue'
 import TeamDialog from '@/modules/teams/components/team-dialog.vue'
 import UserDialog from '@/modules/users/components/user-dialog.vue'
 import SettingsWindow from '@/modules/settings/components/settings-window.vue'
 
-import projectsModule from '@/modules/projects/store/projects.store'
-import teamsModule from '@/modules/teams/store/teams.store'
-import usersModule from '@/modules/users/store/users.store'
-import settingsModule from '@/modules/settings/store/settings.store'
-
 @Component({
   components: {
+    GoalWindow,
     UserDialog,
     TeamDialog,
     ProjectDialog,
@@ -43,52 +48,59 @@ import settingsModule from '@/modules/settings/store/settings.store'
   },
 })
 export default class SidebarFooter extends Vue {
-  private get isProjectDialogOpened(): boolean {
-    return projectsModule.isProjectDialogOpened
+  private get isProjectWindowOpened(): boolean {
+    return projectsStore.isProjectWindowOpened
   }
 
-  private get isTeamDialogOpened(): boolean {
-    return teamsModule.isTeamDialogOpened
+  private get isGoalWindowOpened(): boolean {
+    return goalsStore.isGoalWindowOpened
   }
 
-  private get isUserDialogOpened(): boolean {
-    return usersModule.isUserDialogOpened
+  private get isTeamWindowOpened(): boolean {
+    return teamsStore.isTeamWindowOpened
+  }
+
+  private get isUserWindowOpened(): boolean {
+    return usersStore.isUserWindowOpened
   }
 
   private get isSettingsOpened(): boolean {
-    return settingsModule.isSettingsOpened
+    return settingsStore.isSettingsOpened
   }
 
-  private openProjectDialog(): void {
-    projectsModule.openProjectDialog()
+  private openProjectWindow(): void {
+    projectsStore.openProjectWindow()
+  }
+  private closeProjectWindow(): void {
+    projectsStore.closeProjectWindow()
   }
 
-  private closeProjectDialog(): void {
-    projectsModule.closeProjectDialog()
+  private openGoalWindow(): void {
+    goalsStore.openGoalWindow()
+  }
+  private closeGoalWindow(): void {
+    goalsStore.closeGoalWindow()
   }
 
-  private openTeamDialog(): void {
-    teamsModule.openTeamDialog()
+  private openTeamWindow(): void {
+    teamsStore.openTeamWindow()
+  }
+  private closeTeamWindow(): void {
+    teamsStore.closeTeamWindow()
   }
 
-  private closeTeamDialog(): void {
-    teamsModule.closeTeamDialog()
+  private openUserWindow(): void {
+    usersStore.openUserWindow()
   }
-
-  private openUserDialog(): void {
-    usersModule.openUserDialog()
-  }
-
-  private closeUserDialog(): void {
-    usersModule.closeUserDialog()
+  private closeUserWindow(): void {
+    usersStore.closeUserWindow()
   }
 
   private openSettings(): void {
-    settingsModule.openSettings()
+    settingsStore.openSettings()
   }
-
   private closeSettings(): void {
-    settingsModule.closeSettings()
+    settingsStore.closeSettings()
   }
 }
 </script>

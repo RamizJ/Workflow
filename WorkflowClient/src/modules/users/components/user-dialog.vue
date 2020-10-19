@@ -283,7 +283,7 @@ export default class UserDialog extends Mixins(DialogMixin) {
 
   public exit(): void {
     this.visible = false
-    usersModule.closeUserDialog()
+    usersModule.closeUserWindow()
     this.$emit('close')
   }
 }

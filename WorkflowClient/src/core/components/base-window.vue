@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
+import { Component, Prop, Ref, Vue } from 'vue-property-decorator'
 import { MessageBox } from 'element-ui'
 import { DialogType } from '@/core/types/dialog.type'
 import settingsModule from '@/modules/settings/store/settings.store'
@@ -47,6 +47,8 @@ export default class BaseWindow extends Vue {
   @Prop() readonly appendToBody?: boolean
   @Prop() readonly width?: string
   @Prop() readonly top?: string
+  @Ref() readonly window!: DialogType
+
   private isWindowOpened = false
 
   protected mounted(): void {
@@ -66,7 +68,7 @@ export default class BaseWindow extends Vue {
   }
 
   private onClose(): void {
-    ;(this.$refs.dialog as DialogType).hide()
+    this.window.hide()
     this.$emit('close')
   }
 

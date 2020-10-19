@@ -30,10 +30,10 @@ class ProjectsStore extends VuexModule {
   _projects: Project[] = []
   _projectTeams: Team[] = []
   _projectUsers: User[] = []
-  _projectDialogOpened = false
+  _projectWindowOpened = false
 
-  public get isProjectDialogOpened(): boolean {
-    return this._projectDialogOpened
+  public get isProjectWindowOpened(): boolean {
+    return this._projectWindowOpened
   }
   public get project() {
     return this._project
@@ -48,17 +48,17 @@ class ProjectsStore extends VuexModule {
     return this._projectUsers
   }
 
-  @MutationAction({ mutate: ['_projectDialogOpened'] })
-  public async closeProjectDialog() {
+  @MutationAction({ mutate: ['_projectWindowOpened'] })
+  public async closeProjectWindow() {
     return {
-      _projectDialogOpened: false,
+      _projectWindowOpened: false,
     }
   }
 
-  @MutationAction({ mutate: ['_projectDialogOpened'] })
-  public async openProjectDialog() {
+  @MutationAction({ mutate: ['_projectWindowOpened'] })
+  public async openProjectWindow() {
     return {
-      _projectDialogOpened: true,
+      _projectWindowOpened: true,
     }
   }
 

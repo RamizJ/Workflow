@@ -20,12 +20,12 @@ import Query from '@/core/types/query.type'
   store,
 })
 class UsersStore extends VuexModule {
-  _userDialogOpened = false
+  _userWindowOpened = false
   _user: User | null = null
   _users: User[] = []
 
-  public get isUserDialogOpened() {
-    return this._userDialogOpened
+  public get isUserWindowOpened() {
+    return this._userWindowOpened
   }
   public get user() {
     return this._user
@@ -34,17 +34,17 @@ class UsersStore extends VuexModule {
     return this._users
   }
 
-  @MutationAction({ mutate: ['_userDialogOpened'] })
-  public async closeUserDialog() {
+  @MutationAction({ mutate: ['_userWindowOpened'] })
+  public async closeUserWindow() {
     return {
-      _userDialogOpened: false,
+      _userWindowOpened: false,
     }
   }
 
-  @MutationAction({ mutate: ['_userDialogOpened'] })
-  public async openUserDialog() {
+  @MutationAction({ mutate: ['_userWindowOpened'] })
+  public async openUserWindow() {
     return {
-      _userDialogOpened: true,
+      _userWindowOpened: true,
     }
   }
 

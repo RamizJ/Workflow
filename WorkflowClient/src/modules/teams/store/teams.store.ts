@@ -21,14 +21,14 @@ import User from '@/modules/users/models/user.type'
   store,
 })
 class TeamsStore extends VuexModule {
-  _teamDialogOpened = false
+  _teamWindowOpened = false
   _team: Team | null = null
   _teams: Team[] = []
   _teamUsers: User[] = []
   _teamProjects: Project[] = []
 
-  public get isTeamDialogOpened() {
-    return this._teamDialogOpened
+  public get isTeamWindowOpened() {
+    return this._teamWindowOpened
   }
   public get team() {
     return this._team
@@ -43,17 +43,17 @@ class TeamsStore extends VuexModule {
     return this._teamProjects
   }
 
-  @MutationAction({ mutate: ['_teamDialogOpened'] })
-  public async closeTeamDialog() {
+  @MutationAction({ mutate: ['_teamWindowOpened'] })
+  public async closeTeamWindow() {
     return {
-      _teamDialogOpened: false,
+      _teamWindowOpened: false,
     }
   }
 
-  @MutationAction({ mutate: ['_teamDialogOpened'] })
-  public async openTeamDialog() {
+  @MutationAction({ mutate: ['_teamWindowOpened'] })
+  public async openTeamWindow() {
     return {
-      _teamDialogOpened: true,
+      _teamWindowOpened: true,
     }
   }
 
