@@ -349,13 +349,16 @@ a {
   border-bottom-right-radius: 4px;
 }
 .el-table__body tr.current-row>td,
-.el-table--striped .el-table__body tr.el-table__row--striped.current-row td {
+.el-table__body tr.selected>td,
+.el-table--striped .el-table__body tr.el-table__row--striped.current-row td,
+.el-table--striped .el-table__body tr.el-table__row--striped.selected td {
   background-color: var(--table-selected);
 }
 .el-table--enable-row-hover .el-table__body tr:hover>td {
   background-color: var(--table-hover);
 }
-.el-table--enable-row-hover .el-table__body tr.current-row:hover>td {
+.el-table--enable-row-hover .el-table__body tr.current-row:hover>td,
+.el-table--enable-row-hover .el-table__body tr.selected:hover>td {
   background-color: var(--table-selected);
 }
 .el-table--border, .el-table--group,

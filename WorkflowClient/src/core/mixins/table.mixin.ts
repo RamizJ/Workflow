@@ -146,8 +146,9 @@ export default class TableMixin extends Vue {
     this.dialogVisible = false
   }
 
-  public setIndex({ row, rowIndex }: { row: Entity; rowIndex: number }): void {
+  public setIndex({ row, rowIndex }: { row: Entity; rowIndex: number }): string | undefined {
     row.index = rowIndex
+    if (this.selectedRows.some((entity) => entity.id === row.id)) return 'selected'
   }
 
   public onRowSelect(selection: Entity[], entity: Entity): void {
