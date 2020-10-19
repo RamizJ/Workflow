@@ -9,5 +9,15 @@
 
         public int? GoalId { get; set; }
         public Goal Goal { get; set; }
+
+
+        public Metadata()
+        { }
+
+        public Metadata(string key, string value)
+        {
+            Key = key;
+            Value = value;
+        }
     }
 }

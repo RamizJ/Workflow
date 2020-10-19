@@ -234,7 +234,12 @@ namespace Workflow.Tests.Services
                 Id = id,
                 Title = "Goal3",
                 ProjectId = _testData.Projects.First().Id,
-                IsRemoved = false
+                IsRemoved = false,
+                MetadataList = new List<VmMetadata>
+                {
+                    new VmMetadata("Key1", "Val1"),
+                    new VmMetadata("Key2", "Val2")
+                }
             };
 
             //Act
@@ -244,6 +249,11 @@ namespace Workflow.Tests.Services
             Assert.IsNotNull(result);
             Assert.AreEqual(_testData.Goals.Count + 1, result.Id);
             Assert.AreEqual(vmGoal.Title, result.Title);
+            Assert.AreEqual(vmGoal.MetadataList.Count, result.MetadataList.Count);
+            Assert.AreEqual(vmGoal.MetadataList[0].Key, result.MetadataList[0].Key);
+            Assert.AreEqual(vmGoal.MetadataList[0].Value, result.MetadataList[0].Value);
+            Assert.AreEqual(vmGoal.MetadataList[1].Key, result.MetadataList[1].Key);
+            Assert.AreEqual(vmGoal.MetadataList[1].Value, result.MetadataList[1].Value);
         }
 
         [TestCase(null)]
@@ -367,9 +377,29 @@ namespace Workflow.Tests.Services
             vmGoal.Title = updatedName;
             vmGoal.Description = updatedDescription;
             vmGoal.ObserverIds = _testData.Users.Skip(4).Take(6).Select(u => u.Id).ToList();
+            vmGoal.MetadataList = new List<VmMetadata>
+            {
+                new VmMetadata("UpdKey1", "UpdVal1"),
+                new VmMetadata("UpdKey2", "UpdVal2"),
+                new VmMetadata("UpdKey3", "UpdVal3")
+            };
 
             //Act
             await _service.UpdateRange(_currentUser, new[] {vmGoal});
+            var metadataCount = await _dataContext.Metadata
+                .AsNoTracking()
+                .CountAsync(x => x.GoalId == vmGoal.Id);
+            var result = await _dataContext.Goals
+                .Include(x => x.MetadataList)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == vmGoal.Id);
+                
+
+            //Assert
+            Assert.AreEqual(updatedName, result.Title);
+            Assert.AreEqual(updatedDescription, result.Description);
+            Assert.AreEqual(3, metadataCount);
+            Assert.AreEqual(3, result.MetadataList.Count);
         }
 
         [Test]

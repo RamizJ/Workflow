@@ -434,6 +434,11 @@ namespace Workflow.Services
                     .SelectMany(g => g.Attachments)
                     .Any(),
                 IsRemoved = goal.IsRemoved,
+                MetadataList = goal.MetadataList.Select(m => new VmMetadata
+                {
+                    Key = m.Key,
+                    Value = m.Value
+                }).ToList()
             });
             return vmGoals;
         }
@@ -462,6 +467,11 @@ namespace Workflow.Services
             goal.Id = 0;
             goal.CreationDate = DateTime.Now;
             goal.OwnerId = creatorId;
+            goal.MetadataList = vmGoal.MetadataList.Select(m => new Metadata
+            {
+                Key = m.Key,
+                Value = m.Value
+            }).ToList();
 
             goal.Observers = vmGoal.ObserverIds?
                 .Select(observerId => new GoalObserver(vmGoal.Id, observerId))
@@ -489,7 +499,8 @@ namespace Workflow.Services
             vmGoals = ChildrenHierarchyToPlainList(vmGoals);
 
             var goalIds = vmGoals.Select(g => g.Id).ToArray();
-            var existedGoals = await _dataContext.Goals.Where(g => goalIds.Any(gId => gId == g.Id))
+            var existedGoals = await _dataContext.Goals
+                .Where(g => goalIds.Any(gId => gId == g.Id))
                 .ToArrayAsync();
 
             foreach (var vmGoal in vmGoals)
@@ -520,6 +531,12 @@ namespace Workflow.Services
                     .Select(observerId => new GoalObserver(vmGoal.Id, observerId))
                     .ToList();
 
+                model.MetadataList = vmGoal.MetadataList
+                    .Select(x => new Metadata(x.Key, x.Value))
+                    .ToList();
+
+                _dataContext.GoalObservers.RemoveRange(_dataContext.GoalObservers.Where(x => x.GoalId == vmGoal.Id));
+                _dataContext.Metadata.RemoveRange(_dataContext.Metadata.Where(m => m.GoalId == vmGoal.Id));
                 _dataContext.Entry(model).State = EntityState.Modified;
             }
 
