@@ -73,7 +73,8 @@ namespace Workflow.VM.ViewModelConverters
             viewModel.IsRemoved = model.IsRemoved;
             viewModel.HasChildren = model.ChildGoals.Any();
             viewModel.IsAttachmentsExist = model.Attachments.Any();
-            viewModel.MetadataList = model.MetadataList.Select(x => new VmMetadata
+            viewModel.ObserverIds = model.Observers?.Select(x => x.ObserverId).ToList();
+            viewModel.MetadataList = model.MetadataList?.Select(x => new VmMetadata
             {
                 Key = x.Key,
                 Value = x.Value

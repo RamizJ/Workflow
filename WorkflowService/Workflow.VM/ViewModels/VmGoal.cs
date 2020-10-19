@@ -17,6 +17,8 @@ namespace Workflow.VM.ViewModels
 
         public int? ParentGoalId { get; set; }
         //public List<int> ChildGoals { get; set; }
+        public List<VmGoal> Children { get; set; }
+        public List<string> ObserverIds { get; set; }
 
         public DateTime CreationDate { get; set; }
         public DateTime? ExpectedCompletedDate { get; set; }
@@ -36,23 +38,5 @@ namespace Workflow.VM.ViewModels
         public bool IsAttachmentsExist { get; set; }
 
         public List<VmMetadata> MetadataList { get; set; }
-    }
-
-    public class VmGoalForm
-    {
-        public VmGoal Goal { get; set; }
-        public List<string> ObserverIds { get; set; }
-        public List<VmGoal> ChildGoals { get;  set; }
-
-
-        public VmGoalForm()
-        { }
-
-        public VmGoalForm(VmGoal goal, List<string> observerIds, List<VmGoal> childGoals)
-        {
-            Goal = goal;
-            ObserverIds = observerIds;
-            ChildGoals = childGoals;
-        }
     }
 }

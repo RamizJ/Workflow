@@ -267,7 +267,7 @@ namespace Workflow.Tests.Services
         [TestCase(0)]
         [TestCase(1)]
         [TestCase(-1)]
-        public async Task CreateByFormTest(int id)
+        public async Task CreateHierarchyTest(int id)
         {
             //Arrange
             var vmGoal = new VmGoal
@@ -275,26 +275,23 @@ namespace Workflow.Tests.Services
                 Id = id,
                 Title = "Goal3",
                 ProjectId = _testData.Projects.First().Id,
-                IsRemoved = false
-            };
-            var vmChildGoal = new VmGoal
-            {
-                Id = id,
-                Title = "Goal31",
-                ProjectId = _testData.Projects.First().Id,
-                IsRemoved = false
-            };
-            var vmChildGoal2 = _vmConverter.ToViewModel(_testData.Goals[15]);
+                IsRemoved = false,
 
-            var goalForm = new VmGoalForm(vmGoal, null, new List<VmGoal>
-            {
-                vmChildGoal,
-                vmChildGoal2
-            });
-
+                Children = new List<VmGoal>
+                {
+                    new VmGoal
+                    {
+                        Id = id,
+                        Title = "Goal31",
+                        ProjectId = _testData.Projects.First().Id,
+                        IsRemoved = false
+                    },
+                    _vmConverter.ToViewModel(_testData.Goals[15])
+                }
+            };
 
             //Act
-            var result = await _service.CreateByForm(_currentUser, goalForm);
+            var result = await _service.Create(_currentUser, vmGoal);
             int childsCount = await _dataContext.Goals.CountAsync(g => g.ParentGoalId == result.Id);
 
             //Assert
@@ -369,11 +366,10 @@ namespace Workflow.Tests.Services
             var vmGoal = _vmConverter.ToViewModel(_testData.Goals.First());
             vmGoal.Title = updatedName;
             vmGoal.Description = updatedDescription;
-            var observerIds = _testData.Users.Skip(4).Take(6).Select(u => u.Id).ToList();
-            var vmGoalForm = new VmGoalForm(vmGoal, observerIds, null);
+            vmGoal.ObserverIds = _testData.Users.Skip(4).Take(6).Select(u => u.Id).ToList();
 
             //Act
-            await _service.UpdateByFormRange(_currentUser, new[] {vmGoalForm});
+            await _service.UpdateRange(_currentUser, new[] {vmGoal});
         }
 
         [Test]

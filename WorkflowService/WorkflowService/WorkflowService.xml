@@ -82,13 +82,6 @@
             <param name="goal">Создаваемая задача</param>
             <returns>Созданная задача</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.GoalsController.CreateByForm(Workflow.VM.ViewModels.VmGoalForm)">
-            <summary>
-            Создание задачи по форме
-            </summary>
-            <param name="goalForm">Форма создаваемой задачи</param>
-            <returns>Созданная задача</returns>
-        </member>
         <member name="M:WorkflowService.Controllers.GoalsController.Update(Workflow.VM.ViewModels.VmGoal)">
             <summary>
             Обновление задачи
@@ -101,27 +94,6 @@
             Обновление задач
             </summary>
             <param name="goals">Обновляемые задачи</param>
-            <returns></returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.GoalsController.UpdateByForm(Workflow.VM.ViewModels.VmGoalForm)">
-            <summary>
-            Обновление задачи по форме
-            </summary>
-            <param name="goalForm">Форма обновляемой задачи</param>
-            <returns></returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.GoalsController.UpdateByFormRange(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmGoalForm})">
-            <summary>
-            Обновление задач по формам
-            </summary>
-            <param name="goalForms">Формы обновляемых задач</param>
-            <returns></returns>
-        </member>
-        <member name="M:WorkflowService.Controllers.GoalsController.UpdateByFormRange(Workflow.VM.ViewModels.VmGoalForm)">
-            <summary>
-            Обновление задач по формам
-            </summary>
-            <param name="goalForm">Форма обновляемой задачи</param>
             <returns></returns>
         </member>
         <member name="M:WorkflowService.Controllers.GoalsController.Delete(System.Int32)">

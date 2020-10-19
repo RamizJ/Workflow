@@ -107,64 +107,17 @@ namespace Workflow.Services
         }
 
         /// <inheritdoc />
-        public async Task<VmGoal> CreateByForm(ApplicationUser currentUser, VmGoalForm goalForm)
-        {
-            if(goalForm == null)
-                throw new HttpResponseException(BadRequest,
-                    $"Parameter '{nameof(goalForm)}' cannot be null");
-
-            var model = await CreateGoal(currentUser, 
-                goalForm.Goal, 
-                goalForm.ObserverIds, 
-                goalForm.ChildGoals);
-
-            return _vmConverter.ToViewModel(model);
-        }
-
-        /// <inheritdoc />
         public async Task Update(ApplicationUser currentUser, VmGoal goal)
         {
             await UpdateGoals(new[] {goal});
         }
-
-        public async Task UpdateByForm(ApplicationUser currentUser, VmGoalForm goalForm)
-        {
-            if(goalForm == null)
-                throw new HttpResponseException(BadRequest,
-                    $"Parameter '{nameof(goalForm)}' cannot be null");
-
-            await UpdateGoals(new[] { goalForm.Goal }, goal =>
-            {
-                goal.Observers = goalForm.ObserverIds?
-                    .Select(observerId => new GoalObserver(goal.Id, observerId))
-                    .ToList();
-            });
-        }
-
+        
         /// <inheritdoc />
         public async Task UpdateRange(ApplicationUser currentUser, IEnumerable<VmGoal> goals)
         {
             await UpdateGoals(goals?.ToArray());
-        }
-
-        /// <inheritdoc />
-        public async Task UpdateByFormRange(ApplicationUser currentUser, IEnumerable<VmGoalForm> goalForms)
-        {
-            if (goalForms == null)
-                throw new HttpResponseException(BadRequest, 
-                    $"Parameter '{nameof(goalForms)}' cannot be null");
-
-            var forms = goalForms.ToArray();
-            var goals = forms.Select(f => f.Goal).ToArray();
-            await UpdateGoals(goals, goal =>
-            {
-                var form = forms.First(gf => gf.Goal.Id == goal.Id);
-                goal.Observers = form.ObserverIds?
-                    .Select(observerId => new GoalObserver(goal.Id, observerId))
-                    .ToList();
-            });
-        }
-
+        } 
+        
         /// <inheritdoc />
         public async Task<VmGoal> Delete(ApplicationUser currentUser, int goalId)
         {
@@ -191,7 +144,7 @@ namespace Workflow.Services
             var goal = query.FirstOrDefault(g => g.Id == goalId);
 
             if(goal == null)
-                throw new HttpResponseException(NotFound, "The goal don't have parent");
+                throw new HttpResponseException(NotFound, "The vmGoal don't have parent");
 
             return _vmConverter.ToViewModel(goal.ParentGoal);
         }
@@ -485,68 +438,67 @@ namespace Workflow.Services
             return vmGoals;
         }
 
-        private async Task<Goal> CreateGoal(ApplicationUser currentUser, VmGoal goal,
-            IEnumerable<string> observerIds = null,
-            IEnumerable<VmGoal> childGoals = null)
+        private async Task<Goal> CreateGoal(ApplicationUser currentUser, VmGoal vmGoal)
         {
-            if (goal == null)
+            if (vmGoal == null)
                 throw new HttpResponseException(BadRequest,
-                    $"Parameter '{nameof(goal)}' cannot be null");
+                    $"Parameter '{nameof(vmGoal)}' cannot be null");
 
-            if (string.IsNullOrWhiteSpace(goal.Title))
+            if (string.IsNullOrWhiteSpace(vmGoal.Title))
                 throw new HttpResponseException(BadRequest, "Goal title cannot be empty");
 
             var creatingGoals = new List<Goal>();
-
-            var model = _vmConverter.ToModel(goal);
-            model.Id = 0;
-            model.CreationDate = DateTime.Now;
-            model.OwnerId = currentUser.Id;
-            
-            if (observerIds != null)
-            {
-                model.Observers = observerIds
-                    .Select(observerId => new GoalObserver(goal.Id, observerId))
-                    .ToList();
-            }
-
-            creatingGoals.Add(model);
-
-            if (childGoals != null)
-            {
-                foreach (var childGoal in childGoals)
-                {
-                    var childModel = _vmConverter.ToModel(childGoal);
-                    childModel.Id = 0;
-                    childModel.CreationDate = DateTime.Now;
-                    childModel.OwnerId = currentUser.Id;
-                    childModel.ParentGoal = model;
-
-                    creatingGoals.Add(childModel);
-                }
-            }
-
-
+            var goal = CreateGoalHierarchy(vmGoal, currentUser.Id, creatingGoals);
 
             await _dataContext.Goals.AddRangeAsync(creatingGoals);
             await _dataContext.SaveChangesAsync();
-            return model;
+
+            return goal;
         }
 
-        private async Task UpdateGoals(ICollection<VmGoal> vmGoals, Action<Goal> updateAction = null)
+        private Goal CreateGoalHierarchy(VmGoal vmGoal, string creatorId, List<Goal> creatingGoals)
+        {
+            var goal = _vmConverter.ToModel(vmGoal);
+            goal.Id = 0;
+            goal.CreationDate = DateTime.Now;
+            goal.OwnerId = creatorId;
+
+            goal.Observers = vmGoal.ObserverIds?
+                .Select(observerId => new GoalObserver(vmGoal.Id, observerId))
+                .ToList();
+
+            creatingGoals.Add(goal);
+
+            if (vmGoal.Children == null) 
+                return goal;
+
+            foreach (var vmChildGoal in vmGoal.Children)
+            {
+                var childGoal = CreateGoalHierarchy(vmChildGoal, creatorId, creatingGoals);
+                childGoal.ParentGoal = goal;
+            }
+
+            return goal;
+        }
+
+        private async Task UpdateGoals(ICollection<VmGoal> vmGoals)
         {
             if (vmGoals == null)
                 throw new HttpResponseException(BadRequest, $"Parameter '{nameof(vmGoals)}' cannot be null");
 
+            vmGoals = ChildrenHierarchyToPlainList(vmGoals);
+
             var goalIds = vmGoals.Select(g => g.Id).ToArray();
-            var existedGoals = _dataContext.Goals.Where(g => goalIds.Any(gId => gId == g.Id));
+            var existedGoals = await _dataContext.Goals.Where(g => goalIds.Any(gId => gId == g.Id))
+                .ToArrayAsync();
+
             foreach (var vmGoal in vmGoals)
             {
                 if (string.IsNullOrWhiteSpace(vmGoal.Title))
                     throw new HttpResponseException(BadRequest, 
-                        "Cannot update goal. The title cannot be empty");
+                        "Cannot update vmGoal. The title cannot be empty");
 
-                var model = await existedGoals.FirstOrDefaultAsync(eg => eg.Id == vmGoal.Id);
+                var model = existedGoals.FirstOrDefault(eg => eg.Id == vmGoal.Id);
                 if(model == null)
                     throw new HttpResponseException(NotFound, $"Goal with id='{vmGoal.Id}' not found");
 
@@ -564,14 +516,31 @@ namespace Workflow.Services
                 model.ExpectedCompletedDate = vmGoal.ExpectedCompletedDate;
                 model.EstimatedPerformingTime = vmGoal.EstimatedPerformingTime;
 
-
-
-                updateAction?.Invoke(model);
+                model.Observers = vmGoal.ObserverIds?
+                    .Select(observerId => new GoalObserver(vmGoal.Id, observerId))
+                    .ToList();
 
                 _dataContext.Entry(model).State = EntityState.Modified;
             }
 
             await _dataContext.SaveChangesAsync();
+        }
+
+        private List<VmGoal> ChildrenHierarchyToPlainList(IEnumerable<VmGoal> vmGoals)
+        {
+            if (vmGoals == null)
+                return new List<VmGoal>();
+
+            var goalsArray = vmGoals.ToArray();
+            var result = new List<VmGoal>(goalsArray);
+
+            foreach (var vmGoal in goalsArray)
+            {
+                var childrenList = ChildrenHierarchyToPlainList(vmGoal.Children);
+                result.AddRange(childrenList);
+            }
+
+            return result;
         }
 
         private async Task<IEnumerable<VmGoal>> RemoveRestore(ApplicationUser currentUser, 

@@ -65,26 +65,10 @@ namespace Workflow.Services.Abstract
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="currentUser"></param>
-        /// <param name="goalForm"></param>
-        /// <returns></returns>
-        Task<VmGoal> CreateByForm(ApplicationUser currentUser, VmGoalForm goalForm);
-
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="user"></param>
         /// <param name="goal"></param>
         /// <returns></returns>
         Task Update(ApplicationUser user, VmGoal goal);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="currentUser"></param>
-        /// <param name="goalForm"></param>
-        /// <returns></returns>
-        Task UpdateByForm(ApplicationUser currentUser, VmGoalForm goalForm);
 
 
         /// <summary>
@@ -102,14 +86,6 @@ namespace Workflow.Services.Abstract
         /// <param name="goals"></param>
         /// <returns></returns>
         Task UpdateRange(ApplicationUser currentUser, IEnumerable<VmGoal> goals);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="currentUser"></param>
-        /// <param name="goalForms"></param>
-        /// <returns></returns>
-        Task UpdateByFormRange(ApplicationUser currentUser, IEnumerable<VmGoalForm> goalForms);
 
         /// <summary>
         /// 
