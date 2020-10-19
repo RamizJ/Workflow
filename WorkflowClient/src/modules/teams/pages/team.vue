@@ -1,7 +1,7 @@
 <template>
   <div class="page">
     <div class="header">
-      <div class="header_title">
+      <div class="header__title">
         <input
           class="title"
           v-model="teamItem.name"
