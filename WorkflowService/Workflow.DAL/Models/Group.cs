@@ -15,6 +15,9 @@ namespace Workflow.DAL.Models
         public List<Group> ChildGroups { get; set; }
 
         public DateTime CreationDate { get; set; }
+
+        public List<Metadata> MetadataList { get; set; } = new List<Metadata>();
+
         public bool IsRemoved { get; set; }
     }
 }

@@ -10,6 +10,12 @@
         public int? GoalId { get; set; }
         public Goal Goal { get; set; }
 
+        public int? ProjectId { get; set; }
+        public Project Project { get; set; }
+
+        public int? GroupId { get; set; }
+        public Group Group { get; set; }
+
 
         public Metadata()
         { }
