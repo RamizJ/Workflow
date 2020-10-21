@@ -38,7 +38,7 @@ namespace Workflow.VM.ViewModelConverters
             model.Description = viewModel.Description;
             model.ExpectedCompletedDate = viewModel.ExpectedCompletedDate;
             model.OwnerId = viewModel.OwnerId;
-            model.GroupId = viewModel.GroupId;
+            model.GroupId = viewModel.GroupId == 0 ? null : viewModel.GroupId;
         }
 
         public void SetViewModel(Project model, VmProject viewModel)

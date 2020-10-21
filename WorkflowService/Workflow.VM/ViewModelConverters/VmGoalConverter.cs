@@ -33,7 +33,7 @@ namespace Workflow.VM.ViewModelConverters
         public void SetModel(VmGoal viewModel, Goal model)
         {
             model.Id = viewModel.Id;
-            model.ParentGoalId = viewModel.ParentGoalId;
+            model.ParentGoalId = viewModel.ParentGoalId == 0 ? null : viewModel.ParentGoalId;
             model.OwnerId = viewModel.OwnerId;
             model.CreationDate = viewModel.CreationDate;
             model.Title = viewModel.Title;
