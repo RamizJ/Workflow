@@ -23,7 +23,7 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 
-import ChartLine from '@/core/components/base-chart-line.vue'
+import ChartLine from '@/core/components/base-chart/base-chart-line.vue'
 import moment from 'moment'
 import { ChartData, ChartDataSets, ChartOptions } from 'chart.js'
 

@@ -89,7 +89,7 @@ import ProjectReports from '@/modules/projects/components/project-statistics.vue
 import ProjectDialog from '@/modules/projects/components/project-window.vue'
 import ProjectAddTeamDialog from '@/modules/projects/components/project-add-team-window.vue'
 import TaskDialog from '@/modules/goals/components/goal-window.vue'
-import TaskTable from '@/modules/goals/components/goal-table.vue'
+import TaskTable from '@/modules/goals/components/goal-table/goal-table.vue'
 import Project from '@/modules/projects/models/project.type'
 import TeamTable from '@/modules/teams/components/team-table.vue'
 import ProjectUsers from '@/modules/projects/components/project-team-users.vue'

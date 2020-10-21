@@ -120,8 +120,7 @@ export default class BaseTable extends Vue {
     }
     this.table?.setCurrentRow(row)
     this.selectedRows = [row]
-    this.$emit('right-click', row)
-    // this.contextMenu.open(event, { row, column })
+    this.$emit('right-click', row, event)
     event.preventDefault()
   }
 

@@ -56,7 +56,7 @@ export default class LoginPage extends Vue {
         try {
           this.loading = true
           await authModule.login(formCredentials)
-          await this.$router.push('/tasks')
+          await this.$router.push('/')
           this.loading = false
         } catch (error) {
           this.loading = false
@@ -74,7 +74,6 @@ export default class LoginPage extends Vue {
           type: 'error',
         })
       }
-      this.formComponent.resetFields()
     })
   }
 }

@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import Sidebar from '@/core/components/app-sidebar.vue'
+import Sidebar from '@/core/components/app-sidebar/app-sidebar.vue'
 
 @Component({ components: { Sidebar } })
 export default class MainLayout extends Vue {}

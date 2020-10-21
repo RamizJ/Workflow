@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import ChartDoughnut from '@/core/components/base-chart-doughnut.vue'
+import ChartDoughnut from '@/core/components/base-chart/base-chart-doughnut.vue'
 import { ChartData, ChartOptions } from 'chart.js'
 
 @Component({ components: { ChartDoughnut } })
