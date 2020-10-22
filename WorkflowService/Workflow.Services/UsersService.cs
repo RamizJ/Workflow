@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +12,7 @@ using Workflow.Share.Extensions;
 using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
+using static System.Net.HttpStatusCode;
 
 namespace Workflow.Services
 {
@@ -61,7 +61,7 @@ namespace Workflow.Services
                 throw new ArgumentNullException(nameof(currentUser));
 
             if (pageOptions == null)
-                throw new HttpResponseException(HttpStatusCode.BadRequest, 
+                throw new HttpResponseException(BadRequest, 
                     $"Parameter '{nameof(pageOptions)}' cannot be null");
 
             var query = GetQuery(pageOptions.WithRemoved);
@@ -102,7 +102,7 @@ namespace Workflow.Services
 
             var result = await _userManager.CreateAsync(model, password);
             if (!result.Succeeded) 
-                throw new InvalidOperationException(result.ToString());
+                throw new HttpResponseException(BadRequest, result.ToString());
 
             return _vmConverter.ToViewModel(model);
         }
@@ -115,7 +115,7 @@ namespace Workflow.Services
 
             var model = await _userManager.FindByIdAsync(user.Id);
             if (model == null)
-                throw new InvalidOperationException($"User with id='{user.Id}' not found");
+                throw new HttpResponseException(NotFound, $"User with id='{user.Id}' not found");
 
             model.UserName = user.UserName;
             model.NormalizedUserName = user.UserName.ToUpper();
@@ -130,7 +130,7 @@ namespace Workflow.Services
 
             var result = await _userManager.UpdateAsync(model);
             if (!result.Succeeded) 
-                throw new InvalidOperationException(result.ToString());
+                throw new HttpResponseException(BadRequest, result.ToString());
         }
 
         /// <inheritdoc />
@@ -163,7 +163,7 @@ namespace Workflow.Services
         {
             var result = await _userManager.ChangePasswordAsync(currentUser, currentPassword, newPassword);
             if (!result.Succeeded)
-                throw new InvalidOperationException(result.ToString());
+                throw new HttpResponseException(BadRequest, result.ToString());
         }
 
         /// <inheritdoc />

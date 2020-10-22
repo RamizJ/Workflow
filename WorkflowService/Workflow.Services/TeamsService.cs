@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
@@ -12,6 +11,7 @@ using Workflow.Share.Extensions;
 using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
+using static System.Net.HttpStatusCode;
 
 namespace Workflow.Services
 {
@@ -60,7 +60,7 @@ namespace Workflow.Services
                 throw new ArgumentNullException(nameof(currentUser));
 
             if (pageOptions == null)
-                throw new HttpResponseException(HttpStatusCode.BadRequest,
+                throw new HttpResponseException(BadRequest,
                     $"Parameter '{nameof(pageOptions)}' cannot be null");
 
             var query = GetQuery(currentUser, pageOptions.WithRemoved);
@@ -314,7 +314,7 @@ namespace Workflow.Services
                 throw new ArgumentNullException(nameof(team));
 
             if (string.IsNullOrWhiteSpace(team.Name))
-                throw new InvalidOperationException("Team name cannot be empty");
+                throw new HttpResponseException(BadRequest, "Team name cannot be empty");
 
             var model = _vmConverter.ToModel(team);
             model.Id = 0;
@@ -346,7 +346,7 @@ namespace Workflow.Services
             foreach (var model in models)
             {
                 if (string.IsNullOrWhiteSpace(model.Name))
-                    throw new InvalidOperationException("Cannot update team. The name cannot be empty");
+                    throw new HttpResponseException(BadRequest, "Cannot update team. The name cannot be empty");
 
                 var team = teams.First(t => t.Id == model.Id);
                 model.Name = team.Name;
