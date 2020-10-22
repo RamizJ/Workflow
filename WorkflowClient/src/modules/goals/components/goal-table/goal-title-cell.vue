@@ -1,5 +1,5 @@
 <template>
-  <div class="title-cell">
+  <div class="cell title-cell">
     <span class="cell-text">{{ row.title }}</span>
     <span class="cell-icon" v-if="row.description">
       <unicon name="file-alt" />
@@ -23,4 +23,8 @@ export default class GoalTableNew extends Vue {
 }
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+.title-cell {
+  padding-left: 0;
+}
+</style>

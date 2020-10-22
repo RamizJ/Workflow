@@ -5,6 +5,7 @@ import { View } from '@/core/types/view.type'
 
 import projectsModule from '@/modules/projects/store/projects.store'
 import usersModule from '@/modules/users/store/users.store'
+import tableStore from '@/core/store/table.store'
 
 @Component
 export default class ToolbarMixin extends Vue {
@@ -95,20 +96,24 @@ export default class ToolbarMixin extends Vue {
   }
 
   public onSearch(value: string): void {
+    tableStore.setSearch(value)
     this.$emit('search', value || this.search)
   }
 
   public onFiltersChange(): void {
+    tableStore.setFilters(this.filterFields)
     this.$emit('filters', this.filterFields)
   }
 
   public onOrderChange(value: SortType): void {
     this.order = value
+    tableStore.setOrder(value)
     this.$emit('order', value)
   }
 
   public onSortChange(value: string): void {
     this.sort = value
+    tableStore.setSort(value)
     this.$emit('sort', value)
   }
 

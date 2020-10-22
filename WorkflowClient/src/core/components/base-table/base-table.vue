@@ -44,6 +44,7 @@ import Entity from '@/core/types/entity.type'
 export default class BaseTable extends Vue {
   @Prop() readonly infinite?: boolean
   @Prop() readonly data?: Entity[]
+
   @Ref('table') readonly table!: ElTable
   @Ref('loader') readonly loader!: InfiniteLoading
 
@@ -102,6 +103,9 @@ export default class BaseTable extends Vue {
     } else {
       this.selectedRows = [row]
     }
+    this.selectedRows = this.selectedRows.filter(
+      (v, i, a) => a.findIndex((t) => t.id === v.id) === i
+    )
     this.selectedRows.map((entity) => {
       this.table.toggleRowSelection(entity, true)
     })
@@ -119,8 +123,7 @@ export default class BaseTable extends Vue {
       this.table?.toggleRowSelection(row)
     }
     this.table?.setCurrentRow(row)
-    this.selectedRows = [row]
-    this.$emit('right-click', row, event)
+    this.$emit('right-click', row, this.selectedRows, event)
     event.preventDefault()
   }
 

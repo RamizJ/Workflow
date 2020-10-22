@@ -1,6 +1,7 @@
 @import '~vue-context/src/sass/vue-context';
 
 .v-context {
+  min-width: 200px;
   &, & ul {
     background: var(--dropdown-background);
     padding: 5px 0;

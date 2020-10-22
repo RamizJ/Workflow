@@ -10,7 +10,7 @@ import moment from 'moment' // TODO: Replace with dateFns
 import store from '@/core/store'
 import api from '../api'
 import Task, { Status } from '@/modules/goals/models/task.type'
-import Query from '@/core/types/query.type'
+import Query, { FilterField, SortType } from '@/core/types/query.type'
 import Attachment from '@/modules/goals/models/attachment.type'
 
 @Module({

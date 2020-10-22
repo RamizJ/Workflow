@@ -1,6 +1,7 @@
 <template>
   <BaseTable
-    :data="data"
+    ref="baseTable"
+    :data="tableData"
     @space="openGoalWindow"
     @double-click="openGoalWindow"
     @right-click="openContextMenu"
@@ -23,62 +24,135 @@
       width="180"
       :formatter="formatDate"
     />
-    <BaseContextMenu slot="footer" ref="contextMenu">
-      <template v-slot:default="scope">
-        <BaseContextMenuItem @click="editEntity(scope.data)">Изменить</BaseContextMenuItem>
-      </template>
-    </BaseContextMenu>
+    <GoalContextMenu
+      slot="footer"
+      ref="contextMenu"
+      @edit="edit"
+      @create="create"
+      @edit-status="editStatus"
+      @remove="remove"
+      @restore="restore"
+    />
   </BaseTable>
 </template>
 
 <script lang="ts">
-import { Component, Ref, Vue } from 'vue-property-decorator'
+import { Component, Ref, Vue, Watch } from 'vue-property-decorator'
 import { StateChanger } from 'vue-infinite-loading'
-import goalsStore from '@/modules/goals/store/goals.store'
-import BaseTable from '../../../../core/components/base-table/base-table.vue'
-import BaseTableColumn from '@/core/components/base-table/base-table-column.vue'
-import Task, { Priority, Status, priorities, statuses } from '@/modules/goals/models/task.type'
-import Query from '@/core/types/query.type'
-import GoalTitleCell from '@/modules/goals/components/goal-table/goal-title-cell.vue'
-import Entity from '@/core/types/entity.type'
 import { ElTableColumn } from 'element-ui/types/table-column'
-import moment from 'moment'
-import BaseContextMenu from '@/core/components/base-context-menu/base-context-menu.vue'
-import BaseContextMenuItem from '@/core/components/base-context-menu/base-context-menu-item.vue'
+
+import goalsStore from '@/modules/goals/store/goals.store'
+import tableStore from '@/core/store/table.store'
+import BaseTable from '@/core/components/base-table/base-table.vue'
+import BaseTableColumn from '@/core/components/base-table/base-table-column.vue'
+import GoalTitleCell from '@/modules/goals/components/goal-table/goal-title-cell.vue'
+import Query, { FilterField } from '@/core/types/query.type'
+import Entity from '@/core/types/entity.type'
+import Task, { Priority, Status, priorities, statuses } from '@/modules/goals/models/task.type'
+import GoalContextMenu from '@/modules/goals/components/goal-table/goal-context-menu.vue'
 
 @Component({
-  components: { BaseContextMenuItem, BaseContextMenu, GoalTitleCell, BaseTableColumn, BaseTable },
+  components: {
+    BaseTable,
+    BaseTableColumn,
+    GoalTitleCell,
+    GoalContextMenu,
+  },
 })
 export default class GoalTableNew extends Vue {
-  @Ref() readonly contextMenu!: BaseContextMenu
+  @Ref() readonly contextMenu!: GoalContextMenu
+  @Ref() readonly baseTable!: BaseTable
 
-  private query: Query = new Query()
-  private data: Task[] = []
+  private get tableData(): Task[] {
+    return tableStore.data as Task[]
+  }
+
+  private get query(): Query {
+    return tableStore.query
+  }
+
+  private get isReloadRequired(): boolean {
+    return tableStore.isReloadRequired
+  }
+
+  @Watch('isReloadRequired')
+  onReloadRequired() {
+    tableStore.setData([])
+    tableStore.setPage(0)
+    this.baseTable.loader.stateChanger.reset()
+    tableStore.completeReload()
+  }
 
   private get isProjectPage(): boolean {
     return !!this.$route.params.projectId
   }
 
   private async onLoad($state: StateChanger): Promise<void> {
-    const isFirstLoad = !this.data.length
     const data = await goalsStore.findAll(this.query)
-    if (this.query.pageNumber !== undefined) this.query.pageNumber++
+    tableStore.increasePage()
     if (data.length) $state.loaded()
     else $state.complete()
-    this.data = isFirstLoad ? data : this.data.concat(data)
+    tableStore.appendData(data)
   }
 
-  private openContextMenu(row: Entity, event: Event) {
+  private openContextMenu(row: Task, selection: Task[], event: Event) {
+    tableStore.setSelectedRow(row)
+    tableStore.setSelectedRows(selection)
     this.contextMenu.open(event, row)
   }
 
   private openGoalWindow(row: Task): void {
-    goalsStore.setTask(row)
+    tableStore.setSelectedRow(row)
+    goalsStore.setTask(tableStore.selectedRow as Task)
     goalsStore.openGoalWindow()
   }
 
-  private editEntity(row: Task): void {
-    console.log(row)
+  private async edit(): Promise<void> {
+    if (!tableStore.selectedRow) return
+    goalsStore.setTask(tableStore.selectedRow as Task)
+    await goalsStore.openGoalWindow()
+  }
+
+  private async editStatus(status: string): Promise<void> {
+    if (tableStore.isMultiselect) {
+      const selection = tableStore.selectedRows as Task[]
+      selection.forEach((goal: Task) => (goal.state = status as Status))
+      await goalsStore.updateMany(selection)
+    } else {
+      if (!tableStore.selectedRow) return
+      const row: Task = tableStore.selectedRow as Task
+      row.state = status as Status
+      await goalsStore.updateOne(row)
+    }
+  }
+
+  private async create(): Promise<void> {
+    goalsStore.setTask(new Task())
+    await goalsStore.openGoalWindow()
+  }
+
+  private async remove(): Promise<void> {
+    if (tableStore.isMultiselect) {
+      const selection = tableStore.selectedRows as Task[]
+      const ids = selection.map((goal: Task) => goal.id!)
+      await goalsStore.deleteMany(ids)
+    } else {
+      if (!tableStore.selectedRow) return
+      if (!tableStore.selectedRow?.id) return
+      await goalsStore.deleteOne(tableStore.selectedRow.id as number)
+    }
+  }
+
+  private async restore(): Promise<void> {
+    if (tableStore.isMultiselect) {
+      const selection = tableStore.selectedRows as Task[]
+      const ids = selection.map((goal: Task) => goal.id!)
+      await goalsStore.restoreMany(ids)
+    } else {
+      if (!tableStore.selectedRow) return
+      if (!tableStore.selectedRow?.id) return
+      await goalsStore.restoreOne(tableStore.selectedRow.id as number)
+    }
   }
 
   public formatStatus(row: Entity, column: ElTableColumn, value: string): string {
@@ -90,8 +164,15 @@ export default class GoalTableNew extends Vue {
   }
 
   public formatDate(row: Entity, column: ElTableColumn, value: string): string {
-    const dateUtc = moment.utc(value)
-    return dateUtc.format('DD.MM.YYYY HH:mm')
+    const date = new Date(value)
+    return date.toLocaleString('ru', {
+      timeZone: 'UTC',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
   }
 
   public formatFio(row: Entity, column: ElTableColumn, value: string): string {

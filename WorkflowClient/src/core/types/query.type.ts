@@ -9,7 +9,7 @@ export default class Query {
   projectId?: number
   teamId?: number
 
-  constructor(pageSize = 20) {
+  constructor(pageSize = 10) {
     this.pageNumber = 0
     this.pageSize = pageSize
   }

@@ -15,7 +15,13 @@
       @sort="onSortChange"
       @view="onViewChange"
     ></task-toolbar>
-    <!--    <GoalTableNew />-->
+    <!--    <GoalTableNew-->
+    <!--      v-if="view === 'list'"-->
+    <!--      :search="search"-->
+    <!--      :filters="filters"-->
+    <!--      :order="order"-->
+    <!--      :sort="sort"-->
+    <!--    />-->
     <task-table
       v-if="view === 'list'"
       ref="items"
