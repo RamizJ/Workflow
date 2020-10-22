@@ -15,7 +15,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 import NavMenu from '@/core/components/base-nav-menu.vue'
 import NavMenuItem from '@/core/components/base-nav-menu-item.vue'
-import SidebarFooter from '@/core/components/app-sidebar-footer.vue'
+import SidebarFooter from '@/core/components/app-sidebar/app-sidebar-footer.vue'
 
 @Component({
   components: { NavMenu, NavMenuItem, SidebarFooter },

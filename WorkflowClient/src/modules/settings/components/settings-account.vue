@@ -156,7 +156,7 @@ export default class SettingsAccount extends Vue {
   private async exit(): Promise<void> {
     try {
       await authModule.logout()
-      await this.$router.push({ name: 'Login' })
+      await this.$router.push('/login')
       await settingsModule.closeSettings()
     } catch (e) {
       console.error(e)

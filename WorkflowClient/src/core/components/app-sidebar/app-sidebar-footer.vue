@@ -5,6 +5,7 @@
       <PopoverButton icon="user-arrows" @click="openTeamWindow">Новая команда</PopoverButton>
       <PopoverButton icon="users-alt" @click="openUserWindow">Новый пользователь</PopoverButton>
       <PopoverButton icon="layer-group" @click="openProjectWindow">Новый проект</PopoverButton>
+      <PopoverButton icon="edit" @click="openGoalWindow">Новый раздел</PopoverButton>
       <PopoverButton icon="edit-alt" @click="openGoalWindow">Новая задача</PopoverButton>
       <IconButton slot="reference" icon="plus" />
     </Popover>
@@ -26,8 +27,8 @@ import teamsStore from '@/modules/teams/store/teams.store'
 import usersStore from '@/modules/users/store/users.store'
 import settingsStore from '@/modules/settings/store/settings.store'
 
-import Popover from '@/core/components/base-popover.vue'
-import PopoverButton from '@/core/components/base-popover-button.vue'
+import Popover from '@/core/components/base-popover/base-popover.vue'
+import PopoverButton from '@/core/components/base-popover/base-popover-button.vue'
 import IconButton from '@/core/components/base-icon-button.vue'
 import ProjectDialog from '@/modules/projects/components/project-window.vue'
 import GoalWindow from '@/modules/goals/components/goal-window.vue'

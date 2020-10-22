@@ -15,7 +15,7 @@
       @sort="onSortChange"
       @view="onViewChange"
     ></task-toolbar>
-    <!--<GoalTableNew />-->
+    <!--    <GoalTableNew />-->
     <task-table
       v-if="view === 'list'"
       ref="items"
@@ -39,11 +39,11 @@
 import { Component, Mixins } from 'vue-property-decorator'
 import PageMixin from '@/core/mixins/page.mixin'
 import TaskToolbar from '@/modules/goals/components/goal-toolbar.vue'
-import TaskTable from '@/modules/goals/components/goal-table.vue'
+import TaskTable from '@/modules/goals/components/goal-table/goal-table.vue'
 import TaskBoard from '@/modules/goals/components/goal-board.vue'
 import { View } from '@/core/types/view.type'
 import { SortType } from '@/core/types/query.type'
-import GoalTableNew from '@/modules/goals/components/goal-table-new.vue'
+import GoalTableNew from '@/modules/goals/components/goal-table/goal-table-new.vue'
 
 @Component({
   components: {
