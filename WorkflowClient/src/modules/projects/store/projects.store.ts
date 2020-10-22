@@ -120,7 +120,7 @@ class ProjectsStore extends VuexModule {
       project: entity,
       teamIds: entity.teamIds || [],
     }
-    const response = await api.create(request)
+    const response = await api.createByForm(request)
     const result = response.data as Project
     result.teamIds = entity.teamIds
     this.context.commit('setProject', result)

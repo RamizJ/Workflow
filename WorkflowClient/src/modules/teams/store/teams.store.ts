@@ -110,7 +110,7 @@ class TeamsStore extends VuexModule {
       userIds: entity.userIds || [],
       projectIds: entity.projectIds || [],
     }
-    const response = await api.create(request)
+    const response = await api.createByForm(request)
     const result = response.data as { team: Team; userIds: string[]; projectIds: number[] }
     result.team.userIds = result.userIds
     result.team.projectIds = result.projectIds

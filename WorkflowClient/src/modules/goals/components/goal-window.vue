@@ -282,6 +282,7 @@ import { Input, Message } from 'element-ui'
 import moment from 'moment'
 
 import tasksModule from '@/modules/goals/store/goals.store'
+import authStore from '@/modules/users/store/auth.store'
 import DialogMixin from '@/core/mixins/dialog.mixin'
 import BaseWindow from '@/core/components/base-window.vue'
 import Checklist from '@/modules/goals/components/goal-checklist.vue'
@@ -298,13 +299,13 @@ export default class GoalWindow extends Mixins(DialogMixin) {
     description: '',
     projectId: parseInt(this.$route.params.projectId) || undefined,
     performerId: undefined,
-    performerFio: undefined,
     creationDate: moment.utc(moment()).format(),
     state: Status.New,
     priority: Priority.Normal,
     hasChildren: false,
     isRemoved: false,
     attachments: [],
+    metadataList: [],
   }
 
   private rules = {
