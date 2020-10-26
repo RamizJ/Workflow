@@ -5,16 +5,16 @@
       <PopoverButton icon="user-arrows" @click="openTeamWindow">Новая команда</PopoverButton>
       <PopoverButton icon="users-alt" @click="openUserWindow">Новый пользователь</PopoverButton>
       <PopoverButton icon="layer-group" @click="openProjectWindow">Новый проект</PopoverButton>
-      <PopoverButton icon="edit" @click="openGoalWindow">Новый раздел</PopoverButton>
+      <PopoverButton icon="edit" @click="openSectionWindow">Новый раздел</PopoverButton>
       <PopoverButton icon="edit-alt" @click="openGoalWindow">Новая задача</PopoverButton>
       <IconButton slot="reference" icon="plus" />
     </Popover>
     <IconButton icon="sliders-v-alt" @click="openSettings" />
 
-    <ProjectDialog v-if="isProjectWindowOpened" @close="closeProjectWindow" />
-    <GoalWindow v-if="isGoalWindowOpened" @close="closeGoalWindow" />
     <TeamDialog v-if="isTeamWindowOpened" @close="closeTeamWindow" />
     <UserDialog v-if="isUserWindowOpened" @close="closeUserWindow" />
+    <ProjectDialog v-if="isProjectWindowOpened" @close="closeProjectWindow" />
+    <GoalWindow v-if="isGoalWindowOpened" :caption="goalWindowCaption" @close="closeGoalWindow" />
     <SettingsWindow v-if="isSettingsOpened" @closed="closeSettings" />
   </div>
 </template>
@@ -49,6 +49,8 @@ import SettingsWindow from '@/modules/settings/components/settings-window.vue'
   },
 })
 export default class SidebarFooter extends Vue {
+  private goalWindowCaption: string | undefined = 'Задача'
+
   private get isProjectWindowOpened(): boolean {
     return projectsStore.isProjectWindowOpened
   }
@@ -76,10 +78,17 @@ export default class SidebarFooter extends Vue {
     projectsStore.closeProjectWindow()
   }
 
+  private openSectionWindow(): void {
+    this.goalWindowCaption = 'Раздел'
+    goalsStore.openGoalWindow()
+  }
+
   private openGoalWindow(): void {
+    this.goalWindowCaption = 'Задача'
     goalsStore.openGoalWindow()
   }
   private closeGoalWindow(): void {
+    this.goalWindowCaption = ''
     goalsStore.closeGoalWindow()
   }
 

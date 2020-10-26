@@ -2,6 +2,7 @@
   <BaseTable
     ref="baseTable"
     :data="tableData"
+    :row-class="setRowClass"
     @space="openGoalWindow"
     @double-click="openGoalWindow"
     @right-click="openContextMenu"
@@ -76,7 +77,7 @@ export default class GoalTableNew extends Vue {
   }
 
   @Watch('isReloadRequired')
-  onReloadRequired() {
+  onReloadRequired(): void {
     tableStore.setData([])
     tableStore.setPage(0)
     this.baseTable.loader.stateChanger.reset()
@@ -101,6 +102,15 @@ export default class GoalTableNew extends Vue {
     tableStore.setSelectedRow(row)
     tableStore.setSelectedRows(selection)
     this.contextMenu.open(event, row)
+  }
+
+  private setRowClass({ row, rowIndex }: { row: Entity; rowIndex: number }): string {
+    const goal = row as Goal
+    const isSection = goal.metadataList?.some(
+      (metadata) => metadata.key === 'isSection' && metadata.value === 'true'
+    )
+    if (isSection) return 'section'
+    else return ''
   }
 
   private openGoalWindow(row: Goal): void {

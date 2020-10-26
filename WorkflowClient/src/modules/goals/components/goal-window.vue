@@ -1,6 +1,6 @@
 <template>
   <BaseWindow @closed="exit">
-    <h1 slot="title">Задача</h1>
+    <h1 slot="title">{{ windowTitle || 'Задача' }}</h1>
     <el-form
       slot="body"
       ref="form"
@@ -16,7 +16,7 @@
             <el-input
               ref="title"
               v-model="form.title"
-              placeholder="Новая задача"
+              placeholder="Название"
               @keyup.enter.native="submit"
             ></el-input>
           </el-form-item>
@@ -293,8 +293,10 @@ import Attachment from '@/modules/goals/models/attachment.type'
 @Component({ components: { Checklist, BaseWindow } })
 export default class GoalWindow extends Mixins(DialogMixin) {
   @Prop() readonly id: number | undefined
+  @Prop() readonly caption: string | undefined
   @Ref() readonly title?: Input
 
+  private windowTitle = 'Задача'
   private form: Goal = {
     title: '',
     description: '',
@@ -337,11 +339,22 @@ export default class GoalWindow extends Mixins(DialogMixin) {
     } else if (tasksModule.task) {
       this.form = tasksModule.task
     }
-
+    if (this.isSection) {
+      this.form.metadataList = [{ key: 'isSection', value: 'true' }]
+      this.windowTitle = 'Раздел'
+    }
     await this.searchUsers()
     await this.searchProjects()
     this.loading = false
     ;(this.$refs.title as Input).focus()
+  }
+
+  private get isSection(): boolean {
+    const hasSectionMark = this.form.metadataList?.some(
+      (metadata) => metadata.key === 'isSection' && metadata.value === 'true'
+    )
+    const hasSectionTitle = this.caption === 'Раздел'
+    return hasSectionMark || hasSectionTitle
   }
 
   private async submit(): Promise<void> {

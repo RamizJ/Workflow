@@ -44,6 +44,7 @@ import Entity from '@/core/types/entity.type'
 export default class BaseTable extends Vue {
   @Prop() readonly infinite?: boolean
   @Prop() readonly data?: Entity[]
+  @Prop() readonly rowClass?: ({ row: Entity, rowIndex: number }) => string
 
   @Ref('table') readonly table!: ElTable
   @Ref('loader') readonly loader!: InfiniteLoading
@@ -68,9 +69,12 @@ export default class BaseTable extends Vue {
     this.$emit('load', $state)
   }
 
-  private setIndex({ row, rowIndex }: { row: Entity; rowIndex: number }): string | undefined {
+  private setIndex({ row, rowIndex }: { row: Entity; rowIndex: number }): string {
+    let rowClass = ''
     row.index = rowIndex
-    if (this.selectedRows.some((entity) => entity.id === row.id)) return 'selected'
+    if (this.selectedRows.some((entity) => entity.id === row.id)) rowClass = 'selected'
+    if (this.rowClass) rowClass += ' ' + this.rowClass({ row, rowIndex })
+    return rowClass
   }
 
   public onCheck(selection: Entity[], entity: Entity): void {
