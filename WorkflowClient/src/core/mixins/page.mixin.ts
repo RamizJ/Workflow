@@ -39,9 +39,9 @@ export default class PageMixin extends Vue {
     const query: Dictionary<string | (string | null)[] | null | undefined> | undefined = {
       ...this.$route.query,
     }
-    if (query[queryLabel] !== queryValue) {
-      query[queryLabel] = queryValue || undefined
-      await this.$router.replace({ query })
-    }
+    // if (query[queryLabel] !== queryValue) {
+    //   query[queryLabel] = queryValue || undefined
+    //   await this.$router.replace({ query })
+    // }
   }
 }

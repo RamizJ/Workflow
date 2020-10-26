@@ -125,9 +125,12 @@
 import { Component, Mixins } from 'vue-property-decorator'
 import Toolbar from '@/core/components/base-toolbar.vue'
 import ToolbarMixin from '@/core/mixins/toolbar.mixin.ts'
+import tableStore from '@/core/store/table.store'
+import { SortType } from '@/core/types/query.type'
 
 @Component({ components: { Toolbar } })
 export default class TaskToolbar extends Mixins(ToolbarMixin) {
+  public sort = this.$route.query.sort || 'creationDate'
   private sortFields = [
     { value: 'creationDate', label: 'По дате создания' },
     { value: 'title', label: 'По названию' },
@@ -136,5 +139,10 @@ export default class TaskToolbar extends Mixins(ToolbarMixin) {
     { value: 'state', label: 'По статусу' },
     { value: 'priority', label: 'По приоритету' },
   ]
+
+  protected mounted(): void {
+    tableStore.setSort('creationDate')
+    tableStore.setOrder(SortType.Descending)
+  }
 }
 </script>

@@ -20,15 +20,15 @@ import Attachment from '@/modules/goals/models/attachment.type'
   store,
 })
 class GoalsStore extends VuexModule {
-  _task: Task | null = null
-  _tasks: Task[] = []
+  _goal: Task | null = null
+  _goals: Task[] = []
   _goalWindowOpened = false
 
   public get task() {
-    return this._task
+    return this._goal
   }
   public get tasks() {
-    return this._tasks
+    return this._goals
   }
   public get isGoalWindowOpened(): boolean {
     return this._goalWindowOpened
@@ -36,12 +36,12 @@ class GoalsStore extends VuexModule {
 
   @Mutation
   setTask(task: Task) {
-    this._task = task
+    this._goal = task
   }
 
   @Mutation
   setTasks(tasks: Task[]) {
-    this._tasks = tasks
+    this._goals = tasks
   }
 
   @MutationAction({ mutate: ['_goalWindowOpened'] })
@@ -51,9 +51,10 @@ class GoalsStore extends VuexModule {
     }
   }
 
-  @MutationAction({ mutate: ['_goalWindowOpened'] })
-  public async openGoalWindow() {
+  @MutationAction({ mutate: ['_goalWindowOpened', '_goal'] })
+  public async openGoalWindow(goal?: Task) {
     return {
+      _goal: goal || null,
       _goalWindowOpened: true,
     }
   }

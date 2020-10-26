@@ -1,7 +1,6 @@
 import { getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import store from '@/core/store/index'
 import Query, { FilterField, SortType } from '@/core/types/query.type'
-import Task from '@/modules/goals/models/task.type'
 import Entity from '@/core/types/entity.type'
 
 @Module({
@@ -123,6 +122,7 @@ class TableStore extends VuexModule {
   setOrder(value: SortType) {
     this._order = value
     if (this._query.sortFields) this._query.sortFields[0].sortType = value
+    else this._query.sortFields = [{ fieldName: this._sort || '', sortType: value }]
     this._isReloadRequired = true
   }
 
@@ -130,6 +130,8 @@ class TableStore extends VuexModule {
   setSort(value: string) {
     this._sort = value
     if (this._query.sortFields) this._query.sortFields[0].fieldName = value
+    else
+      this._query.sortFields = [{ fieldName: value, sortType: this._order || SortType.Descending }]
     this._isReloadRequired = true
   }
 }

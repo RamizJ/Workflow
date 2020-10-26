@@ -15,21 +15,21 @@
       @sort="onSortChange"
       @view="onViewChange"
     ></task-toolbar>
-    <!--    <GoalTableNew-->
-    <!--      v-if="view === 'list'"-->
-    <!--      :search="search"-->
-    <!--      :filters="filters"-->
-    <!--      :order="order"-->
-    <!--      :sort="sort"-->
-    <!--    />-->
-    <task-table
+    <GoalTableNew
       v-if="view === 'list'"
-      ref="items"
       :search="search"
       :filters="filters"
       :order="order"
       :sort="sort"
-    ></task-table>
+    />
+    <!--    <task-table-->
+    <!--      v-if="view === 'list'"-->
+    <!--      ref="items"-->
+    <!--      :search="search"-->
+    <!--      :filters="filters"-->
+    <!--      :order="order"-->
+    <!--      :sort="sort"-->
+    <!--    ></task-table>-->
     <task-board
       v-if="view === 'board'"
       ref="items"
@@ -50,6 +50,7 @@ import TaskBoard from '@/modules/goals/components/goal-board.vue'
 import { View } from '@/core/types/view.type'
 import { SortType } from '@/core/types/query.type'
 import GoalTableNew from '@/modules/goals/components/goal-table/goal-table-new.vue'
+import goalStore from '@/modules/goals/store/goals.store'
 
 @Component({
   components: {
@@ -66,8 +67,9 @@ export default class Tasks extends Mixins(PageMixin) {
   }
 
   private onCreate(): void {
-    if (this.view === View.List) (this.$refs.items as TaskTable).createEntity()
-    if (this.view === View.Board) (this.$refs.items as TaskBoard).createEntity()
+    goalStore.openGoalWindow()
+    // if (this.view === View.List) (this.$refs.items as TaskTable).createEntity()
+    // if (this.view === View.Board) (this.$refs.items as TaskBoard).createEntity()
   }
 }
 </script>

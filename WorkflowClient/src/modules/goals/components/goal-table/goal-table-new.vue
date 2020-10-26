@@ -104,13 +104,12 @@ export default class GoalTableNew extends Vue {
   private openGoalWindow(row: Task): void {
     tableStore.setSelectedRow(row)
     goalsStore.setTask(tableStore.selectedRow as Task)
-    goalsStore.openGoalWindow()
+    goalsStore.openGoalWindow(row)
   }
 
   private async edit(): Promise<void> {
     if (!tableStore.selectedRow) return
-    goalsStore.setTask(tableStore.selectedRow as Task)
-    await goalsStore.openGoalWindow()
+    await goalsStore.openGoalWindow(tableStore.selectedRow as Task)
   }
 
   private async editStatus(status: string): Promise<void> {
@@ -141,6 +140,7 @@ export default class GoalTableNew extends Vue {
       if (!tableStore.selectedRow?.id) return
       await goalsStore.deleteOne(tableStore.selectedRow.id as number)
     }
+    tableStore.requireReload()
   }
 
   private async restore(): Promise<void> {
@@ -153,6 +153,7 @@ export default class GoalTableNew extends Vue {
       if (!tableStore.selectedRow?.id) return
       await goalsStore.restoreOne(tableStore.selectedRow.id as number)
     }
+    tableStore.requireReload()
   }
 
   public formatStatus(row: Entity, column: ElTableColumn, value: string): string {

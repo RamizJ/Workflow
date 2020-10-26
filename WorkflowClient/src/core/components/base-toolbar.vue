@@ -87,6 +87,8 @@ export default class Toolbar extends Vue {
     this.sort =
       this.$route.query.sort?.toString() ||
       (this.sortFields ? this.sortFields[0].value?.toString() : '')
+    if (this.$route.query.order) this.$emit('order', this.order)
+    if (this.$route.query.sort) this.$emit('order', this.sort)
     this.view = (this.$route.query.view as View) || View.List
   }
 
@@ -102,6 +104,7 @@ export default class Toolbar extends Vue {
   }
 
   private onSortChange(value: string): void {
+    this.sort = value
     this.$emit('sort', value)
   }
 

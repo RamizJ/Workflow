@@ -3,6 +3,7 @@
     <div class="header">
       <div class="header__title">
         <input
+          v-if="projectItem.name"
           class="title"
           v-model="projectItem.name"
           v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
