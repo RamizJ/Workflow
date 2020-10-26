@@ -287,7 +287,7 @@ import tableStore from '@/core/store/table.store'
 import DialogMixin from '@/core/mixins/dialog.mixin'
 import BaseWindow from '@/core/components/base-window.vue'
 import Checklist from '@/modules/goals/components/goal-checklist.vue'
-import Task, { Priority, Status } from '@/modules/goals/models/task.type'
+import Goal, { Priority, Status } from '@/modules/goals/models/goal.type'
 import Attachment from '@/modules/goals/models/attachment.type'
 
 @Component({ components: { Checklist, BaseWindow } })
@@ -295,7 +295,7 @@ export default class GoalWindow extends Mixins(DialogMixin) {
   @Prop() readonly id: number | undefined
   @Ref() readonly title?: Input
 
-  private form: Task = {
+  private form: Goal = {
     title: '',
     description: '',
     projectId: parseInt(this.$route.params.projectId) || undefined,
@@ -370,7 +370,7 @@ export default class GoalWindow extends Mixins(DialogMixin) {
     this.loading = true
     const hasAttachments = this.form.isAttachmentsExist
     const hasChildren = this.form.hasChildren
-    const entity: Task = { ...this.form } as Task
+    const entity: Goal = { ...this.form } as Goal
     if (!this.performerVisible && !this.form.performerId) delete entity.performerId
     if (this.id) await tasksModule.updateOne(entity)
     else this.form = await tasksModule.createOne(entity)
@@ -392,9 +392,9 @@ export default class GoalWindow extends Mixins(DialogMixin) {
     })
   }
 
-  private onChecklistChange(checklist: Task[]): void {
+  private onChecklistChange(checklist: Goal[]): void {
     this.form.children = checklist
-    this.form.hasChildren = checklist.some((task: Task) => !task.isRemoved)
+    this.form.hasChildren = checklist.some((task: Goal) => !task.isRemoved)
     this.$forceUpdate()
   }
 

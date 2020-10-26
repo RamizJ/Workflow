@@ -2,7 +2,7 @@ import Attachment from '@/modules/goals/models/attachment.type'
 import Entity from '@/core/types/entity.type'
 import moment from 'moment'
 
-export default class Task extends Entity {
+export default class Goal extends Entity {
   id?: number
   goalNumber?: number
   title?: string
@@ -23,11 +23,11 @@ export default class Task extends Entity {
   isSection?: boolean
   isAttachmentsExist?: boolean
   isRemoved?: boolean
-  children?: Task[]
+  children?: Goal[]
   metadataList?: Metadata[]
 
   attachments?: Attachment[]
-  parent?: Task[]
+  parent?: Goal[]
   completed?: boolean
 }
 

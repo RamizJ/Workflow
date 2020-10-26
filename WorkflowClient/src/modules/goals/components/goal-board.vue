@@ -111,13 +111,13 @@ import TableMixin from '@/core/mixins/table.mixin'
 import TaskDialog from '@/modules/goals/components/goal-window.vue'
 import { StateChanger } from 'vue-infinite-loading'
 import tasksModule from '@/modules/goals/store/goals.store'
-import Task, { Status } from '@/modules/goals/models/task.type'
+import Goal, { Status } from '@/modules/goals/models/goal.type'
 import Entity from '@/core/types/entity.type'
 
 @Component({ components: { Draggable, TaskDialog } })
 export default class TaskBoard extends Mixins(TableMixin) {
-  public data: Task[] = []
-  public lists: { label: string; name: string; items: Task[] }[] = []
+  public data: Goal[] = []
+  public lists: { label: string; name: string; items: Goal[] }[] = []
   private loading = false
 
   private get listsDragOptions() {
@@ -137,7 +137,7 @@ export default class TaskBoard extends Mixins(TableMixin) {
       disabled: false,
     }
   }
-  private get boardLists(): { label: string; name: string; items?: Task[] }[] {
+  private get boardLists(): { label: string; name: string; items?: Goal[] }[] {
     if (localStorage.boardLists) return JSON.parse(localStorage.boardLists)
     else
       return [
@@ -161,7 +161,7 @@ export default class TaskBoard extends Mixins(TableMixin) {
   }
 
   private async onEntityMove(
-    event: { added?: { element: Task } },
+    event: { added?: { element: Goal } },
     listName: string
   ): Promise<void> {
     if (event.added) await this.editEntityStatus(event.added.element, listName, false)
@@ -169,7 +169,7 @@ export default class TaskBoard extends Mixins(TableMixin) {
 
   private updateLists(): void {
     this.lists = []
-    this.boardLists.forEach((list: { label: string; name: string; items?: Task[] }) => {
+    this.boardLists.forEach((list: { label: string; name: string; items?: Goal[] }) => {
       this.lists.push({
         label: list.label,
         name: list.name,
@@ -195,28 +195,28 @@ export default class TaskBoard extends Mixins(TableMixin) {
     this.dialogVisible = true
   }
 
-  public editEntity(entity: Task): void {
+  public editEntity(entity: Goal): void {
     this.dialogData = entity.id
     this.dialogVisible = true
   }
 
   private async deleteEntity(): Promise<void> {
-    const entity = this.selectedRow as Task
+    const entity = this.selectedRow as Goal
     if (this.isMultipleSelected) await tasksModule.deleteMany(this.selectionIds as number[])
     else await tasksModule.deleteOne(entity.id as number)
     this.reloadData()
   }
 
-  private async restoreEntity(entity: Task, multiple = false): Promise<void> {
+  private async restoreEntity(entity: Goal, multiple = false): Promise<void> {
     if (multiple) await tasksModule.restoreMany(this.selectionIds as number[])
     else await tasksModule.restoreOne(entity.id as number)
     this.reloadData()
   }
 
-  private async editEntityStatus(entity: Task, status: string, reload = true): Promise<void> {
+  private async editEntityStatus(entity: Goal, status: string, reload = true): Promise<void> {
     if (this.isMultipleSelected) {
       const items = this.table.selection.map((entity: Entity) => {
-        const modifiedEntity = entity as Task
+        const modifiedEntity = entity as Goal
         modifiedEntity.state = status as Status
         return modifiedEntity
       })

@@ -1,3 +1,4 @@
+import './vue-ins-progress-bar'
 import './element-ui'
 import './infinite-loading'
 import './context-menu'

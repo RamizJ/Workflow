@@ -48,7 +48,7 @@ import BaseTableColumn from '@/core/components/base-table/base-table-column.vue'
 import GoalTitleCell from '@/modules/goals/components/goal-table/goal-title-cell.vue'
 import Query, { FilterField } from '@/core/types/query.type'
 import Entity from '@/core/types/entity.type'
-import Task, { Priority, Status, priorities, statuses } from '@/modules/goals/models/task.type'
+import Goal, { Priority, Status, priorities, statuses } from '@/modules/goals/models/goal.type'
 import GoalContextMenu from '@/modules/goals/components/goal-table/goal-context-menu.vue'
 
 @Component({
@@ -63,8 +63,8 @@ export default class GoalTableNew extends Vue {
   @Ref() readonly contextMenu!: GoalContextMenu
   @Ref() readonly baseTable!: BaseTable
 
-  private get tableData(): Task[] {
-    return tableStore.data as Task[]
+  private get tableData(): Goal[] {
+    return tableStore.data as Goal[]
   }
 
   private get query(): Query {
@@ -88,52 +88,54 @@ export default class GoalTableNew extends Vue {
   }
 
   private async onLoad($state: StateChanger): Promise<void> {
+    ;(this as any).$insProgress.start()
     const data = await goalsStore.findAll(this.query)
     tableStore.increasePage()
     if (data.length) $state.loaded()
     else $state.complete()
     tableStore.appendData(data)
+    ;(this as any).$insProgress.finish()
   }
 
-  private openContextMenu(row: Task, selection: Task[], event: Event) {
+  private openContextMenu(row: Goal, selection: Goal[], event: Event) {
     tableStore.setSelectedRow(row)
     tableStore.setSelectedRows(selection)
     this.contextMenu.open(event, row)
   }
 
-  private openGoalWindow(row: Task): void {
+  private openGoalWindow(row: Goal): void {
     tableStore.setSelectedRow(row)
-    goalsStore.setTask(tableStore.selectedRow as Task)
+    goalsStore.setTask(tableStore.selectedRow as Goal)
     goalsStore.openGoalWindow(row)
   }
 
   private async edit(): Promise<void> {
     if (!tableStore.selectedRow) return
-    await goalsStore.openGoalWindow(tableStore.selectedRow as Task)
+    await goalsStore.openGoalWindow(tableStore.selectedRow as Goal)
   }
 
   private async editStatus(status: string): Promise<void> {
     if (tableStore.isMultiselect) {
-      const selection = tableStore.selectedRows as Task[]
-      selection.forEach((goal: Task) => (goal.state = status as Status))
+      const selection = tableStore.selectedRows as Goal[]
+      selection.forEach((goal: Goal) => (goal.state = status as Status))
       await goalsStore.updateMany(selection)
     } else {
       if (!tableStore.selectedRow) return
-      const row: Task = tableStore.selectedRow as Task
+      const row: Goal = tableStore.selectedRow as Goal
       row.state = status as Status
       await goalsStore.updateOne(row)
     }
   }
 
   private async create(): Promise<void> {
-    goalsStore.setTask(new Task())
+    goalsStore.setTask(new Goal())
     await goalsStore.openGoalWindow()
   }
 
   private async remove(): Promise<void> {
     if (tableStore.isMultiselect) {
-      const selection = tableStore.selectedRows as Task[]
-      const ids = selection.map((goal: Task) => goal.id!)
+      const selection = tableStore.selectedRows as Goal[]
+      const ids = selection.map((goal: Goal) => goal.id!)
       await goalsStore.deleteMany(ids)
     } else {
       if (!tableStore.selectedRow) return
@@ -145,8 +147,8 @@ export default class GoalTableNew extends Vue {
 
   private async restore(): Promise<void> {
     if (tableStore.isMultiselect) {
-      const selection = tableStore.selectedRows as Task[]
-      const ids = selection.map((goal: Task) => goal.id!)
+      const selection = tableStore.selectedRows as Goal[]
+      const ids = selection.map((goal: Goal) => goal.id!)
       await goalsStore.restoreMany(ids)
     } else {
       if (!tableStore.selectedRow) return

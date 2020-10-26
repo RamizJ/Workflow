@@ -26,7 +26,7 @@ import BaseContextMenu from '@/core/components/base-context-menu/base-context-me
 import BaseContextMenuItem from '@/core/components/base-context-menu/base-context-menu-item.vue'
 import BaseContextMenuDivider from '@/core/components/base-context-menu/base-context-menu-divider.vue'
 import BaseContextSubmenu from '@/core/components/base-context-menu/base-context-submenu.vue'
-import Task from '@/modules/goals/models/task.type'
+import Goal from '@/modules/goals/models/goal.type'
 
 @Component({
   components: { BaseContextSubmenu, BaseContextMenuDivider, BaseContextMenuItem, BaseContextMenu },
@@ -36,7 +36,7 @@ export default class GoalContextMenu extends Vue {
 
   private active = true
 
-  public open(event: Event, data: Task): void {
+  public open(event: Event, data: Goal): void {
     this.active = !data.isRemoved
     this.baseContextMenu.open(event, data)
   }

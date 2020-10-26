@@ -133,16 +133,16 @@ import { StateChanger } from 'vue-infinite-loading'
 import goalsStore from '@/modules/goals/store/goals.store'
 import TableMixin from '@/core/mixins/table.mixin.ts'
 import GoalWindow from '@/modules/goals/components/goal-window.vue'
-import Task, { Status } from '@/modules/goals/models/task.type'
+import Goal, { Status } from '@/modules/goals/models/goal.type'
 import Entity from '@/core/types/entity.type'
 import { FilterField } from '@/core/types/query.type'
 
 @Component({ components: { GoalWindow } })
 export default class TaskTable extends Mixins(TableMixin) {
-  public data: Task[] = []
+  public data: Goal[] = []
   private loading = false
-  private sections: Task[] = []
-  private currentSection: Task | undefined
+  private sections: Goal[] = []
+  private currentSection: Goal | undefined
   private expandRowKeys: number[] = []
   private tasksLoaded = false
 
@@ -237,7 +237,7 @@ export default class TaskTable extends Mixins(TableMixin) {
     this.loading = false
   }
 
-  private async findSections(): Promise<Task[]> {
+  private async findSections(): Promise<Goal[]> {
     const filterWithChildren: FilterField = { fieldName: 'hasChildren', values: [true] }
     if (this.query.filterFields?.length) this.query.filterFields.push(filterWithChildren)
     else this.query.filterFields = [filterWithChildren]
@@ -250,7 +250,7 @@ export default class TaskTable extends Mixins(TableMixin) {
     return [...sections]
   }
 
-  private deleteSection(sectionToDelete: Task): Task[] {
+  private deleteSection(sectionToDelete: Goal): Goal[] {
     if (!(this.sections && this.sections.length)) return []
     const sections = this.sections?.filter((section) => section.id !== sectionToDelete.id)
     this.currentSection = { ...sections[0] }
@@ -258,7 +258,7 @@ export default class TaskTable extends Mixins(TableMixin) {
     return [...sections]
   }
 
-  private async loadChildren(parent: Task, treeNode, resolve: CallableFunction) {
+  private async loadChildren(parent: Goal, treeNode, resolve: CallableFunction) {
     console.log('loadChildren')
     if (!parent.id) return
     const children = await goalsStore.findChild({ id: parent.id })
@@ -270,7 +270,7 @@ export default class TaskTable extends Mixins(TableMixin) {
     this.dialogVisible = true
   }
 
-  public editEntity(entity: Task): void {
+  public editEntity(entity: Goal): void {
     this.dialogData = entity.id
     this.dialogVisible = true
   }
@@ -278,22 +278,22 @@ export default class TaskTable extends Mixins(TableMixin) {
   private async deleteEntity(): Promise<void> {
     const allowDelete = await this.confirmDelete()
     if (!allowDelete) return
-    const entity = this.selectedRow as Task
+    const entity = this.selectedRow as Goal
     if (this.isMultipleSelected) await goalsStore.deleteMany(this.selectionIds as number[])
     else await goalsStore.deleteOne(entity.id as number)
     this.reloadData()
   }
 
-  private async restoreEntity(entity: Task, multiple = false): Promise<void> {
+  private async restoreEntity(entity: Goal, multiple = false): Promise<void> {
     if (multiple) await goalsStore.restoreMany(this.selectionIds as number[])
     else await goalsStore.restoreOne(entity.id as number)
     this.reloadData()
   }
 
-  private async editEntityStatus(entity: Task, status: string): Promise<void> {
+  private async editEntityStatus(entity: Goal, status: string): Promise<void> {
     if (this.isMultipleSelected) {
       const items = this.table.selection.map((entity: Entity) => {
-        const modifiedEntity = entity as Task
+        const modifiedEntity = entity as Goal
         modifiedEntity.state = status as Status
         return modifiedEntity
       })

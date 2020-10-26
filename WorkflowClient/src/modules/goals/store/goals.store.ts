@@ -9,7 +9,7 @@ import {
 import moment from 'moment' // TODO: Replace with dateFns
 import store from '@/core/store'
 import api from '../api'
-import Task, { Status } from '@/modules/goals/models/task.type'
+import Goal, { Status } from '@/modules/goals/models/goal.type'
 import Query, { FilterField, SortType } from '@/core/types/query.type'
 import Attachment from '@/modules/goals/models/attachment.type'
 
@@ -20,8 +20,8 @@ import Attachment from '@/modules/goals/models/attachment.type'
   store,
 })
 class GoalsStore extends VuexModule {
-  _goal: Task | null = null
-  _goals: Task[] = []
+  _goal: Goal | null = null
+  _goals: Goal[] = []
   _goalWindowOpened = false
 
   public get task() {
@@ -35,12 +35,12 @@ class GoalsStore extends VuexModule {
   }
 
   @Mutation
-  setTask(task: Task) {
+  setTask(task: Goal) {
     this._goal = task
   }
 
   @Mutation
-  setTasks(tasks: Task[]) {
+  setTasks(tasks: Goal[]) {
     this._goals = tasks
   }
 
@@ -52,7 +52,7 @@ class GoalsStore extends VuexModule {
   }
 
   @MutationAction({ mutate: ['_goalWindowOpened', '_goal'] })
-  public async openGoalWindow(goal?: Task) {
+  public async openGoalWindow(goal?: Goal) {
     return {
       _goal: goal || null,
       _goalWindowOpened: true,
@@ -60,29 +60,29 @@ class GoalsStore extends VuexModule {
   }
 
   @Action({ rawError: true })
-  async findAll(query: Query): Promise<Task[]> {
+  async findAll(query: Query): Promise<Goal[]> {
     const response = await api.getPage(query)
-    const results = (response.data as Task[]).filter((task) => !task.parentGoalId)
+    const results = (response.data as Goal[]).filter((task) => !task.parentGoalId)
     this.context.commit('setTasks', results)
     return results
   }
 
   @Action
-  async findAllByIds(ids: number[]): Promise<Task[]> {
+  async findAllByIds(ids: number[]): Promise<Goal[]> {
     const response = await api.getRange(ids)
-    const entities = response.data as Task[]
+    const entities = response.data as Goal[]
     this.context.commit('setTasks', entities)
     return entities
   }
 
   @Action
-  async findOneById(id: number): Promise<Task> {
+  async findOneById(id: number): Promise<Goal> {
     const response = await api.get(id)
-    const result = response.data as Task
+    const result = response.data as Goal
     if (result.parentGoalId)
-      result.parent = (await this.context.dispatch('findParent', id)) as Task[]
+      result.parent = (await this.context.dispatch('findParent', id)) as Goal[]
     if (result.hasChildren) {
-      const child = (await this.context.dispatch('findChild', { id })) as Task[]
+      const child = (await this.context.dispatch('findChild', { id })) as Goal[]
       result.children = child.sort(this.compare).reverse()
     }
     if (result.isAttachmentsExist)
@@ -96,13 +96,13 @@ class GoalsStore extends VuexModule {
   }
 
   @Action
-  async createOne(entity: Task): Promise<Task> {
+  async createOne(entity: Goal): Promise<Goal> {
     const response = await api.create(entity)
-    const createdTask = response.data as Task
+    const createdTask = response.data as Goal
     createdTask.attachments = entity.attachments
 
     if (entity.children?.length) {
-      const child: Task[] = []
+      const child: Goal[] = []
       for (const childTask of entity.children.reverse()) {
         childTask.parentGoalId = createdTask.id
         if (childTask.isRemoved) continue
@@ -119,8 +119,8 @@ class GoalsStore extends VuexModule {
   }
 
   @Action
-  async createMany(entities: Task[]): Promise<Task[]> {
-    const results: Task[] = []
+  async createMany(entities: Goal[]): Promise<Goal[]> {
+    const results: Goal[] = []
     for (const entity of entities) {
       const createdEntity = await this.context.dispatch('createOne', entity)
       results.push(createdEntity)
@@ -129,11 +129,11 @@ class GoalsStore extends VuexModule {
   }
 
   @Action
-  async updateOne(entity: Task): Promise<void> {
+  async updateOne(entity: Goal): Promise<void> {
     await api.update(entity)
 
     if (entity.children?.length) {
-      const child: Task[] = []
+      const child: Goal[] = []
       for (const childTask of entity.children.reverse()) {
         childTask.parentGoalId = entity.id
         let updatedTask = childTask
@@ -149,7 +149,7 @@ class GoalsStore extends VuexModule {
     }
   }
 
-  private compare(taskA: Task, taskB: Task): number {
+  private compare(taskA: Goal, taskB: Goal): number {
     const dateA = moment.utc(taskA.creationDate)
     const dateB = moment.utc(taskB.creationDate)
 
@@ -163,7 +163,7 @@ class GoalsStore extends VuexModule {
   }
 
   @Action
-  async updateMany(entities: Task[]): Promise<void> {
+  async updateMany(entities: Goal[]): Promise<void> {
     await api.updateRange(entities)
   }
 
@@ -188,20 +188,20 @@ class GoalsStore extends VuexModule {
   }
 
   @Action
-  async findParent(id: number): Promise<Task> {
+  async findParent(id: number): Promise<Goal> {
     const response = await api.getParentGoal(id)
-    return response.data as Task
+    return response.data as Goal
   }
 
   @Action
-  async findChild({ id, query }: { id: number; query?: Query }): Promise<Task[]> {
+  async findChild({ id, query }: { id: number; query?: Query }): Promise<Goal[]> {
     if (!query)
       query = {
         pageNumber: 0,
         pageSize: 10,
       }
     const response = await api.getChildGoals(id, query)
-    return response.data as Task[]
+    return response.data as Goal[]
   }
 
   @Action

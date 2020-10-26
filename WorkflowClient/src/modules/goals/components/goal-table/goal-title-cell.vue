@@ -15,11 +15,11 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import Task from '@/modules/goals/models/task.type'
+import Goal from '@/modules/goals/models/goal.type'
 
 @Component
 export default class GoalTableNew extends Vue {
-  @Prop() readonly row!: Task
+  @Prop() readonly row!: Goal
 }
 </script>
 

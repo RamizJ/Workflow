@@ -4,16 +4,16 @@ import qs from 'qs'
 import api from '@/core/api'
 import Attachment from '@/modules/goals/models/attachment.type'
 import Query from '@/core/types/query.type'
-import Task from '@/modules/goals/models/task.type'
+import Goal from '@/modules/goals/models/goal.type'
 
 export default {
-  get: (id: number): Promise<AxiosResponse<Task>> => {
+  get: (id: number): Promise<AxiosResponse<Goal>> => {
     return api.request({
       url: `/api/Goals/Get/${id}`,
       method: 'GET',
     })
   },
-  getPage: (query: Query): Promise<AxiosResponse<Task[]>> => {
+  getPage: (query: Query): Promise<AxiosResponse<Goal[]>> => {
     return api.request({
       url: `/api/Goals/GetPage${query.projectId ? '?projectId=' + query.projectId : ''}`,
       method: 'POST',
@@ -35,13 +35,13 @@ export default {
       method: 'GET',
     })
   },
-  getRange: (ids: number[]): Promise<AxiosResponse<Task[]>> => {
+  getRange: (ids: number[]): Promise<AxiosResponse<Goal[]>> => {
     return api.request({
       url: `/api/Goals/GetRange?ids=${qs.stringify(ids)}`,
       method: 'GET',
     })
   },
-  create: (goal: Task): Promise<AxiosResponse<Task>> => {
+  create: (goal: Goal): Promise<AxiosResponse<Goal>> => {
     return api.request({
       url: `/api/Goals/Create`,
       method: 'POST',
@@ -49,24 +49,24 @@ export default {
     })
   },
   createByForm: (
-    goal: Task,
+    goal: Goal,
     observerIds: number[],
-    childGoals: Task[]
-  ): Promise<AxiosResponse<Task>> => {
+    childGoals: Goal[]
+  ): Promise<AxiosResponse<Goal>> => {
     return api.request({
       url: `/api/Goals/CreateByForm`,
       method: 'POST',
       data: { goal, observerIds, childGoals },
     })
   },
-  update: (goal: Task): Promise<AxiosResponse<void>> => {
+  update: (goal: Goal): Promise<AxiosResponse<void>> => {
     return api.request({
       url: `/api/Goals/Update`,
       method: 'PUT',
       data: goal,
     })
   },
-  updateRange: (goals: Task[]): Promise<AxiosResponse<void>> => {
+  updateRange: (goals: Goal[]): Promise<AxiosResponse<void>> => {
     return api.request({
       url: `/api/Goals/UpdateRange`,
       method: 'PUT',
@@ -74,9 +74,9 @@ export default {
     })
   },
   updateByForm: (goalForm: {
-    goal: Task
+    goal: Goal
     observerIds: number[]
-    childGoals: Task[]
+    childGoals: Goal[]
   }): Promise<AxiosResponse<void>> => {
     return api.request({
       url: `/api/Goals/UpdateByForm`,
@@ -86,9 +86,9 @@ export default {
   },
   updateByFormRange: (
     goalForms: {
-      goal: Task
+      goal: Goal
       observerIds: number[]
-      childGoals: Task[]
+      childGoals: Goal[]
     }[]
   ): Promise<AxiosResponse<void>> => {
     return api.request({
@@ -97,7 +97,7 @@ export default {
       data: goalForms,
     })
   },
-  remove: (id: number): Promise<AxiosResponse<Task>> => {
+  remove: (id: number): Promise<AxiosResponse<Goal>> => {
     return api.request({
       url: `/api/Goals/Delete/${id}`,
       method: 'DELETE',
@@ -153,13 +153,13 @@ export default {
       responseType: 'blob',
     })
   },
-  getParentGoal: (goalId: number): Promise<AxiosResponse<Task>> => {
+  getParentGoal: (goalId: number): Promise<AxiosResponse<Goal>> => {
     return api.request({
       url: `/api/Goals/GetParentGoal/${goalId}`,
       method: 'GET',
     })
   },
-  getChildGoals: (parentGoalId: number, query: Query): Promise<AxiosResponse<Task[]>> => {
+  getChildGoals: (parentGoalId: number, query: Query): Promise<AxiosResponse<Goal[]>> => {
     return api.request({
       url: `/api/Goals/GetChildGoals/${parentGoalId}`,
       method: 'POST',

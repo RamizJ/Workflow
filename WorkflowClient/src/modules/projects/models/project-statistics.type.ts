@@ -1,4 +1,4 @@
-import { Status } from '@/modules/goals/models/task.type'
+import { Status } from '@/modules/goals/models/goal.type'
 
 export type ProjectStatistics = {
   goalsCountForState: number[]

@@ -9647,6 +9647,11 @@ vue-input-autowidth@^1.0.10:
   dependencies:
     es6-object-assign "^1.1.0"
 
+vue-ins-progress-bar@^1.3.8:
+  version "1.3.8"
+  resolved "https://registry.yarnpkg.com/vue-ins-progress-bar/-/vue-ins-progress-bar-1.3.8.tgz#759d367f519ec29ec468cc04c70ee20f6f2c7aad"
+  integrity sha512-R/gIiaCqR5Y2R6UA876UMzEFWTK5t6FILgyg4RF05M11EGkwbdmKdbHkrpFPZhMldm5K1Ys4UHL9+wFb5JHHng==
+
 "vue-loader-v16@npm:vue-loader@^16.0.0-beta.3":
   version "16.0.0-beta.5"
   resolved "https://registry.npm.taobao.org/vue-loader/download/vue-loader-16.0.0-beta.5.tgz?cache=0&sync_timestamp=1597130792222&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fvue-loader%2Fdownload%2Fvue-loader-16.0.0-beta.5.tgz#04edc889492b03a445e7ac66e9226a70175ca8a0"

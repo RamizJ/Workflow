@@ -1,6 +1,6 @@
 import { Component, Vue } from 'vue-property-decorator'
 import { FilterField, SortType } from '@/core/types/query.type'
-import { Priority, Status } from '@/modules/goals/models/task.type'
+import { Priority, Status } from '@/modules/goals/models/goal.type'
 import { View } from '@/core/types/view.type'
 
 import projectsModule from '@/modules/projects/store/projects.store'

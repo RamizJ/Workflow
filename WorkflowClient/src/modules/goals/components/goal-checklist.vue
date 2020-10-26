@@ -39,15 +39,15 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 
-import Task, { Status } from '@/modules/goals/models/task.type'
+import Goal, { Status } from '@/modules/goals/models/goal.type'
 import moment from 'moment'
 
 @Component
 export default class Checklist extends Vue {
-  @Prop() readonly task!: Task
+  @Prop() readonly task!: Goal
 
   private input = ''
-  private checklist: Task[] = []
+  private checklist: Goal[] = []
 
   protected mounted(): void {
     if (!this.task.children) return
@@ -58,7 +58,7 @@ export default class Checklist extends Vue {
   }
 
   @Watch('task', { deep: true })
-  onItemsChange(task: Task): void {
+  onItemsChange(task: Goal): void {
     if (!task.children) return
     this.checklist = task.children.map((child) => {
       child.completed = child.state === 'Succeed'
@@ -78,7 +78,7 @@ export default class Checklist extends Vue {
 
   private onAdd(event?: KeyboardEvent): void {
     if (!this.input) return
-    const entity: Task = {
+    const entity: Goal = {
       title: this.input.trim(),
       projectId: this.task.projectId,
       creationDate: moment.utc(moment()).format(),

@@ -5,7 +5,7 @@ import moment from 'moment'
 
 import settingsModule from '@/modules/settings/store/settings.store'
 import Entity from '@/core/types/entity.type'
-import { Priority, Status } from '@/modules/goals/models/task.type'
+import { Priority, Status } from '@/modules/goals/models/goal.type'
 import Query, { FilterField, SortType } from '@/core/types/query.type'
 import TableType from '@/core/types/table.type'
 import { ContextMenu } from '@/core/types/context-menu.type'

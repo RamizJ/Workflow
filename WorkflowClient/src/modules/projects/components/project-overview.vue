@@ -27,7 +27,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
 
 import projectModule from '@/modules/projects/store/projects.store'
 import Project from '@/modules/projects/models/project.type'
-import { Status } from '@/modules/goals/models/task.type'
+import { Status } from '@/modules/goals/models/goal.type'
 
 @Component
 export default class ProjectOverview extends Vue {
