@@ -9,7 +9,6 @@
     @load="onLoad"
     infinite
   >
-    <!--    <BaseTableColumn type="selection" width="42" />-->
     <BaseTableColumn prop="title" label="Название" :custom="true">
       <template v-slot:default="scope">
         <GoalTitleCell :row="scope.row"></GoalTitleCell>
@@ -130,7 +129,7 @@ export default class GoalTableNew extends Vue {
 
   private openContextMenu(row: Goal, selection: Goal[], event: Event) {
     tableStore.setSelectedRow(row)
-    tableStore.setSelectedRows(selection)
+    tableStore.setSelectedRows([row])
     this.contextMenu.open(event, row)
   }
 

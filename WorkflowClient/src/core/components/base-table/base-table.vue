@@ -126,6 +126,7 @@ export default class BaseTable extends Vue {
       this.table?.clearSelection()
       this.table?.toggleRowSelection(row)
     }
+    if (this.selectedRows.length === 1) this.selectedRows = [row]
     this.table?.setCurrentRow(row)
     this.$emit('right-click', row, this.selectedRows, event)
     event.preventDefault()
