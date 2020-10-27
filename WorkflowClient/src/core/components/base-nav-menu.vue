@@ -5,6 +5,9 @@
     :mode="mode || 'vertical'"
     :default-active="defaultActive || $route.path"
   >
+    <div class="menu__header">
+      <slot name="header"></slot>
+    </div>
     <slot></slot>
     <div class="menu__footer">
       <slot name="footer"></slot>
@@ -30,13 +33,13 @@ export default class Menu extends Vue {
   height: 100%;
   position: relative;
   background-color: transparent;
-  padding: 18px;
+  padding: 24px;
   &__footer {
     width: 100%;
     position: absolute;
     bottom: 0;
     left: 0;
-    padding: 18px;
+    padding: 20px;
   }
 }
 </style>

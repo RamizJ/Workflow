@@ -184,7 +184,8 @@
   --background-5: #dedede;
   --background-6: #adadad;
 
-  --background: #ffffff;
+  --background: #f8f8f8;
+  --page-background: #ffffff;
   --text: #303030;
   --text-muted: #a5a7ac;
   --text-placeholder: #505050;
@@ -201,7 +202,7 @@
   --search-hover: rgba(255, 255, 255, 0.1);
   --search-active: rgba(255, 255, 255, 0.9);
 
-  --sidebar-background: #f5f6f7;
+  --sidebar-background: var(--background);
   --sidebar-background-rgb: 245, 246, 247;
   --sidebar-border: rgb(230, 235, 240);
   --sidebar-text: #383a3e;
@@ -245,7 +246,7 @@
   --tag-border-hover: var(--background-5);
   --tag-text: var(--background-6);
 
-  --table-background: var(--background);
+  --table-background: var(--page-background);
   --table-background-striped: var(--background-2);
   --table-border: var(--background-2);
   --table-selected: rgba(196, 218, 254, 1);

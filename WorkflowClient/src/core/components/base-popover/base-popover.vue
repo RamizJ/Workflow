@@ -3,7 +3,7 @@
     placement="top"
     trigger="click"
     transition="fade"
-    width="225"
+    :width="width || '225'"
     popper-class="popover"
     v-model="isPopoverVisible"
     v-click-outside="onClickOutside"
@@ -16,10 +16,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Prop, Vue } from 'vue-property-decorator'
 
 @Component
 export default class PopoverWithButtons extends Vue {
+  @Prop() readonly width?: string
   private isPopoverVisible = false
 
   private onClickOutside(): void {

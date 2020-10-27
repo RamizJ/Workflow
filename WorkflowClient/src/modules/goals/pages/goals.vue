@@ -8,6 +8,15 @@
         </div>
       </div>
     </div>
+    <el-breadcrumb separator="/">
+      <el-breadcrumb-item
+        v-for="breadcrumb in breadcrumbs"
+        :key="breadcrumb.path"
+        :to="{ path: breadcrumb.path }"
+      >
+        {{ breadcrumb.label }}
+      </el-breadcrumb-item>
+    </el-breadcrumb>
     <task-toolbar
       @search="onSearch"
       @filters="onFiltersChange"
@@ -22,11 +31,7 @@
       :order="order"
       :sort="sort"
     />
-    <el-breadcrumb separator="/">
-      <el-breadcrumb-item v-for="breadcrumb in breadcrumbs" :key="breadcrumb.path">
-        <a :href="breadcrumb.path">{{ breadcrumb.label }}</a>
-      </el-breadcrumb-item>
-    </el-breadcrumb>
+
     <task-board
       v-if="view === 'board'"
       ref="items"

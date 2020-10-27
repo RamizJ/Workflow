@@ -1,9 +1,8 @@
 <template>
   <div class="main-layout">
     <Sidebar />
-    <main>
-      <router-view :key="$route.path" />
-    </main>
+
+    <router-view :key="$route.path" />
   </div>
 </template>
 

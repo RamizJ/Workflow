@@ -27,9 +27,12 @@ a {
   position: relative;
   overflow: hidden;
   padding: 0 30px 20px;
-  height: 100vh;
-  width: 100%;
+  margin: 24px 24px 24px 0;
+  width: calc(100% - var(--sidebar-width));
+  border-radius: 3px;
+  box-shadow: 0 1px 5px rgba(0,0,0,.07);
   flex-direction: column;
+  background: var(--page-background);
   .header {
     padding-top: 20px;
     display: flex;
@@ -39,10 +42,10 @@ a {
       cursor: default;
       display: flex;
       align-items: baseline;
-      font-size: 28px;
+      font-size: 24px;
       font-family: var(--header-font);
       line-height: 34px;
-      font-weight: 700;
+      font-weight: 600;
     }
     &__subtitle > * {
       margin-top: 10px;
@@ -66,10 +69,10 @@ a {
       border: none;
       padding: 0;
       color: var(--text);
-      background-color: var(--background);
+      background-color: var(--input-background);
       &.title {
-        font-size: 28px;
-        font-weight: 700;
+        font-size: 24px;
+        font-weight: 600;
         font-family: var(--header-font);
         height: auto;
       }
@@ -110,8 +113,7 @@ a {
 
 .el-breadcrumb {
   font-size: 13px;
-  padding-top: 8px;
-  padding-left: 8px;
+  padding-top: 10px;
 }
 
 .el-dialog {
@@ -504,7 +506,7 @@ a {
 .el-card {
   border-radius: 8px;
   background-color: var(--input-background);
-  border-color: var(--input-border);
+  border: var(--input-border);
 }
 
 .el-progress-bar__outer {
@@ -596,7 +598,7 @@ a {
   color: #8a3ab9 !important;
 
   td {
-    border-top: 30px solid var(--background);
+    border-top: 30px solid var(--page-background);
     border-bottom: 1px solid var(--divider);
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;

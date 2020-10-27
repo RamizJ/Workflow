@@ -82,14 +82,16 @@ export default class GoalTableNew extends Vue {
 
   private fillBreadcrumbs(): void {
     const pathElements = this.$route.path.split('/').filter((str) => str && str !== 'goals')
-    const breadcrumbs: { path: string; label: string }[] = []
+    const breadcrumbs: { path: string; label: string }[] = [{ path: '/goals', label: 'Задачи' }]
     pathElements.forEach((element) => {
       const prevPath = breadcrumbs[breadcrumbs.length - 1]?.path
-      const path = `${prevPath}/${element}`
+      const path = prevPath ? `${prevPath}/${element}` : element
+      console.log(path)
       const label = `Задача №${element}`
       breadcrumbs.push({ path, label })
     })
-    breadcrumbStore.setBreadcrumbs([{ path: 'goals', label: 'Задачи' }, ...breadcrumbs])
+    console.log(breadcrumbs.map((b) => b.path))
+    breadcrumbStore.setBreadcrumbs(breadcrumbs)
   }
 
   @Watch('isReloadRequired')
