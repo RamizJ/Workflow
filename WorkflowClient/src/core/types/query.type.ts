@@ -1,3 +1,5 @@
+import { Metadata } from '@/modules/goals/models/goal.type'
+
 export default class Query {
   pageNumber?: number
   pageSize?: number
@@ -9,7 +11,7 @@ export default class Query {
   projectId?: number
   teamId?: number
 
-  constructor(pageSize = 10) {
+  constructor(pageSize = 25) {
     this.pageNumber = 0
     this.pageSize = pageSize
   }
@@ -17,7 +19,7 @@ export default class Query {
 
 export interface FilterField {
   fieldName: string
-  values: string[] | boolean[]
+  values: Array<string> | Array<number> | Array<boolean> | Array<Metadata[]>
 }
 
 export interface SortField {

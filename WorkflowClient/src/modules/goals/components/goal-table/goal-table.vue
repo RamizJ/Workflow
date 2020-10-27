@@ -132,7 +132,7 @@ import { StateChanger } from 'vue-infinite-loading'
 
 import goalsStore from '@/modules/goals/store/goals.store'
 import TableMixin from '@/core/mixins/table.mixin.ts'
-import GoalWindow from '@/modules/goals/components/goal-window.vue'
+import GoalWindow from '@/modules/goals/components/goal-window/goal-window.vue'
 import Goal, { Status } from '@/modules/goals/models/goal.type'
 import Entity from '@/core/types/entity.type'
 import { FilterField } from '@/core/types/query.type'

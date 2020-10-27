@@ -3,14 +3,14 @@
     ref="baseTable"
     :data="tableData"
     :row-class="setRowClass"
-    @space="openGoalWindow"
-    @double-click="openGoalWindow"
+    @space="onSpaceClick"
+    @double-click="onDoubleClick"
     @right-click="openContextMenu"
     @load="onLoad"
     infinite
   >
-    <BaseTableColumn type="selection" width="42" />
-    <BaseTableColumn prop="title" label="Задача" :custom="true">
+    <!--    <BaseTableColumn type="selection" width="42" />-->
+    <BaseTableColumn prop="title" label="Название" :custom="true">
       <template v-slot:default="scope">
         <GoalTitleCell :row="scope.row"></GoalTitleCell>
       </template>
@@ -29,7 +29,7 @@
       slot="footer"
       ref="contextMenu"
       @edit="edit"
-      @create="create"
+      @create-child="createChild"
       @edit-status="editStatus"
       @remove="remove"
       @restore="restore"
@@ -44,6 +44,7 @@ import { ElTableColumn } from 'element-ui/types/table-column'
 
 import goalsStore from '@/modules/goals/store/goals.store'
 import tableStore from '@/core/store/table.store'
+import breadcrumbStore from '@/modules/goals/store/breadcrumb.store'
 import BaseTable from '@/core/components/base-table/base-table.vue'
 import BaseTableColumn from '@/core/components/base-table/base-table-column.vue'
 import GoalTitleCell from '@/modules/goals/components/goal-table/goal-title-cell.vue'
@@ -76,6 +77,22 @@ export default class GoalTableNew extends Vue {
     return tableStore.isReloadRequired
   }
 
+  protected mounted(): void {
+    this.fillBreadcrumbs()
+  }
+
+  private fillBreadcrumbs(): void {
+    const pathElements = this.$route.path.split('/').filter((str) => str && str !== 'goals')
+    const breadcrumbs: { path: string; label: string }[] = []
+    pathElements.forEach((element) => {
+      const prevPath = breadcrumbs[breadcrumbs.length - 1]?.path
+      const path = `${prevPath}/${element}`
+      const label = `Задача №${element}`
+      breadcrumbs.push({ path, label })
+    })
+    breadcrumbStore.setBreadcrumbs([{ path: 'goals', label: 'Задачи' }, ...breadcrumbs])
+  }
+
   @Watch('isReloadRequired')
   onReloadRequired(): void {
     tableStore.setData([])
@@ -90,12 +107,25 @@ export default class GoalTableNew extends Vue {
 
   private async onLoad($state: StateChanger): Promise<void> {
     ;(this as any).$insProgress.start()
-    const data = await goalsStore.findAll(this.query)
+    let data: Goal[] = []
+    if (this.openedGoalId)
+      data = await goalsStore.findChild({ id: this.openedGoalId, query: this.query })
+    else data = await goalsStore.findAll(this.query)
     tableStore.increasePage()
     if (data.length) $state.loaded()
     else $state.complete()
     tableStore.appendData(data)
     ;(this as any).$insProgress.finish()
+  }
+
+  private get openedGoalId(): number {
+    const pathElements = this.$route.path.split('/')
+    const goalId = pathElements[pathElements.length - 1]
+    try {
+      return parseInt(goalId)
+    } catch (e) {
+      return 0
+    }
   }
 
   private openContextMenu(row: Goal, selection: Goal[], event: Event) {
@@ -113,10 +143,21 @@ export default class GoalTableNew extends Vue {
     else return ''
   }
 
-  private openGoalWindow(row: Goal): void {
-    tableStore.setSelectedRow(row)
-    goalsStore.setTask(tableStore.selectedRow as Goal)
-    goalsStore.openGoalWindow(row)
+  private async onSpaceClick(): Promise<void> {
+    await goalsStore.openGoalWindow()
+  }
+
+  private async onDoubleClick(row: Goal): Promise<void> {
+    if (row.hasChildren) {
+      const path = `${this.$route.path}/${row.id}`
+      await this.$router.push(path)
+      // breadcrumbStore.addBreadcrumb({ path: path, label: `${row.title}` })
+    } else {
+      tableStore.setSelectedRow(row)
+      const goal = await goalsStore.findOneById(row.id!)
+      goalsStore.setTask(goal)
+      await goalsStore.openGoalWindow(row)
+    }
   }
 
   private async edit(): Promise<void> {
@@ -137,9 +178,12 @@ export default class GoalTableNew extends Vue {
     }
   }
 
-  private async create(): Promise<void> {
-    goalsStore.setTask(new Goal())
-    await goalsStore.openGoalWindow()
+  private async createChild(): Promise<void> {
+    const parentGoal = tableStore.selectedRow as Goal
+    const goal = new Goal()
+    goal.parentGoalId = parentGoal.id
+    goal.projectId = parentGoal.projectId
+    await goalsStore.openGoalWindow(goal)
   }
 
   private async remove(): Promise<void> {

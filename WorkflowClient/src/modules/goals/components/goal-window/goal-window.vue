@@ -42,7 +42,7 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col v-if="priorityVisible || form.priority" :span="$route.params.projectId ? 9 : 12">
+        <el-col :span="$route.params.projectId ? 9 : 12">
           <el-form-item prop="priority">
             <el-select v-model="form.priority" placeholder="Приоритет">
               <el-option
@@ -65,17 +65,6 @@
                 type="textarea"
                 placeholder="Описание"
               ></el-input>
-            </el-form-item>
-          </el-col>
-        </transition>
-        <transition name="fade">
-          <el-col v-if="checklistVisible || (form.children && form.children.length)" :span="24">
-            <el-form-item>
-              <checklist
-                :items="form.children"
-                :task="form"
-                @change="onChecklistChange"
-              ></checklist>
             </el-form-item>
           </el-col>
         </transition>
@@ -171,40 +160,6 @@
           </el-button>
         </el-tooltip>
         <el-tooltip
-          content="Чек-лист"
-          effect="dark"
-          placement="top"
-          transition="fade"
-          :visible-arrow="false"
-          :open-delay="500"
-        >
-          <el-button
-            v-if="!(form.children && form.children.length)"
-            type="text"
-            @click="checklistVisible = !checklistVisible"
-            circle="circle"
-          >
-            <unicon name="list-ul" />
-          </el-button>
-        </el-tooltip>
-        <el-tooltip
-          content="Приоритет"
-          effect="dark"
-          placement="top"
-          transition="fade"
-          :visible-arrow="false"
-          :open-delay="500"
-        >
-          <el-button
-            v-if="!form.priority"
-            type="text"
-            @click="priorityVisible = !priorityVisible"
-            circle="circle"
-          >
-            <feather type="zap"></feather>
-          </el-button>
-        </el-tooltip>
-        <el-tooltip
           content="Исполнитель"
           effect="dark"
           placement="top"
@@ -281,16 +236,15 @@ import { ElForm } from 'element-ui/types/form'
 import { Input, Message } from 'element-ui'
 import moment from 'moment'
 
-import tasksModule from '@/modules/goals/store/goals.store'
+import goalsStore from '@/modules/goals/store/goals.store'
 import authStore from '@/modules/users/store/auth.store'
 import tableStore from '@/core/store/table.store'
 import DialogMixin from '@/core/mixins/dialog.mixin'
 import BaseWindow from '@/core/components/base-window.vue'
-import Checklist from '@/modules/goals/components/goal-checklist.vue'
 import Goal, { Priority, Status } from '@/modules/goals/models/goal.type'
 import Attachment from '@/modules/goals/models/attachment.type'
 
-@Component({ components: { Checklist, BaseWindow } })
+@Component({ components: { BaseWindow } })
 export default class GoalWindow extends Mixins(DialogMixin) {
   @Prop() readonly id: number | undefined
   @Prop() readonly caption: string | undefined
@@ -335,9 +289,10 @@ export default class GoalWindow extends Mixins(DialogMixin) {
     this.loading = true
     if (this.id) {
       const id: number = parseInt(this.id.toString())
-      this.form = await tasksModule.findOneById(id)
-    } else if (tasksModule.task) {
-      this.form = tasksModule.task
+      this.form = await goalsStore.findOneById(id)
+    } else if (goalsStore.goal) {
+      this.form = goalsStore.goal
+      console.log(this.form)
     }
     if (this.isSection) {
       this.form.metadataList = [{ key: 'isSection', value: 'true' }]
@@ -385,8 +340,8 @@ export default class GoalWindow extends Mixins(DialogMixin) {
     const hasChildren = this.form.hasChildren
     const entity: Goal = { ...this.form } as Goal
     if (!this.performerVisible && !this.form.performerId) delete entity.performerId
-    if (this.id) await tasksModule.updateOne(entity)
-    else this.form = await tasksModule.createOne(entity)
+    if (this.id) await goalsStore.updateOne(entity)
+    else this.form = await goalsStore.createOne(entity)
     this.form.isAttachmentsExist = hasAttachments
     this.form.hasChildren = hasChildren
     this.loading = false
@@ -407,7 +362,7 @@ export default class GoalWindow extends Mixins(DialogMixin) {
 
   private onChecklistChange(checklist: Goal[]): void {
     this.form.children = checklist
-    this.form.hasChildren = checklist.some((task: Goal) => !task.isRemoved)
+    this.form.hasChildren = checklist.some((goal: Goal) => !goal.isRemoved)
     this.$forceUpdate()
   }
 
@@ -428,7 +383,7 @@ export default class GoalWindow extends Mixins(DialogMixin) {
       file = this.renameFile(httpRequest.file, filename)
     }
     files.append('files', file)
-    await tasksModule.uploadAttachments({ id, files })
+    await goalsStore.uploadAttachments({ id, files })
     this.loading = false
   }
 
@@ -447,7 +402,7 @@ export default class GoalWindow extends Mixins(DialogMixin) {
 
   private async onAttachmentClick(attachment: Attachment): Promise<void> {
     if (!attachment.id) return
-    await tasksModule.downloadAttachment(attachment)
+    await goalsStore.downloadAttachment(attachment)
   }
 
   private async onAttachmentsChange(file: File, fileList: FileList): Promise<void> {
@@ -465,7 +420,7 @@ export default class GoalWindow extends Mixins(DialogMixin) {
 
   private async onAttachmentRemove(file: Attachment, fileList: FileList): Promise<void> {
     this.form.isAttachmentsExist = !!fileList.length
-    if (file.id) await tasksModule.removeAttachments([file.id])
+    if (file.id) await goalsStore.removeAttachments([file.id])
   }
 }
 </script>

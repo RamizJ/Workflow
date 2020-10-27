@@ -4,7 +4,7 @@
       {{ active ? 'Изменить' : 'Информация' }}
     </BaseContextMenuItem>
     <BaseContextMenuDivider v-if="active" />
-    <BaseContextMenuItem v-if="active" @click="create">Новая задача</BaseContextMenuItem>
+    <BaseContextMenuItem v-if="active" @click="createChild">Добавить подзадачу</BaseContextMenuItem>
     <BaseContextMenuDivider v-if="active" />
     <BaseContextSubmenu v-if="active" title="Изменить статус">
       <BaseContextMenuItem @click="editStatus('New')"> Новое </BaseContextMenuItem>
@@ -45,8 +45,8 @@ export default class GoalContextMenu extends Vue {
     this.$emit('edit')
   }
 
-  private create(): void {
-    this.$emit('create')
+  private createChild(): void {
+    this.$emit('create-child')
   }
 
   private editStatus(status: string): void {

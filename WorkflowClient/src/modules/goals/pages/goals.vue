@@ -22,14 +22,11 @@
       :order="order"
       :sort="sort"
     />
-    <!--    <task-table-->
-    <!--      v-if="view === 'list'"-->
-    <!--      ref="items"-->
-    <!--      :search="search"-->
-    <!--      :filters="filters"-->
-    <!--      :order="order"-->
-    <!--      :sort="sort"-->
-    <!--    ></task-table>-->
+    <el-breadcrumb separator="/">
+      <el-breadcrumb-item v-for="breadcrumb in breadcrumbs" :key="breadcrumb.path">
+        <a :href="breadcrumb.path">{{ breadcrumb.label }}</a>
+      </el-breadcrumb-item>
+    </el-breadcrumb>
     <task-board
       v-if="view === 'board'"
       ref="items"
@@ -51,6 +48,7 @@ import { View } from '@/core/types/view.type'
 import { SortType } from '@/core/types/query.type'
 import GoalTableNew from '@/modules/goals/components/goal-table/goal-table-new.vue'
 import goalStore from '@/modules/goals/store/goals.store'
+import breadcrumbStore from '@/modules/goals/store/breadcrumb.store'
 
 @Component({
   components: {
@@ -60,16 +58,18 @@ import goalStore from '@/modules/goals/store/goals.store'
     TaskBoard,
   },
 })
-export default class Tasks extends Mixins(PageMixin) {
+export default class Goals extends Mixins(PageMixin) {
   protected mounted(): void {
     if (!this.$route.query.sort) this.onSortChange('creationDate')
     if (!this.$route.query.order) this.onOrderChange(SortType.Descending)
   }
 
+  private get breadcrumbs(): { path: string; label: string }[] {
+    return breadcrumbStore.breadcrumbs
+  }
+
   private onCreate(): void {
     goalStore.openGoalWindow()
-    // if (this.view === View.List) (this.$refs.items as TaskTable).createEntity()
-    // if (this.view === View.Board) (this.$refs.items as TaskBoard).createEntity()
   }
 }
 </script>

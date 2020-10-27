@@ -2,10 +2,20 @@ import MainLayout from '@/core/layouts/main.layout.vue'
 
 export default [
   {
-    path: '/goals',
     name: 'goals',
+    path: '/goals',
+    alias: '/goals/*',
     component: (): Promise<typeof import('../pages/goals.vue')> =>
       import(/* webpackChunkName: "goals" */ '../pages/goals.vue'),
-    meta: { layout: MainLayout },
+    meta: { layout: MainLayout, basePath: '/goals' },
+    // children: [
+    //   {
+    //     path: ':goalId',
+    //     name: 'parentGoal',
+    //     component: (): Promise<typeof import('../pages/goals.vue')> =>
+    //       import(/* webpackChunkName: "goals" */ '../pages/goals.vue'),
+    //     meta: { layout: MainLayout },
+    //   },
+    // ],
   },
 ]

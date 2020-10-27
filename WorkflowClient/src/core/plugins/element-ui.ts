@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import {
+  Breadcrumb,
+  BreadcrumbItem,
   Dialog,
   Autocomplete,
   Dropdown,
@@ -59,6 +61,8 @@ import 'element-ui/lib/theme-chalk/index.css'
 
 locale.use(language)
 
+Vue.use(Breadcrumb)
+Vue.use(BreadcrumbItem)
 Vue.use(Dialog)
 Vue.use(Autocomplete)
 Vue.use(Dropdown)

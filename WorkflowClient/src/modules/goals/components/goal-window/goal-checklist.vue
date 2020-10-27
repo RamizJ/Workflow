@@ -39,28 +39,28 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 
-import Goal, { Status } from '@/modules/goals/models/goal.type'
+import Goal, { Priority, Status } from '@/modules/goals/models/goal.type'
 import moment from 'moment'
 
 @Component
 export default class Checklist extends Vue {
-  @Prop() readonly task!: Goal
+  @Prop() readonly goal!: Goal
 
   private input = ''
   private checklist: Goal[] = []
 
   protected mounted(): void {
-    if (!this.task.children) return
-    this.checklist = this.task.children.map((task) => {
-      task.completed = task.state === 'Succeed'
-      return task
+    if (!this.goal.children) return
+    this.checklist = this.goal.children.map((goal) => {
+      goal.completed = goal.state === 'Succeed'
+      return goal
     })
   }
 
-  @Watch('task', { deep: true })
-  onItemsChange(task: Goal): void {
-    if (!task.children) return
-    this.checklist = task.children.map((child) => {
+  @Watch('goal', { deep: true })
+  onItemsChange(goal: Goal): void {
+    if (!goal.children) return
+    this.checklist = goal.children.map((child) => {
       child.completed = child.state === 'Succeed'
       return child
     })
@@ -80,11 +80,13 @@ export default class Checklist extends Vue {
     if (!this.input) return
     const entity: Goal = {
       title: this.input.trim(),
-      projectId: this.task.projectId,
+      projectId: this.goal.projectId,
       creationDate: moment.utc(moment()).format(),
       state: Status.New,
-      parentGoalId: this.task.id,
+      priority: Priority.Normal,
+      parentGoalId: this.goal.id,
       completed: false,
+      metadataList: [],
     }
     this.checklist.unshift(entity)
     this.input = ''

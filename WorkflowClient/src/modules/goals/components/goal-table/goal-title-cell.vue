@@ -1,13 +1,16 @@
 <template>
   <div class="cell title-cell">
+    <span class="cell-icon left primary" v-if="hasChildren">
+      <unicon name="copy" />
+    </span>
+    <span class="cell-icon left primary" v-else>
+      <unicon name="file" />
+    </span>
     <span class="cell-text">{{ row.title }}</span>
-    <span class="cell-icon" v-if="row.description">
+    <span class="cell-icon right" v-if="hasDescription">
       <unicon name="file-alt" />
     </span>
-    <span class="cell-icon" v-if="row.hasChildren">
-      <unicon name="list-ul" />
-    </span>
-    <span class="cell-icon" v-if="row.isAttachmentsExist">
+    <span class="cell-icon right" v-if="hasAttachments">
       <unicon name="paperclip" />
     </span>
   </div>
@@ -20,11 +23,24 @@ import Goal from '@/modules/goals/models/goal.type'
 @Component
 export default class GoalTableNew extends Vue {
   @Prop() readonly row!: Goal
+
+  private get hasDescription(): boolean {
+    return !!this.row.description
+  }
+
+  private get hasChildren(): boolean {
+    return !!this.row.hasChildren
+  }
+
+  private get hasAttachments(): boolean {
+    return !!this.row.isAttachmentsExist
+  }
 }
 </script>
 
 <style lang="scss" scoped>
-.title-cell {
-  padding-left: 0;
+.title-cell,
+.cell {
+  padding-left: 0 !important;
 }
 </style>
