@@ -76,20 +76,12 @@ export default class GoalTableNew extends Vue {
     return tableStore.isReloadRequired
   }
 
-  protected mounted(): void {
-    this.fillBreadcrumbs()
+  protected async mounted(): Promise<void> {
+    await this.updateBreadcrumbs()
   }
 
-  private fillBreadcrumbs(): void {
-    const pathElements = this.$route.path.split('/').filter((str) => str && str !== 'goals')
-    const breadcrumbs: { path: string; label: string }[] = [{ path: '/goals', label: 'Задачи' }]
-    pathElements.forEach((element) => {
-      const prevPath = breadcrumbs[breadcrumbs.length - 1]?.path
-      const path = prevPath ? `${prevPath}/${element}` : element
-      const label = `Задача №${element}`
-      breadcrumbs.push({ path, label })
-    })
-    breadcrumbStore.setBreadcrumbs(breadcrumbs)
+  private async updateBreadcrumbs(): Promise<void> {
+    await breadcrumbStore.updateBreadcrumbs()
   }
 
   @Watch('isReloadRequired')
@@ -150,7 +142,7 @@ export default class GoalTableNew extends Vue {
     if (row.hasChildren) {
       const path = `${this.$route.path}/${row.id}`
       await this.$router.push(path)
-      // breadcrumbStore.addBreadcrumb({ path: path, label: `${row.title}` })
+      await breadcrumbStore.addBreadcrumb({ path: path, label: `${row.title}` })
     } else {
       tableStore.setSelectedRow(row)
       const goal = await goalsStore.findOneById(row.id!)

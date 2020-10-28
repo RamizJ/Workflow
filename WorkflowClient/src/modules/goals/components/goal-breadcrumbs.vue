@@ -4,6 +4,7 @@
       v-for="breadcrumb in breadcrumbs"
       :key="breadcrumb.path"
       :to="{ path: breadcrumb.path }"
+      @click.native="goto(breadcrumb.path)"
     >
       {{ breadcrumb.label }}
     </el-breadcrumb-item>
@@ -18,6 +19,10 @@ import breadcrumbStore from '@/modules/goals/store/breadcrumb.store'
 export default class GoalBreadcrumbs extends Vue {
   private get breadcrumbs(): { path: string; label: string }[] {
     return breadcrumbStore.breadcrumbs
+  }
+
+  private goto(path: string): void {
+    breadcrumbStore.goto(path)
   }
 
   private get breadcrumbsActive(): boolean {
