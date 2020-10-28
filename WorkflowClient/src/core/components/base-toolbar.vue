@@ -117,7 +117,7 @@ export default class Toolbar extends Vue {
 
 <style lang="scss">
 .toolbar {
-  padding-bottom: 10px;
+  //padding-bottom: 10px;
 }
 .toolbar__filters {
   justify-content: space-between;

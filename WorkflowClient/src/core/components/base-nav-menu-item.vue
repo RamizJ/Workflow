@@ -23,10 +23,10 @@ export default class MenuItem extends Vue {
   color: var(--sidebar-text);
   height: auto;
   line-height: 30px;
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 500;
   letter-spacing: 0.2px;
-  padding: 0 17px 0 10px !important;
+  padding: 0 16px 0 10px !important;
   margin: 4px 0;
   width: fit-content;
   border-radius: 20px;
@@ -62,9 +62,9 @@ export default class MenuItem extends Vue {
 
 <style lang="scss">
 .el-menu-item .unicon svg {
-  width: 15px !important;
-  margin-right: 7px;
-  margin-left: 2px;
+  width: 16px !important;
+  margin-right: 8px;
+  margin-left: 3px;
   margin-bottom: 2px;
   overflow: unset;
 }

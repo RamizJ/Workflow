@@ -1,14 +1,10 @@
 <template>
-  <BasePopover width="220">
-    <BasePopoverButton icon="cube">Новая область</BasePopoverButton>
-    <BasePopoverButton icon="user-arrows" @click="openTeamWindow">Новая команда</BasePopoverButton>
-    <BasePopoverButton icon="users-alt" @click="openUserWindow"
-      >Новый пользователь
-    </BasePopoverButton>
-    <BasePopoverButton icon="layer-group" @click="openProjectWindow"
-      >Новый проект
-    </BasePopoverButton>
-    <BasePopoverButton icon="edit-alt" @click="openGoalWindow">Новая задача</BasePopoverButton>
+  <BasePopover popover-class="add-popover" transition="fade-left-top" title="Создать">
+    <BasePopoverButton icon="edit-alt" @click="openGoalWindow">Задачу</BasePopoverButton>
+    <BasePopoverButton icon="layer-group" @click="openProjectWindow">Проект</BasePopoverButton>
+    <BasePopoverButton icon="user-arrows" @click="openTeamWindow">Команду</BasePopoverButton>
+    <BasePopoverButton icon="users-alt" @click="openUserWindow">Пользователя</BasePopoverButton>
+    <BasePopoverButton icon="cube">Область</BasePopoverButton>
     <el-button class="sidebar-add-button" slot="reference">
       <unicon name="plus-circle" />
       Создать
@@ -106,6 +102,14 @@ export default class SidebarFooter extends Vue {
 </script>
 
 <style lang="scss">
+.add-popover {
+  transform-origin: left top !important;
+  top: 10px !important;
+  left: 23px !important;
+  box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05) !important;
+  border-color: rgba(0, 0, 0, 0.07) !important;
+  background-color: var(--background) !important;
+}
 .sidebar-add-button {
   width: 100%;
   background-color: var(--page-background) !important;

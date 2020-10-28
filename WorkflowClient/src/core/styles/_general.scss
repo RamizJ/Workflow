@@ -35,10 +35,11 @@ a {
   background: var(--page-background);
   .header {
     padding-top: 20px;
+    padding-bottom: 8px;
     display: flex;
-    align-items: flex-start;
-    flex-direction: column;
-    &__title {
+    align-items: center;
+    justify-content: space-between;
+    &__left {
       cursor: default;
       display: flex;
       align-items: baseline;
@@ -335,6 +336,7 @@ a {
   overflow: hidden;
   flex: 1;
   height: 100%;
+  margin: 0 -10px;
   .el-table {
     overflow: hidden;
     position: unset !important;

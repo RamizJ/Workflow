@@ -26,6 +26,21 @@
   transform: translateY(0);
 }
 
+.fade-left-top-enter-active,
+.fade-left-top-leave-active {
+  transition: .25s;
+  opacity: 1;
+  transform: scale(1);
+}
+.fade-left-top-enter {
+  opacity: 0;
+  transform: scale(0.8);
+}
+.fade-left-top-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
 .slide-fade-enter-active,
 .slide-fade-leave-active {
   transition: .25s;
