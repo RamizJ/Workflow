@@ -382,7 +382,7 @@ a {
 .el-table__body tr.selected>td,
 .el-table--striped .el-table__body tr.el-table__row--striped.current-row td,
 .el-table--striped .el-table__body tr.el-table__row--striped.selected td {
-  background-color: var(--table-selected);
+  background-color: var(--table-hover);
 }
 .el-table--enable-row-hover .el-table__body tr:hover>td {
   background-color: var(--table-hover);

@@ -249,8 +249,8 @@
   --table-background: var(--page-background);
   --table-background-striped: var(--background-2);
   --table-border: var(--background-2);
-  --table-selected: rgba(196, 218, 254, 1);
-  --table-hover: rgba(196, 218, 254, 0.5);
+  --table-selected: rgba(0,0,0,.1);
+  --table-hover: rgba(0,0,0,.05);
 
   --checkbox-background: var(--background-3);
   --checkbox-border: var(--background-5);
