@@ -1,9 +1,9 @@
 <template>
   <div class="cell title-cell">
-    <span class="cell-icon left primary" v-if="hasChildren">
+    <span class="cell-icon left text" v-if="hasChildren">
       <unicon name="copy" />
     </span>
-    <span class="cell-icon left primary" v-else>
+    <span class="cell-icon left text" v-else>
       <unicon name="file" />
     </span>
     <span class="cell-text">{{ row.title }}</span>

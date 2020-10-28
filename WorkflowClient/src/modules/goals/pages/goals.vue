@@ -2,21 +2,9 @@
   <div class="page">
     <div class="header">
       <div class="header__title">
-        Задачи
-        <div class="header__action">
-          <el-button type="text" size="mini" @click="onCreate">Создать</el-button>
-        </div>
+        <GoalBreadcrumbs />
       </div>
     </div>
-    <el-breadcrumb separator="/">
-      <el-breadcrumb-item
-        v-for="breadcrumb in breadcrumbs"
-        :key="breadcrumb.path"
-        :to="{ path: breadcrumb.path }"
-      >
-        {{ breadcrumb.label }}
-      </el-breadcrumb-item>
-    </el-breadcrumb>
     <task-toolbar
       @search="onSearch"
       @filters="onFiltersChange"
@@ -54,9 +42,11 @@ import { SortType } from '@/core/types/query.type'
 import GoalTableNew from '@/modules/goals/components/goal-table/goal-table-new.vue'
 import goalStore from '@/modules/goals/store/goals.store'
 import breadcrumbStore from '@/modules/goals/store/breadcrumb.store'
+import GoalBreadcrumbs from '@/modules/goals/components/goal-breadcrumbs.vue'
 
 @Component({
   components: {
+    GoalBreadcrumbs,
     GoalTableNew,
     TaskToolbar,
     TaskTable,

@@ -371,7 +371,7 @@ export default class GoalWindow extends Mixins(DialogMixin) {
     const hasChildren = this.form.hasChildren
     const entity: Goal = { ...this.form } as Goal
     if (!this.performerVisible && !this.form.performerId) delete entity.performerId
-    if (this.id) await goalsStore.updateOne(entity)
+    if (this.id || this.form.id) await goalsStore.updateOne(entity)
     else this.form = await goalsStore.createOne(entity)
     this.form.isAttachmentsExist = hasAttachments
     this.form.hasChildren = hasChildren

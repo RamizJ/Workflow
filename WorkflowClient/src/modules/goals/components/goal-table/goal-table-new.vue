@@ -86,11 +86,9 @@ export default class GoalTableNew extends Vue {
     pathElements.forEach((element) => {
       const prevPath = breadcrumbs[breadcrumbs.length - 1]?.path
       const path = prevPath ? `${prevPath}/${element}` : element
-      console.log(path)
       const label = `Задача №${element}`
       breadcrumbs.push({ path, label })
     })
-    console.log(breadcrumbs.map((b) => b.path))
     breadcrumbStore.setBreadcrumbs(breadcrumbs)
   }
 
@@ -131,7 +129,7 @@ export default class GoalTableNew extends Vue {
 
   private openContextMenu(row: Goal, selection: Goal[], event: Event) {
     tableStore.setSelectedRow(row)
-    tableStore.setSelectedRows([row])
+    tableStore.setSelectedRows(selection)
     this.contextMenu.open(event, row)
   }
 

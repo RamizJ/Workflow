@@ -63,8 +63,8 @@ export default class MenuItem extends Vue {
 <style lang="scss">
 .el-menu-item .unicon svg {
   width: 15px !important;
-  margin-right: 9px;
-  margin-left: 3px;
+  margin-right: 7px;
+  margin-left: 2px;
   margin-bottom: 2px;
   overflow: unset;
 }
