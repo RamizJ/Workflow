@@ -1,5 +1,5 @@
 <template>
-  <el-menu-item class="menu-item" :index="index" :disabled="disabled">
+  <el-menu-item @click="onClick" class="menu-item" :index="index" :disabled="disabled">
     <unicon v-if="icon" :name="icon" />
     <span>
       <slot></slot>
@@ -15,6 +15,10 @@ export default class MenuItem extends Vue {
   @Prop() readonly index!: string
   @Prop() readonly icon?: string
   @Prop() readonly disabled?: boolean
+
+  private onClick(): void {
+    this.$emit('click')
+  }
 }
 </script>
 
