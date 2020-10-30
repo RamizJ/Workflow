@@ -15,13 +15,7 @@
       </div>
     </div>
 
-    <GoalTableNew
-      v-if="view === 'list'"
-      :search="search"
-      :filters="filters"
-      :order="order"
-      :sort="sort"
-    />
+    <GoalTableNew v-if="view === 'list'" />
 
     <GoalBoard
       v-if="view === 'board'"

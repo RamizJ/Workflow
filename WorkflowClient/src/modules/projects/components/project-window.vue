@@ -155,6 +155,8 @@ export default class ProjectDialog extends Mixins(DialogMixin) {
         })
         this.form.teamIds = []
         this.form.teamIds = projectsModule.projectTeams.map((team) => (team.id ? team.id : -1))
+      } else if (projectsModule.project) {
+        this.form = projectsModule.project
       }
     } catch (e) {
       this.$message.error('Не удаётся загрузить проект')

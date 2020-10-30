@@ -55,9 +55,10 @@ class ProjectsStore extends VuexModule {
     }
   }
 
-  @MutationAction({ mutate: ['_projectWindowOpened'] })
-  public async openProjectWindow() {
+  @MutationAction({ mutate: ['_projectWindowOpened', '_project'] })
+  public async openProjectWindow(project?: Project) {
     return {
+      _project: project || null,
       _projectWindowOpened: true,
     }
   }

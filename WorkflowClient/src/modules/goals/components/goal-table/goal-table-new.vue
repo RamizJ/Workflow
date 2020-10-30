@@ -80,6 +80,11 @@ export default class GoalTableNew extends Vue {
     await this.updateBreadcrumbs()
   }
 
+  protected beforeDestroy(): void {
+    tableStore.setData([])
+    tableStore.setQuery(new Query())
+  }
+
   private async updateBreadcrumbs(): Promise<void> {
     await breadcrumbStore.updateBreadcrumbs()
   }

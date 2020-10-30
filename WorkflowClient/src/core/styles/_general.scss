@@ -45,7 +45,7 @@ a {
       align-items: baseline;
       font-size: 24px;
       font-family: var(--header-font);
-      line-height: 34px;
+      line-height: 29px;
       font-weight: 600;
     }
     &__subtitle > * {
@@ -252,6 +252,9 @@ a {
   font-family: var(--fonts);
   border-radius: var(--border-radius);
   border: var(--input-border);
+}
+.el-textarea__inner {
+  line-height: inherit;
 }
 .el-textarea__inner::placeholder,
 .el-input__inner::placeholder {

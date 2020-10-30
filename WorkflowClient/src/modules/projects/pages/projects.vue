@@ -12,13 +12,16 @@
         ></project-toolbar>
       </div>
     </div>
-    <project-table
-      ref="items"
-      :search="search"
-      :filters="filters"
-      :order="order"
-      :sort="sort"
-    ></project-table>
+
+    <ProjectTableNew />
+
+    <!--    <project-table-->
+    <!--      ref="items"-->
+    <!--      :search="search"-->
+    <!--      :filters="filters"-->
+    <!--      :order="order"-->
+    <!--      :sort="sort"-->
+    <!--    ></project-table>-->
   </div>
 </template>
 
@@ -28,9 +31,11 @@ import PageMixin from '@/core/mixins/page.mixin'
 import ProjectToolbar from '@/modules/projects/components/project-toolbar.vue'
 import ProjectTable from '@/modules/projects/components/project-table.vue'
 import { SortType } from '@/core/types/query.type'
+import ProjectTableNew from '@/modules/projects/components/project-table-new.vue'
 
 @Component({
   components: {
+    ProjectTableNew,
     ProjectToolbar,
     ProjectTable,
   },
