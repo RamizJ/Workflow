@@ -4,7 +4,7 @@
     <BasePopoverButton icon="layer-group" @click="openProjectWindow">Проект</BasePopoverButton>
     <BasePopoverButton icon="user-arrows" @click="openTeamWindow">Команду</BasePopoverButton>
     <BasePopoverButton icon="users-alt" @click="openUserWindow">Пользователя</BasePopoverButton>
-    <BasePopoverButton icon="cube">Область</BasePopoverButton>
+    <!--    <BasePopoverButton icon="cube">Область</BasePopoverButton>-->
     <el-button class="sidebar-add-button" slot="reference">
       <unicon name="plus-circle" />
       Создать

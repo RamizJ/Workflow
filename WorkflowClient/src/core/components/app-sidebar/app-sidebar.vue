@@ -4,7 +4,7 @@
       <AppSidebarHeader slot="header" />
       <NavMenuItem index="/goals" icon="edit-alt">Задачи</NavMenuItem>
       <NavMenuItem index="/projects" icon="layer-group">Проекты</NavMenuItem>
-      <NavMenuItem index="/areas" icon="cube" disabled>Области</NavMenuItem>
+      <!--      <NavMenuItem index="/areas" icon="cube" disabled>Области</NavMenuItem>-->
       <NavMenuItem index="/teams" icon="user-arrows">Команды</NavMenuItem>
       <NavMenuItem index="/users" icon="users-alt">Пользователи</NavMenuItem>
       <SidebarFooter slot="footer" />

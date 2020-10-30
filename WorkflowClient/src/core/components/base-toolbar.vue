@@ -183,6 +183,8 @@ export default class Toolbar extends Vue {
     .el-select {
       width: 135px;
       margin-bottom: 1px;
+      height: 18px;
+      line-height: 18px;
       .el-input__inner {
         padding: 0;
         padding-left: 5px;
@@ -318,7 +320,7 @@ export default class Toolbar extends Vue {
 .filters-popover {
   width: 1185px;
   left: 231px !important;
-  padding: 0 30px !important;
+  padding: 10px 30px !important;
   border: none;
   border-radius: 0;
   border-bottom: 1px solid var(--sidebar-border);

@@ -1,20 +1,17 @@
 <template>
   <div class="page">
     <div class="header">
-      <div class="header__title">
-        Команды
-        <div class="header__action">
-          <el-button type="text" size="mini" @click="onCreate">Создать</el-button>
-        </div>
+      <div class="header__left">Команды</div>
+      <div class="header__left">
+        <team-toolbar
+          @search="onSearch"
+          @filters="onFiltersChange"
+          @order="onOrderChange"
+          @sort="onSortChange"
+          @view="onViewChange"
+        ></team-toolbar>
       </div>
     </div>
-    <team-toolbar
-      @search="onSearch"
-      @filters="onFiltersChange"
-      @order="onOrderChange"
-      @sort="onSortChange"
-      @view="onViewChange"
-    ></team-toolbar>
     <team-table
       v-if="view === 'list'"
       ref="items"

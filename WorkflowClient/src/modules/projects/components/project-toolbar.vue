@@ -5,32 +5,26 @@
     @sort="onSortChange"
     @filters-collapse="onFiltersCollapse"
   >
-    <el-collapse slot="filters" v-model="activeCollapseItems">
-      <el-collapse-item name="filters">
-        <div class="toolbar__filters">
-          <div class="toolbar__filters-wrapper">
-            <div class="filter">
-              <div class="label">Поиск</div>
-              <el-input v-model="search" size="medium" placeholder="Искать..." @change="onSearch">
-                <el-button slot="prefix" type="text" size="mini" @click="onSearch(search || '')">
-                  <feather type="search" size="16"></feather>
-                </el-button>
-              </el-input>
-            </div>
-            <div class="filter">
-              <div class="label">Архив</div>
-              <el-checkbox
-                v-model="filters.showOnlyDeleted"
-                size="medium"
-                @change="onFiltersChange"
-                border
-                >Только удалённые</el-checkbox
-              >
-            </div>
-          </div>
-        </div>
-      </el-collapse-item>
-    </el-collapse>
+    <template slot="filters">
+      <div class="filter">
+        <div class="label">Поиск</div>
+        <el-input v-model="search" size="medium" placeholder="Искать..." @change="onSearch">
+          <el-button slot="prefix" type="text" size="mini" @click="onSearch(search || '')">
+            <feather type="search" size="16"></feather>
+          </el-button>
+        </el-input>
+      </div>
+      <div class="filter">
+        <div class="label">Архив</div>
+        <el-checkbox
+          v-model="filters.showOnlyDeleted"
+          size="medium"
+          @change="onFiltersChange"
+          border
+          >Только удалённые</el-checkbox
+        >
+      </div>
+    </template>
   </toolbar>
 </template>
 

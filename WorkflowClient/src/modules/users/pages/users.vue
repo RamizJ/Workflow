@@ -1,20 +1,17 @@
 <template>
   <div class="page">
     <div class="header">
-      <div class="header__title">
-        Пользователи
-        <div class="header__action">
-          <el-button type="text" size="mini" @click="onCreate">Создать</el-button>
-        </div>
+      <div class="header__left">Пользователи</div>
+      <div class="header__right">
+        <user-toolbar
+          @search="onSearch"
+          @filters="onFiltersChange"
+          @order="onOrderChange"
+          @sort="onSortChange"
+          @view="onViewChange"
+        ></user-toolbar>
       </div>
     </div>
-    <user-toolbar
-      @search="onSearch"
-      @filters="onFiltersChange"
-      @order="onOrderChange"
-      @sort="onSortChange"
-      @view="onViewChange"
-    ></user-toolbar>
     <user-table
       v-if="view === 'list'"
       ref="items"
