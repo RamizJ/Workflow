@@ -1,29 +1,30 @@
 <template>
   <div class="toolbar">
-    <slot name="filters" />
     <div class="toolbar__wrapper">
-      <div class="filters">
-        <el-button
-          :class="filtersCollapsed ? '' : 'active'"
-          type="text"
-          size="mini"
-          @click="onFiltersCollapse"
-        >
-          <feather type="sliders" size="15"></feather>
-        </el-button>
-        <el-button
-          class="filters__button"
-          :class="filtersCollapsed ? '' : 'active'"
-          type="text"
-          @click="onFiltersCollapse"
-          >Фильтры</el-button
-        >
-      </div>
+      <BasePopover popover-class="filters-popover" slot="filters">
+        <div class="toolbar__filters">
+          <div class="toolbar__filters-wrapper">
+            <slot name="filters" />
+          </div>
+        </div>
+        <div slot="reference" class="filters">
+          <el-button type="text" size="mini">
+            <feather type="sliders" size="15"></feather>
+          </el-button>
+          <el-button class="filters__button" type="text">Фильтры</el-button>
+        </div>
+      </BasePopover>
       <div class="sort">
         <el-button type="text" size="mini" @click="onOrderChange">
           <feather :class="order" type="bar-chart" size="15"></feather>
         </el-button>
-        <el-select v-model="sort" size="small" placeholder="По умолчанию" @change="onSortChange">
+        <el-select
+          class="sort-selection"
+          v-model="sort"
+          size="small"
+          placeholder="По умолчанию"
+          @change="onSortChange"
+        >
           <el-option
             v-for="option in sortFields"
             :key="option.value"
@@ -69,8 +70,11 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import { SortType } from '@/core/types/query.type'
 import { View } from '@/core/types/view.type'
+import BasePopover from '@/core/components/base-popover/base-popover.vue'
 
-@Component
+@Component({
+  components: { BasePopover },
+})
 export default class Toolbar extends Vue {
   @Prop() readonly sortFields: { value: string; label: string }[] | undefined
   @Prop() readonly board: boolean | undefined
@@ -186,6 +190,13 @@ export default class Toolbar extends Vue {
         font-weight: 500;
         line-height: 21px;
         height: 21px;
+        box-shadow: none !important;
+        border: none !important;
+        &:hover,
+        &:focus {
+          box-shadow: none !important;
+          border: none !important;
+        }
       }
       .el-input__suffix {
         display: none;
@@ -302,5 +313,15 @@ export default class Toolbar extends Vue {
   .el-button + .el-button {
     margin-left: 5px;
   }
+}
+
+.filters-popover {
+  width: 1185px;
+  left: 231px !important;
+  padding: 0 30px !important;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid var(--sidebar-border);
+  box-shadow: none;
 }
 </style>

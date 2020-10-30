@@ -2,7 +2,6 @@
   <el-popover
     placement="top"
     trigger="click"
-    :offset="100"
     :transition="transition || 'fade'"
     :width="width || undefined"
     :popper-class="'popover ' + popoverClass"
