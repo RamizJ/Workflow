@@ -328,6 +328,7 @@ export default class GoalWindow extends Mixins(DialogMixin) {
   private attachmentsVisible = null
 
   protected async mounted(): Promise<void> {
+    console.log(`Goal window mounted`)
     this.visible = true
 
     this.loading = true

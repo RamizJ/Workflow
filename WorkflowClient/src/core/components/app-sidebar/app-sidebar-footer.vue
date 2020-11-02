@@ -10,11 +10,11 @@
     </Popover>
     <IconButton icon="sliders-v-alt" @click="openSettings" />
 
-    <TeamDialog v-if="isTeamWindowOpened" @close="closeTeamWindow" />
-    <UserDialog v-if="isUserWindowOpened" @close="closeUserWindow" />
-    <ProjectDialog v-if="isProjectWindowOpened" @close="closeProjectWindow" />
-    <GoalWindowNew v-if="isGoalWindowOpened" @close="closeGoalWindow" />
-    <SettingsWindow v-if="isSettingsOpened" @closed="closeSettings" />
+    <!--    <TeamDialog v-if="isTeamWindowOpened" @close="closeTeamWindow" />-->
+    <!--    <UserDialog v-if="isUserWindowOpened" @close="closeUserWindow" />-->
+    <!--    <ProjectDialog v-if="isProjectWindowOpened" @close="closeProjectWindow" />-->
+    <!--    <GoalWindowNew v-if="isGoalWindowOpened" @close="closeGoalWindow" />-->
+    <!--    <SettingsWindow v-if="isSettingsOpened" @closed="closeSettings" />-->
   </div>
 </template>
 

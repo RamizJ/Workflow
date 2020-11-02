@@ -43,60 +43,21 @@ import GoalWindowNew from '@/modules/goals/components/goal-window/goal-window-ne
     BasePopover,
   },
 })
-export default class SidebarFooter extends Vue {
-  private get isProjectWindowOpened(): boolean {
-    return projectsStore.isProjectWindowOpened
-  }
-
-  private get isGoalWindowOpened(): boolean {
-    return goalsStore.isGoalWindowOpened
-  }
-
-  private get isTeamWindowOpened(): boolean {
-    return teamsStore.isTeamWindowOpened
-  }
-
-  private get isUserWindowOpened(): boolean {
-    return usersStore.isUserWindowOpened
-  }
-
-  private get isSettingsOpened(): boolean {
-    return settingsStore.isSettingsOpened
-  }
-
+export default class AppSidebarAdd extends Vue {
   private openProjectWindow(): void {
     projectsStore.openProjectWindow()
-  }
-  private closeProjectWindow(): void {
-    projectsStore.closeProjectWindow()
   }
 
   private openGoalWindow(): void {
     goalsStore.openGoalWindow()
   }
-  private closeGoalWindow(): void {
-    goalsStore.closeGoalWindow()
-  }
 
   private openTeamWindow(): void {
     teamsStore.openTeamWindow()
   }
-  private closeTeamWindow(): void {
-    teamsStore.closeTeamWindow()
-  }
 
   private openUserWindow(): void {
     usersStore.openUserWindow()
-  }
-  private closeUserWindow(): void {
-    usersStore.closeUserWindow()
-  }
-
-  private openSettings(): void {
-    settingsStore.openSettings()
-  }
-  private closeSettings(): void {
-    settingsStore.closeSettings()
   }
 }
 </script>
