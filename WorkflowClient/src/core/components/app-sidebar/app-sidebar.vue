@@ -7,7 +7,7 @@
       <!--<NavMenuItem index="/areas" icon="cube" disabled>Области</NavMenuItem>-->
       <NavMenuItem index="/teams" icon="user-arrows">Команды</NavMenuItem>
       <NavMenuItem index="/users" icon="users-alt">Пользователи</NavMenuItem>
-      <NavMenuItem icon="sliders-v-alt" @click="openSettings">Настройки</NavMenuItem>
+      <NavMenuItem index="#" icon="sliders-v-alt" @click="openSettings">Настройки</NavMenuItem>
     </NavMenu>
   </div>
 </template>

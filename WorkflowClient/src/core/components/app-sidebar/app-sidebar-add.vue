@@ -18,7 +18,6 @@ import projectsStore from '@/modules/projects/store/projects.store'
 import goalsStore from '@/modules/goals/store/goals.store'
 import teamsStore from '@/modules/teams/store/teams.store'
 import usersStore from '@/modules/users/store/users.store'
-import settingsStore from '@/modules/settings/store/settings.store'
 
 import BasePopover from '@/core/components/base-popover/base-popover.vue'
 import BasePopoverButton from '@/core/components/base-popover/base-popover-button.vue'

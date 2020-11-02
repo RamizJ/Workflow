@@ -69,17 +69,17 @@
             </el-form-item>
           </el-col>
         </transition>
-        <transition name="fade">
-          <el-col v-if="checklistVisible || (form.children && form.children.length)" :span="24">
-            <el-form-item>
-              <checklist
-                :items="form.children"
-                :goal="form"
-                @change="onChecklistChange"
-              ></checklist>
-            </el-form-item>
-          </el-col>
-        </transition>
+        <!--        <transition name="fade">-->
+        <!--          <el-col v-if="checklistVisible || (form.children && form.children.length)" :span="24">-->
+        <!--            <el-form-item>-->
+        <!--              <checklist-->
+        <!--                :items="form.children"-->
+        <!--                :goal="form"-->
+        <!--                @change="onChecklistChange"-->
+        <!--              ></checklist>-->
+        <!--            </el-form-item>-->
+        <!--          </el-col>-->
+        <!--        </transition>-->
         <transition name="fade">
           <el-col v-if="performerVisible || form.performerId" :span="7">
             <el-form-item label="Исполнитель" prop="performerId">
@@ -171,23 +171,23 @@
             <unicon name="file-alt" />
           </el-button>
         </el-tooltip>
-        <el-tooltip
-          content="Чек-лист"
-          effect="dark"
-          placement="top"
-          transition="fade"
-          :visible-arrow="false"
-          :open-delay="500"
-        >
-          <el-button
-            v-if="!(form.children && form.children.length)"
-            type="text"
-            @click="checklistVisible = !checklistVisible"
-            circle="circle"
-          >
-            <unicon name="list-ul" />
-          </el-button>
-        </el-tooltip>
+        <!--        <el-tooltip-->
+        <!--          content="Чек-лист"-->
+        <!--          effect="dark"-->
+        <!--          placement="top"-->
+        <!--          transition="fade"-->
+        <!--          :visible-arrow="false"-->
+        <!--          :open-delay="500"-->
+        <!--        >-->
+        <!--          <el-button-->
+        <!--            v-if="!(form.children && form.children.length)"-->
+        <!--            type="text"-->
+        <!--            @click="checklistVisible = !checklistVisible"-->
+        <!--            circle="circle"-->
+        <!--          >-->
+        <!--            <unicon name="list-ul" />-->
+        <!--          </el-button>-->
+        <!--        </el-tooltip>-->
         <el-tooltip
           content="Приоритет"
           effect="dark"
@@ -328,7 +328,6 @@ export default class GoalWindow extends Mixins(DialogMixin) {
   private attachmentsVisible = null
 
   protected async mounted(): Promise<void> {
-    console.log(`Goal window mounted`)
     this.visible = true
 
     this.loading = true
