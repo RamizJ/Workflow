@@ -50,9 +50,10 @@ class TeamsStore extends VuexModule {
     }
   }
 
-  @MutationAction({ mutate: ['_teamWindowOpened'] })
-  public async openTeamWindow() {
+  @MutationAction({ mutate: ['_teamWindowOpened', '_team'] })
+  public async openTeamWindow(team?: Team) {
     return {
+      _team: team || null,
       _teamWindowOpened: true,
     }
   }

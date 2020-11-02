@@ -8,7 +8,7 @@
     </BaseContextMenuItem>
     <BaseContextMenuDivider v-if="active && !$route.params.teamId" />
     <BaseContextMenuItem v-if="active && !$route.params.teamId" @click="createNew"
-      >Новый проект</BaseContextMenuItem
+      >Новая команда</BaseContextMenuItem
     >
     <BaseContextMenuDivider v-if="active && !$route.params.teamId" />
     <BaseContextMenuItem v-if="active && !$route.params.teamId" @click="remove">
@@ -29,7 +29,7 @@ import Entity from '@/core/types/entity.type'
 @Component({
   components: { BaseContextSubmenu, BaseContextMenuDivider, BaseContextMenuItem, BaseContextMenu },
 })
-export default class ProjectContextMenu extends Vue {
+export default class TeamContextMenu extends Vue {
   @Ref() readonly baseContextMenu!: BaseContextMenu
 
   private active = true

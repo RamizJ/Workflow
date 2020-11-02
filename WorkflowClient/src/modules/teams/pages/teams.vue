@@ -12,14 +12,7 @@
         ></team-toolbar>
       </div>
     </div>
-    <team-table
-      v-if="view === 'list'"
-      ref="items"
-      :search="search"
-      :filters="filters"
-      :order="order"
-      :sort="sort"
-    ></team-table>
+    <TeamTableNew />
   </div>
 </template>
 
@@ -29,9 +22,11 @@ import PageMixin from '@/core/mixins/page.mixin'
 import TeamToolbar from '@/modules/teams/components/team-toolbar.vue'
 import TeamTable from '@/modules/teams/components/team-table.vue'
 import { SortType } from '@/core/types/query.type'
+import TeamTableNew from '@/modules/teams/components/team-table-new.vue'
 
 @Component({
   components: {
+    TeamTableNew,
     TeamToolbar,
     TeamTable,
   },

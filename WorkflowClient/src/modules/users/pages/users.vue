@@ -12,14 +12,17 @@
         ></user-toolbar>
       </div>
     </div>
-    <user-table
-      v-if="view === 'list'"
-      ref="items"
-      :search="search"
-      :filters="filters"
-      :order="order"
-      :sort="sort"
-    ></user-table>
+
+    <UserTableNew />
+
+    <!--    <user-table-->
+    <!--      v-if="view === 'list'"-->
+    <!--      ref="items"-->
+    <!--      :search="search"-->
+    <!--      :filters="filters"-->
+    <!--      :order="order"-->
+    <!--      :sort="sort"-->
+    <!--    ></user-table>-->
   </div>
 </template>
 
@@ -29,9 +32,11 @@ import PageMixin from '@/core/mixins/page.mixin'
 import UserToolbar from '@/modules/users/components/user-toolbar.vue'
 import UserTable from '@/modules/users/components/user-table.vue'
 import { SortType } from '@/core/types/query.type'
+import UserTableNew from '@/modules/users/components/user-table-new.vue'
 
 @Component({
   components: {
+    UserTableNew,
     UserToolbar,
     UserTable,
   },

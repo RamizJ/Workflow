@@ -204,6 +204,7 @@ export default class UserDialog extends Mixins(DialogMixin) {
     this.loading = true
     try {
       if (this.id) this.form = await usersModule.findOneById(this.id.toString())
+      else if (usersModule.user) this.form = usersModule.user
     } catch (e) {
       Message.error('Не удаётся загрузить пользователя')
     }

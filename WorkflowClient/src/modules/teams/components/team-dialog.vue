@@ -311,6 +311,8 @@ export default class TeamDialog extends Mixins(DialogMixin) {
       for (const project of this.projects) {
         if (project.id) this.form.projectIds.push(project.id)
       }
+    } else if (teamsModule.team) {
+      this.form = teamsModule.team
     }
     this.loading = false
     ;(this.$refs.title as Input).focus()

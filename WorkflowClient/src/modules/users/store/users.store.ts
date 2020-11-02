@@ -41,9 +41,10 @@ class UsersStore extends VuexModule {
     }
   }
 
-  @MutationAction({ mutate: ['_userWindowOpened'] })
-  public async openUserWindow() {
+  @MutationAction({ mutate: ['_userWindowOpened', '_user'] })
+  public async openUserWindow(user?: User) {
     return {
+      _user: user || null,
       _userWindowOpened: true,
     }
   }
