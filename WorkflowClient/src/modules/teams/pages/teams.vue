@@ -18,8 +18,8 @@
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator'
 import PageMixin from '@/core/mixins/page.mixin'
-import BasePage from '@/core/components/base-page.vue'
-import BasePageHeader from '@/core/components/base-page-header.vue'
+import BasePage from '@/core/components/base-page/base-page.vue'
+import BasePageHeader from '@/core/components/base-page/base-page-header.vue'
 import TeamToolbar from '@/modules/teams/components/team-toolbar.vue'
 import TeamTable from '@/modules/teams/components/team-table.vue'
 import { SortType } from '@/core/types/query.type'

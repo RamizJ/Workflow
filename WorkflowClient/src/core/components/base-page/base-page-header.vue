@@ -24,11 +24,13 @@ export default class BasePageHeader extends Vue {}
 
 <style lang="scss" scoped>
 .page-header {
-  padding-top: 20px;
-  padding-bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-bottom: var(--dropdown-border);
+  margin: 0 -30px 12px;
+  padding: 18px 30px 20px;
+  min-height: 70px;
   input {
     border: none;
     padding: 0;
@@ -41,7 +43,7 @@ export default class BasePageHeader extends Vue {}
     align-items: baseline;
     font-size: 24px;
     font-family: var(--header-font);
-    line-height: 29px;
+    line-height: 24px;
     font-weight: 600;
     input {
       font-size: 24px;

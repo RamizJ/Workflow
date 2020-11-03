@@ -33,7 +33,7 @@ export default class GoalBreadcrumbs extends Vue {
 
 <style lang="scss">
 .goal-breadcrumbs {
-  padding-top: 5px;
+  padding-top: 0px;
   .el-breadcrumb__item:first-child .el-breadcrumb__inner {
     font-size: 24px !important;
     font-weight: 600 !important;

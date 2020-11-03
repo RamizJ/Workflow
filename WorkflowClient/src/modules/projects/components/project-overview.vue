@@ -1,5 +1,5 @@
 <template>
-  <div class="project-overview">
+  <div v-if="project" class="project-overview">
     <el-row :gutter="20">
       <el-col :span="6">
         <el-card class="card" shadow="never">
@@ -23,23 +23,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
-
-import projectModule from '@/modules/projects/store/projects.store'
+import { Component, Vue } from 'vue-property-decorator'
+import projectsStore from '@/modules/projects/store/projects.store'
 import Project from '@/modules/projects/models/project.type'
 import { Status } from '@/modules/goals/models/goal.type'
 
 @Component
 export default class ProjectOverview extends Vue {
-  @Prop() readonly data: Project | undefined
-
-  private project: Project = {
-    name: '',
-    description: '',
-    ownerId: '',
-    ownerFio: '',
-    teamIds: [],
-  }
   private totalTasksCount = 0
   private completedTasksCount = 0
 
@@ -51,11 +41,15 @@ export default class ProjectOverview extends Vue {
     else return result || 0
   }
 
+  private get project(): Project | null {
+    return projectsStore.project
+  }
+
   protected async mounted(): Promise<void> {
-    this.project = { ...this.data } as Project
-    if (this.project.id) {
-      this.totalTasksCount = await projectModule.getTasksCount(this.project.id)
-      this.completedTasksCount = await projectModule.getTasksCountByStatus({
+    if (!this.project) await projectsStore.findOneById(parseInt(this.$route.params.projectId))
+    if (this.project && this.project.id) {
+      this.totalTasksCount = await projectsStore.getTasksCount(this.project.id)
+      this.completedTasksCount = await projectsStore.getTasksCountByStatus({
         projectId: this.project.id,
         status: Status.Succeed,
       })

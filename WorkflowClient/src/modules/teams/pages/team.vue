@@ -1,29 +1,38 @@
 <template>
   <BasePage>
-    <BasePageHeader v-if="!loading">
+    <BasePageHeader>
       <input
+        v-if="!loading"
         v-model="teamItem.name"
         v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
         @change="onTeamUpdate"
       />
+      <TeamActions
+        slot="action"
+        v-if="!loading"
+        @add-user="onUserAdd"
+        @delete-team="onTeamDelete"
+      />
+    </BasePageHeader>
+    <BasePageSubheader>
       <input
-        slot="subtitle"
-        placeholder="Описание"
+        placeholder="Описание..."
         v-model="teamItem.description"
         v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
         @change="onTeamUpdate"
       />
-      <TeamActions slot="action" @add-user="onUserAdd" @delete-team="onTeamDelete" />
-    </BasePageHeader>
+    </BasePageSubheader>
 
-    <el-tabs v-if="teamItem.id" ref="tabs" v-model="activeTab" @tab-click="setTab">
-      <el-tab-pane name="members" label="Участники">
-        <team-users v-if="activeTab === 'members'" ref="teamUsers"></team-users>
-      </el-tab-pane>
-      <el-tab-pane name="projects" label="Проекты">
-        <team-projects v-if="activeTab === 'projects'" ref="teamProjects"></team-projects>
-      </el-tab-pane>
-    </el-tabs>
+    <BaseTabs v-model="currentTab" :tabs="tabs" @tab-click="setTab" />
+
+    <!--    <el-tabs v-if="teamItem.id" ref="tabs" v-model="currentTab" @tab-click="setTab">-->
+    <!--      <el-tab-pane name="members" label="Участники">-->
+    <!--        <team-users v-if="currentTab === 'members'" ref="teamUsers"></team-users>-->
+    <!--      </el-tab-pane>-->
+    <!--      <el-tab-pane name="projects" label="Проекты">-->
+    <!--        <team-projects v-if="currentTab === 'projects'" ref="teamProjects"></team-projects>-->
+    <!--      </el-tab-pane>-->
+    <!--    </el-tabs>-->
 
     <team-dialog
       v-if="dialogTeamVisible"
@@ -42,22 +51,25 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import { MessageBox } from 'element-ui'
-
 import teamsModule from '@/modules/teams/store/teams.store'
 import settingsModule from '@/modules/settings/store/settings.store'
+import BasePage from '@/core/components/base-page/base-page.vue'
+import BasePageHeader from '@/core/components/base-page/base-page-header.vue'
+import BasePageSubheader from '@/core/components/base-page/base-page-subheader.vue'
+import BaseTabs from '@/core/components/base-tabs/base-tabs.vue'
 import TeamUsers from '@/modules/teams/components/team-users.vue'
 import TeamProjects from '@/modules/teams/components/team-projects.vue'
 import TeamDialog from '@/modules/teams/components/team-dialog.vue'
 import TeamAddUserDialog from '@/modules/teams/components/team-add-user-dialog.vue'
 import UserDialog from '@/modules/users/components/user-dialog.vue'
-import Team from '@/modules/teams/models/team.type'
 import UserTable from '@/modules/users/components/user-table-old.vue'
-import BasePage from '@/core/components/base-page.vue'
-import BasePageHeader from '@/core/components/base-page-header.vue'
 import TeamActions from '@/modules/teams/components/team-actions.vue'
+import Team from '@/modules/teams/models/team.type'
 
 @Component({
   components: {
+    BaseTabs,
+    BasePageSubheader,
     TeamActions,
     BasePageHeader,
     BasePage,
@@ -76,7 +88,11 @@ export default class TeamPage extends Vue {
     userIds: [],
     projectIds: [],
   }
-  private activeTab = 'members'
+  private currentTab = 'users'
+  private tabs: Array<{ label: string; name: string; component: any }> = [
+    { label: 'Участники', name: 'users', component: TeamUsers },
+    { label: 'Проекты', name: 'projects', component: TeamProjects },
+  ]
   private dialogTeamVisible = false
   private dialogUserVisible = false
   private dialogAddUserVisible = false
@@ -95,13 +111,13 @@ export default class TeamPage extends Vue {
 
   private loadTab() {
     const query = { ...this.$route.query }
-    query.tab = query.tab?.toString() || this.activeTab
-    this.activeTab = query.tab
+    query.tab = query.tab?.toString() || this.currentTab
+    this.currentTab = query.tab
     if (JSON.stringify(query) !== JSON.stringify(this.$route.query)) this.$router.replace({ query })
   }
 
   private setTab() {
-    const query = { tab: this.activeTab }
+    const query = { tab: this.currentTab }
     if (JSON.stringify(query) !== JSON.stringify(this.$route.query)) this.$router.replace({ query })
   }
 

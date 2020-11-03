@@ -14,8 +14,8 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import Nav from '@/core/components/base-nav.vue'
-import NavItem from '@/core/components/base-nav-item.vue'
+import Nav from '@/core/components/base-nav/base-nav.vue'
+import NavItem from '@/core/components/base-nav/base-nav-item.vue'
 import SidebarFooter from '@/core/components/app-sidebar/app-sidebar-footer.vue'
 import AppSidebarHeader from '@/core/components/app-sidebar/app-sidebar-header.vue'
 import SettingsWindow from '@/modules/settings/components/settings-window.vue'

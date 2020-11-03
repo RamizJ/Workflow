@@ -1,44 +1,30 @@
 <template>
   <BasePage>
-    <BasePageHeader v-if="!loading">
+    <BasePageHeader>
       <input
+        v-if="!loading"
         v-model="projectItem.name"
         v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
         @change="updateEntity"
       />
-      <input
-        slot="subtitle"
-        placeholder="Описание"
-        v-model="projectItem.description"
-        v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
-        @change="updateEntity"
-      />
       <ProjectActions
+        v-if="!loading"
         slot="action"
         @add-goal="createTask"
         @add-team="addTeam"
         @delete-project="deleteEntity"
       />
     </BasePageHeader>
+    <BasePageSubheader>
+      <input
+        placeholder="Описание..."
+        v-model="projectItem.description"
+        v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
+        @change="updateEntity"
+      />
+    </BasePageSubheader>
 
-    <el-tabs v-if="projectItem.id" ref="tabs" v-model="activeTab" @tab-click="setTab">
-      <el-tab-pane name="overview" label="Обзор">
-        <project-overview
-          v-if="activeTab === 'overview'"
-          :data="projectItem"
-          @description="changeEntityDescription"
-        ></project-overview>
-      </el-tab-pane>
-      <el-tab-pane name="tasks" label="Задачи">
-        <project-tasks ref="projectTasks" v-if="activeTab === 'tasks'"></project-tasks>
-      </el-tab-pane>
-      <el-tab-pane name="teams" label="Команды">
-        <project-teams ref="projectTeams" v-if="activeTab === 'teams'"></project-teams>
-      </el-tab-pane>
-      <el-tab-pane name="reports" label="Отчёты">
-        <project-reports ref="projectReports" v-if="activeTab === 'reports'" />
-      </el-tab-pane>
-    </el-tabs>
+    <BaseTabs v-model="currentTab" :tabs="tabs" @tab-click="setTab" />
 
     <project-dialog
       v-if="projectModalVisible"
@@ -58,7 +44,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 import { MessageBox } from 'element-ui'
 
-import projectsModule from '@/modules/projects/store/projects.store'
+import projectsStore from '@/modules/projects/store/projects.store'
 import settingsModule from '@/modules/settings/store/settings.store'
 import ProjectOverview from '@/modules/projects/components/project-overview.vue'
 import ProjectTasks from '@/modules/projects/components/project-tasks.vue'
@@ -71,12 +57,16 @@ import TaskTable from '@/modules/goals/components/goal-table/goal-table.vue'
 import Project from '@/modules/projects/models/project.type'
 import TeamTable from '@/modules/teams/components/team-table-old.vue'
 import ProjectUsers from '@/modules/projects/components/project-team-users.vue'
-import BasePage from '@/core/components/base-page.vue'
-import BasePageHeader from '@/core/components/base-page-header.vue'
+import BasePage from '@/core/components/base-page/base-page.vue'
+import BasePageHeader from '@/core/components/base-page/base-page-header.vue'
 import ProjectActions from '@/modules/projects/components/project-actions.vue'
+import BasePageSubheader from '@/core/components/base-page/base-page-subheader.vue'
+import BaseTabs from '@/core/components/base-tabs/base-tabs.vue'
 
 @Component({
   components: {
+    BaseTabs,
+    BasePageSubheader,
     ProjectActions,
     BasePageHeader,
     BasePage,
@@ -92,7 +82,13 @@ import ProjectActions from '@/modules/projects/components/project-actions.vue'
 })
 export default class ProjectPage extends Vue {
   private loading = true
-  private activeTab = 'overview'
+  private currentTab = 'overview'
+  private tabs: Array<{ label: string; name: string; component: any }> = [
+    { label: 'Обзор', name: 'overview', component: ProjectOverview },
+    { label: 'Задачи', name: 'goals', component: ProjectTasks },
+    { label: 'Команды', name: 'teams', component: ProjectTeams },
+    { label: 'Статистика', name: 'statistics', component: ProjectReports },
+  ]
   private projectItem: Project = {
     name: '',
     description: '',
@@ -109,20 +105,21 @@ export default class ProjectPage extends Vue {
   protected async mounted(): Promise<void> {
     this.loading = true
     this.loadTab()
-    const project = await projectsModule.findOneById(this.id)
+    const project = projectsStore.project || (await projectsStore.findOneById(this.id))
     this.projectItem = { ...project }
+    projectsStore.setProject(project)
     this.loading = false
   }
 
   private loadTab() {
     const query = { ...this.$route.query }
-    query.tab = query.tab?.toString() || this.activeTab
-    this.activeTab = query.tab
+    query.tab = query.tab?.toString() || this.currentTab
+    this.currentTab = query.tab
     if (JSON.stringify(query) !== JSON.stringify(this.$route.query)) this.$router.replace({ query })
   }
 
   private setTab() {
-    const query = { tab: this.activeTab }
+    const query = { tab: this.currentTab }
     if (JSON.stringify({ tab: '' }) !== JSON.stringify(this.$route.query))
       this.$router.replace({ query })
   }
@@ -134,18 +131,18 @@ export default class ProjectPage extends Vue {
   private async deleteEntity() {
     const allowDelete = await this.confirmDelete()
     if (!allowDelete) return
-    await projectsModule.deleteOne(this.id)
+    await projectsStore.deleteOne(this.id)
     await this.$router.replace({ name: 'Project' })
   }
 
   private async updateEntity() {
-    await projectsModule.updateOne(this.projectItem)
+    await projectsStore.updateOne(this.projectItem)
   }
 
   private async changeEntityDescription(value: string) {
     this.projectItem.description = value
-    this.projectItem.teamIds = projectsModule.project?.teamIds
-    await projectsModule.updateOne(this.projectItem)
+    this.projectItem.teamIds = projectsStore.project?.teamIds
+    await projectsStore.updateOne(this.projectItem)
   }
 
   private async createTask() {

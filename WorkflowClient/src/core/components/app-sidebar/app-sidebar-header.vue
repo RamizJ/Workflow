@@ -79,6 +79,9 @@ export default class AppSidebarHeader extends Vue {
 
 <style lang="scss" scoped>
 .sidebar-header {
-  padding-bottom: 20px;
+  padding: 13px 15px 15px;
+  border-bottom: var(--dropdown-border);
+  margin: -15px -15px 15px;
+  min-height: 70px;
 }
 </style>
