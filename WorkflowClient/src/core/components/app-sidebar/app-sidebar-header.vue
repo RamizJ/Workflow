@@ -79,6 +79,6 @@ export default class AppSidebarHeader extends Vue {
 
 <style lang="scss" scoped>
 .sidebar-header {
-  padding-bottom: 27px;
+  padding-bottom: 20px;
 }
 </style>

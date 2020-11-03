@@ -11,7 +11,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 
 @Component
-export default class MenuItem extends Vue {
+export default class BaseNavItem extends Vue {
   @Prop() readonly index!: string
   @Prop() readonly icon?: string
   @Prop() readonly disabled?: boolean
@@ -26,18 +26,16 @@ export default class MenuItem extends Vue {
 .el-menu-item {
   color: var(--sidebar-text);
   height: auto;
-  line-height: 30px;
-  font-size: 14.5px;
+  line-height: 38px;
+  font-size: 14px;
   font-weight: 500;
-  letter-spacing: 0.2px;
   padding: 0 16px 0 10px !important;
-  margin: 4px 0;
-  width: fit-content;
-  border-radius: 20px;
+  margin: 1px 0;
+  border-radius: 5px;
   display: flex;
   align-items: center;
   z-index: 1;
-  transition: 0.15s;
+  transition: 0.1s;
   span {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -45,16 +43,15 @@ export default class MenuItem extends Vue {
     word-break: break-all;
   }
   .unicon {
-    fill: var(--sidebar-text);
-    opacity: 0.85;
+    fill: var(--color-primary);
+    //opacity: 0.85;
     transition: 0.15s;
   }
   &.is-active {
-    //background-color: var(--color-primary);
-    background-color: rgba(0, 0, 0, 0.07);
-    color: var(--text);
+    background-color: var(--sidebar-item-active-background);
+    color: var(--sidebar-item-active-text);
     .unicon {
-      fill: var(--text);
+      fill: var(--sidebar-item-active-text);
     }
   }
   &:hover:not(.is-active) {
@@ -66,9 +63,9 @@ export default class MenuItem extends Vue {
 
 <style lang="scss">
 .el-menu-item .unicon svg {
-  width: 16px !important;
-  margin-right: 8px;
-  margin-left: 3px;
+  width: 17px !important;
+  margin-right: 10px;
+  margin-left: 2px;
   margin-bottom: 2px;
   overflow: unset;
 }

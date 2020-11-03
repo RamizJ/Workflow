@@ -138,7 +138,7 @@ export default class Toolbar extends Vue {
     color: var(--text);
     font-size: 13px;
     font-weight: 500;
-    margin-bottom: 3px;
+    margin-bottom: 5px;
     opacity: 0.9;
   }
   .filter {
@@ -318,8 +318,8 @@ export default class Toolbar extends Vue {
 }
 
 .filters-popover {
-  width: 1185px;
-  left: 231px !important;
+  width: 1205px;
+  left: 235px !important;
   padding: 10px 30px !important;
   border: none;
   border-radius: 0;

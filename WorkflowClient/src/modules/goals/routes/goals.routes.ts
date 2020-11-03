@@ -8,14 +8,5 @@ export default [
     component: (): Promise<typeof import('../pages/goals.vue')> =>
       import(/* webpackChunkName: "goals" */ '../pages/goals.vue'),
     meta: { layout: MainLayout, basePath: '/goals' },
-    // children: [
-    //   {
-    //     path: ':goalId',
-    //     name: 'parentGoal',
-    //     component: (): Promise<typeof import('../pages/goals.vue')> =>
-    //       import(/* webpackChunkName: "goals" */ '../pages/goals.vue'),
-    //     meta: { layout: MainLayout },
-    //   },
-    // ],
   },
 ]

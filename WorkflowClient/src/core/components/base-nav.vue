@@ -19,7 +19,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 
 @Component
-export default class Menu extends Vue {
+export default class BaseNav extends Vue {
   @Prop() readonly mode?: string
   @Prop() readonly router?: boolean
   @Prop() readonly defaultActive?: string
@@ -33,7 +33,7 @@ export default class Menu extends Vue {
   height: 100%;
   position: relative;
   background-color: transparent;
-  padding: 24px;
+  padding: 15px;
   &__footer {
     width: 100%;
     position: absolute;

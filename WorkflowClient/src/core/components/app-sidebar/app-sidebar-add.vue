@@ -64,14 +64,15 @@ export default class AppSidebarAdd extends Vue {
 <style lang="scss">
 .add-popover {
   transform-origin: left top !important;
-  top: 10px !important;
-  left: 23px !important;
+  top: 2px !important;
+  left: 14px !important;
   box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05) !important;
   border-color: rgba(0, 0, 0, 0.07) !important;
   background-color: var(--background) !important;
 }
 .sidebar-add-button {
   width: 100%;
+  padding: 11px 20px;
   background-color: var(--page-background) !important;
   font-size: 15px !important;
   font-weight: 600 !important;
@@ -86,7 +87,7 @@ export default class AppSidebarAdd extends Vue {
     vertical-align: sub;
     position: absolute;
     top: 50%;
-    left: 22px;
+    left: 20px;
     transform: translate(-50%, -50%);
   }
   &:hover,

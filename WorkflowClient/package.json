@@ -1,6 +1,6 @@
 {
   "name": "workflow",
-  "version": "0.9.13",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "vue-cli-service serve --mode development",

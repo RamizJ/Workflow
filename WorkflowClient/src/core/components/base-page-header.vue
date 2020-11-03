@@ -1,12 +1,11 @@
 <template>
   <div class="page-header">
     <div class="page-header__left">
-      <slot name="left" />
+      <slot />
     </div>
     <div class="page-header__left">
       <slot name="right" />
     </div>
-    <slot />
   </div>
 </template>
 

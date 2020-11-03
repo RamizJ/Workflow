@@ -1,28 +1,28 @@
 <template>
   <div class="sidebar">
-    <NavMenu :router="true">
+    <Nav :router="true">
       <AppSidebarHeader slot="header" />
-      <NavMenuItem index="/goals" icon="edit-alt">Задачи</NavMenuItem>
-      <NavMenuItem index="/projects" icon="layer-group">Проекты</NavMenuItem>
-      <!--<NavMenuItem index="/areas" icon="cube" disabled>Области</NavMenuItem>-->
-      <NavMenuItem index="/teams" icon="user-arrows">Команды</NavMenuItem>
-      <NavMenuItem index="/users" icon="users-alt">Пользователи</NavMenuItem>
-      <NavMenuItem index="#" icon="sliders-v-alt" @click="openSettings">Настройки</NavMenuItem>
-    </NavMenu>
+      <NavItem index="/goals" icon="edit-alt">Задачи</NavItem>
+      <NavItem index="/projects" icon="layer-group">Проекты</NavItem>
+      <!--<NavItem index="/areas" icon="cube" disabled>Области</NavItem>-->
+      <NavItem index="/teams" icon="user-arrows">Команды</NavItem>
+      <NavItem index="/users" icon="users-alt">Пользователи</NavItem>
+      <NavItem index="/settings" icon="sliders-v-alt">Настройки</NavItem>
+    </Nav>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import NavMenu from '@/core/components/base-nav-menu.vue'
-import NavMenuItem from '@/core/components/base-nav-menu-item.vue'
+import Nav from '@/core/components/base-nav.vue'
+import NavItem from '@/core/components/base-nav-item.vue'
 import SidebarFooter from '@/core/components/app-sidebar/app-sidebar-footer.vue'
 import AppSidebarHeader from '@/core/components/app-sidebar/app-sidebar-header.vue'
 import SettingsWindow from '@/modules/settings/components/settings-window.vue'
 import settingsStore from '@/modules/settings/store/settings.store'
 
 @Component({
-  components: { SettingsWindow, AppSidebarHeader, NavMenu, NavMenuItem, SidebarFooter },
+  components: { SettingsWindow, AppSidebarHeader, Nav, NavItem, SidebarFooter },
 })
 export default class AppSidebar extends Vue {
   private openSettings(): void {
