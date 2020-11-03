@@ -1,151 +1,169 @@
 <template>
-  <div class="table-container">
-    <el-table
-      ref="table"
-      height="100%"
-      v-loading="loading"
-      :data="data"
-      :row-class-name="setIndex"
-      @select="onRowSelect"
-      @row-click="onRowSingleClick"
-      @row-dblclick="onRowDoubleClick"
-      @row-contextmenu="onRowRightClick"
-      highlight-current-row="highlight-current-row"
-      border="border"
-    >
-      <el-table-column type="selection" width="42"></el-table-column>
-      <el-table-column prop="name" label="Проект"></el-table-column>
-      <el-table-column prop="ownerFio" label="Руководитель" width="250"></el-table-column>
-      <el-table-column
-        prop="creationDate"
-        label="Дата создания"
-        width="180"
-        :formatter="formatDate"
-      ></el-table-column>
-      <infinite-loading
-        slot="append"
-        ref="loader"
-        spinner="waveDots"
-        :distance="300"
-        @infinite="loadData"
-        force-use-infinite-wrapper=".el-table__body-wrapper"
-      >
-        <div slot="no-more"></div>
-        <div slot="no-results"></div>
-      </infinite-loading>
-    </el-table>
-    <vue-context ref="contextMenu">
-      <template slot-scope="child">
-        <li>
-          <a
-            v-if="isRowEditable && !$route.params.teamId"
-            @click.prevent="onRowDoubleClick(child.data.row)"
-            >Открыть</a
-          >
-        </li>
-        <li>
-          <a v-if="!$route.params.teamId" @click.prevent="editEntity(child.data.row)">
-            {{ isRowEditable ? 'Изменить' : 'Информация' }}
-          </a>
-        </li>
-        <el-divider v-if="isRowEditable && !$route.params.teamId"></el-divider>
-        <li>
-          <a v-if="isRowEditable && !$route.params.teamId" @click.prevent="createEntity"
-            >Новый проект</a
-          >
-        </li>
-        <el-divider v-if="isRowEditable && !$route.params.teamId"></el-divider>
-        <li>
-          <a v-if="isRowEditable && !$route.params.teamId" @click.prevent="deleteEntity">
-            Переместить в корзину
-          </a>
-        </li>
-        <li>
-          <a
-            v-if="!isRowEditable"
-            @click.prevent="restoreEntity(child.data.row, isMultipleSelected)"
-            >Восстановить</a
-          >
-        </li>
-      </template>
-    </vue-context>
-    <project-dialog
-      v-if="dialogVisible"
-      :id="dialogData"
-      @close="dialogVisible = false"
-      @submit="reloadData"
-    ></project-dialog>
-  </div>
+  <BaseTable
+    ref="baseTable"
+    :data="tableData"
+    @space="onSpaceClick"
+    @double-click="onDoubleClick"
+    @right-click="openContextMenu"
+    @load="onLoad"
+    infinite
+  >
+    <BaseTableColumn prop="name" label="Название" />
+    <BaseTableColumn prop="ownerFio" label="Руководитель" width="250"></BaseTableColumn>
+    <BaseTableColumn
+      prop="creationDate"
+      label="Дата создания"
+      width="180"
+      :formatter="formatDate"
+    ></BaseTableColumn>
+    <ProjectContextMenu
+      slot="footer"
+      ref="contextMenu"
+      @open="onDoubleClick"
+      @edit="edit"
+      @create="create"
+      @remove="remove"
+      @restore="restore"
+    />
+  </BaseTable>
 </template>
 
 <script lang="ts">
-import { Component, Mixins } from 'vue-property-decorator'
+import { Component, Ref, Vue, Watch } from 'vue-property-decorator'
 import { StateChanger } from 'vue-infinite-loading'
-
-import projectsModule from '@/modules/projects/store/projects.store'
-import TableMixin from '@/core/mixins/table.mixin'
-import ProjectDialog from '@/modules/projects/components/project-window.vue'
-import Project from '@/modules/projects/models/project.type'
-import teamsModule from '@/modules/teams/store/teams.store'
 import { ElTableColumn } from 'element-ui/types/table-column'
 
-@Component({ components: { ProjectDialog } })
-export default class ProjectTable extends Mixins(TableMixin) {
-  public data: Project[] = []
-  private loading = false
+import projectsStore from '@/modules/projects/store/projects.store'
+import tableStore from '@/core/store/table.store'
+import BaseTable from '@/core/components/base-table/base-table.vue'
+import BaseTableColumn from '@/core/components/base-table/base-table-column.vue'
+import Query, { FilterField } from '@/core/types/query.type'
+import Entity from '@/core/types/entity.type'
+import ProjectContextMenu from '@/modules/projects/components/project-context-menu.vue'
+import Project from '@/modules/projects/models/project.type'
 
-  private async loadData($state: StateChanger): Promise<void> {
-    const isFirstLoad = !this.data.length
-    this.loading = isFirstLoad
-    let data: Project[]
-    if (this.$route.params.teamId) data = await teamsModule.findProjects(this.query)
-    else data = await projectsModule.findAll(this.query)
-    if (this.query.pageNumber !== undefined) this.query.pageNumber++
+@Component({
+  components: {
+    ProjectContextMenu,
+    BaseTable,
+    BaseTableColumn,
+  },
+})
+export default class ProjectTable extends Vue {
+  @Ref() readonly contextMenu!: ProjectContextMenu
+  @Ref() readonly baseTable!: BaseTable
+
+  private get tableData(): Project[] {
+    return tableStore.data as Project[]
+  }
+
+  private get query(): Query {
+    return tableStore.query
+  }
+
+  private get isReloadRequired(): boolean {
+    return tableStore.isReloadRequired
+  }
+
+  protected beforeDestroy(): void {
+    tableStore.setData([])
+    tableStore.setQuery(new Query())
+  }
+
+  @Watch('isReloadRequired')
+  onReloadRequired(): void {
+    tableStore.setData([])
+    tableStore.setPage(0)
+    this.baseTable.loader.stateChanger.reset()
+    tableStore.completeReload()
+  }
+
+  private async onLoad($state: StateChanger): Promise<void> {
+    ;(this as any).$insProgress.start()
+    const data: Project[] = await projectsStore.findAll(this.query)
+    tableStore.increasePage()
     if (data.length) $state.loaded()
     else $state.complete()
-    this.data = isFirstLoad ? data : this.data.concat(data)
-    this.loading = false
+    tableStore.appendData(data)
+    ;(this as any).$insProgress.finish()
   }
 
-  public createEntity(): void {
-    this.dialogData = undefined
-    this.dialogVisible = true
+  private openContextMenu(row: Project, selection: Project[], event: Event) {
+    tableStore.setSelectedRow(row)
+    tableStore.setSelectedRows(selection)
+    this.contextMenu.open(event, row)
   }
 
-  public editEntity(entity: Project): void {
-    this.dialogData = entity.id
-    this.dialogVisible = true
+  private async onSpaceClick(): Promise<void> {
+    await projectsStore.openProjectWindow()
   }
 
-  private async deleteEntity(): Promise<void> {
-    const allowDelete = await this.confirmDelete()
-    if (!allowDelete) return
-    const entity = this.selectedRow as Project
-    if (this.isMultipleSelected) await projectsModule.deleteMany(this.selectionIds as number[])
-    else await projectsModule.deleteOne(entity.id as number)
-    this.reloadData()
-  }
-
-  private async restoreEntity(entity: Project, multiple = false): Promise<void> {
-    if (multiple) await projectsModule.restoreMany(this.selectionIds as number[])
-    else await projectsModule.restoreOne(entity.id as number)
-    this.reloadData()
-  }
-
-  public async onRowDoubleClick(row: Project): Promise<void> {
+  private async onDoubleClick(row: Project): Promise<void> {
     if (!row.isRemoved && !this.$route.params.teamId) await this.$router.push(`/projects/${row.id}`)
   }
 
-  public onRowRightClick(row: Project, column: ElTableColumn, event: Event): void {
-    if (!this.isMultipleSelected) {
-      this.table?.clearSelection()
-      this.table?.toggleRowSelection(row)
+  private async edit(): Promise<void> {
+    if (!tableStore.selectedRow) return
+    const project = tableStore.selectedRow as Project
+    // console.log(project)
+    await projectsStore.openProjectWindow(project)
+  }
+
+  private async create(): Promise<void> {
+    await projectsStore.openProjectWindow()
+  }
+
+  private async remove(): Promise<void> {
+    if (tableStore.isMultiselect) {
+      const selection = tableStore.selectedRows as Project[]
+      const ids = selection.map((project: Project) => project.id!)
+      await projectsStore.deleteMany(ids)
+    } else {
+      if (!tableStore.selectedRow) return
+      if (!tableStore.selectedRow?.id) return
+      await projectsStore.deleteOne(tableStore.selectedRow.id as number)
     }
-    this.table?.setCurrentRow(row)
-    this.selectedRow = row
-    event.preventDefault()
-    if (this.$route.params.teamId) return
-    this.contextMenu.open(event, { row, column })
+    tableStore.requireReload()
+  }
+
+  private async restore(): Promise<void> {
+    if (tableStore.isMultiselect) {
+      const selection = tableStore.selectedRows as Project[]
+      const ids = selection.map((project: Project) => project.id!)
+      await projectsStore.restoreMany(ids)
+    } else {
+      if (!tableStore.selectedRow) return
+      if (!tableStore.selectedRow?.id) return
+      await projectsStore.restoreOne(tableStore.selectedRow.id as number)
+    }
+    tableStore.requireReload()
+  }
+
+  public formatDate(row: Entity, column: ElTableColumn, value: string): string {
+    const date = new Date(value)
+    return date.toLocaleString('ru', {
+      timeZone: 'UTC',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }
+
+  public formatFio(row: Entity, column: ElTableColumn, value: string): string {
+    return this.shortenFullName(value)
+  }
+
+  public shortenFullName(value: string): string {
+    if (!value) return value
+    const fioArray = value.split(' ')
+    const lastName = fioArray[0]
+    const firstNameInitial = fioArray[1][0] ? `${fioArray[1][0]}.` : ''
+    const middleNameInitial = fioArray[2][0] ? `${fioArray[2][0]}.` : ''
+    return `${lastName} ${firstNameInitial} ${middleNameInitial}`
   }
 }
 </script>
+
+<style lang="scss"></style>

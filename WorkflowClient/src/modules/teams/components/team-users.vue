@@ -22,7 +22,7 @@
 import { Component, Mixins } from 'vue-property-decorator'
 import PageMixin from '@/core/mixins/page.mixin'
 import UserToolbar from '@/modules/users/components/user-toolbar.vue'
-import UserTable from '@/modules/users/components/user-table.vue'
+import UserTable from '@/modules/users/components/user-table-old.vue'
 import { SortType } from '@/core/types/query.type'
 
 @Component({ components: { UserToolbar, UserTable } })

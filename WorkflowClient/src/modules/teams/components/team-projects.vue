@@ -22,7 +22,7 @@
 import { Component, Mixins } from 'vue-property-decorator'
 import PageMixin from '@/core/mixins/page.mixin'
 import ProjectToolbar from '@/modules/projects/components/project-toolbar.vue'
-import ProjectTable from '@/modules/projects/components/project-table.vue'
+import ProjectTable from '@/modules/projects/components/project-table-old.vue'
 import { SortType } from '@/core/types/query.type'
 
 @Component({ components: { ProjectToolbar, ProjectTable } })

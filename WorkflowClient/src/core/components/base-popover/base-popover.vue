@@ -1,6 +1,5 @@
 <template>
   <el-popover
-    placement="top"
     trigger="click"
     :transition="transition || 'fade'"
     :width="width || undefined"

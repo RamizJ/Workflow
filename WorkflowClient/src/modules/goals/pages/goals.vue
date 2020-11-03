@@ -1,22 +1,17 @@
 <template>
-  <div class="page">
-    <div class="header">
-      <div class="header__left">
-        <GoalBreadcrumbs />
-      </div>
-      <div class="header__right">
-        <GoalToolbar
-          @search="onSearch"
-          @filters="onFiltersChange"
-          @order="onOrderChange"
-          @sort="onSortChange"
-          @view="onViewChange"
-        ></GoalToolbar>
-      </div>
-    </div>
-
+  <BasePage>
+    <BasePageHeader>
+      <GoalBreadcrumbs />
+      <GoalToolbar
+        slot="toolbar"
+        @search="onSearch"
+        @filters="onFiltersChange"
+        @order="onOrderChange"
+        @sort="onSortChange"
+        @view="onViewChange"
+      ></GoalToolbar>
+    </BasePageHeader>
     <GoalTableNew v-if="view === 'list'" />
-
     <GoalBoard
       v-if="view === 'board'"
       ref="items"
@@ -25,14 +20,16 @@
       :order="order"
       :sort="sort"
     ></GoalBoard>
-  </div>
+  </BasePage>
 </template>
 
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator'
-import PageMixin from '@/core/mixins/page.mixin'
 import goalStore from '@/modules/goals/store/goals.store'
 import breadcrumbStore from '@/modules/goals/store/breadcrumb.store'
+import PageMixin from '@/core/mixins/page.mixin'
+import BasePage from '@/core/components/base-page.vue'
+import BasePageHeader from '@/core/components/base-page-header.vue'
 import GoalToolbar from '@/modules/goals/components/goal-toolbar.vue'
 import GoalTable from '@/modules/goals/components/goal-table/goal-table.vue'
 import GoalBoard from '@/modules/goals/components/goal-board.vue'
@@ -42,6 +39,8 @@ import { SortType } from '@/core/types/query.type'
 
 @Component({
   components: {
+    BasePageHeader,
+    BasePage,
     GoalBreadcrumbs,
     GoalTableNew,
     GoalToolbar,

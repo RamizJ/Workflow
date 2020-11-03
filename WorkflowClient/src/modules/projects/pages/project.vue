@@ -1,46 +1,26 @@
 <template>
-  <div class="page">
-    <div class="header">
-      <div class="header__title">
-        <input
-          v-if="projectItem.name"
-          class="title"
-          v-model="projectItem.name"
-          v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
-          @change="updateEntity"
-        />
-        <div class="header__action">
-          <el-dropdown v-if="!loading" placement="bottom" :show-timeout="0">
-            <el-button type="text" size="mini">
-              <unicon name="ellipsis-h" />
-            </el-button>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>
-                <el-button type="text" size="mini" @click="createTask">Создать задачу</el-button>
-              </el-dropdown-item>
-              <el-dropdown-item>
-                <el-button type="text" size="mini" @click="addTeam">Добавить команду</el-button>
-              </el-dropdown-item>
-              <el-divider></el-divider>
-              <el-dropdown-item>
-                <el-button type="text" size="mini" @click="deleteEntity"
-                  >Переместить в корзину</el-button
-                >
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </div>
-      </div>
-      <div class="header__subtitle">
-        <input
-          class="subtitle"
-          placeholder="Описание"
-          v-model="projectItem.description"
-          v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
-          @change="updateEntity"
-        />
-      </div>
-    </div>
+  <BasePage>
+    <BasePageHeader v-if="!loading">
+      <input
+        v-model="projectItem.name"
+        v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
+        @change="updateEntity"
+      />
+      <input
+        slot="subtitle"
+        placeholder="Описание"
+        v-model="projectItem.description"
+        v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
+        @change="updateEntity"
+      />
+      <ProjectActions
+        slot="action"
+        @add-goal="createTask"
+        @add-team="addTeam"
+        @delete-project="deleteEntity"
+      />
+    </BasePageHeader>
+
     <el-tabs v-if="projectItem.id" ref="tabs" v-model="activeTab" @tab-click="setTab">
       <el-tab-pane name="overview" label="Обзор">
         <project-overview
@@ -55,9 +35,6 @@
       <el-tab-pane name="teams" label="Команды">
         <project-teams ref="projectTeams" v-if="activeTab === 'teams'"></project-teams>
       </el-tab-pane>
-      <!--<el-tab-pane name="users" label="Пользователи">
-        <project-users ref="projectUsers" v-if="activeTab === 'users'"></project-users>
-      </el-tab-pane>-->
       <el-tab-pane name="reports" label="Отчёты">
         <project-reports ref="projectReports" v-if="activeTab === 'reports'" />
       </el-tab-pane>
@@ -74,7 +51,7 @@
       @submit="onTeamAdd"
     ></project-add-team-dialog>
     <task-dialog v-if="taskModalVisible" @close="taskModalVisible = false"></task-dialog>
-  </div>
+  </BasePage>
 </template>
 
 <script lang="ts">
@@ -92,11 +69,17 @@ import ProjectAddTeamDialog from '@/modules/projects/components/project-add-team
 import TaskDialog from '@/modules/goals/components/goal-window/goal-window.vue'
 import TaskTable from '@/modules/goals/components/goal-table/goal-table.vue'
 import Project from '@/modules/projects/models/project.type'
-import TeamTable from '@/modules/teams/components/team-table.vue'
+import TeamTable from '@/modules/teams/components/team-table-old.vue'
 import ProjectUsers from '@/modules/projects/components/project-team-users.vue'
+import BasePage from '@/core/components/base-page.vue'
+import BasePageHeader from '@/core/components/base-page-header.vue'
+import ProjectActions from '@/modules/projects/components/project-actions.vue'
 
 @Component({
   components: {
+    ProjectActions,
+    BasePageHeader,
+    BasePage,
     ProjectUsers,
     ProjectOverview,
     ProjectTasks,

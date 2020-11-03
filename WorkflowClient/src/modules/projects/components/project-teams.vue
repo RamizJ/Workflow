@@ -22,7 +22,7 @@
 import { Component, Mixins } from 'vue-property-decorator'
 import PageMixin from '@/core/mixins/page.mixin'
 import TeamToolbar from '@/modules/teams/components/team-toolbar.vue'
-import TeamTable from '@/modules/teams/components/team-table.vue'
+import TeamTable from '@/modules/teams/components/team-table-old.vue'
 import { SortType } from '@/core/types/query.type'
 
 @Component({

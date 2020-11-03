@@ -1,7 +1,7 @@
 <template>
   <div class="toolbar">
     <div class="toolbar__wrapper">
-      <BasePopover popover-class="filters-popover" slot="filters">
+      <BasePopover popover-class="filters-popover">
         <div class="toolbar__filters">
           <div class="toolbar__filters-wrapper">
             <slot name="filters" />
@@ -121,7 +121,7 @@ export default class Toolbar extends Vue {
 
 <style lang="scss">
 .toolbar {
-  //padding-bottom: 10px;
+  padding: 4px 0;
 }
 .toolbar__filters {
   justify-content: space-between;
