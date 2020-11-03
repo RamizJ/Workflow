@@ -238,8 +238,9 @@
   --popover-shadow: 0 14px 30px rgba(103,132,187,.15),0 4px 4px rgba(103,132,187,.05);
 
   --dropdown-background: #ffffff;
-  --dropdown-shadow: 0 14px 30px rgba(101, 185, 172, 0.25), 0 4px 4px rgba(103, 187, 174, .1);
-  --dropdown-item-hover-background: rgb(237, 245, 245);
+  --dropdown-border: 1px solid rgba(0,0,0,0.05);
+  --dropdown-shadow: 0px 3px 5px rgba(0,0,0,0.04);
+  --dropdown-item-hover-background: #e7e7e9;
 
   --tag-background: var(--background-3);
   --tag-border: var(--background-4);

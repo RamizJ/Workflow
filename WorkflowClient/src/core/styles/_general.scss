@@ -183,14 +183,14 @@ a {
 .el-dropdown-menu {
   padding: 5px 0;
   border-radius: 5px;
-  border: none;
+  border: var(--dropdown-border)
 }
 .el-select-dropdown__item,
 .el-dropdown-menu__item {
   height: 32px;
   line-height: 32px;
-  font-size: 13px;
-  padding: 0 27px 0 15px;
+  font-size: 14px;
+  padding: 0 27px 0 11px;
   margin: 0 5px;
   color: var(--text);
   border-radius: 4px;
