@@ -41,8 +41,9 @@ import { Component, Ref, Vue, Watch } from 'vue-property-decorator'
 import { StateChanger } from 'vue-infinite-loading'
 import { ElTableColumn } from 'element-ui/types/table-column'
 
-import goalsStore from '@/modules/goals/store/goals.store'
 import tableStore from '@/core/store/table.store'
+import goalsStore from '@/modules/goals/store/goals.store'
+import projectsStore from '@/modules/projects/store/projects.store'
 import breadcrumbStore from '@/modules/goals/store/breadcrumb.store'
 import BaseTable from '@/core/components/base-table/base-table.vue'
 import BaseTableColumn from '@/core/components/base-table/base-table-column.vue'
@@ -78,11 +79,13 @@ export default class GoalTableNew extends Vue {
 
   protected async mounted(): Promise<void> {
     await this.updateBreadcrumbs()
+    if (this.openedProjectId) tableStore.extendQuery({ projectId: this.openedProjectId })
   }
 
-  protected beforeDestroy(): void {
+  protected async beforeDestroy(): Promise<void> {
     tableStore.setData([])
     tableStore.setQuery(new Query())
+    await breadcrumbStore.resetBreadcrumbs()
   }
 
   private async updateBreadcrumbs(): Promise<void> {
@@ -114,7 +117,12 @@ export default class GoalTableNew extends Vue {
     ;(this as any).$insProgress.finish()
   }
 
+  private get openedProjectId(): number {
+    return this.$route.params.projectId ? parseInt(this.$route.params.projectId) : 0
+  }
+
   private get openedGoalId(): number {
+    if (!this.$route.path.includes('/goals/')) return 0
     const pathElements = this.$route.path.split('/')
     const goalId = pathElements[pathElements.length - 1]
     try {

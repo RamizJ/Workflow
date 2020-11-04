@@ -72,6 +72,11 @@ class TableStore extends VuexModule {
   }
 
   @Mutation
+  extendQuery(property: Record<string, string | number>) {
+    this._query = { ...this._query, ...property }
+  }
+
+  @Mutation
   requireReload() {
     this._isReloadRequired = true
   }

@@ -7,14 +7,15 @@
       @sort="onSortChange"
       @view="onViewChange"
     ></task-toolbar>
-    <task-table
-      v-if="view === 'list'"
-      ref="items"
-      :search="search"
-      :filters="filters"
-      :order="order"
-      :sort="sort"
-    ></task-table>
+    <GoalTableNew v-if="view === 'list'" />
+    <!--    <task-table-->
+    <!--      v-if="view === 'list'"-->
+    <!--      ref="items"-->
+    <!--      :search="search"-->
+    <!--      :filters="filters"-->
+    <!--      :order="order"-->
+    <!--      :sort="sort"-->
+    <!--    ></task-table>-->
     <task-board
       v-if="view === 'board'"
       ref="items"
@@ -33,9 +34,11 @@ import TaskToolbar from '@/modules/goals/components/goal-toolbar.vue'
 import TaskTable from '@/modules/goals/components/goal-table/goal-table.vue'
 import TaskBoard from '@/modules/goals/components/goal-board.vue'
 import { SortType } from '@/core/types/query.type'
+import GoalTableNew from '@/modules/goals/components/goal-table/goal-table-new.vue'
 
 @Component({
   components: {
+    GoalTableNew,
     TaskToolbar,
     TaskTable,
     TaskBoard,

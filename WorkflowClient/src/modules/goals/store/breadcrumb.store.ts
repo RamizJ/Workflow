@@ -58,6 +58,12 @@ class BreadcrumbStore extends VuexModule {
     this._breadcrumbs = this._breadcrumbs.filter((breadcrumb) => breadcrumb.path !== path)
     await breadcrumbsStorage.setBreadcrumbs('goals', this._breadcrumbs)
   }
+
+  @Mutation
+  async resetBreadcrumbs(): Promise<void> {
+    this._breadcrumbs = [{ path: '/goals', label: 'Задачи' }]
+    await breadcrumbsStorage.setBreadcrumbs('goals', this._breadcrumbs)
+  }
 }
 
 export default getModule(BreadcrumbStore)

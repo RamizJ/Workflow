@@ -104,10 +104,12 @@ export default class ProjectPage extends Vue {
 
   protected async mounted(): Promise<void> {
     this.loading = true
+    ;(this as any).$insProgress.start()
     this.loadTab()
     const project = projectsStore.project || (await projectsStore.findOneById(this.id))
     this.projectItem = { ...project }
     projectsStore.setProject(project)
+    ;(this as any).$insProgress.finish()
     this.loading = false
   }
 

@@ -40,7 +40,7 @@ export default class BasePageHeader extends Vue {}
   &__title {
     cursor: default;
     display: flex;
-    align-items: baseline;
+    align-items: center;
     font-size: 24px;
     font-family: var(--header-font);
     line-height: 24px;

@@ -1,6 +1,12 @@
 <template>
   <el-tabs v-model="tab" @tab-click="onTabClick">
-    <el-tab-pane v-for="(tab, index) in tabs" :key="index" :label="tab.label" :name="tab.name">
+    <el-tab-pane
+      v-for="(tab, index) in tabs"
+      :key="index"
+      :label="tab.label"
+      :name="tab.name"
+      :lazy="true"
+    >
       <component :is="tab.component" />
     </el-tab-pane>
   </el-tabs>

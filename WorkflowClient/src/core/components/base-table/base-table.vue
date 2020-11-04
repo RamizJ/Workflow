@@ -59,6 +59,11 @@ export default class BaseTable extends Vue {
     document.onkeyup = this.onKeyUp
   }
 
+  protected beforeDestroy(): void {
+    document.onkeydown = null
+    document.onkeyup = null
+  }
+
   @Watch('data')
   private onDataChange(data: Entity[]) {
     this.tableData = data

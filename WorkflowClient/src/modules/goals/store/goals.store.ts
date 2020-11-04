@@ -6,7 +6,7 @@ import {
   MutationAction,
   VuexModule,
 } from 'vuex-module-decorators'
-import moment from 'moment' // TODO: Replace with dateFns
+import moment from 'moment' // TODO: Replace with dateFns / Luxon.js
 import store from '@/core/store'
 import api from '../api'
 import Goal, { Status } from '@/modules/goals/models/goal.type'
