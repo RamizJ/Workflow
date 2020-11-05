@@ -8,16 +8,18 @@
           </div>
         </div>
         <div slot="reference" class="filters">
-          <el-button type="text" size="mini">
-            <feather type="sliders" size="15"></feather>
+          <el-button class="filters-icon" type="text" size="mini">
+            <unicon name="filter" />
           </el-button>
           <el-button class="filters__button" type="text">Фильтры</el-button>
         </div>
       </BasePopover>
       <div class="sort">
-        <el-button type="text" size="mini" @click="onOrderChange">
-          <feather :class="order" type="bar-chart" size="15"></feather>
+        <el-button class="order-button" type="text" size="mini" @click="onOrderChange">
+          <unicon v-if="order === 'Ascending'" name="sort-amount-down" />
+          <unicon v-if="order === 'Descending'" name="sort-amount-up" />
         </el-button>
+        <div class="divider"></div>
         <el-select
           class="sort-selection"
           v-model="sort"
@@ -158,18 +160,65 @@ export default class Toolbar extends Vue {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  .filters {
+    cursor: pointer;
+    border: var(--input-border);
+    border-radius: 5px;
+    padding: 8px 20px 5px 13px;
+    margin-right: 20px;
+    .filters-icon {
+      svg {
+        height: 16px;
+        width: 16px;
+        fill: var(--text);
+      }
+      margin-right: 2px;
+    }
+    .filters__button {
+      color: var(--text) !important;
+      font-size: 14px;
+      line-height: 16px;
+      font-weight: 400;
+    }
+  }
+  .sort {
+    cursor: pointer;
+    border: var(--input-border);
+    border-radius: 5px;
+    padding: 7px 14px 6px 13px;
+    color: var(--text) !important;
+    .order-button {
+      svg {
+        height: 18px;
+        width: 18px;
+        fill: var(--text);
+      }
+      margin-right: 12px;
+    }
+    .divider {
+      margin-top: -8px;
+      margin-bottom: -6px;
+      height: 35px;
+      border-right: var(--input-border) !important;
+    }
+    .sort-selection {
+      .el-input__inner {
+        margin-left: 10px;
+        color: var(--text) !important;
+        font-size: 14px !important;
+        font-weight: 400 !important;
+        line-height: 20px !important;
+        height: 20px !important;
+      }
+    }
+  }
   .sort,
   .view,
   .filters {
     display: flex;
     justify-content: flex-end;
     align-items: flex-start;
-    .filters__button {
-      font-size: 13px;
-      line-height: 16px;
-      margin-right: 20px;
-      font-weight: 500;
-    }
+
     .Ascending {
       transform: rotate(90deg);
       margin-top: 1px;
@@ -181,7 +230,7 @@ export default class Toolbar extends Vue {
       margin-right: -5px;
     }
     .el-select {
-      width: 135px;
+      width: 145px;
       margin-bottom: 1px;
       height: 18px;
       line-height: 18px;

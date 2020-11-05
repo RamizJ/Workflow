@@ -29,7 +29,7 @@ export default class BasePageHeader extends Vue {}
   justify-content: space-between;
   border-bottom: var(--dropdown-border);
   margin: 0 -30px 12px;
-  padding: 18px 30px 20px;
+  padding: 0 30px;
   min-height: 70px;
   input {
     border: none;

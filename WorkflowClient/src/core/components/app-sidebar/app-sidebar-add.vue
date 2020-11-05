@@ -72,12 +72,13 @@ export default class AppSidebarAdd extends Vue {
 }
 .sidebar-add-button {
   width: 100%;
-  padding: 11px 20px !important;
+  padding: 12px 20px !important;
   background-color: var(--page-background) !important;
   font-size: 14px !important;
   font-weight: 500 !important;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 1px 0 1px rgba(0, 0, 0, 0.05),
-    0 4px 6px 0 rgba(0, 0, 0, 0.05);
+  border: var(--input-border) !important;
+  //box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 1px 0 1px rgba(0, 0, 0, 0.05),
+  //  0 4px 6px 0 rgba(0, 0, 0, 0.05);
   transition: background-color 0.15s !important;
   position: relative;
   svg {
