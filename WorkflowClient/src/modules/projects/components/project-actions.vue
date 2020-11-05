@@ -5,7 +5,7 @@
     </el-button>
     <el-dropdown-menu slot="dropdown">
       <el-dropdown-item>
-        <el-button type="text" size="mini" @click="$emit('add-task')">Добавить задачу</el-button>
+        <el-button type="text" size="mini" @click="$emit('add-goal')">Добавить задачу</el-button>
       </el-dropdown-item>
       <el-dropdown-item>
         <el-button type="text" size="mini" @click="$emit('add-team')">Добавить команду</el-button>

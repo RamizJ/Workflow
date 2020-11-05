@@ -47,10 +47,9 @@ class BreadcrumbStore extends VuexModule {
 
   @Action({ commit: 'setBreadcrumbs' })
   async addBreadcrumb(breadcrumb: { path: string; label: string }) {
-    const breadcrumbs = this._breadcrumbs
-    const alreadyExist = breadcrumbs.some((b) => b.path === breadcrumb.path)
-    if (alreadyExist) return breadcrumbs
-    else return [...breadcrumbs, breadcrumb]
+    const alreadyExist = this._breadcrumbs.some((b) => b.path === breadcrumb.path)
+    if (alreadyExist) return this._breadcrumbs
+    else return [...this._breadcrumbs, breadcrumb]
   }
 
   @Mutation

@@ -319,8 +319,8 @@ export default class Toolbar extends Vue {
 
 .filters-popover {
   width: 1205px;
-  left: 235px !important;
-  padding: 10px 30px !important;
+  left: 220px !important;
+  padding: 5px 30px !important;
   border: none;
   border-radius: 0;
   border-bottom: 1px solid var(--sidebar-border);

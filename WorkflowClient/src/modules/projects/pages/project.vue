@@ -53,7 +53,7 @@ import ProjectReports from '@/modules/projects/components/project-statistics.vue
 import ProjectDialog from '@/modules/projects/components/project-window.vue'
 import ProjectAddTeamDialog from '@/modules/projects/components/project-add-team-window.vue'
 import TaskDialog from '@/modules/goals/components/goal-window/goal-window.vue'
-import TaskTable from '@/modules/goals/components/goal-table/goal-table.vue'
+import TaskTable from '@/modules/goals/components/goal-table/goal-table-old.vue'
 import Project from '@/modules/projects/models/project.type'
 import TeamTable from '@/modules/teams/components/team-table-old.vue'
 import ProjectUsers from '@/modules/projects/components/project-team-users.vue'
@@ -62,6 +62,8 @@ import BasePageHeader from '@/core/components/base-page/base-page-header.vue'
 import ProjectActions from '@/modules/projects/components/project-actions.vue'
 import BasePageSubheader from '@/core/components/base-page/base-page-subheader.vue'
 import BaseTabs from '@/core/components/base-tabs/base-tabs.vue'
+import goalsStore from '@/modules/goals/store/goals.store'
+import Goal from '@/modules/goals/models/goal.type'
 
 @Component({
   components: {
@@ -113,6 +115,10 @@ export default class ProjectPage extends Vue {
     this.loading = false
   }
 
+  protected beforeDestroy(): void {
+    projectsStore.setProject(null)
+  }
+
   private loadTab() {
     const query = { ...this.$route.query }
     query.tab = query.tab?.toString() || this.currentTab
@@ -148,9 +154,9 @@ export default class ProjectPage extends Vue {
   }
 
   private async createTask() {
-    const projectTasks = this.$refs.projectTasks as ProjectTasks
-    if (projectTasks) (projectTasks.$refs.items as TaskTable).createEntity()
-    else this.taskModalVisible = true
+    const goal = new Goal()
+    goal.projectId = this.projectItem.id
+    await goalsStore.openGoalWindow(goal)
   }
 
   private async addTeam() {
