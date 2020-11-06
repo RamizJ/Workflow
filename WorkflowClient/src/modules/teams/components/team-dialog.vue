@@ -171,6 +171,7 @@ import BaseDialog from '@/core/components/BaseDialog.vue'
 import Team from '@/modules/teams/models/team.type'
 import Query from '@/core/types/query.type'
 import User from '@/modules/users/models/user.type'
+import tableStore from '@/core/store/table.store'
 
 @Component({ components: { BaseDialog } })
 export default class TeamDialog extends Mixins(DialogMixin) {
@@ -323,6 +324,7 @@ export default class TeamDialog extends Mixins(DialogMixin) {
     await form.validate(async (valid) => {
       if (valid) {
         await this.sendForm()
+        tableStore.requireReload()
         this.$emit('submit')
         this.exit()
       } else {

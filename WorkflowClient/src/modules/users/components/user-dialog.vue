@@ -154,6 +154,7 @@ import DialogMixin from '@/core/mixins/dialog.mixin'
 import BaseDialog from '@/core/components/BaseDialog.vue'
 import User, { Role } from '@/modules/users/models/user.type'
 import { ValidationRule } from '@/core/types/validation-rule.type'
+import tableStore from '@/core/store/table.store'
 
 @Component({ components: { BaseDialog } })
 export default class UserDialog extends Mixins(DialogMixin) {
@@ -219,6 +220,7 @@ export default class UserDialog extends Mixins(DialogMixin) {
     await form.validate(async (valid) => {
       if (valid) {
         await this.sendForm()
+        tableStore.requireReload()
         this.$emit('submit')
         this.exit()
       } else {

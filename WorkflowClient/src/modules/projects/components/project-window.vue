@@ -119,6 +119,7 @@ import projectsModule from '@/modules/projects/store/projects.store'
 import DialogMixin from '@/core/mixins/dialog.mixin'
 import BaseDialog from '@/core/components/BaseDialog.vue'
 import Project from '@/modules/projects/models/project.type'
+import tableStore from '@/core/store/table.store'
 
 @Component({ components: { BaseDialog } })
 export default class ProjectDialog extends Mixins(DialogMixin) {
@@ -178,6 +179,7 @@ export default class ProjectDialog extends Mixins(DialogMixin) {
     await form.validate(async (valid) => {
       if (valid) {
         await this.sendForm()
+        tableStore.requireReload()
         this.$emit('submit')
         this.exit()
       } else {
