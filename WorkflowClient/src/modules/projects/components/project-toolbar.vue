@@ -30,8 +30,10 @@
 
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator'
+import tableStore from '@/core/store/table.store'
 import ToolbarMixin from '@/core/mixins/toolbar.mixin'
 import Toolbar from '@/core/components/base-toolbar.vue'
+import { SortType } from '@/core/types/query.type'
 
 @Component({ components: { Toolbar } })
 export default class ProjectToolbar extends Mixins(ToolbarMixin) {
@@ -40,5 +42,10 @@ export default class ProjectToolbar extends Mixins(ToolbarMixin) {
     { value: 'name', label: 'По названию' },
     { value: 'ownerFio', label: 'По руководителю' },
   ]
+
+  protected mounted() {
+    tableStore.setSort(this.sortFields[0].value)
+    tableStore.setOrder(SortType.Descending)
+  }
 }
 </script>

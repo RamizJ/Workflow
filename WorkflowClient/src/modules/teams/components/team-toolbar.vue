@@ -32,9 +32,16 @@
 import { Component, Mixins } from 'vue-property-decorator'
 import ToolbarMixin from '@/core/mixins/toolbar.mixin'
 import Toolbar from '@/core/components/base-toolbar.vue'
+import tableStore from '@/core/store/table.store'
+import { SortType } from '@/core/types/query.type'
 
 @Component({ components: { Toolbar } })
 export default class TeamToolbar extends Mixins(ToolbarMixin) {
   private sortFields = [{ value: 'name', label: 'По названию' }]
+
+  protected mounted() {
+    tableStore.setSort(this.sortFields[0].value)
+    tableStore.setOrder(SortType.Ascending)
+  }
 }
 </script>

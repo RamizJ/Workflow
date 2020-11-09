@@ -108,6 +108,9 @@ export default class ToolbarMixin extends Vue {
   public onOrderChange(value: SortType): void {
     this.order = value
     tableStore.setOrder(value)
+    console.log(value)
+    // if (!tableStore.sort) tableStore.setSort(this.sort)
+    console.log(tableStore.sort)
     this.$emit('order', value)
   }
 
