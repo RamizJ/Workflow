@@ -38,7 +38,7 @@ export default class ProjectToolbar extends Mixins(ToolbarMixin) {
   private sortFields = [
     { value: 'creationDate', label: 'По дате создания' },
     { value: 'name', label: 'По названию' },
-    { value: 'state', label: 'По руководителю' },
+    { value: 'ownerFio', label: 'По руководителю' },
   ]
 }
 </script>
