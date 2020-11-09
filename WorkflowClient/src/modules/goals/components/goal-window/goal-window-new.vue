@@ -347,13 +347,10 @@ export default class GoalWindow extends Mixins(DialogMixin) {
     await form.validate(async (valid) => {
       if (valid) {
         await this.sendForm()
-        if (this.form.isAttachmentsExist) {
-          ;(this.$refs.upload as ElUpload).submit()
-        } else {
-          this.$emit('submit')
-          this.exit()
-        }
+        if (this.form.isAttachmentsExist) (this.$refs.upload as ElUpload).submit()
+        this.$emit('submit')
         tableStore.requireReload()
+        this.exit()
       } else {
         Message({
           showClose: true,
