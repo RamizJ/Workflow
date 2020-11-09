@@ -16,7 +16,7 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" :loading="loading" @click="submit">{{
-          loginButtonText
+          loading ? '' : 'Войти'
         }}</el-button>
       </el-form-item>
       <el-form-item prop="rememberMe">
@@ -46,7 +46,6 @@ export default class LoginPage extends Vue {
 
   private loading = false
   private form: Credentials = new Credentials('', '')
-  private loginButtonText = 'Войти'
   private rules = {
     userName: [{ required: true, message: '!', trigger: 'blur' }],
     password: [{ required: true, message: '!', trigger: 'blur' }],
@@ -58,10 +57,8 @@ export default class LoginPage extends Vue {
       if (valid) {
         try {
           this.loading = true
-          this.loginButtonText = ''
           await authModule.login(formCredentials)
           await this.$router.push('/')
-          this.loginButtonText = 'Войти'
           this.loading = false
         } catch (error) {
           this.loading = false

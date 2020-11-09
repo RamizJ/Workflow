@@ -116,7 +116,7 @@ export default class SettingsAccount extends Vue {
   }
 
   protected async mounted(): Promise<void> {
-    if (authModule.me) this.form = authModule.me
+    if (authModule.me) this.form = { ...authModule.me }
   }
 
   private async updateAccount(): Promise<void> {
