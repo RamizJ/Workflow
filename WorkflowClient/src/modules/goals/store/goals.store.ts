@@ -89,7 +89,6 @@ class GoalsStore extends VuexModule {
     if (result.parentGoalId)
       result.parent = (await this.context.dispatch('findParent', id)) as Goal[]
     if (result.hasChildren) {
-      console.log(result.hasChildren)
       const child = (await this.context.dispatch('findChild', { id })) as Goal[]
       result.children = child.sort(this.compare).reverse()
     }
@@ -99,7 +98,6 @@ class GoalsStore extends VuexModule {
       attachment.name = attachment.fileName
       return attachment
     })
-    console.log(result)
     this.context.commit('setTask', result)
     return result
   }
