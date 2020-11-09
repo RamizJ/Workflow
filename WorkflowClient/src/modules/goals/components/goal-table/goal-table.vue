@@ -78,6 +78,7 @@ export default class GoalTable extends Vue {
   }
 
   protected async mounted(): Promise<void> {
+    this.onReloadRequired(tableStore.isReloadRequired)
     if (!this.openedGoalId) await breadcrumbStore.resetBreadcrumbs()
     await this.updateBreadcrumbs()
     if (this.openedProjectId) tableStore.extendQuery({ projectId: this.openedProjectId })
@@ -93,7 +94,8 @@ export default class GoalTable extends Vue {
   }
 
   @Watch('isReloadRequired')
-  onReloadRequired(): void {
+  onReloadRequired(value: boolean): void {
+    if (!value) return
     tableStore.setData([])
     tableStore.setPage(0)
     this.baseTable.loader.stateChanger.reset()
