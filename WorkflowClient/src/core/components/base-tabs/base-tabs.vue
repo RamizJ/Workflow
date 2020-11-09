@@ -81,10 +81,12 @@ export default class BaseTabs extends Vue {
 .el-tabs__nav-wrap {
   padding: 0 30px;
   margin: 0 -30px;
-  border-bottom: var(--dropdown-border);
+  border-bottom: var(--input-border);
+  transition: 0.2s;
   &:after {
     background-color: var(--input-focus-background);
     height: 1px;
+    transition: 0.2s;
   }
 }
 .el-tabs__active-bar {

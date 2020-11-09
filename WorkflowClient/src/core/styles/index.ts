@@ -1,8 +1,7 @@
-import './_reset.scss'
-import './_variables.scss'
+import './reset.scss'
+import './constants.scss'
 import './fonts.scss'
-import './_general.scss'
-import './_transitions.scss'
-import './vue-context.scss'
+import './general.scss'
+import './transitions.scss'
 
 document.documentElement.setAttribute('theme', localStorage.getItem('theme') || 'light')

@@ -334,7 +334,6 @@ export default class GoalWindow extends Mixins(DialogMixin) {
     const id = this.id || goalsStore.goal?.id
 
     if (id) this.form = await goalsStore.findOneById(id)
-    else Message.error(`Идентификатор задачи не найден`)
 
     await this.searchUsers()
     await this.searchProjects()

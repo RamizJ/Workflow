@@ -27,10 +27,11 @@ export default class BasePageHeader extends Vue {}
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: var(--dropdown-border);
+  border-bottom: var(--input-border);
   margin: 0 -30px 12px;
   padding: 0 30px;
-  min-height: 70px;
+  min-height: var(--header-height);
+  transition: border-color 0.2s;
   input {
     border: none;
     padding: 0;
@@ -42,13 +43,13 @@ export default class BasePageHeader extends Vue {}
     display: flex;
     align-items: center;
     font-size: 24px;
-    font-family: var(--header-font);
+    font-family: var(--fonts);
     line-height: 24px;
     font-weight: 600;
     input {
       font-size: 24px;
       font-weight: 600;
-      font-family: var(--header-font);
+      font-family: var(--fonts);
       height: auto;
     }
   }

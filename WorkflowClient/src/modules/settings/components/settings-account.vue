@@ -70,8 +70,8 @@
     </el-row>
 
     <div class="section buttons">
-      <el-button type="primary" @click="updateAccount" :loading="loading">Сохранить</el-button>
       <el-button @click="exit">Выйти</el-button>
+      <el-button type="primary" @click="updateAccount" :loading="loading">Сохранить</el-button>
     </div>
   </el-form>
 </template>

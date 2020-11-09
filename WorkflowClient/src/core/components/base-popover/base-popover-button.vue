@@ -26,6 +26,8 @@ export default class PopoverButton extends Vue {
   text-align: center;
   background-color: transparent;
   justify-content: center;
+  transition: 0.12s;
+  border: none;
   span {
     display: flex;
     flex-direction: column;
@@ -37,7 +39,8 @@ export default class PopoverButton extends Vue {
     svg {
       fill: var(--text);
     }
-    background-color: var(--page-background);
+    border: none;
+    background-color: var(--main-background);
     box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.05);
   }
   .unicon {

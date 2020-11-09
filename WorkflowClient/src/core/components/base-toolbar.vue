@@ -367,12 +367,12 @@ export default class Toolbar extends Vue {
 }
 
 .filters-popover {
-  width: 1205px;
-  left: 220px !important;
+  width: 100%;
+  left: 221px !important;
   padding: 5px 30px !important;
   border: none;
   border-radius: 0;
-  border-bottom: 1px solid var(--sidebar-border);
+  border-bottom: var(--input-border);
   box-shadow: none;
 }
 </style>

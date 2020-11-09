@@ -27,14 +27,14 @@ export default class BaseContextMenu extends Vue {
   min-width: 210px;
   &,
   & ul {
-    background: var(--dropdown-background);
+    background: var(--popover-background);
     padding: 5px 0;
     border-radius: 5px;
-    border: var(--dropdown-border);
-    box-shadow: var(--dropdown-shadow);
+    border: var(--popover-border);
+    box-shadow: var(--popover-shadow);
     overflow-y: unset;
     > li > a {
-      padding: 9px 16px;
+      padding: 9px 12px;
       margin: 0 5px;
       font-size: 14px;
       cursor: pointer;
@@ -42,23 +42,23 @@ export default class BaseContextMenu extends Vue {
       transition: background-color 0.05s;
       color: var(--text);
       &:hover {
-        background-color: var(--dropdown-item-hover-background);
         color: var(--text);
+        background-color: var(--dropdown-item-hover);
       }
     }
     > li > span {
       display: inline-block;
       height: 29px;
-      padding: 8px 16px;
+      padding: 8px 12px;
       margin: 0 5px;
       font-size: 13px;
       cursor: pointer;
       border-radius: 4px;
-      transition: background-color 0.05s;
+      transition: background-color 0.08s;
       color: var(--text);
       &:hover {
-        background-color: var(--dropdown-item-hover-background);
         color: var(--text);
+        background-color: var(--dropdown-item-hover);
       }
       a {
         color: var(--text);
@@ -91,7 +91,8 @@ export default class BaseContextMenu extends Vue {
     }
   }
   .el-divider {
-    margin: 4px 0;
+    margin: 4px 16px;
+    width: auto;
   }
 }
 </style>

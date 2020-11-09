@@ -18,9 +18,9 @@ export default class BasePage extends Vue {}
   overflow: hidden;
   padding: 0 30px 20px;
   width: calc(100% - var(--sidebar-width));
-  border-radius: 3px;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  border-left: var(--input-border);
   flex-direction: column;
-  background: var(--page-background);
+  background: var(--main-background);
+  transition: background 0.2s, border-color 0.2s;
 }
 </style>

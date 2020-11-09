@@ -23,7 +23,7 @@ export default class BasePageSubheader extends Vue {}
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: var(--dropdown-border);
+  border-bottom: var(--input-border);
   margin: -12px -30px 12px;
   padding: 6px 30px 10px;
   input {

@@ -24,7 +24,7 @@ export default class BaseNavItem extends Vue {
 
 <style lang="scss" scoped>
 .el-menu-item {
-  color: var(--sidebar-text);
+  color: var(--text);
   height: auto;
   line-height: 38px;
   font-size: 14px;
@@ -44,14 +44,13 @@ export default class BaseNavItem extends Vue {
   }
   .unicon {
     fill: var(--color-primary);
-    //opacity: 0.85;
     transition: 0.15s;
   }
   &.is-active {
-    background-color: var(--sidebar-item-active-background);
-    color: var(--sidebar-item-active-text);
+    background-color: var(--color-primary);
+    color: var(--nav-item-selected);
     .unicon {
-      fill: var(--sidebar-item-active-text);
+      fill: var(--nav-item-selected);
     }
   }
   &:hover:not(.is-active) {
