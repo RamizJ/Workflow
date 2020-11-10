@@ -199,7 +199,6 @@ namespace Workflow.Tests.Services
             {
                 Id = 0,
                 Name = name,
-                GroupId = null,
                 IsRemoved = false
             };
 
@@ -220,7 +219,6 @@ namespace Workflow.Tests.Services
             {
                 Id = 0,
                 Name = name,
-                GroupId = null,
                 IsRemoved = false
             };
 
@@ -244,7 +242,6 @@ namespace Workflow.Tests.Services
             {
                 Id = id,
                 Name = "Team",
-                GroupId = null,
                 IsRemoved = false
             };
 
@@ -267,7 +264,6 @@ namespace Workflow.Tests.Services
             {
                 Id = id,
                 Name = "Team",
-                GroupId = null,
                 IsRemoved = false
             };
             var userIds = _testData.Users.Take(2).Select(u => u.Id).ToList();

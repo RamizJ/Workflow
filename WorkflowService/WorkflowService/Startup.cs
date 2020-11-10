@@ -14,10 +14,12 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
 using Workflow.Services.Abstract;
+using Workflow.Services.PageLoading;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModelConverters.Absract;
 using Workflow.VM.ViewModels;
@@ -147,10 +149,21 @@ namespace WorkflowService
                 options.EnableDetailedErrors = true;
             });
 
+
+            //View model converters
+            services.AddTransient<IViewModelConverter<ApplicationUser, VmUser>, VmUserConverter>();
+            services.AddTransient<IViewModelConverter<Team, VmTeam>, VmTeamConverter>();
+            services.AddTransient<IViewModelConverter<Project, VmProject>, VmProjectConverter>();
+            services.AddTransient<IViewModelConverter<ProjectUserRole, VmProjectUserRole>, VmProjectUserRoleConverter>();
+            services.AddTransient<IViewModelConverter<ProjectTeam, VmProjectTeamRole>, VmProjectTeamRoleConverter>();
+            services.AddTransient<IViewModelConverter<Group, VmGroup>, VmGroupConverter>();
+            services.AddTransient<IViewModelConverter<Metadata, VmMetadata>, VmMetadataConverter>();
+
             //Services
             services.AddTransient<ICurrentUserService, CurrentUserService>();
             services.AddTransient<IDefaultDataInitializationService, DefaultDataInitializationService>();
             services.AddTransient<IAuthenticationService, AuthenticationService>();
+            services.AddTransient<IGroupsService, GroupsService>();
             services.AddTransient<IProjectsService, ProjectsService>();
             services.AddTransient<IUsersService, UsersService>();
             services.AddTransient<ITeamsService, TeamsService>();
@@ -164,11 +177,7 @@ namespace WorkflowService
             services.AddTransient<IProjectUserRolesService, ProjectUserRolesService>();
             services.AddTransient<IStatisticService, StatisticService>();
 
-            services.AddTransient<IViewModelConverter<ApplicationUser, VmUser>, VmUserConverter>();
-            services.AddTransient<IViewModelConverter<Team, VmTeam>, VmTeamConverter>();
-            services.AddTransient<IViewModelConverter<Project, VmProject>, VmProjectConverter>();
-            services.AddTransient<IViewModelConverter<ProjectUserRole, VmProjectUserRole>, VmProjectUserRoleConverter>();
-            services.AddTransient<IViewModelConverter<ProjectTeam, VmProjectTeamRole>, VmProjectTeamRoleConverter>();
+            services.AddTransient<IPageLoadService<Group>, GroupsPageLoadService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

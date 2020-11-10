@@ -52,7 +52,6 @@ namespace Workflow.Tests
 
             Teams = Builder<Team>.CreateListOfSize(10)
                 .All()
-                .With(x => x.GroupId = null)
                 .With(x => x.CreatorId = Users.First().Id)
                 .TheFirst(6).With(x => x.Name = $"Team1{x.Id}")
                 .TheNext(4).With(x => x.Name = $"Team2{x.Id}")

@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Workflow.Share", "Workflow.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Workflow.Services", "Workflow.Services\Workflow.Services.csproj", "{1F68123F-60B1-4849-AE81-D4ACCA21C289}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PageLoading", "PageLoading\PageLoading.csproj", "{52E5D3D8-3A16-4C06-A48A-2A6D7FFD0DB1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{1F68123F-60B1-4849-AE81-D4ACCA21C289}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F68123F-60B1-4849-AE81-D4ACCA21C289}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F68123F-60B1-4849-AE81-D4ACCA21C289}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52E5D3D8-3A16-4C06-A48A-2A6D7FFD0DB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52E5D3D8-3A16-4C06-A48A-2A6D7FFD0DB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52E5D3D8-3A16-4C06-A48A-2A6D7FFD0DB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52E5D3D8-3A16-4C06-A48A-2A6D7FFD0DB1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

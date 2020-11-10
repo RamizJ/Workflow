@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
-using Workflow.Share.Extensions;
-using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 using static System.Net.HttpStatusCode;
+using QuerableExtension = Workflow.Share.Extensions.QuerableExtension;
 
 namespace Workflow.Services
 {
@@ -204,7 +204,6 @@ namespace Workflow.Services
         private IQueryable<Team> GetQuery(ApplicationUser currentUser, bool withRemoved)
         {
             var query = _dataContext.Teams
-                .Include(t => t.Group)
                 .Include(t => t.TeamUsers)
                 .Include(t => t.TeamProjects)
                 .Where(t => t.Creator.Id == currentUser.Id
@@ -227,7 +226,6 @@ namespace Workflow.Services
                 query = query
                     .Where(team => team.Name.ToLower().Contains(word)
                                    || team.Description.ToLower().Contains(word)
-                                   || team.Group.Name.ToLower().Contains(word)
                                    || team.Creator.FirstName.ToLower().Contains(word)
                                    || team.Creator.MiddleName.ToLower().Contains(word)
                                    || team.Creator.LastName.ToLower().Contains(word));
@@ -251,14 +249,6 @@ namespace Workflow.Services
                 {
                     var queries = strValues.Select(sv => query.Where(t =>
                         t.Name.ToLower().Contains(sv))).ToArray();
-
-                    if (queries.Any())
-                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
-                }
-                else if (field.SameAs(nameof(VmTeam.GroupName)))
-                {
-                    var queries = strValues.Select(sv => query.Where(t =>
-                        t.Group.Name.ToLower().Contains(sv))).ToArray();
 
                     if (queries.Any())
                         query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
@@ -291,17 +281,14 @@ namespace Workflow.Services
 
                 var isAcending = field.SortType == SortType.Ascending;
 
-                if (field.Is(nameof(VmTeam.Name)))
-                    query = query.SortBy(t => t.Name, isAcending);
+                if (field.SameAs(nameof(VmTeam.Name)))
+                    query = QuerableExtension.SortBy(query, t => t.Name, isAcending);
 
-                else if (field.Is(nameof(VmTeam.Description)))
-                    query = query.SortBy(t => t.Description, isAcending);
+                else if (field.SameAs(nameof(VmTeam.Description)))
+                    query = QuerableExtension.SortBy(query, t => t.Description, isAcending);
 
-                else if (field.Is(nameof(VmTeam.GroupName)))
-                    query = query.SortBy(t => t.Group.Name, isAcending);
-
-                else if (field.Is(nameof(VmTeam.IsRemoved))) 
-                    query = query.SortBy(t => t.IsRemoved, isAcending);
+                else if (field.SameAs(nameof(VmTeam.IsRemoved))) 
+                    query = QuerableExtension.SortBy(query, t => t.IsRemoved, isAcending);
             }
 
             return query;
@@ -351,7 +338,6 @@ namespace Workflow.Services
                 var team = teams.First(t => t.Id == model.Id);
                 model.Name = team.Name;
                 model.Description = team.Description;
-                model.GroupId = team.GroupId;
                 updateAction?.Invoke(model);
                 _dataContext.Entry(model).State = EntityState.Modified;
             }

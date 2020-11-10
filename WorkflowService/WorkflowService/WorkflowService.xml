@@ -176,6 +176,88 @@
             <param name="childGoalIds">Идентификаторы дочерних задач</param>
             <returns></returns>
         </member>
+        <member name="T:WorkflowService.Controllers.GroupsController">
+            <summary>
+            API-методы работы с группами проектов
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.#ctor(Workflow.Services.Abstract.IGroupsService,WorkflowService.Services.Abstract.ICurrentUserService)">
+            <summary>
+            
+            </summary>
+            <param name="groupsService"></param>
+            <param name="currentUserService"></param>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.Get(System.Int32)">
+            <summary>
+            Получить группу проектов по идентификатору, если она доступна пользователю
+            </summary>
+            <param name="id">Идентификатор задачи</param>
+            <returns>Группа</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.GetAll">
+            <summary>
+            Получить все группы проектов
+            </summary>
+            <returns>Группа</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.GetPage(System.Nullable{System.Int32},Workflow.VM.ViewModels.PageOptions)">
+            <summary>
+            Постраничная загрузка группы проектов с фильтрацией и сортировкой
+            </summary>
+            <param name="parentGroupId">Идентификатор родительской группы</param>
+            <param name="pageOptions">Параметры загружаемой страницы</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.Create(Workflow.VM.ViewModels.VmGroup)">
+            <summary>
+            Создание группы проектов
+            </summary>
+            <param name="group">Создаваемая группа проектов</param>
+            <returns>Созданная группа проектов</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.Update(Workflow.VM.ViewModels.VmGroup)">
+            <summary>
+            Обновление группы проектов
+            </summary>
+            <param name="group">Обновляемая группа проектов</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.UpdateRange(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmGroup})">
+            <summary>
+            Обновление группы проектов
+            </summary>
+            <param name="groups">Обновляемые группы проектов</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.Delete(System.Int32)">
+            <summary>
+            Удаление группы проектов
+            </summary>
+            <param name="id">Идентификатор удаляемой группы проектов</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.DeleteRange(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Удаление групп проектов
+            </summary>
+            <param name="ids">Идентификаторы групп проектов</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.Restore(System.Int32)">
+            <summary>
+            Восстановление группы проектов
+            </summary>
+            <param name="id">Идентификатор восстанавливаемой группы проектов</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.RestoreRange(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Восстановление групп проектов
+            </summary>
+            <param name="ids">Идентификаторы групп проектов</param>
+            <returns></returns>
+        </member>
         <member name="T:WorkflowService.Controllers.ProjectsController">
             <summary>
             API-методы работы с проектами

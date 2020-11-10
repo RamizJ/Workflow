@@ -34,7 +34,6 @@ namespace Workflow.VM.ViewModelConverters
                 return;
 
             model.Id = viewModel.Id;
-            model.GroupId = viewModel.GroupId == 0 ? null : viewModel.GroupId;
             model.Name = viewModel.Name;
             model.Description = viewModel.Description;
         }
@@ -47,8 +46,6 @@ namespace Workflow.VM.ViewModelConverters
             viewModel.Id = model.Id;
             viewModel.Name = model.Name;
             viewModel.Description = model.Description;
-            viewModel.GroupId = model.GroupId;
-            viewModel.GroupName = model.Group?.Name;
             viewModel.IsRemoved = model.IsRemoved;
         }
     }
