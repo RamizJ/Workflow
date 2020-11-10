@@ -206,21 +206,6 @@ namespace Workflow.Services
                             : orderedQuery.ThenByDescending(pt => pt.Project.Description);
                     }
                 }
-                else if (field.Is(nameof(VmTeam.GroupName)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(pt => pt.Project.Group.Name)
-                            : query.OrderByDescending(pt => pt.Project.Group.Name);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(tu => tu.Project.Group.Name)
-                            : orderedQuery.ThenByDescending(tu => tu.Project.Group.Name);
-                    }
-                }
             }
 
             return orderedQuery ?? query;

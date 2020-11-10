@@ -149,7 +149,6 @@ namespace Workflow.Services
                 query = query
                     .Where(pt => pt.Team.Name.ToLower().Contains(word)
                                  || pt.Team.Description.ToLower().Contains(word)
-                                 || pt.Team.Group.Name.ToLower().Contains(word)
                                  || pt.Team.Creator.FirstName.ToLower().Contains(word)
                                  || pt.Team.Creator.MiddleName.ToLower().Contains(word)
                                  || pt.Team.Creator.LastName.ToLower().Contains(word));
@@ -183,14 +182,6 @@ namespace Workflow.Services
                     if (queries.Any())
                         query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
                 }
-                else if (field.SameAs(nameof(VmTeam.GroupName)))
-                {
-                    var queries = strValues.Select(sv => query.Where(pt =>
-                        pt.Team.Group.Name.ToLower().Contains(sv))).ToArray();
-
-                    if (queries.Any())
-                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
-                }
             }
 
             return query;
@@ -209,9 +200,6 @@ namespace Workflow.Services
 
                 else if (field.Is(nameof(VmTeam.Description)))
                     query = query.SortBy(pt => pt.Team.Description, isAcending);
-
-                else if (field.Is(nameof(VmTeam.GroupName))) 
-                    query = query.SortBy(pt => pt.Team.Group.Name, isAcending);
 
                 else if (field.Is(nameof(VmTeam.IsRemoved)))
                     query = query.SortBy(pt => pt.Team.IsRemoved, isAcending);

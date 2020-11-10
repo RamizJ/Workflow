@@ -204,7 +204,6 @@ namespace Workflow.Services
         private IQueryable<Team> GetQuery(ApplicationUser currentUser, bool withRemoved)
         {
             var query = _dataContext.Teams
-                .Include(t => t.Group)
                 .Include(t => t.TeamUsers)
                 .Include(t => t.TeamProjects)
                 .Where(t => t.Creator.Id == currentUser.Id
@@ -227,7 +226,6 @@ namespace Workflow.Services
                 query = query
                     .Where(team => team.Name.ToLower().Contains(word)
                                    || team.Description.ToLower().Contains(word)
-                                   || team.Group.Name.ToLower().Contains(word)
                                    || team.Creator.FirstName.ToLower().Contains(word)
                                    || team.Creator.MiddleName.ToLower().Contains(word)
                                    || team.Creator.LastName.ToLower().Contains(word));
@@ -251,14 +249,6 @@ namespace Workflow.Services
                 {
                     var queries = strValues.Select(sv => query.Where(t =>
                         t.Name.ToLower().Contains(sv))).ToArray();
-
-                    if (queries.Any())
-                        query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
-                }
-                else if (field.SameAs(nameof(VmTeam.GroupName)))
-                {
-                    var queries = strValues.Select(sv => query.Where(t =>
-                        t.Group.Name.ToLower().Contains(sv))).ToArray();
 
                     if (queries.Any())
                         query = queries.Aggregate(queries.First(), (current, q) => current.Union(q));
@@ -296,9 +286,6 @@ namespace Workflow.Services
 
                 else if (field.Is(nameof(VmTeam.Description)))
                     query = query.SortBy(t => t.Description, isAcending);
-
-                else if (field.Is(nameof(VmTeam.GroupName)))
-                    query = query.SortBy(t => t.Group.Name, isAcending);
 
                 else if (field.Is(nameof(VmTeam.IsRemoved))) 
                     query = query.SortBy(t => t.IsRemoved, isAcending);
@@ -351,7 +338,6 @@ namespace Workflow.Services
                 var team = teams.First(t => t.Id == model.Id);
                 model.Name = team.Name;
                 model.Description = team.Description;
-                model.GroupId = team.GroupId;
                 updateAction?.Invoke(model);
                 _dataContext.Entry(model).State = EntityState.Modified;
             }
