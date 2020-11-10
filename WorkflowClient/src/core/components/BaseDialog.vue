@@ -102,9 +102,8 @@ export default class BaseDialog extends Vue {
 <style lang="scss">
 .base-dialog {
   border-radius: 6px !important;
-  border-width: var(--border-width);
-  border-color: var(--card-border);
-  background-color: var(--card-background);
+  border: var(--window-border);
+  background-color: var(--window-background);
   .el-dialog__headerbtn {
     display: none;
   }

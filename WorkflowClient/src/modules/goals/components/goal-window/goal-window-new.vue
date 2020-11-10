@@ -331,9 +331,13 @@ export default class GoalWindow extends Mixins(DialogMixin) {
     this.visible = true
 
     this.loading = true
-    const id = this.id || goalsStore.goal?.id
 
-    if (id) this.form = await goalsStore.findOneById(id)
+    if (goalsStore.goal) this.form = { ...goalsStore.goal }
+
+    if (goalsStore.goal?.id) {
+      const fullGoal = await goalsStore.findOneById(goalsStore.goal.id)
+      this.form = { ...fullGoal, ...this.form }
+    }
 
     await this.searchUsers()
     await this.searchProjects()
