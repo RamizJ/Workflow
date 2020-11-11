@@ -1,7 +1,7 @@
 <template>
   <BasePage>
     <BasePageHeader>
-      <GoalBreadcrumbs />
+      <GoalBreadcrumbs :root="{ path: $route.path, label: 'Задачи' }" />
       <GoalToolbar
         slot="toolbar"
         @search="onSearch"

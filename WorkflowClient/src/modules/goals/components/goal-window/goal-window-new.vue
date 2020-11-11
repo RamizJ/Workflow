@@ -351,9 +351,11 @@ export default class GoalWindow extends Mixins(DialogMixin) {
       if (valid) {
         await this.sendForm()
         if (this.form.isAttachmentsExist) (this.$refs.upload as ElUpload).submit()
-        this.$emit('submit')
-        tableStore.requireReload()
-        this.exit()
+        else {
+          this.$emit('submit')
+          this.exit()
+          tableStore.requireReload()
+        }
       } else {
         Message({
           showClose: true,
@@ -446,6 +448,7 @@ export default class GoalWindow extends Mixins(DialogMixin) {
   ): Promise<void> {
     this.$emit('submit')
     this.exit()
+    tableStore.requireReload()
   }
 
   private async onAttachmentRemove(file: Attachment, fileList: FileList): Promise<void> {
