@@ -285,7 +285,8 @@ import Goal, { Priority, Status } from '@/modules/goals/models/goal.type'
 import moment from 'moment'
 import goalsStore from '@/modules/goals/store/goals.store'
 import { ElForm } from 'element-ui/types/form'
-import { ElUpload, HttpRequestOptions } from 'element-ui/types/upload'
+import { Upload } from 'element-ui'
+import { HttpRequestOptions } from 'element-ui/types/upload'
 import tableStore from '@/core/store/table.store'
 import Attachment from '@/modules/goals/models/attachment.type'
 
@@ -327,6 +328,8 @@ export default class GoalWindow extends Mixins(DialogMixin) {
   private expectedCompletedDateVisible = null
   private attachmentsVisible = null
 
+  private isReloadRequested = false
+
   protected async mounted(): Promise<void> {
     this.visible = true
 
@@ -349,13 +352,12 @@ export default class GoalWindow extends Mixins(DialogMixin) {
     const form = this.$refs.form as ElForm
     await form.validate(async (valid) => {
       if (valid) {
+        const uploadComponent = this.$refs.upload as Upload
         await this.sendForm()
-        if (this.form.isAttachmentsExist) (this.$refs.upload as ElUpload).submit()
-        else {
-          this.$emit('submit')
-          this.exit()
-          tableStore.requireReload()
-        }
+        if (this.form.isAttachmentsExist) uploadComponent.submit()
+        if (!this.isReloadRequested) tableStore.requireReload()
+        this.$emit('submit')
+        this.exit()
       } else {
         Message({
           showClose: true,
@@ -446,9 +448,8 @@ export default class GoalWindow extends Mixins(DialogMixin) {
     file: File,
     fileList: FileList
   ): Promise<void> {
-    this.$emit('submit')
-    this.exit()
     tableStore.requireReload()
+    this.isReloadRequested = true
   }
 
   private async onAttachmentRemove(file: Attachment, fileList: FileList): Promise<void> {
