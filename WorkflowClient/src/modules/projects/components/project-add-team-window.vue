@@ -60,6 +60,7 @@ import DialogMixin from '@/core/mixins/dialog.mixin'
 import BaseDialog from '@/core/components/BaseDialog.vue'
 import Team from '@/modules/teams/models/team.type'
 import { Input } from 'element-ui'
+import tableStore from '@/core/store/table.store'
 
 @Component({
   components: {
@@ -101,6 +102,7 @@ export default class ProjectAddTeamDialog extends Mixins(DialogMixin) {
       this.loading = true
       await projectsModule.addTeam({ projectId, teamId })
       this.$emit('submit')
+      tableStore.requireReload()
       this.loading = false
     }
     this.exit()
