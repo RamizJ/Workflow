@@ -129,7 +129,7 @@ export default class TaskToolbar extends Mixins(ToolbarMixin) {
   private sortFields = [
     { value: 'creationDate', label: 'По дате создания' },
     { value: 'title', label: 'По названию' },
-    { value: 'performerFio', label: 'По ответственному' },
+    { value: 'performerFio', label: 'По исполнителю' },
     { value: 'projectName', label: 'По проекту' },
     { value: 'state', label: 'По статусу' },
     { value: 'priority', label: 'По приоритету' },
