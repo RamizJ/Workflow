@@ -9,6 +9,8 @@
 <script lang="ts">
 import { Component, Ref, Vue } from 'vue-property-decorator'
 import { ContextMenu } from '@/core/types/context-menu.type'
+import settingsModule from '@/modules/settings/store/settings.store'
+import { MessageBox } from 'element-ui'
 
 @Component
 export default class BaseContextMenu extends Vue {
@@ -16,6 +18,20 @@ export default class BaseContextMenu extends Vue {
 
   public open(event: Event, data: any): void {
     this.vueContext.open(event, data)
+  }
+
+  public async confirmDelete(): Promise<boolean> {
+    if (!settingsModule.confirmDelete) return true
+    try {
+      await MessageBox.confirm('Вы действительно хотите удалить элемент?', 'Предупреждение', {
+        confirmButtonText: 'Удалить',
+        cancelButtonText: 'Отменить',
+        type: 'warning',
+      })
+      return true
+    } catch (e) {
+      return false
+    }
   }
 }
 </script>

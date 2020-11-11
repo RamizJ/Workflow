@@ -1,17 +1,16 @@
 <template>
   <BaseContextMenu ref="baseContextMenu">
-    <BaseContextMenuItem v-if="active && !$route.params.teamId" @click="openAction">
+    <BaseContextMenuItem v-if="active && !$route.params.projectId" @click="openAction">
       Открыть
     </BaseContextMenuItem>
-    <BaseContextMenuItem v-if="!$route.params.teamId" @click="edit">
+    <BaseContextMenuItem v-if="!$route.params.projectId" @click="edit">
       {{ active ? 'Изменить' : 'Информация' }}
     </BaseContextMenuItem>
-    <BaseContextMenuDivider v-if="active && !$route.params.teamId" />
-    <BaseContextMenuItem v-if="active && !$route.params.teamId" @click="createNew"
-      >Новая команда</BaseContextMenuItem
-    >
-    <BaseContextMenuDivider v-if="active && !$route.params.teamId" />
-    <BaseContextMenuItem v-if="active && !$route.params.teamId" @click="remove">
+    <BaseContextMenuDivider v-if="active && !$route.params.projectId" />
+    <BaseContextMenuItem v-if="$route.params.projectId" @click="removeFromProject">
+      Убрать из проекта
+    </BaseContextMenuItem>
+    <BaseContextMenuItem v-if="active && !$route.params.projectId" @click="remove">
       Удалить
     </BaseContextMenuItem>
     <BaseContextMenuItem v-if="!active" @click="restore">Восстановить</BaseContextMenuItem>
@@ -51,8 +50,14 @@ export default class TeamContextMenu extends Vue {
     this.$emit('create')
   }
 
-  private remove(): void {
-    this.$emit('remove')
+  private removeFromProject(): void {
+    this.$emit('remove-from-project')
+  }
+
+  private async remove(): Promise<void> {
+    const allowDelete = await this.baseContextMenu.confirmDelete()
+    if (!allowDelete) return
+    else this.$emit('remove')
   }
 
   private restore(): void {

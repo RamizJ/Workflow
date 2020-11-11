@@ -101,7 +101,7 @@ export default class ProjectTable extends Vue {
   private openContextMenu(row: Project, selection: Project[], event: Event) {
     tableStore.setSelectedRow(row)
     tableStore.setSelectedRows(selection)
-    this.contextMenu.open(event, row)
+    if (!this.$route.params.teamId) this.contextMenu.open(event, row)
   }
 
   private async onSpaceClick(): Promise<void> {

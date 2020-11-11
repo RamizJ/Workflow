@@ -22,6 +22,7 @@
       @edit="edit"
       @create="create"
       @remove="remove"
+      @remove-from-team="removeFromTeam"
       @restore="restore"
     />
   </BaseTable>
@@ -41,6 +42,7 @@ import Entity from '@/core/types/entity.type'
 import User from '@/modules/users/models/user.type'
 import UserContextMenu from '@/modules/users/components/user-context-menu.vue'
 import teamsStore from '@/modules/teams/store/teams.store'
+import teamsModule from '@/modules/teams/store/teams.store'
 
 @Component({
   components: {
@@ -129,6 +131,21 @@ export default class UserTable extends Vue {
       if (!tableStore.selectedRow) return
       if (!tableStore.selectedRow?.id) return
       await usersStore.deleteOne(tableStore.selectedRow.id as string)
+    }
+    tableStore.requireReload()
+  }
+
+  private async removeFromTeam(user: User): Promise<void> {
+    const teamId = parseInt(this.$route.params.teamId)
+    if (tableStore.isMultiselect) {
+      const selection = tableStore.selectedRows as User[]
+      const userIds = selection.map((user: User) => user.id!)
+      await teamsStore.removeUsers({ teamId, userIds })
+    } else {
+      if (!tableStore.selectedRow) return
+      if (!tableStore.selectedRow?.id) return
+      const userId = tableStore.selectedRow.id as string
+      await teamsStore.removeUser({ teamId, userId })
     }
     tableStore.requireReload()
   }

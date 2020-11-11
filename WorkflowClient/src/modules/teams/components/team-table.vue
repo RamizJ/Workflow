@@ -16,6 +16,7 @@
       @edit="edit"
       @create="create"
       @remove="remove"
+      @remove-from-project="removeFromProject"
       @restore="restore"
     />
   </BaseTable>
@@ -125,6 +126,21 @@ export default class TeamTable extends Vue {
       if (!tableStore.selectedRow) return
       if (!tableStore.selectedRow?.id) return
       await teamsStore.deleteOne(tableStore.selectedRow.id as number)
+    }
+    tableStore.requireReload()
+  }
+
+  private async removeFromProject(): Promise<void> {
+    const projectId = parseInt(this.$route.params.projectId)
+    if (tableStore.isMultiselect) {
+      const selection = tableStore.selectedRows as Team[]
+      const teamIds = selection.map((team: Team) => team.id!)
+      await projectsStore.removeTeams({ projectId, teamIds })
+    } else {
+      if (!tableStore.selectedRow) return
+      if (!tableStore.selectedRow?.id) return
+      const teamId = tableStore.selectedRow.id as number
+      await projectsStore.removeTeam({ projectId, teamId })
     }
     tableStore.requireReload()
   }

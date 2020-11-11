@@ -1,14 +1,22 @@
 <template>
   <BaseContextMenu ref="baseContextMenu">
-    <BaseContextMenuItem v-if="!$route.params.teamId" @click="edit">
+    <BaseContextMenuItem v-if="!$route.params.teamId && !$route.params.projectId" @click="edit">
       {{ active ? 'Изменить' : 'Информация' }}
     </BaseContextMenuItem>
-    <BaseContextMenuDivider v-if="active && !$route.params.teamId" />
-    <BaseContextMenuItem v-if="active && !$route.params.teamId" @click="createNew"
+    <BaseContextMenuDivider v-if="active && !$route.params.teamId && !$route.params.projectId" />
+    <BaseContextMenuItem
+      v-if="active && !$route.params.teamId && !$route.params.projectId"
+      @click="createNew"
       >Новый пользователь</BaseContextMenuItem
     >
-    <BaseContextMenuDivider v-if="active && !$route.params.teamId" />
-    <BaseContextMenuItem v-if="active && !$route.params.teamId" @click="remove">
+    <BaseContextMenuDivider v-if="active && !$route.params.teamId && !$route.params.projectId" />
+    <BaseContextMenuItem v-if="$route.params.teamId" @click="remove">
+      Убрать из команды
+    </BaseContextMenuItem>
+    <BaseContextMenuItem
+      v-if="active && !$route.params.teamId && !$route.params.projectId"
+      @click="remove"
+    >
       Удалить
     </BaseContextMenuItem>
     <BaseContextMenuItem v-if="!active" @click="restore">Восстановить</BaseContextMenuItem>
@@ -48,8 +56,14 @@ export default class UserContextMenu extends Vue {
     this.$emit('create')
   }
 
-  private remove(): void {
-    this.$emit('remove')
+  private async remove(): Promise<void> {
+    const allowDelete = await this.baseContextMenu.confirmDelete()
+    if (!allowDelete) return
+    else this.$emit('remove')
+  }
+
+  private removeFromTeam(): void {
+    this.$emit('remove-from-team')
   }
 
   private restore(): void {

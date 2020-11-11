@@ -221,6 +221,7 @@ a {
   background-color: var(--color-primary);
   border-color: var(--color-primary);
   &:focus, &:hover {
+    color: var(--button-primary-text);
     background-color: var(--color-primary);
     border-color: var(--color-primary);
     box-shadow: var(--input-focus-box-shadow);
