@@ -1,5 +1,5 @@
 <template>
-  <div class="page-header">
+  <div class="page-header" :class="headerClass">
     <div class="page-header__left">
       <div class="page-header__title">
         <slot />
@@ -16,10 +16,25 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Prop, Vue } from 'vue-property-decorator'
 
 @Component
-export default class BasePageHeader extends Vue {}
+export default class BasePageHeader extends Vue {
+  @Prop() readonly noBorder?: boolean
+  @Prop() readonly height?: string
+  @Prop() readonly size?: string
+
+  private get headerClass(): string {
+    const border = this.noBorder ? '' : 'bordered'
+    const size = this.size
+    return `${size} ${border}`
+  }
+
+  protected mounted(): void {
+    const headerElement = this.$el as HTMLDivElement
+    if (headerElement) headerElement.style.minHeight = `${this.height}px`
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -27,11 +42,17 @@ export default class BasePageHeader extends Vue {}
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: var(--input-border);
+  border-bottom: none;
   margin: 0 -30px 12px;
   padding: 0 30px;
   min-height: var(--header-height);
   transition: border-color 0.2s;
+  &.bordered {
+    border-bottom: var(--input-border);
+  }
+  &.small {
+    margin: -10px -30px 3px;
+  }
   input {
     border: none;
     padding: 0;
@@ -65,6 +86,7 @@ export default class BasePageHeader extends Vue {}
   &__action {
     margin: auto auto auto 8px;
     height: 24px;
+    display: flex;
     button {
       padding: 0 !important;
     }

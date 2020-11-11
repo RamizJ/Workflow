@@ -1,8 +1,7 @@
 <template>
   <div class="main-layout">
     <Sidebar />
-
-    <router-view :key="$route.path" />
+    <RouterView />
   </div>
 </template>
 

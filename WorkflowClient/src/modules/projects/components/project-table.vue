@@ -41,6 +41,7 @@ import Query, { FilterField } from '@/core/types/query.type'
 import Entity from '@/core/types/entity.type'
 import ProjectContextMenu from '@/modules/projects/components/project-context-menu.vue'
 import Project from '@/modules/projects/models/project.type'
+import teamsStore from '@/modules/teams/store/teams.store'
 
 @Component({
   components: {
@@ -65,6 +66,12 @@ export default class ProjectTable extends Vue {
     return tableStore.isReloadRequired
   }
 
+  private get openedTeamId(): number {
+    const teamId = this.$route.params.teamId ? parseInt(this.$route.params.teamId) : 0
+    if (teamId) this.query.teamId = teamId
+    return teamId
+  }
+
   protected beforeDestroy(): void {
     tableStore.setData([])
     tableStore.setQuery(new Query())
@@ -80,11 +87,14 @@ export default class ProjectTable extends Vue {
 
   private async onLoad($state: StateChanger): Promise<void> {
     ;(this as any).$insProgress.start()
-    const data: Project[] = await projectsStore.findAll(this.query)
-    tableStore.increasePage()
-    if (data.length) $state.loaded()
-    else $state.complete()
-    tableStore.appendData(data)
+    let data: Project[] = []
+    if (this.openedTeamId) data = await teamsStore.findProjects(this.query)
+    else data = await projectsStore.findAll(this.query)
+    if (data.length) {
+      tableStore.increasePage()
+      tableStore.appendData(data)
+      $state.loaded()
+    } else $state.complete()
     ;(this as any).$insProgress.finish()
   }
 

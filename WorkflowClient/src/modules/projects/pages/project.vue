@@ -23,8 +23,11 @@
         @change="updateEntity"
       />
     </BasePageSubheader>
+    <BasePageSubheader :no-border="true">
+      <BaseTabs v-model="currentTab" :tabs="tabs" @tab-click="setTab" :routing="true" />
+    </BasePageSubheader>
 
-    <BaseTabs v-model="currentTab" :tabs="tabs" @tab-click="setTab" />
+    <RouterView />
 
     <project-dialog
       v-if="projectModalVisible"
@@ -85,11 +88,11 @@ import Goal from '@/modules/goals/models/goal.type'
 export default class ProjectPage extends Vue {
   private loading = true
   private currentTab = 'overview'
-  private tabs: Array<{ label: string; name: string; component: any }> = [
-    { label: 'Обзор', name: 'overview', component: ProjectOverview },
-    { label: 'Задачи', name: 'goals', component: ProjectTasks },
-    { label: 'Команды', name: 'teams', component: ProjectTeams },
-    { label: 'Статистика', name: 'statistics', component: ProjectReports },
+  private tabs: Array<{ label: string; name: string; component?: any }> = [
+    { label: 'Обзор', name: 'overview' },
+    { label: 'Задачи', name: 'goals' },
+    { label: 'Команды', name: 'teams' },
+    { label: 'Статистика', name: 'statistics' },
   ]
   private projectItem: Project = {
     name: '',
@@ -120,16 +123,39 @@ export default class ProjectPage extends Vue {
   }
 
   private loadTab() {
-    const query = { ...this.$route.query }
-    query.tab = query.tab?.toString() || this.currentTab
-    this.currentTab = query.tab
-    if (JSON.stringify(query) !== JSON.stringify(this.$route.query)) this.$router.replace({ query })
+    const tab = this.$route.path.substring(this.$route.path.lastIndexOf('/') + 1)
+    switch (tab) {
+      case 'goals':
+      case 'teams':
+      case 'statistics':
+        this.currentTab = tab
+        break
+      default:
+        this.currentTab = 'overview'
+        if (this.$route.name !== 'project-overview')
+          this.$router.replace({ name: `project-overview` })
+        break
+    }
   }
 
   private setTab() {
-    const query = { tab: this.currentTab }
-    if (JSON.stringify({ tab: '' }) !== JSON.stringify(this.$route.query))
-      this.$router.replace({ query })
+    const tab = this.$route.path.substring(this.$route.path.lastIndexOf('/') + 1)
+    let path = this.$route.path
+
+    switch (tab) {
+      case 'goals':
+      case 'teams':
+      case 'statistics':
+      case 'overview':
+        path = path.replace(tab, this.currentTab)
+        break
+      default:
+        path = this.currentTab === 'overview' ? path : `${path}/${this.currentTab}`
+        break
+    }
+
+    const targetRoute = `project-${this.currentTab}`
+    if (this.$route.name !== targetRoute) this.$router.replace({ name: targetRoute })
   }
 
   private async editEntity() {

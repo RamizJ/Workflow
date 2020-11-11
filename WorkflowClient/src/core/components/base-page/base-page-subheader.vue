@@ -1,5 +1,5 @@
 <template>
-  <div class="page-subheader">
+  <div class="page-subheader" :class="subheaderClass">
     <div class="page-subheader__left">
       <div class="page-subheader__title">
         <slot />
@@ -12,10 +12,16 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Prop } from 'vue-property-decorator'
 
 @Component
-export default class BasePageSubheader extends Vue {}
+export default class BasePageSubheader extends Vue {
+  @Prop() readonly noBorder?: boolean
+
+  private get subheaderClass(): string {
+    return this.noBorder ? 'borderless' : ''
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -25,12 +31,19 @@ export default class BasePageSubheader extends Vue {}
   justify-content: space-between;
   border-bottom: var(--input-border);
   margin: -12px -30px 12px;
-  padding: 6px 30px 10px;
+  padding: 0 30px;
+  line-height: 30px;
+  &.borderless {
+    border: none;
+  }
   input {
     border: none;
     padding: 0;
     color: var(--text);
     background-color: var(--input-background);
+  }
+  &__left {
+    width: 100%;
   }
   &__title {
     margin-top: 10px;

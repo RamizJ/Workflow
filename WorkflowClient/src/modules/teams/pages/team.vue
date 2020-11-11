@@ -22,17 +22,11 @@
         @change="onTeamUpdate"
       />
     </BasePageSubheader>
+    <BasePageSubheader :no-border="true">
+      <BaseTabs v-model="currentTab" :tabs="tabs" @tab-click="setTab" :routing="true" />
+    </BasePageSubheader>
 
-    <BaseTabs v-model="currentTab" :tabs="tabs" @tab-click="setTab" />
-
-    <!--    <el-tabs v-if="teamItem.id" ref="tabs" v-model="currentTab" @tab-click="setTab">-->
-    <!--      <el-tab-pane name="members" label="Участники">-->
-    <!--        <team-users v-if="currentTab === 'members'" ref="teamUsers"></team-users>-->
-    <!--      </el-tab-pane>-->
-    <!--      <el-tab-pane name="projects" label="Проекты">-->
-    <!--        <team-projects v-if="currentTab === 'projects'" ref="teamProjects"></team-projects>-->
-    <!--      </el-tab-pane>-->
-    <!--    </el-tabs>-->
+    <RouterView />
 
     <team-dialog
       v-if="dialogTeamVisible"
@@ -89,9 +83,9 @@ export default class TeamPage extends Vue {
     projectIds: [],
   }
   private currentTab = 'users'
-  private tabs: Array<{ label: string; name: string; component: any }> = [
-    { label: 'Участники', name: 'users', component: TeamUsers },
-    { label: 'Проекты', name: 'projects', component: TeamProjects },
+  private tabs: Array<{ label: string; name: string; component?: any }> = [
+    { label: 'Участники', name: 'users' },
+    { label: 'Проекты', name: 'projects' },
   ]
   private dialogTeamVisible = false
   private dialogUserVisible = false
@@ -110,15 +104,35 @@ export default class TeamPage extends Vue {
   }
 
   private loadTab() {
-    const query = { ...this.$route.query }
-    query.tab = query.tab?.toString() || this.currentTab
-    this.currentTab = query.tab
-    if (JSON.stringify(query) !== JSON.stringify(this.$route.query)) this.$router.replace({ query })
+    const tab = this.$route.path.substring(this.$route.path.lastIndexOf('/') + 1)
+    switch (tab) {
+      case 'projects':
+      case 'users':
+        this.currentTab = tab
+        break
+      default:
+        this.currentTab = 'users'
+        if (this.$route.name !== 'team-users') this.$router.replace({ name: `team-users` })
+        break
+    }
   }
 
   private setTab() {
-    const query = { tab: this.currentTab }
-    if (JSON.stringify(query) !== JSON.stringify(this.$route.query)) this.$router.replace({ query })
+    const tab = this.$route.path.substring(this.$route.path.lastIndexOf('/') + 1)
+    let path = this.$route.path
+
+    switch (tab) {
+      case 'projects':
+      case 'users':
+        path = path.replace(tab, this.currentTab)
+        break
+      default:
+        path = this.currentTab === 'users' ? path : `${path}/${this.currentTab}`
+        break
+    }
+
+    const targetRoute = `team-${this.currentTab}`
+    if (this.$route.name !== targetRoute) this.$router.replace({ name: targetRoute })
   }
 
   private async onUserAdd() {

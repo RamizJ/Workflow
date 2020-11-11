@@ -16,6 +16,7 @@ import breadcrumbsStorage from '@/core/storage/adapters/breadcrumbs'
   store,
 })
 class BreadcrumbStore extends VuexModule {
+  _rootBreadcrumb: { path: string; label: string } = { path: '/goals', label: 'Задачи' }
   _breadcrumbs: { path: string; label: string }[] = []
 
   public get breadcrumbs(): { path: string; label: string }[] {
@@ -23,10 +24,15 @@ class BreadcrumbStore extends VuexModule {
   }
 
   @Mutation
+  async setRootBreadcrumb(breadcrumb: { path: string; label: string }): Promise<void> {
+    this._rootBreadcrumb = breadcrumb
+  }
+
+  @Mutation
   async updateBreadcrumbs(): Promise<void> {
     const breadcrumbs = await breadcrumbsStorage.getBreadcrumbs('goals')
     if (breadcrumbs) this._breadcrumbs = breadcrumbs
-    if (!this._breadcrumbs.length) this._breadcrumbs = [{ path: '/goals', label: 'Задачи' }]
+    if (!this._breadcrumbs.length) this._breadcrumbs = [this._rootBreadcrumb]
   }
 
   @Mutation
@@ -60,7 +66,7 @@ class BreadcrumbStore extends VuexModule {
 
   @Mutation
   async resetBreadcrumbs(): Promise<void> {
-    this._breadcrumbs = [{ path: '/goals', label: 'Задачи' }]
+    this._breadcrumbs = [this._rootBreadcrumb]
     await breadcrumbsStorage.setBreadcrumbs('goals', this._breadcrumbs)
   }
 }

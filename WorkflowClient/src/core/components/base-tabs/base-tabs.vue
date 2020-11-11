@@ -7,7 +7,7 @@
       :name="tab.name"
       :lazy="true"
     >
-      <component :is="tab.component" />
+      <Component v-if="tab.component" :is="tab.component" />
     </el-tab-pane>
   </el-tabs>
 </template>
@@ -17,20 +17,22 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 
 @Component
 export default class BaseTabs extends Vue {
-  @Prop() readonly tabs!: Array<{ label: string; name: string; component: any }>
+  @Prop() readonly tabs!: Array<{ label: string; name: string; component?: any }>
   @Prop() readonly value!: string
+  @Prop() readonly routing?: boolean
   private tab = ''
 
-  @Watch('input')
-  onInputChange(value: string): void {
+  @Watch('value')
+  onValueChange(value: string): void {
     this.tab = value
   }
 
   protected mounted(): void {
     this.tab = this.value
+    if (this.routing) this.$el.querySelector<HTMLDivElement>('.el-tabs__header')!.style.margin = '0'
   }
 
-  private onTabClick(tab: string): void {
+  private onTabClick(): void {
     this.$emit('input', this.tab)
     this.$emit('tab-click', this.tab)
   }
@@ -39,7 +41,7 @@ export default class BaseTabs extends Vue {
 
 <style lang="scss">
 .el-tabs {
-  margin-top: -12px !important;
+  margin-top: -10px !important;
   padding: 0 30px;
   margin: 0 -30px;
   width: calc(100% + 60px);

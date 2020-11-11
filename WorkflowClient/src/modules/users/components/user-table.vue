@@ -40,6 +40,7 @@ import Query, { FilterField } from '@/core/types/query.type'
 import Entity from '@/core/types/entity.type'
 import User from '@/modules/users/models/user.type'
 import UserContextMenu from '@/modules/users/components/user-context-menu.vue'
+import teamsStore from '@/modules/teams/store/teams.store'
 
 @Component({
   components: {
@@ -64,6 +65,12 @@ export default class UserTable extends Vue {
     return tableStore.isReloadRequired
   }
 
+  private get openedTeamId(): number {
+    const teamId = this.$route.params.teamId ? parseInt(this.$route.params.teamId) : 0
+    if (teamId) this.query.teamId = teamId
+    return teamId
+  }
+
   protected beforeDestroy(): void {
     tableStore.setData([])
     tableStore.setQuery(new Query())
@@ -79,11 +86,14 @@ export default class UserTable extends Vue {
 
   private async onLoad($state: StateChanger): Promise<void> {
     ;(this as any).$insProgress.start()
-    const data: User[] = await usersStore.findAll(this.query)
-    tableStore.increasePage()
-    if (data.length) $state.loaded()
-    else $state.complete()
-    tableStore.appendData(data)
+    let data: User[] = []
+    if (this.openedTeamId) data = await teamsStore.findUsers(this.query)
+    else data = await usersStore.findAll(this.query)
+    if (data.length) {
+      tableStore.increasePage()
+      tableStore.appendData(data)
+      $state.loaded()
+    } else $state.complete()
     ;(this as any).$insProgress.finish()
   }
 

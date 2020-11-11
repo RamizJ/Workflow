@@ -12,21 +12,35 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Prop, Vue } from 'vue-property-decorator'
 import breadcrumbStore from '@/modules/goals/store/breadcrumb.store'
 
 @Component
 export default class GoalBreadcrumbs extends Vue {
+  @Prop() readonly root?: { path: string; label: string }
+  @Prop() readonly headerSize?: string
+
   private get breadcrumbs(): { path: string; label: string }[] {
     return breadcrumbStore.breadcrumbs
   }
 
-  private goto(path: string): void {
-    breadcrumbStore.goto(path)
-  }
-
   private get breadcrumbsActive(): boolean {
     return breadcrumbStore.breadcrumbs.length > 1
+  }
+
+  protected mounted(): void {
+    if (this.root) breadcrumbStore.setRootBreadcrumb(this.root)
+  }
+
+  protected beforeUpdate(): void {
+    const breadcrumbHeader = document.querySelector<HTMLSpanElement>(
+      '.goal-breadcrumbs .el-breadcrumb__item:first-child .el-breadcrumb__inner'
+    )
+    if (breadcrumbHeader) breadcrumbHeader.style.fontSize = `${this.headerSize}px`
+  }
+
+  private goto(path: string): void {
+    breadcrumbStore.goto(path)
   }
 }
 </script>
@@ -35,7 +49,7 @@ export default class GoalBreadcrumbs extends Vue {
 .goal-breadcrumbs {
   padding-top: 0px;
   .el-breadcrumb__item:first-child .el-breadcrumb__inner {
-    font-size: 24px !important;
+    font-size: 24px;
     font-weight: 600 !important;
     color: var(--text);
     transition: 0.2s;

@@ -52,6 +52,7 @@ import Query, { FilterField } from '@/core/types/query.type'
 import Entity from '@/core/types/entity.type'
 import Goal, { Priority, Status, priorities, statuses } from '@/modules/goals/models/goal.type'
 import GoalContextMenu from '@/modules/goals/components/goal-table/goal-context-menu.vue'
+import { Route } from 'vue-router'
 
 @Component({
   components: {
@@ -78,7 +79,6 @@ export default class GoalTable extends Vue {
   }
 
   protected async mounted(): Promise<void> {
-    this.onReloadRequired(tableStore.isReloadRequired)
     if (!this.openedGoalId) await breadcrumbStore.resetBreadcrumbs()
     await this.updateBreadcrumbs()
     if (this.openedProjectId) tableStore.extendQuery({ projectId: this.openedProjectId })
@@ -91,6 +91,11 @@ export default class GoalTable extends Vue {
 
   private async updateBreadcrumbs(): Promise<void> {
     await breadcrumbStore.updateBreadcrumbs()
+  }
+
+  @Watch('$route')
+  onRouteChange(to: Route, from: Route): void {
+    this.onReloadRequired(true)
   }
 
   @Watch('isReloadRequired')
@@ -112,10 +117,11 @@ export default class GoalTable extends Vue {
     if (this.openedGoalId)
       data = await goalsStore.findChild({ id: this.openedGoalId, query: this.query })
     else data = await goalsStore.findAll(this.query)
-    tableStore.increasePage()
-    if (data.length) $state.loaded()
-    else $state.complete()
-    tableStore.appendData(data)
+    if (data.length) {
+      tableStore.increasePage()
+      tableStore.appendData(data)
+      $state.loaded()
+    } else $state.complete()
     ;(this as any).$insProgress.finish()
   }
 
@@ -157,7 +163,6 @@ export default class GoalTable extends Vue {
     if (row.hasChildren) {
       const path = `${this.$route.path}/${row.id}`
       await this.$router.push(path)
-      console.log(row.title)
       await breadcrumbStore.addBreadcrumb({ path: path, label: `${row.title}` })
     } else {
       tableStore.setSelectedRow(row)
