@@ -95,6 +95,7 @@ export default class GoalTable extends Vue {
 
   @Watch('$route')
   onRouteChange(to: Route, from: Route): void {
+    if (to.path === '/goals') breadcrumbStore.resetBreadcrumbs()
     this.onReloadRequired(true)
   }
 
