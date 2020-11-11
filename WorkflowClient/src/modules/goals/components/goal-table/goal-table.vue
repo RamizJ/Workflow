@@ -82,11 +82,12 @@ export default class GoalTable extends Vue {
     if (!this.openedGoalId) await breadcrumbStore.resetBreadcrumbs()
     await this.updateBreadcrumbs()
     if (this.openedProjectId) tableStore.extendQuery({ projectId: this.openedProjectId })
+    this.onReloadRequired(tableStore.isReloadRequired)
   }
 
   protected async beforeDestroy(): Promise<void> {
     tableStore.setData([])
-    tableStore.setQuery(new Query())
+    tableStore.setPage(0)
   }
 
   private async updateBreadcrumbs(): Promise<void> {
