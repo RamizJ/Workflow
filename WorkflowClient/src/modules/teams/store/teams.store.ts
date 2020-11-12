@@ -128,12 +128,7 @@ class TeamsStore extends VuexModule {
 
   @Action
   async updateOne(entity: Team): Promise<void> {
-    const request = {
-      team: entity,
-      userIds: entity.userIds || [],
-      projectIds: entity.projectIds || [],
-    }
-    await api.update(request)
+    await api.update(entity)
   }
 
   @Action

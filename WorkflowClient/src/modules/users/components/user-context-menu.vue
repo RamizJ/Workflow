@@ -10,7 +10,7 @@
       >Новый пользователь</BaseContextMenuItem
     >
     <BaseContextMenuDivider v-if="active && !$route.params.teamId && !$route.params.projectId" />
-    <BaseContextMenuItem v-if="$route.params.teamId" @click="remove">
+    <BaseContextMenuItem v-if="$route.params.teamId" @click="removeFromTeam">
       Убрать из команды
     </BaseContextMenuItem>
     <BaseContextMenuItem

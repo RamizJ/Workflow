@@ -108,7 +108,8 @@ export default class ProjectTable extends Vue {
     await projectsStore.openProjectWindow()
   }
 
-  private async onDoubleClick(row: Project): Promise<void> {
+  private async onDoubleClick(row?: Project): Promise<void> {
+    row = row || (tableStore.selectedRow as Project)
     if (!row.isRemoved && !this.$route.params.teamId) await this.$router.push(`/projects/${row.id}`)
   }
 

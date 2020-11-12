@@ -29,117 +29,9 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <!--      <el-row :gutter="20">
-        <transition name="fade">
-          <el-col v-if="teamMembersVisible || (form.userIds && form.userIds.length)" :span="24">
-            <el-form-item>
-              <el-select
-                v-model="form.userIds"
-                placeholder="Участники"
-                :remote-method="searchUsers"
-                default-first-option
-                filterable
-                clearable
-                multiple
-                remote
-              >
-                <el-option
-                  v-for="item in users"
-                  :key="item.id"
-                  :label="item.value"
-                  :value="item.id"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </transition>
-        <transition name="fade">
-          <el-col
-            v-if="
-              !$route.params.projectId &&
-              (projectsVisible || (form.projectIds && form.projectIds.length))
-            "
-            :span="24"
-          >
-            <el-form-item>
-              <el-select
-                v-model="form.projectIds"
-                placeholder="Проекты"
-                :remote-method="searchProjects"
-                multiple="multiple"
-                filterable="filterable"
-                remote="remote"
-                clearable="clearable"
-                default-first-option="default-first-option"
-              >
-                <el-option
-                  v-for="item in projects"
-                  :key="item.id"
-                  :label="item.value"
-                  :value="item.id"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </transition>
-      </el-row>-->
     </el-form>
     <template v-if="!loading && (!form.id || !form.isRemoved)" slot="footer">
-      <div class="extra">
-        <!--        <el-tooltip
-          content="Описание"
-          effect="dark"
-          placement="top"
-          transition="fade"
-          :visible-arrow="false"
-          :open-delay="500"
-        >
-          <el-button
-            v-if="!form.description"
-            type="text"
-            @click="descriptionVisible = !descriptionVisible"
-            circle="circle"
-          >
-            <unicon name="file-alt" />
-          </el-button>
-        </el-tooltip>-->
-        <el-tooltip
-          content="Участники"
-          effect="dark"
-          placement="top"
-          transition="fade"
-          :visible-arrow="false"
-          :open-delay="500"
-        >
-          <el-button
-            size="small"
-            v-if="!(form.userIds && form.userIds.length)"
-            type="text"
-            @click="teamMembersVisible = !teamMembersVisible"
-            circle="circle"
-          >
-            <unicon name="users-alt" />
-          </el-button>
-        </el-tooltip>
-        <el-tooltip
-          content="Проекты"
-          effect="dark"
-          placement="top"
-          transition="fade"
-          :visible-arrow="false"
-          :open-delay="500"
-        >
-          <el-button
-            size="small"
-            v-if="!(form.projectIds && form.projectIds.length)"
-            type="text"
-            @click="projectsVisible = !projectsVisible"
-            circle="circle"
-          >
-            <unicon name="layer-group" />
-          </el-button>
-        </el-tooltip>
-      </div>
+      <div class="extra"></div>
       <div class="send">
         <el-tooltip
           content="Сохранить"
@@ -340,7 +232,7 @@ export default class TeamDialog extends Mixins(DialogMixin) {
   private async sendForm(): Promise<void> {
     this.loading = true
     const entity: Team = { ...this.form } as Team
-    if (this.id) await teamsModule.updateOne(entity)
+    if (this.id || this.form.id) await teamsModule.updateOne(entity)
     else await teamsModule.createOne(entity)
     this.loading = false
   }
