@@ -73,6 +73,8 @@ export default class TableService {
   ): Promise<void> {
     this.tableLoader = tableLoader
     this.progressBar.start()
+    if (this.projectId) this.extendQuery({ projectId: this.projectId })
+    if (this.teamId) this.extendQuery({ teamId: this.teamId })
     const data: Entity[] = await fetchMethod(fetchPayload || this.query)
     if (data.length) {
       tableStore.increasePage()

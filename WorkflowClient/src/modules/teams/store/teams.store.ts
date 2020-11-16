@@ -182,10 +182,8 @@ class TeamsStore extends VuexModule {
   }
 
   @Action
-  async removeUsers({ teamId, userIds }: { teamId: number; userIds: string[] }) {
-    for (const userId of userIds) {
-      await api.removeUser(teamId, userId)
-    }
+  async removeUsers({ teamId, userIds }: { teamId: number; userIds: Array<string> }) {
+    await api.removeUsers(teamId, userIds)
   }
 
   @Action

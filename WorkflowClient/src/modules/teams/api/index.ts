@@ -143,7 +143,7 @@ export default {
       data: JSON.stringify(userId),
     })
   },
-  removeUsers: (teamId: number, userIds: string): Promise<AxiosResponse<void>> => {
+  removeUsers: (teamId: number, userIds: Array<string>): Promise<AxiosResponse<void>> => {
     return api.request({
       url: `/api/Teams/RemoveUsers/${teamId}`,
       method: 'PATCH',
