@@ -196,16 +196,12 @@ export default class TeamDialog extends Mixins(DialogMixin) {
       await this.searchUsers()
       await this.searchProjects()
 
-      // this.form.userIds = []
-      // for (const user of this.users) {
-      //   if (user.id) this.form.userIds.push(user.id)
-      // }
       this.form.projectIds = []
       for (const project of this.projects) {
         if (project.id) this.form.projectIds.push(project.id)
       }
     } else if (teamsModule.team) {
-      this.form = teamsModule.team
+      this.form = { ...teamsModule.team }
     }
     this.loading = false
     ;(this.$refs.title as Input).focus()

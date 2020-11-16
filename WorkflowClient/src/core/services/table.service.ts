@@ -103,6 +103,8 @@ export default class TableService {
   }
 
   public resetTable(data: Entity[] = [], pageNumber = 0): void {
+    tableStore.extendQuery({ projectId: this.projectId || undefined })
+    tableStore.extendQuery({ teamId: this.teamId || undefined })
     tableStore.setData(data)
     tableStore.setPage(pageNumber)
   }
