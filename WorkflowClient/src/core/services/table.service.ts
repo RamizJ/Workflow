@@ -5,8 +5,8 @@ import tableStore from '@/core/store/table.store'
 import Entity from '@/core/types/entity.type'
 import Query from '@/core/types/query.type'
 import BaseContextMenu from '@/core/components/base-context-menu/base-context-menu.vue'
-import Goal, { priorities, Priority, Status, statuses } from '@/modules/goals/models/goal.type'
 import breadcrumbStore from '@/modules/goals/store/breadcrumb.store'
+import { priorities, Priority, Status, statuses } from '@/modules/goals/models/goal.type'
 import { router } from '@/core'
 
 export default class TableService {
@@ -85,8 +85,8 @@ export default class TableService {
     selection,
     event,
   }: {
-    row: Goal
-    selection: Goal[]
+    row: Entity
+    selection: Entity[]
     event: Event
   }): void {
     tableStore.setSelectedRow(row)
