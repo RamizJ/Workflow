@@ -59,7 +59,7 @@ class TeamsStore extends VuexModule {
   }
 
   @Mutation
-  setTeam(team: Team) {
+  setTeam(team: Team | null) {
     this._team = team
   }
 

@@ -14,28 +14,28 @@ export default class ProjectTableService extends TableService {
     await this.loadData(tableLoader, fetchMethod)
   }
 
-  public async openRow(row: Project): Promise<void> {
+  public async openEntity(row: Project): Promise<void> {
     row = row || (tableStore.selectedRow as Project)
     if (!row.isRemoved && !this.teamId) await router.push(`/projects/${row.id}`)
   }
 
-  public async createRow(): Promise<void> {
+  public async createEntity(): Promise<void> {
     projectsStore.setProject(null)
     await projectsStore.openProjectWindow()
   }
 
-  public async editRow(): Promise<void> {
+  public async editEntity(): Promise<void> {
     if (!tableStore.selectedRow) return
     await projectsStore.openProjectWindow(tableStore.selectedRow as Project)
   }
 
-  public async deleteRows(): Promise<void> {
+  public async deleteEntities(): Promise<void> {
     const ids = this.selectedIds as Array<number>
     await projectsStore.deleteMany(ids)
     tableStore.requireReload()
   }
 
-  public async restoreRows(): Promise<void> {
+  public async restoreEntities(): Promise<void> {
     const ids = this.selectedIds as Array<number>
     await projectsStore.restoreMany(ids)
     tableStore.requireReload()

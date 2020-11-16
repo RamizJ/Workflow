@@ -26,7 +26,7 @@ export default class GoalTableService extends TableService {
     await this.loadData(tableLoader, fetchMethod, fetchPayload)
   }
 
-  public async openGoal(row: Goal): Promise<void> {
+  public async openEntity(row: Goal): Promise<void> {
     if (row.hasChildren) {
       const path = `${this.route.path}/${row.id}`
       await router.push(path)
@@ -40,24 +40,12 @@ export default class GoalTableService extends TableService {
     }
   }
 
-  public async editRow(): Promise<void> {
+  public async editEntity(): Promise<void> {
     if (!tableStore.selectedRow) return
     await goalsStore.openGoalWindow(tableStore.selectedRow as Goal)
   }
 
-  public async deleteRows(): Promise<void> {
-    const ids = this.selectedIds as Array<number>
-    await goalsStore.deleteMany(ids)
-    tableStore.requireReload()
-  }
-
-  public async restoreRows(): Promise<void> {
-    const ids = this.selectedIds as Array<number>
-    await goalsStore.restoreMany(ids)
-    tableStore.requireReload()
-  }
-
-  public async editRowStatus(status: string): Promise<void> {
+  public async editEntityStatus(status: string): Promise<void> {
     if (tableStore.isMultiselect) {
       const selection = tableStore.selectedRows as Goal[]
       selection.forEach((goal: Goal) => (goal.state = status as Status))
@@ -68,6 +56,18 @@ export default class GoalTableService extends TableService {
       row.state = status as Status
       await goalsStore.updateOne(row)
     }
+  }
+
+  public async deleteEntities(): Promise<void> {
+    const ids = this.selectedIds as Array<number>
+    await goalsStore.deleteMany(ids)
+    tableStore.requireReload()
+  }
+
+  public async restoreEntities(): Promise<void> {
+    const ids = this.selectedIds as Array<number>
+    await goalsStore.restoreMany(ids)
+    tableStore.requireReload()
   }
 
   public async createChild(): Promise<void> {

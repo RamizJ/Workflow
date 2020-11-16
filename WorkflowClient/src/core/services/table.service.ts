@@ -2,17 +2,19 @@ import { Route } from 'vue-router'
 import { StateChanger } from 'vue-infinite-loading'
 import { ElTableColumn } from 'element-ui/types/table-column'
 import tableStore from '@/core/store/table.store'
+import breadcrumbStore from '@/modules/goals/store/breadcrumb.store'
 import Entity from '@/core/types/entity.type'
 import Query from '@/core/types/query.type'
-import BaseContextMenu from '@/core/components/base-context-menu/base-context-menu.vue'
-import breadcrumbStore from '@/modules/goals/store/breadcrumb.store'
 import { priorities, Priority, Status, statuses } from '@/modules/goals/models/goal.type'
 import { router } from '@/core'
 
 export default class TableService {
   protected progressBar: ProgressBar
-  public contextMenu?: BaseContextMenu
   public tableLoader?: StateChanger
+  public contextMenu?: {
+    open: (event: Event, data: any) => void
+    confirmDelete: () => Promise<boolean>
+  }
 
   constructor(progressBar: ProgressBar) {
     this.progressBar = progressBar
@@ -108,27 +110,6 @@ export default class TableService {
     this.resetTable()
     this.tableLoader?.reset()
     tableStore.completeReload()
-  }
-
-  public async editRow(action?: (row: Entity) => Promise<unknown>): Promise<void> {
-    if (!tableStore.selectedRow) return
-    if (action) await action(tableStore.selectedRow)
-  }
-
-  public async deleteRows(
-    action: (ids: Array<number> | Array<string>) => Promise<void>
-  ): Promise<void> {
-    const ids = this.selectedIds
-    await action(ids)
-    tableStore.requireReload()
-  }
-
-  public async restoreRows(
-    action: (ids: Array<number> | Array<string>) => Promise<void>
-  ): Promise<void> {
-    const ids = this.selectedIds
-    await action(ids)
-    tableStore.requireReload()
   }
 
   public async updateBreadcrumbs(): Promise<void> {

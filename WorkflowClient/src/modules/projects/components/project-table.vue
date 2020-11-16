@@ -2,7 +2,7 @@
   <BaseTable
     ref="baseTable"
     :data="tableService.tableData"
-    @double-click.capture="tableService.openRow"
+    @double-click.capture="tableService.openEntity"
     @right-click.capture="tableService.openContextMenu"
     @load.capture="tableService.load"
     infinite
@@ -18,11 +18,11 @@
     <ProjectContextMenu
       slot="footer"
       ref="contextMenu"
-      @open.capture="tableService.openRow"
-      @edit.capture="tableService.editRow"
-      @create.capture="tableService.createRow"
-      @remove.capture="tableService.deleteRows"
-      @restore.capture="tableService.restoreRows"
+      @open.capture="tableService.openEntity"
+      @edit.capture="tableService.editEntity"
+      @create.capture="tableService.createEntity"
+      @remove.capture="tableService.deleteEntities"
+      @restore.capture="tableService.restoreEntities"
     />
   </BaseTable>
 </template>
