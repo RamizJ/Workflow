@@ -31,7 +31,7 @@ export default class GoalTableService extends TableService {
       const path = `${this.route.path}/${row.id}`
       await router.push(path)
       await breadcrumbStore.addBreadcrumb({ path: path, label: `${row.title}` })
-      await this.initialize()
+      this.reloadTable()
     } else {
       tableStore.setSelectedRow(row)
       const goal = await goalsStore.findOneById(row.id!)

@@ -34,16 +34,20 @@ export default class TableService {
     return tableStore.isReloadRequired
   }
 
-  public get projectId(): number {
-    return this.route.params.projectId ? parseInt(this.route.params.projectId) : 0
-  }
-
   public get goalId(): number {
     if (!this.route.path.includes('/goals/')) return 0
     const pathElements = this.route.path.split('/')
     const goalId = pathElements[pathElements.length - 1]
     if (isNaN(parseInt(goalId))) return 0
     else return parseInt(goalId)
+  }
+
+  public get projectId(): number {
+    return this.route.params.projectId ? parseInt(this.route.params.projectId) : 0
+  }
+
+  public get teamId(): number {
+    return this.route.params.teamId ? parseInt(this.route.params.teamId) : 0
   }
 
   public get selectedIds(): Array<number> | Array<string> {

@@ -1,10 +1,10 @@
 <template>
   <BaseTable
     ref="baseTable"
-    :data="goalTableService.tableData"
-    @double-click.self="goalTableService.openGoal"
-    @right-click.self="goalTableService.openContextMenu"
-    @load.self="goalTableService.load"
+    :data="tableService.tableData"
+    @double-click.capture="tableService.openGoal"
+    @right-click.capture="tableService.openContextMenu"
+    @load.capture="tableService.load"
     infinite
   >
     <BaseTableColumn prop="title" label="Название" :custom="true">
@@ -16,40 +16,35 @@
       prop="performerFio"
       label="Исполнитель"
       width="150"
-      :formatter="goalTableService.fioFormatter"
+      :formatter="tableService.fioFormatter"
     />
-    <BaseTableColumn
-      v-if="!goalTableService.projectId"
-      prop="projectName"
-      label="Проект"
-      width="150"
-    />
+    <BaseTableColumn v-if="!tableService.projectId" prop="projectName" label="Проект" width="150" />
     <BaseTableColumn
       prop="state"
       label="Статус"
       width="120"
-      :formatter="goalTableService.statusFormatter"
+      :formatter="tableService.statusFormatter"
     />
     <BaseTableColumn
       prop="priority"
       label="Приоритет"
       width="120"
-      :formatter="goalTableService.priorityFormatter"
+      :formatter="tableService.priorityFormatter"
     />
     <BaseTableColumn
       prop="creationDate"
       label="Дата создания"
       width="180"
-      :formatter="goalTableService.dateFormatter"
+      :formatter="tableService.dateFormatter"
     />
     <GoalContextMenu
       slot="footer"
       ref="contextMenu"
-      @edit="goalTableService.editRow"
-      @edit-status="goalTableService.editRowStatus"
-      @create-child="goalTableService.createChild"
-      @remove="goalTableService.deleteRows"
-      @restore="goalTableService.restoreRows"
+      @edit.capture="tableService.editRow"
+      @edit-status.capture="tableService.editRowStatus"
+      @create-child.capture="tableService.createChild"
+      @remove.capture="tableService.deleteRows"
+      @restore.capture="tableService.restoreRows"
     />
   </BaseTable>
 </template>
@@ -69,39 +64,43 @@ import GoalTableService from '@/modules/goals/services/goal-table.service'
   components: {
     BaseTable,
     BaseTableColumn,
-    GoalTitleCell,
     GoalContextMenu,
+    GoalTitleCell,
   },
 })
 export default class GoalTable extends Vue {
   @Ref() readonly contextMenu!: GoalContextMenu
   @Ref() readonly baseTable!: BaseTable
-  private goalTableService: GoalTableService
+  private tableService: GoalTableService
 
   constructor() {
     super()
     const progressBar = (this as any).$insProgress as ProgressBar
-    this.goalTableService = new GoalTableService(progressBar)
+    this.tableService = new GoalTableService(progressBar)
   }
 
   protected async mounted(): Promise<void> {
-    this.goalTableService.contextMenu = (this.contextMenu as unknown) as BaseContextMenu
-    await this.goalTableService.initialize()
+    this.tableService.contextMenu = (this.contextMenu as unknown) as BaseContextMenu
+    await this.tableService.initialize()
   }
 
   protected beforeDestroy(): void {
-    this.goalTableService.resetTable()
+    this.tableService.resetTable()
   }
 
-  @Watch('$route')
-  onRouteChange(to: Route): void {
-    if (to.path === '/goals') this.goalTableService.resetBreadcrumbs()
-    this.goalTableService.reloadTable()
+  private get isReloadRequired(): boolean {
+    return this.tableService.isReloadRequired
   }
 
   @Watch('isReloadRequired')
   onReloadRequired(value: boolean): void {
-    this.goalTableService.reloadTable(value)
+    this.tableService.reloadTable(value)
+  }
+
+  @Watch('$route')
+  onRouteChange(to: Route): void {
+    if (to.path === '/goals') this.tableService.resetBreadcrumbs()
+    this.tableService.reloadTable()
   }
 }
 </script>
