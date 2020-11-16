@@ -133,7 +133,7 @@ export default class BaseTable extends Vue {
     }
     if (this.selectedRows.length === 1) this.selectedRows = [row]
     this.table?.setCurrentRow(row)
-    this.$emit('right-click', row, this.selectedRows, event)
+    this.$emit('right-click', { row, selection: this.selectedRows, event })
     event.preventDefault()
   }
 

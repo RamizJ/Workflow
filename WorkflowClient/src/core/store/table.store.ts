@@ -72,7 +72,7 @@ class TableStore extends VuexModule {
   }
 
   @Mutation
-  extendQuery(property: Record<string, string | number>) {
+  extendQuery(property: Record<string, string | number | boolean>) {
     this._query = { ...this._query, ...property }
   }
 
