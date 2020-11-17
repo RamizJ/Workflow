@@ -1,6 +1,5 @@
 import { AxiosResponse } from 'axios'
 import qs from 'qs'
-
 import api from '@/core/api'
 import Attachment from '@/modules/goals/models/attachment.type'
 import Query from '@/core/types/query.type'

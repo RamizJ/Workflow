@@ -1,4 +1,4 @@
-import { Metadata } from '@/modules/goals/models/goal.type'
+import { Metadata } from '@/core/types/metadata.model'
 
 export default class Query {
   pageNumber?: number
