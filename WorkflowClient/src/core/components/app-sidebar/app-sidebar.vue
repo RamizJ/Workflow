@@ -2,9 +2,9 @@
   <div class="sidebar">
     <BaseNav :router="true">
       <AppSidebarHeader slot="header" />
-      <BaseNavItem index="/groups" icon="cube">Области</BaseNavItem>
-      <BaseNavItem index="/projects" icon="layer-group">Проекты</BaseNavItem>
       <BaseNavItem index="/goals" icon="edit-alt">Задачи</BaseNavItem>
+      <BaseNavItem index="/projects" icon="layer-group">Проекты</BaseNavItem>
+      <!--<BaseNavItem index="/groups" icon="cube">Области</BaseNavItem>-->
       <BaseNavItem index="/teams" icon="user-arrows">Команды</BaseNavItem>
       <BaseNavItem index="/users" icon="users-alt">Пользователи</BaseNavItem>
       <BaseNavItem index="/settings" icon="sliders-v-alt">Настройки</BaseNavItem>
