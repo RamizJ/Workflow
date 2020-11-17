@@ -277,38 +277,23 @@
 
 <script lang="ts">
 import { Component, Mixins, Prop, Ref } from 'vue-property-decorator'
-import Checklist from './goal-checklist.vue'
+import { HttpRequestOptions } from 'element-ui/types/upload'
+import { Input, Message, Upload } from 'element-ui'
+import { ElForm } from 'element-ui/types/form'
+import tableStore from '@/core/store/table.store'
+import goalsStore from '@/modules/goals/store/goals.store'
 import BaseWindow from '../../../../core/components/base-window.vue'
 import DialogMixin from '../../../../core/mixins/dialog.mixin'
-import { Input, Message } from 'element-ui'
 import Goal, { Priority, Status } from '@/modules/goals/models/goal.type'
-import moment from 'moment'
-import goalsStore from '@/modules/goals/store/goals.store'
-import { ElForm } from 'element-ui/types/form'
-import { Upload } from 'element-ui'
-import { HttpRequestOptions } from 'element-ui/types/upload'
-import tableStore from '@/core/store/table.store'
 import Attachment from '@/modules/goals/models/attachment.type'
 
-@Component({ components: { Checklist, BaseWindow } })
+@Component({ components: { BaseWindow } })
 export default class GoalWindow extends Mixins(DialogMixin) {
   @Prop() readonly id: number | undefined
   @Ref() readonly title?: Input
 
   private windowTitle = 'Задача'
-  private form: Goal = {
-    title: '',
-    description: '',
-    projectId: parseInt(this.$route.params.projectId) || undefined,
-    performerId: undefined,
-    creationDate: moment.utc(moment()).format(),
-    state: Status.New,
-    priority: Priority.Normal,
-    hasChildren: false,
-    isRemoved: false,
-    attachments: [],
-    metadataList: [],
-  }
+  private form: Goal = new Goal()
 
   private rules = {
     title: [{ required: true, message: '!', trigger: 'blur' }],
@@ -336,11 +321,13 @@ export default class GoalWindow extends Mixins(DialogMixin) {
     this.loading = true
 
     if (goalsStore.goal) this.form = { ...goalsStore.goal }
-
     if (goalsStore.goal?.id) {
       const fullGoal = await goalsStore.findOneById(goalsStore.goal.id)
       this.form = { ...fullGoal, ...this.form }
     }
+    this.form.projectId = this.$route.params.projectId
+      ? parseInt(this.$route.params.projectId)
+      : undefined
 
     await this.searchUsers()
     await this.searchProjects()

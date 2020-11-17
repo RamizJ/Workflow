@@ -2,9 +2,9 @@
   <BasePopover popover-class="add-popover" transition="fade-left-top" title="Создать">
     <BasePopoverButton icon="edit-alt" @click="openGoalWindow">Задачу</BasePopoverButton>
     <BasePopoverButton icon="layer-group" @click="openProjectWindow">Проект</BasePopoverButton>
+    <BasePopoverButton icon="cube" @click="openGroupWindow">Область</BasePopoverButton>
     <BasePopoverButton icon="user-arrows" @click="openTeamWindow">Команду</BasePopoverButton>
     <BasePopoverButton icon="users-alt" @click="openUserWindow">Пользователя</BasePopoverButton>
-    <!--    <BasePopoverButton icon="cube">Область</BasePopoverButton>-->
     <el-button class="sidebar-add-button" slot="reference">
       <unicon name="plus-circle" />
       Создать
@@ -14,8 +14,9 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import projectsStore from '@/modules/projects/store/projects.store'
 import goalsStore from '@/modules/goals/store/goals.store'
+import projectsStore from '@/modules/projects/store/projects.store'
+import groupsStore from '@/modules/groups/store/groups.store'
 import teamsStore from '@/modules/teams/store/teams.store'
 import usersStore from '@/modules/users/store/users.store'
 
@@ -43,12 +44,16 @@ import GoalWindowNew from '@/modules/goals/components/goal-window/goal-window-ne
   },
 })
 export default class AppSidebarAdd extends Vue {
+  private openGoalWindow(): void {
+    goalsStore.openGoalWindow()
+  }
+
   private openProjectWindow(): void {
     projectsStore.openProjectWindow()
   }
 
-  private openGoalWindow(): void {
-    goalsStore.openGoalWindow()
+  private openGroupWindow(): void {
+    groupsStore.openGroupWindow()
   }
 
   private openTeamWindow(): void {

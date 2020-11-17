@@ -251,19 +251,7 @@ export default class GoalWindow extends Mixins(DialogMixin) {
   @Ref() readonly title?: Input
 
   private windowTitle = 'Задача'
-  private form: Goal = {
-    title: '',
-    description: '',
-    projectId: parseInt(this.$route.params.projectId) || undefined,
-    performerId: undefined,
-    creationDate: moment.utc(moment()).format(),
-    state: Status.New,
-    priority: Priority.Normal,
-    hasChildren: false,
-    isRemoved: false,
-    attachments: [],
-    metadataList: [],
-  }
+  private form: Goal = new Goal()
 
   private rules = {
     title: [{ required: true, message: '!', trigger: 'blur' }],
@@ -298,6 +286,9 @@ export default class GoalWindow extends Mixins(DialogMixin) {
       this.form.metadataList = [{ key: 'isSection', value: 'true' }]
       this.windowTitle = 'Раздел'
     }
+    this.form.projectId = this.$route.params.projectId
+      ? parseInt(this.$route.params.projectId)
+      : undefined
     await this.searchUsers()
     await this.searchProjects()
     this.loading = false

@@ -20,15 +20,14 @@ export default class Goal extends Entity {
   estimatedPerformingTime?: string
   state: Status = Status.New
   priority: Priority = Priority.Normal
-  hasChildren?: boolean
-  isSection?: boolean
-  isAttachmentsExist?: boolean
-  isRemoved?: boolean
-  children?: Goal[]
-  metadataList: Metadata[] = []
+  hasChildren = false
+  isAttachmentsExist = false
+  isRemoved = false
+  children?: Array<Goal>
+  metadataList: Array<Metadata> = []
 
-  attachments?: Attachment[]
-  parent?: Goal[]
+  attachments?: Array<Attachment>
+  parent?: Array<Goal>
   completed?: boolean
 
   constructor() {

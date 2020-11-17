@@ -11,9 +11,16 @@ export default class Query {
   projectId?: number
   teamId?: number
 
-  constructor(pageSize = 25) {
+  constructor(
+    pageSize = 25,
+    sortField: SortField = { fieldName: 'creationDate', sortType: SortType.Descending }
+  ) {
     this.pageNumber = 0
     this.pageSize = pageSize
+    this.filter = ''
+    this.filterFields = []
+    this.sortFields = [sortField]
+    this.withRemoved = false
   }
 }
 
