@@ -1,3 +1,10 @@
+import { ElForm } from 'element-ui/types/form'
+
 export default class WindowService {
-  private loading = false
+  public loading = false
+  public form?: ElForm
+
+  constructor(form?: ElForm) {
+    this.form = form
+  }
 }
