@@ -4,6 +4,7 @@ import { ElForm } from 'element-ui/types/form'
 import projectsModule from '@/modules/projects/store/projects.store'
 import teamsModule from '@/modules/teams/store/teams.store'
 import usersModule from '@/modules/users/store/users.store'
+import { Message } from 'element-ui'
 
 @Component
 export default class DialogMixin extends Vue {
@@ -36,27 +37,39 @@ export default class DialogMixin extends Vue {
   }
 
   public async searchProjects(query = ''): Promise<void> {
-    await projectsModule.findAll({
-      filter: query,
-      pageNumber: 0,
-      pageSize: 10,
-    })
+    try {
+      await projectsModule.findAll({
+        filter: query,
+        pageNumber: 0,
+        pageSize: 10,
+      })
+    } catch (e) {
+      Message.error('Ошибка загрузки списка проектов')
+    }
   }
 
   public async searchTeams(query = ''): Promise<void> {
-    await teamsModule.findAll({
-      filter: query,
-      pageNumber: 0,
-      pageSize: 10,
-    })
+    try {
+      await teamsModule.findAll({
+        filter: query,
+        pageNumber: 0,
+        pageSize: 10,
+      })
+    } catch (e) {
+      Message.error('Ошибка загрузки списка команд')
+    }
   }
 
   public async searchUsers(query = ''): Promise<void> {
-    await usersModule.findAll({
-      filter: query,
-      pageNumber: 0,
-      pageSize: 10,
-    })
+    try {
+      await usersModule.findAll({
+        filter: query,
+        pageNumber: 0,
+        pageSize: 10,
+      })
+    } catch (e) {
+      Message.error('Ошибка загрузки списка пользователей')
+    }
   }
 
   public shortenFullName(value: string): string {

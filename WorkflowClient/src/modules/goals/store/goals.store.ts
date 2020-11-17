@@ -62,14 +62,7 @@ class GoalsStore extends VuexModule {
   @Action({ rawError: true })
   async findAll(query: Query): Promise<Goal[]> {
     const response = await api.getPage(query)
-    let results = (response.data as Goal[]).filter((task) => !task.parentGoalId)
-    results = results.map((goal) => {
-      const hasSectionMark = goal.metadataList?.some(
-        (meta) => meta.key === 'isSection' && meta.value === 'true'
-      )
-      if (hasSectionMark) goal.isSection = true
-      return goal
-    })
+    const results = (response.data as Goal[]).filter((task) => !task.parentGoalId)
     this.context.commit('setTasks', results)
     return results
   }

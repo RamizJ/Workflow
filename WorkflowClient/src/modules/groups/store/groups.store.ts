@@ -33,7 +33,7 @@ class GroupsStore extends VuexModule {
   }
 
   @Mutation
-  setGroup(group: Group) {
+  setGroup(group: Group | null) {
     this._group = group
   }
 

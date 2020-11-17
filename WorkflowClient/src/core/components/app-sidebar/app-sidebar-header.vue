@@ -1,46 +1,53 @@
 <template>
   <div class="sidebar-header">
     <AppSidebarAdd />
-
+    <GoalWindow v-if="isGoalWindowOpened" @close="closeGoalWindow" />
+    <ProjectWindow v-if="isProjectWindowOpened" @close="closeProjectWindow" />
+    <GroupWindow v-if="isGroupWindowOpened" @close="closeGroupWindow" />
     <TeamDialog v-if="isTeamWindowOpened" @close="closeTeamWindow" />
     <UserDialog v-if="isUserWindowOpened" @close="closeUserWindow" />
-    <ProjectWindow v-if="isProjectWindowOpened" @close="closeProjectWindow" />
-    <GoalWindowNew v-if="isGoalWindowOpened" @close="closeGoalWindow" />
     <SettingsWindow v-if="isSettingsOpened" @closed="closeSettings" />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import projectsStore from '@/modules/projects/store/projects.store'
 import goalsStore from '@/modules/goals/store/goals.store'
+import projectsStore from '@/modules/projects/store/projects.store'
+import groupsStore from '@/modules/groups/store/groups.store'
 import teamsStore from '@/modules/teams/store/teams.store'
 import usersStore from '@/modules/users/store/users.store'
 import settingsStore from '@/modules/settings/store/settings.store'
 import AppSidebarAdd from '@/core/components/app-sidebar/app-sidebar-add.vue'
-import GoalWindowNew from '@/modules/goals/components/goal-window/goal-window-new.vue'
+import ProjectWindow from '@/modules/projects/components/project-window.vue'
+import GroupWindow from '@/modules/groups/components/group-window.vue'
+import GoalWindow from '@/modules/goals/components/goal-window/goal-window-new.vue'
 import TeamDialog from '@/modules/teams/components/team-dialog.vue'
 import UserDialog from '@/modules/users/components/user-dialog.vue'
-import ProjectWindow from '@/modules/projects/components/project-window.vue'
 import SettingsWindow from '@/modules/settings/components/settings-window.vue'
 
 @Component({
   components: {
-    SettingsWindow,
+    AppSidebarAdd,
+    GroupWindow,
     ProjectWindow,
+    GoalWindow,
     UserDialog,
     TeamDialog,
-    GoalWindowNew,
-    AppSidebarAdd,
+    SettingsWindow,
   },
 })
 export default class AppSidebarHeader extends Vue {
+  private get isGoalWindowOpened(): boolean {
+    return goalsStore.isGoalWindowOpened
+  }
+
   private get isProjectWindowOpened(): boolean {
     return projectsStore.isProjectWindowOpened
   }
 
-  private get isGoalWindowOpened(): boolean {
-    return goalsStore.isGoalWindowOpened
+  private get isGroupWindowOpened(): boolean {
+    return groupsStore.isGroupWindowOpened
   }
 
   private get isTeamWindowOpened(): boolean {
@@ -55,12 +62,16 @@ export default class AppSidebarHeader extends Vue {
     return settingsStore.isSettingsOpened
   }
 
+  private closeGoalWindow(): void {
+    goalsStore.closeGoalWindow()
+  }
+
   private closeProjectWindow(): void {
     projectsStore.closeProjectWindow()
   }
 
-  private closeGoalWindow(): void {
-    goalsStore.closeGoalWindow()
+  private closeGroupWindow(): void {
+    groupsStore.closeGroupWindow()
   }
 
   private closeTeamWindow(): void {
