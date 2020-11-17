@@ -102,16 +102,24 @@ export default class TableService {
     this.contextMenu?.open(event, row)
   }
 
-  public resetTable(data: Entity[] = [], pageNumber = 0): void {
+  public resetTable(): void {
+    tableStore.setData([])
+    tableStore.setPage(0)
+    this.resetFilters()
+  }
+
+  public resetFilters(): void {
     tableStore.extendQuery({ projectId: this.projectId || undefined })
     tableStore.extendQuery({ teamId: this.teamId || undefined })
-    tableStore.setData(data)
-    tableStore.setPage(pageNumber)
+    tableStore.extendQuery({ filterFields: [] })
+    tableStore.extendQuery({ filter: '' })
+    tableStore.extendQuery({ withRemoved: false })
   }
 
   public reloadTable(reloadRequired?: boolean): void {
     if (reloadRequired === false) return
-    this.resetTable()
+    tableStore.setData([])
+    tableStore.setPage(0)
     this.tableLoader?.reset()
     tableStore.completeReload()
   }
