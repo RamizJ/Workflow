@@ -4,11 +4,11 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
-using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 
@@ -204,21 +204,6 @@ namespace Workflow.Services
                         orderedQuery = field.SortType == SortType.Ascending
                             ? orderedQuery.ThenBy(pt => pt.Project.Description)
                             : orderedQuery.ThenByDescending(pt => pt.Project.Description);
-                    }
-                }
-                else if (field.Is(nameof(VmTeam.GroupName)))
-                {
-                    if (orderedQuery == null)
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? query.OrderBy(pt => pt.Project.Group.Name)
-                            : query.OrderByDescending(pt => pt.Project.Group.Name);
-                    }
-                    else
-                    {
-                        orderedQuery = field.SortType == SortType.Ascending
-                            ? orderedQuery.ThenBy(tu => tu.Project.Group.Name)
-                            : orderedQuery.ThenByDescending(tu => tu.Project.Group.Name);
                     }
                 }
             }

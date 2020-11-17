@@ -1,14 +1,5 @@
-﻿using System;
-using Workflow.VM.Common;
-
-namespace Workflow.VM.ViewModels
+﻿namespace PageLoading
 {
-    public class ProjectStatisticOptions
-    {
-        public DateTime DateBegin { get; set; }
-        public DateTime DateEnd { get; set; }
-    }
-    
     /// <summary>
     /// Параметры загрузки страницы
     /// </summary>
@@ -43,5 +34,15 @@ namespace Workflow.VM.ViewModels
         /// Загрука записей вместе с удаленными
         /// </summary>
         public bool WithRemoved { get; set; }
+
+
+        public PageOptions()
+        { }
+
+        public PageOptions(int pageNumber, int pageSize)
+        {
+            PageNumber = pageNumber;
+            PageSize = pageSize;
+        }
     }
 }

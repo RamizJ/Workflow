@@ -1,13 +1,20 @@
-﻿using System.IO;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
+using Workflow.Services;
+using Workflow.Services.Abstract;
+using Workflow.Services.PageLoading;
+using Workflow.VM.ViewModelConverters;
+using Workflow.VM.ViewModelConverters.Absract;
+using Workflow.VM.ViewModels;
+using WorkflowService.Services;
+using WorkflowService.Services.Abstract;
 
 namespace Workflow.Tests
 {
@@ -69,10 +76,10 @@ namespace Workflow.Tests
 
         public static ServiceProvider Initialize(SqliteConnection connection, bool isLogEnabled)
         {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddLogging();
+            var services = new ServiceCollection();
+            services.AddLogging();
 
-            serviceCollection.AddDbContext<DataContext>(options =>
+            services.AddDbContext<DataContext>(options =>
             {
                 if (isLogEnabled)
                 {
@@ -82,7 +89,7 @@ namespace Workflow.Tests
                 options.UseSqlite(connection);
             });
 
-            serviceCollection.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
                 {
                     options.Password.RequireLowercase = true;
                     options.Password.RequireUppercase = false;
@@ -94,7 +101,37 @@ namespace Workflow.Tests
                 .AddUserManager<UserManager<ApplicationUser>>()
                 .AddEntityFrameworkStores<DataContext>();
 
-            return serviceCollection.BuildServiceProvider();
+            //View model converters
+            services.AddTransient<IViewModelConverter<ApplicationUser, VmUser>, VmUserConverter>();
+            services.AddTransient<IViewModelConverter<Team, VmTeam>, VmTeamConverter>();
+            services.AddTransient<IViewModelConverter<Project, VmProject>, VmProjectConverter>();
+            services.AddTransient<IViewModelConverter<ProjectUserRole, VmProjectUserRole>, VmProjectUserRoleConverter>();
+            services.AddTransient<IViewModelConverter<ProjectTeam, VmProjectTeamRole>, VmProjectTeamRoleConverter>();
+            services.AddTransient<IViewModelConverter<Group, VmGroup>, VmGroupConverter>();
+            services.AddTransient<IViewModelConverter<Metadata, VmMetadata>, VmMetadataConverter>();
+
+            //Services
+            services.AddTransient<ICurrentUserService, CurrentUserService>();
+            services.AddTransient<IDefaultDataInitializationService, DefaultDataInitializationService>();
+            services.AddTransient<IAuthenticationService, AuthenticationService>();
+            services.AddTransient<IGroupsService, GroupsService>();
+            services.AddTransient<IProjectsService, ProjectsService>();
+            services.AddTransient<IUsersService, UsersService>();
+            services.AddTransient<ITeamsService, TeamsService>();
+            services.AddTransient<ITeamUsersService, TeamUsersService>();
+            services.AddTransient<IProjectTeamsService, ProjectTeamsService>();
+            services.AddTransient<ITeamProjectsService, TeamProjectsService>();
+            services.AddTransient<IGoalsService, GoalsService>();
+            services.AddTransient<IGoalAttachmentsService, GoalAttachmentsService>();
+            services.AddTransient<IFileService, FileService>();
+            services.AddTransient<IFormFilesService, FormFilesService>();
+            services.AddTransient<IProjectUserRolesService, ProjectUserRolesService>();
+            services.AddTransient<IStatisticService, StatisticService>();
+            services.AddTransient<IRolesService, RolesService>();
+
+            services.AddTransient<IPageLoadService<Group>, GroupsPageLoadService>();
+
+            return services.BuildServiceProvider();
         }
     }
 }

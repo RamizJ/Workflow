@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Workflow.DAL.Models;
 
 namespace Workflow.VM.ViewModels
 {
@@ -10,10 +11,16 @@ namespace Workflow.VM.ViewModels
         public string Name { get; set; }
         public string Description { get; set; }
 
-        public int? ParentGroupId { get; set; }
-        public List<int> ChildGroups { get; set; }
-
         public DateTime CreationDate { get; set; }
         public bool IsRemoved { get; set; }
+
+        public string OwnerId { get; set; }
+        public string OwnerFio { get; set; }
+
+        public int? ParentGroupId { get; set; }
+        public List<VmGroup> Children { get; set; }
+
+        public List<VmProject> Projects { get; set; }
+        public List<VmMetadata> MetadataList { get; set; }
     }
 }

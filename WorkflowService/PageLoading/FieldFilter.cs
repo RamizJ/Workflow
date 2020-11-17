@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace Workflow.VM.Common
+namespace PageLoading
 {
     /// <summary>
     /// Фильтр по полю
@@ -35,6 +37,18 @@ namespace Workflow.VM.Common
             Values = values;
         }
 
+        public IEnumerable<int> IntValues => Values.SelectIntValues();
+
+        public IEnumerable<bool> BoolValues => Values.SelectBoolValues();
+
+        public IEnumerable<T> EnumValues<T>() where T : struct, IConvertible => Values.SelectEnumValues<T>();
+
+        public IEnumerable<string> StringLowerValues => Values?
+            .Select(v => v.ToString()?.ToLower())
+            .ToList();
+
+        public IEnumerable<DateTime> DateValues => Values.SelectDateTimeValues();
+
 
         /// <summary>
         /// Проверка на совпадение имени поля с передаваемым. Регистр букв не учитывается
@@ -49,6 +63,11 @@ namespace Workflow.VM.Common
         public bool HasValuesAndSameAs(string fieldName)
         {
             return SameAs(fieldName) && Values != null && Values.Length > 0;
+        }
+
+        public IEnumerable<int> SelectIntValues()
+        {
+            return Values.SelectIntValues();
         }
     }
 }

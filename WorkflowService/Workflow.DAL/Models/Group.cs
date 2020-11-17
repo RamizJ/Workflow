@@ -14,7 +14,12 @@ namespace Workflow.DAL.Models
         public Group ParentGroup { get; set; }
         public List<Group> ChildGroups { get; set; }
 
+        public List<Project> Projects { get; set; }
+
         public DateTime CreationDate { get; set; }
+
+        public string OwnerId { get; set; }
+        public ApplicationUser Owner { get; set; }
 
         public List<Metadata> MetadataList { get; set; } = new List<Metadata>();
 

@@ -47,12 +47,17 @@ namespace Workflow.Tests
                 .TheNext(1).With(x => x.IsRemoved = true)
                 .Build().ToList();
 
-            Groups = Builder<Group>.CreateListOfSize(2)
-                .All().With(g => g.Name = $"Group{g.Id}").Build();
+            Groups = Builder<Group>.CreateListOfSize(10)
+                .All()
+                .With(g => g.ParentGroupId = null)
+                .With(g => g.Name = $"Group{g.Id}")
+                .With(g => g.OwnerId = Users.First().Id)
+                .TheFirst(9).With(g => g.IsRemoved = false)
+                .TheNext(1).With(g => g.IsRemoved = true)
+                .Build();
 
             Teams = Builder<Team>.CreateListOfSize(10)
                 .All()
-                .With(x => x.GroupId = null)
                 .With(x => x.CreatorId = Users.First().Id)
                 .TheFirst(6).With(x => x.Name = $"Team1{x.Id}")
                 .TheNext(4).With(x => x.Name = $"Team2{x.Id}")
@@ -62,6 +67,7 @@ namespace Workflow.Tests
 
             Projects = Builder<Project>.CreateListOfSize(10)
                 .All()
+                .With(x => x.GroupId = null)
                 .With(s => s.OwnerId = Users.First().Id)
                 .TheFirst(6).With((s, i) => { 
                     s.Name = $"Scope1{i}"; 
@@ -72,7 +78,7 @@ namespace Workflow.Tests
                     s.Description = $"ScopeDescription2{i}";
                 })
                 .TheFirst(3).With(s => s.GroupId = Groups[0].Id)
-                .TheNext(7).With(s => s.GroupId = Groups[1].Id)
+                .TheNext(7).With(s => s.GroupId = null)
                 .TheFirst(9).With(s => s.IsRemoved = false)
                 .TheLast(1).With(s => s.IsRemoved = true)
                 .Build();

@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
@@ -199,7 +200,6 @@ namespace Workflow.Tests.Services
             {
                 Id = 0,
                 Name = name,
-                GroupId = null,
                 IsRemoved = false
             };
 
@@ -220,7 +220,6 @@ namespace Workflow.Tests.Services
             {
                 Id = 0,
                 Name = name,
-                GroupId = null,
                 IsRemoved = false
             };
 
@@ -244,7 +243,6 @@ namespace Workflow.Tests.Services
             {
                 Id = id,
                 Name = "Team",
-                GroupId = null,
                 IsRemoved = false
             };
 
@@ -267,7 +265,6 @@ namespace Workflow.Tests.Services
             {
                 Id = id,
                 Name = "Team",
-                GroupId = null,
                 IsRemoved = false
             };
             var userIds = _testData.Users.Take(2).Select(u => u.Id).ToList();

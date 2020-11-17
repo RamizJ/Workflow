@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Workflow.VM.Common
+namespace PageLoading
 {
     /// <summary>
     /// Сортировка по полю
@@ -45,5 +45,21 @@ namespace Workflow.VM.Common
         {
             return FieldName.Equals(fieldName, StringComparison.InvariantCultureIgnoreCase);
         }
+    }
+
+    /// <summary>
+    /// Тип сортировки
+    /// </summary>
+    public enum SortType
+    {
+        /// <summary>
+        /// По возрастанию
+        /// </summary>
+        Ascending,
+
+        /// <summary>
+        /// По убыванию
+        /// </summary>
+        Descending
     }
 }
