@@ -1,6 +1,7 @@
 import Attachment from '@/modules/goals/models/attachment.type'
 import Entity from '@/core/types/entity.type'
 import moment from 'moment'
+import { Metadata } from '@/core/types/metadata.model'
 
 export default class Goal extends Entity {
   id?: number
@@ -64,8 +65,3 @@ export const statuses = [
   { value: Status.Succeed, label: 'Выполнено' },
   { value: Status.Rejected, label: 'Отклонено' },
 ]
-
-export type Metadata = {
-  key: string
-  value: string
-}

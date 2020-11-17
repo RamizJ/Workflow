@@ -50,7 +50,7 @@ class UsersStore extends VuexModule {
   }
 
   @Mutation
-  setUser(user: User) {
+  setUser(user: User | null) {
     this._user = user
   }
 

@@ -180,7 +180,7 @@ class GoalsStore extends VuexModule {
   }
 
   @Action
-  async deleteMany(ids: number[]): Promise<void> {
+  async deleteMany(ids: Array<number>): Promise<void> {
     await api.removeRange(ids)
   }
 

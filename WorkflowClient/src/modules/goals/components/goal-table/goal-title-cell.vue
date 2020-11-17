@@ -21,7 +21,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
 import Goal from '@/modules/goals/models/goal.type'
 
 @Component
-export default class GoalTableNew extends Vue {
+export default class GoalTitleCell extends Vue {
   @Prop() readonly row!: Goal
 
   private get hasDescription(): boolean {
