@@ -74,9 +74,7 @@ namespace Workflow.Tests.Services
         [TestCase(0, 12, null, 9)]
         [TestCase(0, 5, "Scope1", 5)]
         [TestCase(1, 5, "Scope1", 1)]
-        [TestCase(0, 5, "Group1", 3)]
-        [TestCase(0, 5, "Group2", 5)]
-        [TestCase(1, 5, "Group2", 1)]
+        [TestCase(0, 5, "Group 1", 3)]
         public async Task GetPageFilterTest(int pageNumber, int pageSize, 
             string filter, int expectedCount)
         {
@@ -96,8 +94,8 @@ namespace Workflow.Tests.Services
         }
 
         [TestCase(0, 5, null, "Name", new object[] { "scope1" }, 5)]
-        [TestCase(0, 5, null, "GroupName", new object[] { "Group2" }, 5)]
-        [TestCase(1, 5, null, "GroupName", new object[] { "Group2" }, 1)]
+        [TestCase(0, 5, null, "GroupName", new object[] { "Group 2" }, 5)]
+        [TestCase(1, 5, null, "GroupName", new object[] { "Group 2" }, 1)]
         [TestCase(1, 5, null, "OwnerFio", new object[] { "Firstname1" }, 4)]
         [TestCase(1, 5, null, "OwnerFio", new object[] { "lastname1" }, 4)]
         [TestCase(1, 5, null, "OwnerFio", new object[] { "middlename1" }, 4)]
@@ -159,6 +157,31 @@ namespace Workflow.Tests.Services
                 PageNumber = pageNumber,
                 PageSize = pageSize,
                 SortFields = new[] { sortField1, sortField2 }
+            };
+
+            //Act
+            var resultScopes = (await _service.GetPage(_currentUser, pageOptions)).ToArray();
+
+            //Assert
+            Assert.LessOrEqual(expectedIds.Length, resultScopes.Length);
+            for (var i = 0; i < expectedIds.Length; i++)
+            {
+                Assert.AreEqual(expectedIds[i], resultScopes[i].Id);
+            }
+        }
+
+        [TestCase(0, 5, SortType.Descending, new[] { 1, 2, 3 })]
+        public async Task GetPageSortByDateTest(int pageNumber, int pageSize,
+            SortType sortType, int[] expectedIds)
+        {
+            //Arrange
+            var sortField = new FieldSort(nameof(VmProject.CreationDate), sortType);
+
+            var pageOptions = new PageOptions
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                SortFields = new[] { sortField  }
             };
 
             //Act

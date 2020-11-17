@@ -73,7 +73,7 @@ namespace Workflow.Services
             var group = _vmConverter.ToModel(vmGroup);
             group.CreationDate = DateTime.Now;
             group.OwnerId = currentUser.Id;
-            group.MetadataList = vmGroup.MetadataList
+            group.MetadataList = vmGroup.MetadataList?
                 .Select(x => new Metadata(x.Key, x.Value))
                 .ToList();
 
