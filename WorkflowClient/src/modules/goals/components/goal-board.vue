@@ -108,7 +108,7 @@
 import { Component, Mixins } from 'vue-property-decorator'
 import Draggable from 'vuedraggable'
 import TableMixin from '@/core/mixins/table.mixin'
-import TaskDialog from '@/modules/goals/components/goal-window.vue'
+import TaskDialog from '@/modules/goals/components/goal-window/goal-window.vue'
 import { StateChanger } from 'vue-infinite-loading'
 import tasksModule from '@/modules/goals/store/goals.store'
 import Goal, { Status } from '@/modules/goals/models/goal.type'

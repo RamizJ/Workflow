@@ -23,21 +23,36 @@ export default class PopoverButton extends Vue {
   width: 100%;
   margin-left: 0;
   padding: 12px 16px;
-  text-align: left;
+  text-align: center;
   background-color: transparent;
+  justify-content: center;
+  transition: 0.12s;
+  border: none;
+  span {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
   &:hover,
   &:focus {
+    color: var(--text);
     svg {
-      fill: var(--button-hover-color);
+      fill: var(--text);
     }
-    background-color: var(--color-primary);
+    border: none;
+    background-color: var(--main-background);
+    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.05);
+  }
+  .unicon {
+    display: flex;
+    justify-content: center;
   }
   svg {
     fill: var(--text);
-    width: 18px;
-    height: 18px;
-    margin-right: 12px;
+    width: 28px;
+    height: 28px;
     vertical-align: sub;
+    margin-bottom: 10px;
   }
 }
 </style>

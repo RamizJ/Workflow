@@ -1,67 +1,33 @@
 <template>
-  <div class="page">
-    <div class="header">
-      <div class="header__title">
-        <input
-          v-if="projectItem.name"
-          class="title"
-          v-model="projectItem.name"
-          v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
-          @change="updateEntity"
-        />
-        <div class="header__action">
-          <el-dropdown v-if="!loading" placement="bottom" :show-timeout="0">
-            <el-button type="text" size="mini">
-              <unicon name="ellipsis-h" />
-            </el-button>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>
-                <el-button type="text" size="mini" @click="createTask">Создать задачу</el-button>
-              </el-dropdown-item>
-              <el-dropdown-item>
-                <el-button type="text" size="mini" @click="addTeam">Добавить команду</el-button>
-              </el-dropdown-item>
-              <el-divider></el-divider>
-              <el-dropdown-item>
-                <el-button type="text" size="mini" @click="deleteEntity"
-                  >Переместить в корзину</el-button
-                >
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </div>
-      </div>
-      <div class="header__subtitle">
-        <input
-          class="subtitle"
-          placeholder="Описание"
-          v-model="projectItem.description"
-          v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
-          @change="updateEntity"
-        />
-      </div>
-    </div>
-    <el-tabs v-if="projectItem.id" ref="tabs" v-model="activeTab" @tab-click="setTab">
-      <el-tab-pane name="overview" label="Обзор">
-        <project-overview
-          v-if="activeTab === 'overview'"
-          :data="projectItem"
-          @description="changeEntityDescription"
-        ></project-overview>
-      </el-tab-pane>
-      <el-tab-pane name="tasks" label="Задачи">
-        <project-tasks ref="projectTasks" v-if="activeTab === 'tasks'"></project-tasks>
-      </el-tab-pane>
-      <el-tab-pane name="teams" label="Команды">
-        <project-teams ref="projectTeams" v-if="activeTab === 'teams'"></project-teams>
-      </el-tab-pane>
-      <!--<el-tab-pane name="users" label="Пользователи">
-        <project-users ref="projectUsers" v-if="activeTab === 'users'"></project-users>
-      </el-tab-pane>-->
-      <el-tab-pane name="reports" label="Отчёты">
-        <project-reports ref="projectReports" v-if="activeTab === 'reports'" />
-      </el-tab-pane>
-    </el-tabs>
+  <BasePage>
+    <BasePageHeader>
+      <input
+        v-if="!loading"
+        v-model="projectItem.name"
+        v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
+        @change="updateEntity"
+      />
+      <ProjectActions
+        v-if="!loading"
+        slot="action"
+        @add-goal="createTask"
+        @add-team="addTeam"
+        @delete-project="deleteEntity"
+      />
+    </BasePageHeader>
+    <BasePageSubheader>
+      <input
+        placeholder="Описание..."
+        v-model="projectItem.description"
+        v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
+        @change="updateEntity"
+      />
+    </BasePageSubheader>
+    <BasePageSubheader :no-border="true">
+      <BaseTabs v-model="currentTab" :tabs="tabs" @tab-click="setTab" :routing="true" />
+    </BasePageSubheader>
+
+    <RouterView />
 
     <project-dialog
       v-if="projectModalVisible"
@@ -74,14 +40,14 @@
       @submit="onTeamAdd"
     ></project-add-team-dialog>
     <task-dialog v-if="taskModalVisible" @close="taskModalVisible = false"></task-dialog>
-  </div>
+  </BasePage>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import { MessageBox } from 'element-ui'
 
-import projectsModule from '@/modules/projects/store/projects.store'
+import projectsStore from '@/modules/projects/store/projects.store'
 import settingsModule from '@/modules/settings/store/settings.store'
 import ProjectOverview from '@/modules/projects/components/project-overview.vue'
 import ProjectTasks from '@/modules/projects/components/project-tasks.vue'
@@ -89,14 +55,26 @@ import ProjectTeams from '@/modules/projects/components/project-teams.vue'
 import ProjectReports from '@/modules/projects/components/project-statistics.vue'
 import ProjectDialog from '@/modules/projects/components/project-window.vue'
 import ProjectAddTeamDialog from '@/modules/projects/components/project-add-team-window.vue'
-import TaskDialog from '@/modules/goals/components/goal-window.vue'
-import TaskTable from '@/modules/goals/components/goal-table/goal-table.vue'
+import TaskDialog from '@/modules/goals/components/goal-window/goal-window.vue'
+import TaskTable from '@/modules/goals/components/goal-table/goal-table-old.vue'
 import Project from '@/modules/projects/models/project.type'
-import TeamTable from '@/modules/teams/components/team-table.vue'
+import TeamTable from '@/modules/teams/components/team-table-old.vue'
 import ProjectUsers from '@/modules/projects/components/project-team-users.vue'
+import BasePage from '@/core/components/base-page/base-page.vue'
+import BasePageHeader from '@/core/components/base-page/base-page-header.vue'
+import ProjectActions from '@/modules/projects/components/project-actions.vue'
+import BasePageSubheader from '@/core/components/base-page/base-page-subheader.vue'
+import BaseTabs from '@/core/components/base-tabs/base-tabs.vue'
+import goalsStore from '@/modules/goals/store/goals.store'
+import Goal from '@/modules/goals/models/goal.type'
 
 @Component({
   components: {
+    BaseTabs,
+    BasePageSubheader,
+    ProjectActions,
+    BasePageHeader,
+    BasePage,
     ProjectUsers,
     ProjectOverview,
     ProjectTasks,
@@ -109,7 +87,13 @@ import ProjectUsers from '@/modules/projects/components/project-team-users.vue'
 })
 export default class ProjectPage extends Vue {
   private loading = true
-  private activeTab = 'overview'
+  private currentTab = 'overview'
+  private tabs: Array<{ label: string; name: string; component?: any }> = [
+    { label: 'Обзор', name: 'overview' },
+    { label: 'Задачи', name: 'goals' },
+    { label: 'Команды', name: 'teams' },
+    { label: 'Статистика', name: 'statistics' },
+  ]
   private projectItem: Project = {
     name: '',
     description: '',
@@ -125,23 +109,53 @@ export default class ProjectPage extends Vue {
 
   protected async mounted(): Promise<void> {
     this.loading = true
+    ;(this as any).$insProgress.start()
     this.loadTab()
-    const project = await projectsModule.findOneById(this.id)
+    const project = projectsStore.project || (await projectsStore.findOneById(this.id))
     this.projectItem = { ...project }
+    projectsStore.setProject(project)
+    ;(this as any).$insProgress.finish()
     this.loading = false
   }
 
+  protected beforeDestroy(): void {
+    projectsStore.setProject(null)
+  }
+
   private loadTab() {
-    const query = { ...this.$route.query }
-    query.tab = query.tab?.toString() || this.activeTab
-    this.activeTab = query.tab
-    if (JSON.stringify(query) !== JSON.stringify(this.$route.query)) this.$router.replace({ query })
+    const tab = this.$route.path.substring(this.$route.path.lastIndexOf('/') + 1)
+    switch (tab) {
+      case 'goals':
+      case 'teams':
+      case 'statistics':
+        this.currentTab = tab
+        break
+      default:
+        this.currentTab = 'overview'
+        if (this.$route.name !== 'project-overview')
+          this.$router.replace({ name: `project-overview` })
+        break
+    }
   }
 
   private setTab() {
-    const query = { tab: this.activeTab }
-    if (JSON.stringify({ tab: '' }) !== JSON.stringify(this.$route.query))
-      this.$router.replace({ query })
+    const tab = this.$route.path.substring(this.$route.path.lastIndexOf('/') + 1)
+    let path = this.$route.path
+
+    switch (tab) {
+      case 'goals':
+      case 'teams':
+      case 'statistics':
+      case 'overview':
+        path = path.replace(tab, this.currentTab)
+        break
+      default:
+        path = this.currentTab === 'overview' ? path : `${path}/${this.currentTab}`
+        break
+    }
+
+    const targetRoute = `project-${this.currentTab}`
+    if (this.$route.name !== targetRoute) this.$router.replace({ name: targetRoute })
   }
 
   private async editEntity() {
@@ -151,24 +165,24 @@ export default class ProjectPage extends Vue {
   private async deleteEntity() {
     const allowDelete = await this.confirmDelete()
     if (!allowDelete) return
-    await projectsModule.deleteOne(this.id)
+    await projectsStore.deleteOne(this.id)
     await this.$router.replace({ name: 'Project' })
   }
 
   private async updateEntity() {
-    await projectsModule.updateOne(this.projectItem)
+    await projectsStore.updateOne(this.projectItem)
   }
 
   private async changeEntityDescription(value: string) {
     this.projectItem.description = value
-    this.projectItem.teamIds = projectsModule.project?.teamIds
-    await projectsModule.updateOne(this.projectItem)
+    this.projectItem.teamIds = projectsStore.project?.teamIds
+    await projectsStore.updateOne(this.projectItem)
   }
 
   private async createTask() {
-    const projectTasks = this.$refs.projectTasks as ProjectTasks
-    if (projectTasks) (projectTasks.$refs.items as TaskTable).createEntity()
-    else this.taskModalVisible = true
+    const goal = new Goal()
+    goal.projectId = this.projectItem.id
+    await goalsStore.openGoalWindow(goal)
   }
 
   private async addTeam() {

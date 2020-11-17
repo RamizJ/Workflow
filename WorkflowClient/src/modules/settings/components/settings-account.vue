@@ -70,8 +70,8 @@
     </el-row>
 
     <div class="section buttons">
-      <el-button type="primary" @click="updateAccount" :loading="loading">Сохранить</el-button>
       <el-button @click="exit">Выйти</el-button>
+      <el-button type="primary" @click="updateAccount" :loading="loading">Сохранить</el-button>
     </div>
   </el-form>
 </template>
@@ -116,7 +116,7 @@ export default class SettingsAccount extends Vue {
   }
 
   protected async mounted(): Promise<void> {
-    if (authModule.me) this.form = authModule.me
+    if (authModule.me) this.form = { ...authModule.me }
   }
 
   private async updateAccount(): Promise<void> {

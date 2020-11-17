@@ -119,6 +119,7 @@ import projectsModule from '@/modules/projects/store/projects.store'
 import DialogMixin from '@/core/mixins/dialog.mixin'
 import BaseDialog from '@/core/components/BaseDialog.vue'
 import Project from '@/modules/projects/models/project.type'
+import tableStore from '@/core/store/table.store'
 
 @Component({ components: { BaseDialog } })
 export default class ProjectDialog extends Mixins(DialogMixin) {
@@ -155,6 +156,8 @@ export default class ProjectDialog extends Mixins(DialogMixin) {
         })
         this.form.teamIds = []
         this.form.teamIds = projectsModule.projectTeams.map((team) => (team.id ? team.id : -1))
+      } else if (projectsModule.project) {
+        this.form = projectsModule.project
       }
     } catch (e) {
       this.$message.error('Не удаётся загрузить проект')
@@ -176,6 +179,7 @@ export default class ProjectDialog extends Mixins(DialogMixin) {
     await form.validate(async (valid) => {
       if (valid) {
         await this.sendForm()
+        tableStore.requireReload()
         this.$emit('submit')
         this.exit()
       } else {

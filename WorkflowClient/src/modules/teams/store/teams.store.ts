@@ -50,9 +50,10 @@ class TeamsStore extends VuexModule {
     }
   }
 
-  @MutationAction({ mutate: ['_teamWindowOpened'] })
-  public async openTeamWindow() {
+  @MutationAction({ mutate: ['_teamWindowOpened', '_team'] })
+  public async openTeamWindow(team?: Team) {
     return {
+      _team: team || null,
       _teamWindowOpened: true,
     }
   }
@@ -127,12 +128,7 @@ class TeamsStore extends VuexModule {
 
   @Action
   async updateOne(entity: Team): Promise<void> {
-    const request = {
-      team: entity,
-      userIds: entity.userIds || [],
-      projectIds: entity.projectIds || [],
-    }
-    await api.update(request)
+    await api.update(entity)
   }
 
   @Action

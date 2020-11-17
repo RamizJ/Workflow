@@ -1,202 +1,188 @@
 <template>
-  <div class="table-container">
-    <el-table
-      ref="table"
-      height="100%"
-      v-loading="loading"
-      :data="data"
-      :row-class-name="setIndex"
-      @select="onRowSelect"
-      @row-click="onRowSingleClick"
-      @row-contextmenu="onRowRightClick"
-      @row-dblclick="onRowDoubleClick"
-      highlight-current-row="highlight-current-row"
-      border="border"
-    >
-      <el-table-column type="selection" width="42"></el-table-column>
-      <el-table-column prop="name" label="Команда"></el-table-column>
-      <infinite-loading
-        slot="append"
-        ref="loader"
-        spinner="waveDots"
-        :distance="300"
-        @infinite="loadData"
-        force-use-infinite-wrapper=".el-table__body-wrapper"
-      >
-        <div slot="no-more"></div>
-        <div slot="no-results"></div>
-      </infinite-loading>
-    </el-table>
-    <vue-context ref="contextMenu">
-      <template slot-scope="child">
-        <li>
-          <a
-            v-if="isRowEditable && !$route.params.projectId"
-            @click.prevent="onRowDoubleClick(child.data.row)"
-            >Открыть</a
-          >
-        </li>
-        <li>
-          <a
-            v-if="!isRowEditable && !$route.params.projectId"
-            @click.prevent="editEntity(child.data.row)"
-          >
-            {{ 'Информация' }}
-          </a>
-        </li>
-        <li>
-          <a v-if="isRowEditable && $route.params.projectId" @click.prevent="editProjectTeamRights"
-            >Изменить права</a
-          >
-        </li>
-        <el-divider v-if="isRowEditable && !$route.params.projectId"></el-divider>
-        <li>
-          <a v-if="isRowEditable && !$route.params.projectId" @click.prevent="createEntity"
-            >Новая команда</a
-          >
-        </li>
-        <li>
-          <a v-if="isRowEditable && $route.params.projectId" @click.prevent="addTeam"
-            >Добавить команду</a
-          >
-        </li>
-        <el-divider v-if="isRowEditable"></el-divider>
-        <li>
-          <a v-if="$route.params.projectId" @click.prevent="removeEntityFromProject(child.data.row)"
-            >Убрать из проекта</a
-          >
-        </li>
-        <li>
-          <a v-if="isRowEditable && !$route.params.projectId" @click.prevent="deleteEntity">
-            Переместить в корзину
-          </a>
-        </li>
-        <li>
-          <a
-            v-if="!isRowEditable"
-            @click.prevent="restoreEntity(child.data.row, isMultipleSelected)"
-            >Восстановить</a
-          >
-        </li>
-      </template>
-    </vue-context>
-    <team-dialog
-      v-if="dialogVisible"
-      :id="dialogData"
-      @close="dialogVisible = false"
-      @submit="reloadData"
-    ></team-dialog>
-    <project-add-team-dialog
-      v-if="dialogAddTeamVisible"
-      @close="dialogAddTeamVisible = false"
-      @submit="reloadData"
+  <BaseTable
+    ref="baseTable"
+    :data="tableData"
+    @space="onSpaceClick"
+    @double-click="onDoubleClick"
+    @right-click="openContextMenu"
+    @load="onLoad"
+    infinite
+  >
+    <BaseTableColumn prop="name" label="Название" />
+    <TeamContextMenu
+      slot="footer"
+      ref="contextMenu"
+      @open="onDoubleClick"
+      @edit="edit"
+      @create="create"
+      @remove="remove"
+      @remove-from-project="removeFromProject"
+      @restore="restore"
     />
-    <project-edit-team-rights-dialog
-      v-if="dialogEditTeamRightsVisible"
-      :team="selectedRow"
-      @close="dialogEditTeamRightsVisible = false"
-    />
-    <project-team-users-dialog
-      v-if="dialogTeamUsersVisible"
-      :team-id="selectedRow.id"
-      @close="dialogTeamUsersVisible = false"
-    />
-  </div>
+  </BaseTable>
 </template>
 
 <script lang="ts">
-import { Component, Mixins } from 'vue-property-decorator'
+import { Component, Ref, Vue, Watch } from 'vue-property-decorator'
 import { StateChanger } from 'vue-infinite-loading'
+import { ElTableColumn } from 'element-ui/types/table-column'
 
-import teamsModule from '@/modules/teams/store/teams.store'
-import projectsModule from '@/modules/projects/store/projects.store'
-import TeamDialog from '@/modules/teams/components/team-dialog.vue'
-import ProjectAddTeamDialog from '@/modules/projects/components/project-add-team-window.vue'
-import ProjectEditTeamRightsDialog from '@/modules/projects/components/project-edit-team-rights-window.vue'
-import TableMixin from '@/core/mixins/table.mixin'
+import teamsStore from '@/modules/teams/store/teams.store'
+import tableStore from '@/core/store/table.store'
+import BaseTable from '@/core/components/base-table/base-table.vue'
+import BaseTableColumn from '@/core/components/base-table/base-table-column.vue'
+import Query, { FilterField } from '@/core/types/query.type'
+import Entity from '@/core/types/entity.type'
 import Team from '@/modules/teams/models/team.type'
-import ProjectTeamUsersDialog from '@/modules/projects/components/project-team-users-window.vue'
+import TeamContextMenu from '@/modules/teams/components/team-context-menu.vue'
+import projectsStore from '@/modules/projects/store/projects.store'
 
 @Component({
   components: {
-    ProjectTeamUsersDialog,
-    ProjectEditTeamRightsDialog,
-    ProjectAddTeamDialog,
-    TeamDialog,
+    TeamContextMenu,
+    BaseTable,
+    BaseTableColumn,
   },
 })
-export default class TeamTable extends Mixins(TableMixin) {
-  public data: Team[] = []
-  private loading = false
-  private dialogAddTeamVisible = false
-  private dialogEditTeamRightsVisible = false
-  private dialogTeamUsersVisible = false
+export default class TeamTable extends Vue {
+  @Ref() readonly contextMenu!: TeamContextMenu
+  @Ref() readonly baseTable!: BaseTable
 
-  private async loadData($state: StateChanger): Promise<void> {
-    const isFirstLoad = !this.data.length
-    this.loading = isFirstLoad
+  private get tableData(): Team[] {
+    return tableStore.data as Team[]
+  }
+
+  private get query(): Query {
+    return tableStore.query
+  }
+
+  private get isReloadRequired(): boolean {
+    return tableStore.isReloadRequired
+  }
+
+  private get openedProjectId(): number {
+    const projectId = this.$route.params.projectId ? parseInt(this.$route.params.projectId) : 0
+    if (projectId) this.query.projectId = projectId
+    return projectId
+  }
+
+  protected beforeDestroy(): void {
+    tableStore.setData([])
+    tableStore.setQuery(new Query())
+  }
+
+  @Watch('isReloadRequired')
+  onReloadRequired(): void {
+    tableStore.setData([])
+    tableStore.setPage(0)
+    this.baseTable.loader.stateChanger.reset()
+    tableStore.completeReload()
+  }
+
+  private async onLoad($state: StateChanger): Promise<void> {
+    ;(this as any).$insProgress.start()
     let data: Team[] = []
-    try {
-      if (this.$route.params.projectId) data = await projectsModule.findTeams(this.query)
-      else data = await teamsModule.findAll(this.query)
-      if (this.query.pageNumber !== undefined) this.query.pageNumber++
-      if (data.length) $state.loaded()
-      else $state.complete()
-    } catch (e) {
-      this.$message.error('Не удаётся загрузить список команд')
-      $state.error()
+    if (this.openedProjectId) data = await projectsStore.findTeams(this.query)
+    else data = await teamsStore.findAll(this.query)
+    if (data.length) {
+      tableStore.increasePage()
+      tableStore.appendData(data)
+      $state.loaded()
+    } else $state.complete()
+    ;(this as any).$insProgress.finish()
+  }
+
+  private openContextMenu(row: Team, selection: Team[], event: Event) {
+    tableStore.setSelectedRow(row)
+    tableStore.setSelectedRows(selection)
+    this.contextMenu.open(event, row)
+  }
+
+  private async onSpaceClick(): Promise<void> {
+    await teamsStore.openTeamWindow()
+  }
+
+  private async onDoubleClick(row?: Team): Promise<void> {
+    const team: Team = row || (tableStore.selectedRow as Team)
+    if (!team.isRemoved && !this.$route.params.teamId) await this.$router.push(`/teams/${team.id}`)
+  }
+
+  private async edit(): Promise<void> {
+    if (!tableStore.selectedRow) return
+    const team = tableStore.selectedRow as Team
+    await teamsStore.openTeamWindow(team)
+  }
+
+  private async create(): Promise<void> {
+    await teamsStore.openTeamWindow()
+  }
+
+  private async remove(): Promise<void> {
+    if (tableStore.isMultiselect) {
+      const selection = tableStore.selectedRows as Team[]
+      const ids = selection.map((team: Team) => team.id!)
+      await teamsStore.deleteMany(ids)
+    } else {
+      if (!tableStore.selectedRow) return
+      if (!tableStore.selectedRow?.id) return
+      await teamsStore.deleteOne(tableStore.selectedRow.id as number)
     }
-    this.data = isFirstLoad ? data : this.data.concat(data)
-    this.loading = false
+    tableStore.requireReload()
   }
 
-  public createEntity(): void {
-    this.dialogData = undefined
-    this.dialogVisible = true
-  }
-
-  public editEntity(entity: Team): void {
-    this.dialogData = entity.id
-    this.dialogVisible = true
-  }
-
-  private async deleteEntity(): Promise<void> {
-    const allowDelete = await this.confirmDelete()
-    if (!allowDelete) return
-    const entity = this.selectedRow as Team
-    if (this.isMultipleSelected) await teamsModule.deleteMany(this.selectionIds as number[])
-    else await teamsModule.deleteOne(entity.id as number)
-    this.reloadData()
-  }
-
-  private async restoreEntity(entity: Team, multiple = false): Promise<void> {
-    if (multiple) await teamsModule.restoreMany(this.selectionIds as number[])
-    else await teamsModule.restoreOne(entity.id as number)
-    this.reloadData()
-  }
-
-  public async onRowDoubleClick(row: Team): Promise<void> {
-    if (!row.isRemoved && !this.$route.params.projectId) await this.$router.push(`/teams/${row.id}`)
-    if (this.$route.params.projectId) this.dialogTeamUsersVisible = true
-  }
-
-  private async removeEntityFromProject(row: Team): Promise<void> {
-    const allowDelete = await this.confirmDelete()
-    if (!allowDelete) return
+  private async removeFromProject(): Promise<void> {
     const projectId = parseInt(this.$route.params.projectId)
-    const teamId = row.id || -1
-    const teamIds = this.selectionIds as number[]
-    if (this.isMultipleSelected) await projectsModule.removeTeams({ projectId, teamIds })
-    else await projectsModule.removeTeam({ projectId, teamId })
-    this.reloadData()
+    if (tableStore.isMultiselect) {
+      const selection = tableStore.selectedRows as Team[]
+      const teamIds = selection.map((team: Team) => team.id!)
+      await projectsStore.removeTeams({ projectId, teamIds })
+    } else {
+      if (!tableStore.selectedRow) return
+      if (!tableStore.selectedRow?.id) return
+      const teamId = tableStore.selectedRow.id as number
+      await projectsStore.removeTeam({ projectId, teamId })
+    }
+    tableStore.requireReload()
   }
 
-  private addTeam(): void {
-    this.dialogAddTeamVisible = true
+  private async restore(): Promise<void> {
+    if (tableStore.isMultiselect) {
+      const selection = tableStore.selectedRows as Team[]
+      const ids = selection.map((team: Team) => team.id!)
+      await teamsStore.restoreMany(ids)
+    } else {
+      if (!tableStore.selectedRow) return
+      if (!tableStore.selectedRow?.id) return
+      await teamsStore.restoreOne(tableStore.selectedRow.id as number)
+    }
+    tableStore.requireReload()
   }
 
-  private editProjectTeamRights(): void {
-    this.dialogEditTeamRightsVisible = true
+  public formatDate(row: Entity, column: ElTableColumn, value: string): string {
+    const date = new Date(value)
+    return date.toLocaleString('ru', {
+      timeZone: 'UTC',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  }
+
+  public formatFio(row: Entity, column: ElTableColumn, value: string): string {
+    return this.shortenFullName(value)
+  }
+
+  public shortenFullName(value: string): string {
+    if (!value) return value
+    const fioArray = value.split(' ')
+    const lastName = fioArray[0]
+    const firstNameInitial = fioArray[1][0] ? `${fioArray[1][0]}.` : ''
+    const middleNameInitial = fioArray[2][0] ? `${fioArray[2][0]}.` : ''
+    return `${lastName} ${firstNameInitial} ${middleNameInitial}`
   }
 }
 </script>
+
+<style lang="scss"></style>

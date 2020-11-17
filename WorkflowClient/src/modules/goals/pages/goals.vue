@@ -1,75 +1,53 @@
 <template>
-  <div class="page">
-    <div class="header">
-      <div class="header__title">
-        Задачи
-        <div class="header__action">
-          <el-button type="text" size="mini" @click="onCreate">Создать</el-button>
-        </div>
-      </div>
-    </div>
-    <task-toolbar
-      @search="onSearch"
-      @filters="onFiltersChange"
-      @order="onOrderChange"
-      @sort="onSortChange"
-      @view="onViewChange"
-    ></task-toolbar>
-    <GoalTableNew
-      v-if="view === 'list'"
-      :search="search"
-      :filters="filters"
-      :order="order"
-      :sort="sort"
-    />
-    <!--    <task-table-->
-    <!--      v-if="view === 'list'"-->
-    <!--      ref="items"-->
-    <!--      :search="search"-->
-    <!--      :filters="filters"-->
-    <!--      :order="order"-->
-    <!--      :sort="sort"-->
-    <!--    ></task-table>-->
-    <task-board
+  <BasePage>
+    <BasePageHeader>
+      <GoalBreadcrumbs :root="{ path: $route.path, label: 'Задачи' }" />
+      <GoalToolbar
+        slot="toolbar"
+        @search="onSearch"
+        @filters="onFiltersChange"
+        @order="onOrderChange"
+        @sort="onSortChange"
+        @view="onViewChange"
+      ></GoalToolbar>
+    </BasePageHeader>
+    <GoalTable v-if="view === 'list'" />
+    <GoalBoard
       v-if="view === 'board'"
       ref="items"
       :search="search"
       :filters="filters"
       :order="order"
       :sort="sort"
-    ></task-board>
-  </div>
+    ></GoalBoard>
+  </BasePage>
 </template>
 
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator'
 import PageMixin from '@/core/mixins/page.mixin'
-import TaskToolbar from '@/modules/goals/components/goal-toolbar.vue'
-import TaskTable from '@/modules/goals/components/goal-table/goal-table.vue'
-import TaskBoard from '@/modules/goals/components/goal-board.vue'
-import { View } from '@/core/types/view.type'
+import BasePage from '@/core/components/base-page/base-page.vue'
+import BasePageHeader from '@/core/components/base-page/base-page-header.vue'
+import GoalToolbar from '@/modules/goals/components/goal-toolbar.vue'
+import GoalBreadcrumbs from '@/modules/goals/components/goal-breadcrumbs.vue'
+import GoalTable from '@/modules/goals/components/goal-table/goal-table.vue'
+import GoalBoard from '@/modules/goals/components/goal-board.vue'
 import { SortType } from '@/core/types/query.type'
-import GoalTableNew from '@/modules/goals/components/goal-table/goal-table-new.vue'
-import goalStore from '@/modules/goals/store/goals.store'
 
 @Component({
   components: {
-    GoalTableNew,
-    TaskToolbar,
-    TaskTable,
-    TaskBoard,
+    BasePageHeader,
+    BasePage,
+    GoalBreadcrumbs,
+    GoalToolbar,
+    GoalTable,
+    GoalBoard,
   },
 })
-export default class Tasks extends Mixins(PageMixin) {
+export default class Goals extends Mixins(PageMixin) {
   protected mounted(): void {
     if (!this.$route.query.sort) this.onSortChange('creationDate')
     if (!this.$route.query.order) this.onOrderChange(SortType.Descending)
-  }
-
-  private onCreate(): void {
-    goalStore.openGoalWindow()
-    // if (this.view === View.List) (this.$refs.items as TaskTable).createEntity()
-    // if (this.view === View.Board) (this.$refs.items as TaskBoard).createEntity()
   }
 }
 </script>

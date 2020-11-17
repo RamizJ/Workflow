@@ -1,44 +1,45 @@
 <template>
   <div class="project-tasks">
-    <task-toolbar
-      @search="onSearch"
-      @filters="onFiltersChange"
-      @order="onOrderChange"
-      @sort="onSortChange"
-      @view="onViewChange"
-    ></task-toolbar>
-    <task-table
-      v-if="view === 'list'"
-      ref="items"
-      :search="search"
-      :filters="filters"
-      :order="order"
-      :sort="sort"
-    ></task-table>
-    <task-board
+    <BasePageHeader size="small" height="45" :no-border="true">
+      <GoalBreadcrumbs header-size="20" :root="{ path: $route.path, label: 'Задачи по проекту' }" />
+      <GoalToolbar
+        slot="toolbar"
+        @search="onSearch"
+        @filters="onFiltersChange"
+        @order="onOrderChange"
+        @sort="onSortChange"
+        @view="onViewChange"
+      ></GoalToolbar>
+    </BasePageHeader>
+    <GoalTable v-if="view === 'list'" />
+    <GoalBoard
       v-if="view === 'board'"
       ref="items"
       :search="search"
       :filters="filters"
       :order="order"
       :sort="sort"
-    ></task-board>
+    ></GoalBoard>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Mixins } from 'vue-property-decorator'
 import PageMixin from '@/core/mixins/page.mixin'
-import TaskToolbar from '@/modules/goals/components/goal-toolbar.vue'
-import TaskTable from '@/modules/goals/components/goal-table/goal-table.vue'
-import TaskBoard from '@/modules/goals/components/goal-board.vue'
+import BasePageHeader from '@/core/components/base-page/base-page-header.vue'
+import GoalToolbar from '@/modules/goals/components/goal-toolbar.vue'
+import GoalBoard from '@/modules/goals/components/goal-board.vue'
+import GoalTable from '@/modules/goals/components/goal-table/goal-table.vue'
+import GoalBreadcrumbs from '@/modules/goals/components/goal-breadcrumbs.vue'
 import { SortType } from '@/core/types/query.type'
 
 @Component({
   components: {
-    TaskToolbar,
-    TaskTable,
-    TaskBoard,
+    BasePageHeader,
+    GoalBreadcrumbs,
+    GoalTable,
+    GoalToolbar,
+    GoalBoard,
   },
 })
 export default class ProjectTasks extends Mixins(PageMixin) {

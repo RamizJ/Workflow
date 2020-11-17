@@ -18,17 +18,21 @@ export default class Goal extends Entity {
   expectedCompletedDate?: string
   estimatedPerformingTime?: string
   state: Status = Status.New
-  priority?: Priority
+  priority: Priority = Priority.Normal
   hasChildren?: boolean
   isSection?: boolean
   isAttachmentsExist?: boolean
   isRemoved?: boolean
   children?: Goal[]
-  metadataList?: Metadata[]
+  metadataList: Metadata[] = []
 
   attachments?: Attachment[]
   parent?: Goal[]
   completed?: boolean
+
+  constructor() {
+    super()
+  }
 }
 
 export enum Priority {

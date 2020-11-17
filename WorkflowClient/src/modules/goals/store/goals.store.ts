@@ -6,7 +6,7 @@ import {
   MutationAction,
   VuexModule,
 } from 'vuex-module-decorators'
-import moment from 'moment' // TODO: Replace with dateFns
+import moment from 'moment' // TODO: Replace with dateFns / Luxon.js
 import store from '@/core/store'
 import api from '../api'
 import Goal, { Status } from '@/modules/goals/models/goal.type'
@@ -24,7 +24,7 @@ class GoalsStore extends VuexModule {
   _goals: Goal[] = []
   _goalWindowOpened = false
 
-  public get task() {
+  public get goal() {
     return this._goal
   }
   public get tasks() {
@@ -62,7 +62,14 @@ class GoalsStore extends VuexModule {
   @Action({ rawError: true })
   async findAll(query: Query): Promise<Goal[]> {
     const response = await api.getPage(query)
-    const results = (response.data as Goal[]).filter((task) => !task.parentGoalId)
+    let results = (response.data as Goal[]).filter((task) => !task.parentGoalId)
+    results = results.map((goal) => {
+      const hasSectionMark = goal.metadataList?.some(
+        (meta) => meta.key === 'isSection' && meta.value === 'true'
+      )
+      if (hasSectionMark) goal.isSection = true
+      return goal
+    })
     this.context.commit('setTasks', results)
     return results
   }
@@ -101,18 +108,18 @@ class GoalsStore extends VuexModule {
     const createdTask = response.data as Goal
     createdTask.attachments = entity.attachments
 
-    if (entity.children?.length) {
-      const child: Goal[] = []
-      for (const childTask of entity.children.reverse()) {
-        childTask.parentGoalId = createdTask.id
-        if (childTask.isRemoved) continue
-        const createdChild = await this.context.dispatch('createOne', childTask)
-        child.push(createdChild)
-      }
-      const childIds = child.map((task) => task.id)
-      await this.context.dispatch('addChild', { id: createdTask.id, childIds })
-      await this.context.dispatch('updateMany', child)
-    }
+    // if (entity.children?.length) {
+    //   const child: Goal[] = []
+    //   for (const childTask of entity.children.reverse()) {
+    //     childTask.parentGoalId = createdTask.id
+    //     if (childTask.isRemoved) continue
+    //     const createdChild = await this.context.dispatch('createOne', childTask)
+    //     child.push(createdChild)
+    //   }
+    //   const childIds = child.map((task) => task.id)
+    //   await this.context.dispatch('addChild', { id: createdTask.id, childIds })
+    //   await this.context.dispatch('updateMany', child)
+    // }
 
     this.context.commit('setTask', createdTask)
     return createdTask
@@ -194,12 +201,7 @@ class GoalsStore extends VuexModule {
   }
 
   @Action
-  async findChild({ id, query }: { id: number; query?: Query }): Promise<Goal[]> {
-    if (!query)
-      query = {
-        pageNumber: 0,
-        pageSize: 10,
-      }
+  async findChild({ id, query = new Query() }: { id: number; query?: Query }): Promise<Goal[]> {
     const response = await api.getChildGoals(id, query)
     return response.data as Goal[]
   }

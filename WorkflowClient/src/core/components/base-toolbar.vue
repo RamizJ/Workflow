@@ -1,29 +1,32 @@
 <template>
   <div class="toolbar">
-    <slot name="filters" />
     <div class="toolbar__wrapper">
-      <div class="filters">
-        <el-button
-          :class="filtersCollapsed ? '' : 'active'"
-          type="text"
-          size="mini"
-          @click="onFiltersCollapse"
-        >
-          <feather type="sliders" size="15"></feather>
-        </el-button>
-        <el-button
-          class="filters__button"
-          :class="filtersCollapsed ? '' : 'active'"
-          type="text"
-          @click="onFiltersCollapse"
-          >Фильтры</el-button
-        >
-      </div>
+      <BasePopover popover-class="filters-popover">
+        <div class="toolbar__filters">
+          <div class="toolbar__filters-wrapper">
+            <slot name="filters" />
+          </div>
+        </div>
+        <div slot="reference" class="filters">
+          <el-button class="filters-icon" type="text" size="mini">
+            <unicon name="filter" />
+          </el-button>
+          <el-button class="filters__button" type="text">Фильтры</el-button>
+        </div>
+      </BasePopover>
       <div class="sort">
-        <el-button type="text" size="mini" @click="onOrderChange">
-          <feather :class="order" type="bar-chart" size="15"></feather>
+        <el-button class="order-button" type="text" size="mini" @click="onOrderChange">
+          <unicon v-if="order === 'Ascending'" name="sort-amount-down" />
+          <unicon v-if="order === 'Descending'" name="sort-amount-up" />
         </el-button>
-        <el-select v-model="sort" size="small" placeholder="По умолчанию" @change="onSortChange">
+        <div class="divider"></div>
+        <el-select
+          class="sort-selection"
+          v-model="sort"
+          size="small"
+          placeholder="По умолчанию"
+          @change="onSortChange"
+        >
           <el-option
             v-for="option in sortFields"
             :key="option.value"
@@ -69,8 +72,11 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import { SortType } from '@/core/types/query.type'
 import { View } from '@/core/types/view.type'
+import BasePopover from '@/core/components/base-popover/base-popover.vue'
 
-@Component
+@Component({
+  components: { BasePopover },
+})
 export default class Toolbar extends Vue {
   @Prop() readonly sortFields: { value: string; label: string }[] | undefined
   @Prop() readonly board: boolean | undefined
@@ -117,7 +123,7 @@ export default class Toolbar extends Vue {
 
 <style lang="scss">
 .toolbar {
-  padding-bottom: 10px;
+  padding: 4px 0;
 }
 .toolbar__filters {
   justify-content: space-between;
@@ -134,7 +140,7 @@ export default class Toolbar extends Vue {
     color: var(--text);
     font-size: 13px;
     font-weight: 500;
-    margin-bottom: 3px;
+    margin-bottom: 5px;
     opacity: 0.9;
   }
   .filter {
@@ -154,18 +160,65 @@ export default class Toolbar extends Vue {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  .filters {
+    cursor: pointer;
+    border: var(--input-border);
+    border-radius: 5px;
+    padding: 8px 20px 5px 13px;
+    margin-right: 20px;
+    .filters-icon {
+      svg {
+        height: 16px;
+        width: 16px;
+        fill: var(--text);
+      }
+      margin-right: 2px;
+    }
+    .filters__button {
+      color: var(--text) !important;
+      font-size: 14px;
+      line-height: 16px;
+      font-weight: 400;
+    }
+  }
+  .sort {
+    cursor: pointer;
+    border: var(--input-border);
+    border-radius: 5px;
+    padding: 7px 14px 6px 13px;
+    color: var(--text) !important;
+    .order-button {
+      svg {
+        height: 18px;
+        width: 18px;
+        fill: var(--text);
+      }
+      margin-right: 12px;
+    }
+    .divider {
+      margin-top: -8px;
+      margin-bottom: -6px;
+      height: 35px;
+      border-right: var(--input-border) !important;
+    }
+    .sort-selection {
+      .el-input__inner {
+        margin-left: 10px;
+        color: var(--text) !important;
+        font-size: 14px !important;
+        font-weight: 400 !important;
+        line-height: 20px !important;
+        height: 20px !important;
+      }
+    }
+  }
   .sort,
   .view,
   .filters {
     display: flex;
     justify-content: flex-end;
     align-items: flex-start;
-    .filters__button {
-      font-size: 13px;
-      line-height: 16px;
-      margin-right: 20px;
-      font-weight: 500;
-    }
+
     .Ascending {
       transform: rotate(90deg);
       margin-top: 1px;
@@ -177,8 +230,10 @@ export default class Toolbar extends Vue {
       margin-right: -5px;
     }
     .el-select {
-      width: 135px;
+      width: 145px;
       margin-bottom: 1px;
+      height: 18px;
+      line-height: 18px;
       .el-input__inner {
         padding: 0;
         padding-left: 5px;
@@ -186,6 +241,13 @@ export default class Toolbar extends Vue {
         font-weight: 500;
         line-height: 21px;
         height: 21px;
+        box-shadow: none !important;
+        border: none !important;
+        &:hover,
+        &:focus {
+          box-shadow: none !important;
+          border: none !important;
+        }
       }
       .el-input__suffix {
         display: none;
@@ -302,5 +364,15 @@ export default class Toolbar extends Vue {
   .el-button + .el-button {
     margin-left: 5px;
   }
+}
+
+.filters-popover {
+  width: 100%;
+  left: 221px !important;
+  padding: 5px 30px !important;
+  border: none;
+  border-radius: 0;
+  border-bottom: var(--input-border);
+  box-shadow: none;
 }
 </style>

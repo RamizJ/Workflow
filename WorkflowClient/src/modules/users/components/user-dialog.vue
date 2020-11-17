@@ -154,6 +154,7 @@ import DialogMixin from '@/core/mixins/dialog.mixin'
 import BaseDialog from '@/core/components/BaseDialog.vue'
 import User, { Role } from '@/modules/users/models/user.type'
 import { ValidationRule } from '@/core/types/validation-rule.type'
+import tableStore from '@/core/store/table.store'
 
 @Component({ components: { BaseDialog } })
 export default class UserDialog extends Mixins(DialogMixin) {
@@ -204,6 +205,7 @@ export default class UserDialog extends Mixins(DialogMixin) {
     this.loading = true
     try {
       if (this.id) this.form = await usersModule.findOneById(this.id.toString())
+      else if (usersModule.user) this.form = usersModule.user
     } catch (e) {
       Message.error('Не удаётся загрузить пользователя')
     }
@@ -218,6 +220,7 @@ export default class UserDialog extends Mixins(DialogMixin) {
     await form.validate(async (valid) => {
       if (valid) {
         await this.sendForm()
+        tableStore.requireReload()
         this.$emit('submit')
         this.exit()
       } else {

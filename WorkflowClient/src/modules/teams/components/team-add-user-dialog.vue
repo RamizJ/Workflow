@@ -59,6 +59,7 @@ import teamsModule from '@/modules/teams/store/teams.store'
 import DialogMixin from '@/core/mixins/dialog.mixin'
 import BaseDialog from '@/core/components/BaseDialog.vue'
 import Query from '@/core/types/query.type'
+import tableStore from '@/core/store/table.store'
 
 @Component({ components: { BaseDialog } })
 export default class TeamAddUserDialog extends Mixins(DialogMixin) {
@@ -104,6 +105,7 @@ export default class TeamAddUserDialog extends Mixins(DialogMixin) {
         teamId: parseInt(this.$route.params.teamId),
         userId: userId,
       })
+      tableStore.requireReload()
       this.$emit('submit')
       this.loading = false
     }

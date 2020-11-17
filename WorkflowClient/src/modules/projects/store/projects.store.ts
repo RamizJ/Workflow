@@ -55,15 +55,16 @@ class ProjectsStore extends VuexModule {
     }
   }
 
-  @MutationAction({ mutate: ['_projectWindowOpened'] })
-  public async openProjectWindow() {
+  @MutationAction({ mutate: ['_projectWindowOpened', '_project'] })
+  public async openProjectWindow(project?: Project) {
     return {
+      _project: project || null,
       _projectWindowOpened: true,
     }
   }
 
   @Mutation
-  setProject(project: Project) {
+  setProject(project: Project | null) {
     this._project = project
   }
 
@@ -102,15 +103,15 @@ class ProjectsStore extends VuexModule {
   async findOneById(id: number): Promise<Project> {
     const response = await api.get(id)
     const result = response.data as Project
-    const projectTeams: Team[] = await this.context.dispatch('findTeams', {
-      projectId: id,
-      pageNumber: 0,
-      pageSize: 20,
-    })
-    result.teams = projectTeams
-    result.teamIds = projectTeams.map((team) => (team.id ? team.id : -1))
+    // const projectTeams: Team[] = await this.context.dispatch('findTeams', {
+    //   projectId: id,
+    //   pageNumber: 0,
+    //   pageSize: 20,
+    // })
+    // result.teams = projectTeams
+    // result.teamIds = projectTeams.map((team) => (team.id ? team.id : -1))
     this.context.commit('setProject', result)
-    this.context.commit('setProjectTeams', projectTeams)
+    // this.context.commit('setProjectTeams', projectTeams)
     return result
   }
 

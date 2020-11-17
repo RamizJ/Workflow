@@ -114,9 +114,8 @@ export default class BaseWindow extends Vue {
 <style lang="scss">
 .window {
   border-radius: 6px !important;
-  border-width: var(--border-width);
-  border-color: var(--card-border);
-  background-color: var(--card-background);
+  border: var(--window-border) !important;
+  background-color: var(--window-background) !important;
   .el-dialog__headerbtn {
     display: none;
   }
@@ -150,7 +149,7 @@ export default class BaseWindow extends Vue {
   }
   .el-upload-dragger {
     border-color: var(--text-muted);
-    background-color: var(--card-background);
+    background-color: var(--window-background);
   }
   .el-upload,
   .el-upload-dragger {
