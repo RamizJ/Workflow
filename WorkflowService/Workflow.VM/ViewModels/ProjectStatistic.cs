@@ -4,6 +4,12 @@ using Workflow.DAL.Models;
 
 namespace Workflow.VM.ViewModels
 {
+    public class ProjectStatisticOptions
+    {
+        public DateTime DateBegin { get; set; }
+        public DateTime DateEnd { get; set; }
+    }
+
     public class ProjectStatistic
     {
         public int[] GoalsCountForState { get; set; }

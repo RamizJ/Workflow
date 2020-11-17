@@ -176,7 +176,7 @@ namespace WorkflowService
             services.AddTransient<IFormFilesService, FormFilesService>();
             services.AddTransient<IProjectUserRolesService, ProjectUserRolesService>();
             services.AddTransient<IStatisticService, StatisticService>();
-
+            services.AddTransient<IRolesService, RolesService>();
             services.AddTransient<IPageLoadService<Group>, GroupsPageLoadService>();
         }
 

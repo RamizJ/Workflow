@@ -364,41 +364,41 @@ namespace Workflow.Services
             {
                 var isAcending = field.SortType == SortType.Ascending;
 
-                if (field.SameAs(nameof(VmGoal.Title)))
+                if (field.Is(nameof(VmGoal.Title)))
                     query = QuerableExtension.SortBy(query, g => g.Title, isAcending);
 
-                else if (field.SameAs(nameof(VmGoal.Description))) 
+                else if (field.Is(nameof(VmGoal.Description))) 
                     query = QuerableExtension.SortBy(query, g => g.Description, isAcending);
                 
-                if (field.SameAs(nameof(VmGoal.ProjectName))) 
+                if (field.Is(nameof(VmGoal.ProjectName))) 
                     query = QuerableExtension.SortBy(query, g => g.Project.Name, isAcending);
                 
-                if(field.SameAs(nameof(VmGoal.CreationDate))) 
+                if(field.Is(nameof(VmGoal.CreationDate))) 
                     query = QuerableExtension.SortBy(query, g => g.CreationDate, isAcending);
 
-                if (field.SameAs(nameof(VmGoal.ExpectedCompletedDate)))
+                if (field.Is(nameof(VmGoal.ExpectedCompletedDate)))
                     query = QuerableExtension.SortBy(query, g => g.ExpectedCompletedDate, isAcending);
 
-                else if (field.SameAs(nameof(VmGoal.GoalNumber)))
+                else if (field.Is(nameof(VmGoal.GoalNumber)))
                     query = QuerableExtension.SortBy(query, g => g.GoalNumber, isAcending);
 
-                else if (field.SameAs(nameof(VmGoal.State)))
+                else if (field.Is(nameof(VmGoal.State)))
                     query = QuerableExtension.SortBy(query, g => g.State, isAcending);
 
-                else if (field.SameAs(nameof(VmGoal.Priority)))
+                else if (field.Is(nameof(VmGoal.Priority)))
                     query = QuerableExtension.SortBy(query, g => g.Priority, isAcending);
 
-                else if (field.SameAs(nameof(VmGoal.OwnerFio)))
+                else if (field.Is(nameof(VmGoal.OwnerFio)))
                     query = QuerableExtension.SortBy(query
                             .SortBy(p => p.Owner.LastName, isAcending)
                             .SortBy(p => p.Owner.FirstName, isAcending), p => p.Owner.MiddleName, isAcending);
 
-                else if (field.SameAs(nameof(VmGoal.PerformerFio)))
+                else if (field.Is(nameof(VmGoal.PerformerFio)))
                     query = QuerableExtension.SortBy(query
                             .SortBy(p => p.Performer.LastName, isAcending)
                             .SortBy(p => p.Performer.FirstName, isAcending), p => p.Performer.MiddleName, isAcending);
 
-                else if (field.SameAs(nameof(VmGoal.IsRemoved)))
+                else if (field.Is(nameof(VmGoal.IsRemoved)))
                     query = QuerableExtension.SortBy(query, g => g.IsRemoved, isAcending);
             }
 

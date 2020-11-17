@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -21,13 +20,13 @@ namespace Workflow.Services
     {
         public GroupsService(DataContext dataContext, 
             IViewModelConverter<Group, VmGroup> vmConverter,
-            UserManager<ApplicationUser> userManager,
-            IPageLoadService<Group> pageLoadService)
+            IPageLoadService<Group> pageLoadService,
+            IRolesService rolesService)
         {
             _dataContext = dataContext;
             _vmConverter = vmConverter;
-            _userManager = userManager;
             _pageLoadService = pageLoadService;
+            _rolesService = rolesService;
         }
 
         /// <inheritdoc />
@@ -74,6 +73,9 @@ namespace Workflow.Services
             var group = _vmConverter.ToModel(vmGroup);
             group.CreationDate = DateTime.Now;
             group.OwnerId = currentUser.Id;
+            group.MetadataList = vmGroup.MetadataList
+                .Select(x => new Metadata(x.Key, x.Value))
+                .ToList();
 
             await _dataContext.Groups.AddAsync(group);
             await _dataContext.SaveChangesAsync();
@@ -82,48 +84,89 @@ namespace Workflow.Services
 
         public async Task Update(ApplicationUser user, VmGroup vmGroup)
         {
-            var 
-
-            //var brigade = await GetBrigade(currentUser, id);
-            //if (brigade == null)
-            //    throw new InvalidOperationException("Cannot update brigade. Brigade not found for current user");
-
-            //brigade.Name = vmBrigade.Name;
-
-            //await _dataContext.SaveChangesAsync();
-            //await _entityStateObserverService.NotifyEntityChangedAsync(brigade.Id,
-            //    EntityType.Brigade, EntityOperation.Update);
+            await UpdateGroups(user, new[] {vmGroup});
         }
 
         public async Task<VmGroup> Restore(ApplicationUser currentUser, int id)
         {
-            throw new System.NotImplementedException();
+            var result = await RemoveRestore(currentUser, new[] {id}, false);
+            return result.FirstOrDefault();
         }
 
-        public async Task UpdateRange(ApplicationUser currentUser, IEnumerable<VmGroup> groups)
+        public async Task UpdateRange(ApplicationUser currentUser, IEnumerable<VmGroup> vmGroups)
         {
-            throw new System.NotImplementedException();
+            await UpdateGroups(currentUser, vmGroups);
         }
 
         public async Task<VmGroup> Delete(ApplicationUser currentUser, int id)
         {
-            throw new System.NotImplementedException();
+            var result = await RemoveRestore(currentUser, new[] { id }, true);
+            return result.FirstOrDefault();
         }
 
         public async Task<IEnumerable<VmGroup>> DeleteRange(ApplicationUser currentUser, IEnumerable<int> ids)
         {
-            throw new System.NotImplementedException();
+            return await RemoveRestore(currentUser, ids, true);
         }
 
         public async Task<IEnumerable<VmGroup>> RestoreRange(ApplicationUser currentUser, IEnumerable<int> ids)
         {
-            throw new System.NotImplementedException();
+            return await RemoveRestore(currentUser, ids, false);
+        }
+
+        public async Task AddProjects(ApplicationUser currentUser, int groupId, ICollection<int> projectIds)
+        {
+            projectIds = projectIds.ToArray();
+            var group = await _dataContext.Groups
+                .Include(x => x.Projects)
+                .FirstOrDefaultAsync(x => x.Id == groupId
+                                          && x.OwnerId == currentUser.Id);
+
+            if(group == null)
+                throw new HttpResponseException(BadRequest, "Group for current user not found");
+
+            if(projectIds == null || !projectIds.Any())
+                throw new HttpResponseException(BadRequest, "The projects cannot be null or empty");
+
+            var projects = _dataContext.Projects
+                .Where(p => projectIds.Any(pId => pId == p.Id)
+                            && p.GroupId != groupId);
+
+            group.Projects.AddRange(projects);
+
+            _dataContext.Entry(group).State = EntityState.Modified;
+            await _dataContext.SaveChangesAsync();
+        }   
+
+        public async Task RemoveProjects(ApplicationUser currentUser, int groupId, ICollection<int> projectIds)
+        {
+            projectIds = projectIds.ToArray();
+            var group = await _dataContext.Groups
+                .Include(x => x.Projects)
+                .FirstOrDefaultAsync(x => x.Id == groupId
+                                          && x.OwnerId == currentUser.Id);
+
+            if (group == null)
+                throw new HttpResponseException(BadRequest, "Group for current user not found");
+
+            if (projectIds == null || !projectIds.Any())
+                throw new HttpResponseException(BadRequest, "The projects cannot be null or empty");
+
+            var remainProjects = _dataContext.Projects
+                .Where(p => p.GroupId == groupId && 
+                            projectIds.All(pId => pId != p.Id));
+
+            group.Projects.Clear();
+            group.Projects.AddRange(remainProjects);
+
+            _dataContext.Entry(group).State = EntityState.Modified;
+            await _dataContext.SaveChangesAsync();
         }
 
         private async Task<IQueryable<Group>> GetQuery(ApplicationUser user, 
             bool withRemoved, bool withChildren = false, bool withParent = false)
         {
-            bool isAdmin = await _userManager.IsInRoleAsync(user, RoleNames.ADMINISTRATOR_ROLE);
+            bool isAdmin = await _rolesService.IsAdmin(user);
             var query = _dataContext.Groups.AsNoTracking()
                 .Include(x => x.Owner)
                 .Include(x => x.Projects)
@@ -152,40 +195,94 @@ namespace Workflow.Services
             return query.Select(x => _vmConverter.ToViewModel(x));
         }
 
-        private async Task UpdateTeams(ApplicationUser currentUser,
-            ICollection<VmGroup> vmGroups, Action<Group> updateAction = null)
+        private async Task UpdateGroups(ApplicationUser currentUser, IEnumerable<VmGroup> vmGroups)
         {
             if (vmGroups == null)
-                throw new HttpResponseException(BadRequest);
+                throw new HttpResponseException(BadRequest, $"Parameter '{nameof(vmGroups)}' cannot be null");
 
-            var ids = vmGroups
-                .Where(x => !string.IsNullOrWhiteSpace(x.Name))
-                .Select(x => x.Id);
+            vmGroups = ChildrenHierarchyToPlainList(vmGroups);
 
-            var query = await GetQuery(currentUser, true);
-            var groups = await query
-                .Where(x => ids.Any(id => x.Id == id))
+            var ids = vmGroups.Select(g => g.Id).ToArray();
+            var existedGroups = await _dataContext.Groups
+                .Where(g => ids.Any(gId => gId == g.Id)
+                            && g.OwnerId == currentUser.Id)
                 .ToArrayAsync();
 
-            foreach (var group in groups)
+            foreach (var group in existedGroups)
             {
-                if (string.IsNullOrWhiteSpace(group.Name))
-                    throw new HttpResponseException(BadRequest, "Cannot update group. The name cannot be empty");
-
                 var vmGroup = vmGroups.First(x => x.Id == group.Id);
-                group.Name = vmGroup.Name;
-                group.Description = vmGroup.Description;
-                updateAction?.Invoke(group);
+                if (string.IsNullOrWhiteSpace(vmGroup.Name))
+                    throw new HttpResponseException(BadRequest,
+                        "Cannot update group. The name cannot be empty");
+
+                _vmConverter.SetModel(vmGroup, group);
+
+                group.MetadataList = vmGroup.MetadataList
+                    .Select(x => new Metadata(x.Key, x.Value))
+                    .ToList();
+
+                _dataContext.Metadata.RemoveRange(_dataContext.Metadata.Where(m => m.GroupId == vmGroup.Id));
                 _dataContext.Entry(group).State = EntityState.Modified;
             }
 
             await _dataContext.SaveChangesAsync();
         }
 
+        private List<VmGroup> ChildrenHierarchyToPlainList(IEnumerable<VmGroup> vmGroups)
+        {
+            if (vmGroups == null)
+                return new List<VmGroup>();
+            
+            var groupsArray = vmGroups.ToArray();
+            var result = new List<VmGroup>(groupsArray);
+
+            foreach (var vmGroup in groupsArray)
+            {
+                var childrenList = ChildrenHierarchyToPlainList(vmGroup.Children);
+                result.AddRange(childrenList);
+            }
+
+            return result;
+        }
+
+        private async Task<IEnumerable<VmGroup>> RemoveRestore(ApplicationUser currentUser,
+            IEnumerable<int> ids, bool isRemoved)
+        {
+            var query = await GetQuery(currentUser, !isRemoved, true);
+            var models = await query
+                .Where(t => ids.Any(tId => t.Id == tId))
+                .ToArrayAsync();
+
+            SetIsRemoved(models, isRemoved);
+
+            await _dataContext.SaveChangesAsync();
+            var vmGroups = models.Select(m =>
+            {
+                var vm = _vmConverter.ToViewModel(m);
+                return vm;
+            });
+            return vmGroups;
+        }
+
+        private void SetIsRemoved(IEnumerable<Group> groups, bool isRemoved)
+        {
+            if (groups == null)
+                return;
+
+            foreach (var group in groups)
+            {
+                group.IsRemoved = isRemoved;
+                _dataContext.Entry(group).State = EntityState.Modified;
+
+                SetIsRemoved(group.ChildGroups, isRemoved);
+            }
+        }
+
+
 
         private readonly DataContext _dataContext;
         private readonly IViewModelConverter<Group, VmGroup> _vmConverter;
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IPageLoadService<Group> _pageLoadService;
+        private readonly IRolesService _rolesService;
     }
 }

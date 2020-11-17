@@ -31,9 +31,9 @@ namespace Workflow.Services.Abstract
         /// <summary>
         /// Загрузка иерархии групп проектов с проектами 
         /// </summary>
-        /// <param name="user">Текущий пользователь</param>
+        /// <param name="currentUser">Текущий пользователь</param>
         /// <returns></returns>
-        public Task<IEnumerable<VmGroup>> GetAll(ApplicationUser user);
+        public Task<IEnumerable<VmGroup>> GetAll(ApplicationUser currentUser);
 
         /// <summary>
         /// Создание группы
@@ -46,10 +46,10 @@ namespace Workflow.Services.Abstract
         /// <summary>
         /// Обновление текущей группы
         /// </summary>
-        /// <param name="user">Текущий пользователь</param>
+        /// <param name="currentUser">Текущий пользователь</param>
         /// <param name="group">Обновляемая группа</param>
         /// <returns></returns>
-        Task Update(ApplicationUser user, VmGroup group);
+        Task Update(ApplicationUser currentUser, VmGroup group);
 
 
         /// <summary>
@@ -88,8 +88,24 @@ namespace Workflow.Services.Abstract
         /// 
         /// </summary>
         /// <param name="currentUser"></param>
-        /// <param name="ids"></param>
+        /// <param name="ids"></param>,
         /// <returns></returns>
         Task<IEnumerable<VmGroup>> RestoreRange(ApplicationUser currentUser, IEnumerable<int> ids);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="currentUser"></param>
+        /// <param name="groupId"></param>
+        /// <param name="projectIds"></param>
+        Task AddProjects(ApplicationUser currentUser, int groupId, ICollection<int> projectIds);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="currentUser"></param>
+        /// <param name="groupId"></param>
+        /// <param name="projectIds"></param>
+        Task RemoveProjects(ApplicationUser currentUser, int groupId, ICollection<int> projectIds);
     }
 }

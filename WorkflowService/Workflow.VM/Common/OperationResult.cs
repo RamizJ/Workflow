@@ -2,7 +2,7 @@
 
 namespace Workflow.VM.Common
 {
-
+    
     public class OperationResult
     {
         /// <summary>

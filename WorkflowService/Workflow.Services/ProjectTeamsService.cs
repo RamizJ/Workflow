@@ -4,15 +4,15 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
-using Workflow.Share.Extensions;
-using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModelConverters.Absract;
 using Workflow.VM.ViewModels;
+using QuerableExtension = Workflow.Share.Extensions.QuerableExtension;
 
 namespace Workflow.Services
 {
@@ -196,13 +196,13 @@ namespace Workflow.Services
                 var isAcending = field.SortType == SortType.Ascending;
 
                 if (field.Is(nameof(VmTeam.Name)))
-                    query = query.SortBy(pt => pt.Team.Name, isAcending);
+                    query = QuerableExtension.SortBy(query, pt => pt.Team.Name, isAcending);
 
                 else if (field.Is(nameof(VmTeam.Description)))
-                    query = query.SortBy(pt => pt.Team.Description, isAcending);
+                    query = QuerableExtension.SortBy(query, pt => pt.Team.Description, isAcending);
 
                 else if (field.Is(nameof(VmTeam.IsRemoved)))
-                    query = query.SortBy(pt => pt.Team.IsRemoved, isAcending);
+                    query = QuerableExtension.SortBy(query, pt => pt.Team.IsRemoved, isAcending);
             }
 
             return query;

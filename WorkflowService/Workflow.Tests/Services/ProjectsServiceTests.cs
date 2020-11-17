@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
 using Workflow.Services.Abstract;
-using Workflow.VM.Common;
+using Workflow.Services.Exceptions;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 
@@ -22,29 +20,18 @@ namespace Workflow.Tests.Services
         [SetUp]
         public void Setup()
         {
-            _dbConnection = ContextHelper.OpenSqliteInMemoryConnection();
-            using var serviceProvider = ContextHelper.Initialize(_dbConnection, false);
-            var dataContext = serviceProvider.GetRequiredService<DataContext>();
-            var userManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
-
-            dataContext.Database.EnsureCreated();
-            _testData = new TestData();
-            _testData.Initialize(dataContext, userManager);
-
-            _serviceProvider = ContextHelper.Initialize(_dbConnection, true);
-            _dataContext = _serviceProvider.GetService<DataContext>();
-            _userManager = _serviceProvider.GetService<UserManager<ApplicationUser>>();
-            _service = new ProjectsService(_dataContext, _userManager);
-            _currentUser = _testData.Users.First();
+            _testContext.Initialize();
+            _service = new ProjectsService(_testContext.DataContext, _testContext.UserManager);
             _vmConverter = new VmProjectConverter();
+            _dataContext = _testContext.DataContext;
+            _currentUser = _testContext.CurrentUser;
+            _testData = _testContext.TestData;
         }
 
         [TearDown]
         public void TearDown()
         {
-            _dataContext.Database.EnsureDeleted();
-            _serviceProvider.Dispose();
-            _dbConnection.Close();
+            _testContext.Uninitialize();
         }
 
         [TestCase(0, 0, 1)]
@@ -218,7 +205,7 @@ namespace Workflow.Tests.Services
         [Test]
         public void CreateForNullInputTest()
         {
-            Assert.ThrowsAsync<ArgumentNullException>(async () => await _service.Create(_testData.Users.First(), null));
+            Assert.ThrowsAsync<HttpResponseException>(async () => await _service.Create(_testData.Users.First(), null));
         }
 
         [TestCase(null)]
@@ -237,7 +224,7 @@ namespace Workflow.Tests.Services
             };
 
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => 
+            Assert.ThrowsAsync<HttpResponseException>(async () => 
                 await _service.CreateByForm(_testData.Users.First(), new VmProjectForm(vmProject, null)));
         }
 
@@ -278,7 +265,7 @@ namespace Workflow.Tests.Services
             };
 
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            Assert.ThrowsAsync<HttpResponseException>(async () =>
                 await _service.CreateByForm(_testData.Users.First(), new VmProjectForm(vmProject, null)));
         }
 
@@ -426,7 +413,7 @@ namespace Workflow.Tests.Services
                 new ProjectTeam(1, 7)
             };
 
-            await using var dataContext = ContextHelper.CreateContext(_dbConnection, false);
+            await using var dataContext = ContextHelper.CreateContext(_testContext.DbConnection, false);
             dataContext.ProjectTeams.RemoveRange(_dataContext.ProjectTeams);
             await dataContext.ProjectTeams.AddRangeAsync(oldProjectTeams);
             await dataContext.SaveChangesAsync();
@@ -458,7 +445,7 @@ namespace Workflow.Tests.Services
             var vmProject = _vmConverter.ToViewModel(project);
 
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => 
+            Assert.ThrowsAsync<HttpResponseException>(async () => 
                 await _service.Update(_currentUser, vmProject));
         }
 
@@ -475,7 +462,7 @@ namespace Workflow.Tests.Services
             var vmProject = _vmConverter.ToViewModel(project);
 
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            Assert.ThrowsAsync<HttpResponseException>(async () =>
                 await _service.UpdateByForm(_currentUser, new VmProjectForm(vmProject, null)));
         }
 
@@ -575,14 +562,12 @@ namespace Workflow.Tests.Services
                 Assert.IsFalse(resultProject.IsRemoved);
         }
 
-
-        private SqliteConnection _dbConnection;
-        private DataContext _dataContext;
-        private TestData _testData;
+        
+        private readonly TestContext _testContext = new TestContext();
         private IProjectsService _service;
         private VmProjectConverter _vmConverter;
+        private TestData _testData;
         private ApplicationUser _currentUser;
-        private ServiceProvider _serviceProvider;
-        private UserManager<ApplicationUser> _userManager;
+        private DataContext _dataContext;
     }
 }

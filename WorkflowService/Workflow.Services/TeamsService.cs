@@ -281,13 +281,13 @@ namespace Workflow.Services
 
                 var isAcending = field.SortType == SortType.Ascending;
 
-                if (field.SameAs(nameof(VmTeam.Name)))
+                if (field.Is(nameof(VmTeam.Name)))
                     query = QuerableExtension.SortBy(query, t => t.Name, isAcending);
 
-                else if (field.SameAs(nameof(VmTeam.Description)))
+                else if (field.Is(nameof(VmTeam.Description)))
                     query = QuerableExtension.SortBy(query, t => t.Description, isAcending);
 
-                else if (field.SameAs(nameof(VmTeam.IsRemoved))) 
+                else if (field.Is(nameof(VmTeam.IsRemoved))) 
                     query = QuerableExtension.SortBy(query, t => t.IsRemoved, isAcending);
             }
 

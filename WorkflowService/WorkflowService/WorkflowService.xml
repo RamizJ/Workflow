@@ -45,7 +45,7 @@
             <param name="id">Идентификатор задачи</param>
             <returns>Задача</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.GoalsController.GetPage(System.Nullable{System.Int32},Workflow.VM.ViewModels.PageOptions)">
+        <member name="M:WorkflowService.Controllers.GoalsController.GetPage(System.Nullable{System.Int32},PageLoading.PageOptions)">
             <summary>
             Постраничная загрузка задач с фильтрацией и сортировкой
             </summary>
@@ -160,7 +160,7 @@
             <param name="goalId">Идентификатор задачи</param>
             <returns>Родительская задача</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.GoalsController.GetChildGoals(System.Int32,Workflow.VM.ViewModels.PageOptions)">
+        <member name="M:WorkflowService.Controllers.GoalsController.GetChildGoals(System.Int32,PageLoading.PageOptions)">
             <summary>
             Получение дочерних задач
             </summary>
@@ -201,7 +201,7 @@
             </summary>
             <returns>Группа</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.GroupsController.GetPage(System.Nullable{System.Int32},Workflow.VM.ViewModels.PageOptions)">
+        <member name="M:WorkflowService.Controllers.GroupsController.GetPage(System.Nullable{System.Int32},PageLoading.PageOptions)">
             <summary>
             Постраничная загрузка группы проектов с фильтрацией и сортировкой
             </summary>
@@ -258,6 +258,22 @@
             <param name="ids">Идентификаторы групп проектов</param>
             <returns></returns>
         </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.AddProjects(System.Int32,System.Collections.Generic.ICollection{System.Int32})">
+            <summary>
+            Добавление проектов в группу
+            </summary>
+            <param name="groupId">Идентификатор группы</param>
+            <param name="projectIds">Идентификаторы проектов</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.DeleteProjects(System.Int32,System.Collections.Generic.ICollection{System.Int32})">
+            <summary>
+            Удаление проектов из группы
+            </summary>
+            <param name="groupId">Идентификатор группы</param>
+            <param name="projectIds">Идентификаторы проектов</param>
+            <returns></returns>
+        </member>
         <member name="T:WorkflowService.Controllers.ProjectsController">
             <summary>
             API-методы работы с проектами
@@ -280,14 +296,14 @@
             <param name="id">Идентификатор проекта</param>
             <returns>Проект. Только если доступен пользователю</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.ProjectsController.GetPage(Workflow.VM.ViewModels.PageOptions)">
+        <member name="M:WorkflowService.Controllers.ProjectsController.GetPage(PageLoading.PageOptions)">
             <summary>
             Постраничная загрузка проектов с фильтрацией и сортировкой
             </summary>
             <param name="pageOptions">Параметры страницы</param>
             <returns>Коллекция проектов</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.ProjectsController.GetTeamsPage(System.Int32,Workflow.VM.ViewModels.PageOptions)">
+        <member name="M:WorkflowService.Controllers.ProjectsController.GetTeamsPage(System.Int32,PageLoading.PageOptions)">
             <summary>
             Постраничная загрузка списка команд проекта с фильтрацией и сортировкой
             </summary>
@@ -470,14 +486,14 @@
             <param name="id">Идентификатор команды</param>
             <returns>Команда</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.GetPage(Workflow.VM.ViewModels.PageOptions)">
+        <member name="M:WorkflowService.Controllers.TeamsController.GetPage(PageLoading.PageOptions)">
             <summary>
             Постраничная загрузка команд с фильтрацией и сортировкой
             </summary>
             <param name="pageOptions">Параметры страницы</param>
             <returns>Коллекция команд</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.GetUsersPage(System.Int32,Workflow.VM.ViewModels.PageOptions)">
+        <member name="M:WorkflowService.Controllers.TeamsController.GetUsersPage(System.Int32,PageLoading.PageOptions)">
             <summary>
             Постраничная загрузка пользователей команды с фильтрацией и сортировкой
             </summary>
@@ -485,7 +501,7 @@
             <param name="pageOptions">Параметры страницы</param>
             <returns>Коллекция пользователей команды</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.TeamsController.GetProjectsPage(System.Int32,Workflow.VM.ViewModels.PageOptions)">
+        <member name="M:WorkflowService.Controllers.TeamsController.GetProjectsPage(System.Int32,PageLoading.PageOptions)">
             <summary>
             Постраничная загрузка проектов команды с фильтрацией и сортировкой
             </summary>
@@ -643,7 +659,7 @@
             </summary>
             <returns>Параметры текущего пользователя</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.UsersController.GetPage(Workflow.VM.ViewModels.PageOptions)">
+        <member name="M:WorkflowService.Controllers.UsersController.GetPage(PageLoading.PageOptions)">
             <summary>
             Постраничная загрузка пользователей с фильтрацией и сортировкой
             </summary>

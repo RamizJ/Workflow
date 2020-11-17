@@ -41,7 +41,7 @@ namespace PageLoading
         /// </summary>
         /// <param name="fieldName">Имя поля</param>
         /// <returns></returns>
-        public bool SameAs(string fieldName)
+        public bool Is(string fieldName)
         {
             return FieldName.Equals(fieldName, StringComparison.InvariantCultureIgnoreCase);
         }

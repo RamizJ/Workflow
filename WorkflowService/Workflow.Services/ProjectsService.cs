@@ -4,15 +4,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
-using Workflow.Share.Extensions;
 using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 using static System.Net.HttpStatusCode;
+using QuerableExtension = Workflow.Share.Extensions.QuerableExtension;
 
 namespace Workflow.Services
 {
@@ -307,25 +308,24 @@ namespace Workflow.Services
                 var isAcending = field.SortType == SortType.Ascending;
 
                 if (field.Is(nameof(VmProject.Name)))
-                    query = query.SortBy(p => p.Name, isAcending);
+                    query = QuerableExtension.SortBy(query, p => p.Name, isAcending);
 
                 else if (field.Is(nameof(VmProject.GroupName)))
-                    query = query.SortBy(p => p.Group.Name, isAcending);
+                    query = QuerableExtension.SortBy(query, p => p.Group.Name, isAcending);
 
                 else if (field.Is(nameof(VmProject.CreationDate)))
-                    query = query.SortBy(p => p.CreationDate, isAcending);
+                    query = QuerableExtension.SortBy(query, p => p.CreationDate, isAcending);
 
                 else if (field.Is(nameof(VmProject.ExpectedCompletedDate)))
-                    query = query.SortBy(p => p.ExpectedCompletedDate, isAcending);
+                    query = QuerableExtension.SortBy(query, p => p.ExpectedCompletedDate, isAcending);
 
                 else if (field.Is(nameof(VmProject.IsRemoved)))
-                    query = query.SortBy(p => p.IsRemoved, isAcending);
+                    query = QuerableExtension.SortBy(query, p => p.IsRemoved, isAcending);
 
                 else if (field.Is(nameof(VmProject.OwnerFio)))
-                    query = query
-                        .SortBy(p => p.Owner.LastName, isAcending)
-                        .SortBy(p => p.Owner.FirstName, isAcending)
-                        .SortBy(p => p.Owner.MiddleName, isAcending);
+                    query = QuerableExtension.SortBy(query
+                            .SortBy(p => p.Owner.LastName, isAcending)
+                            .SortBy(p => p.Owner.FirstName, isAcending), p => p.Owner.MiddleName, isAcending);
             }
 
             return query;

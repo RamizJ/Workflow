@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using PageLoading;
 using Workflow.DAL.Models;
-using Workflow.VM.Common;
 using Workflow.VM.ViewModels;
 
 namespace Workflow.Services.Abstract

@@ -34,5 +34,15 @@
         /// Загрука записей вместе с удаленными
         /// </summary>
         public bool WithRemoved { get; set; }
+
+
+        public PageOptions()
+        { }
+
+        public PageOptions(int pageNumber, int pageSize)
+        {
+            PageNumber = pageNumber;
+            PageSize = pageSize;
+        }
     }
 }

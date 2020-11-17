@@ -18,7 +18,7 @@ namespace Workflow.VM.ViewModels
         public string OwnerFio { get; set; }
 
         public int? ParentGroupId { get; set; }
-        public List<VmGroup> ChildGroups { get; set; }
+        public List<VmGroup> Children { get; set; }
 
         public List<VmProject> Projects { get; set; }
         public List<VmMetadata> MetadataList { get; set; }

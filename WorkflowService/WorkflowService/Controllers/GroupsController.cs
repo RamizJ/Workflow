@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PageLoading;
 using Workflow.Services.Abstract;
 using Workflow.VM.ViewModels;
 using WorkflowService.Services.Abstract;
@@ -167,6 +168,32 @@ namespace WorkflowService.Controllers
                 return NotFound();
 
             return Ok(deletedgroup);
+        }
+
+        /// <summary>
+        /// Добавление проектов в группу
+        /// </summary>
+        /// <param name="groupId">Идентификатор группы</param>
+        /// <param name="projectIds">Идентификаторы проектов</param>
+        /// <returns></returns>
+        [HttpPost("{groupId}")]
+        public async Task AddProjects(int groupId, [FromBody]ICollection<int> projectIds)
+        {
+            var currentUser = await _currentUserService.GetCurrentUser(User);
+            await _groupsService.AddProjects(currentUser, groupId, projectIds);
+        }
+
+        /// <summary>
+        /// Удаление проектов из группы
+        /// </summary>
+        /// <param name="groupId">Идентификатор группы</param>
+        /// <param name="projectIds">Идентификаторы проектов</param>
+        /// <returns></returns>
+        [HttpPost("{groupId}")]
+        public async Task DeleteProjects(int groupId, [FromBody] ICollection<int> projectIds)
+        {
+            var currentUser = await _currentUserService.GetCurrentUser(User);
+            await _groupsService.RemoveProjects(currentUser, groupId, projectIds);
         }
 
 

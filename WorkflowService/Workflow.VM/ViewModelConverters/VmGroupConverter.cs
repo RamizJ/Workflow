@@ -39,7 +39,7 @@ namespace Workflow.VM.ViewModelConverters
             viewModel.Projects = model.Projects?
                 .Select(_vmProjectConverter.ToViewModel)
                 .ToList();
-            viewModel.ChildGroups = model.ChildGroups?
+            viewModel.Children = model.ChildGroups?
                 .Select(ToViewModel)
                 .ToList();
             viewModel.MetadataList = model.MetadataList?
