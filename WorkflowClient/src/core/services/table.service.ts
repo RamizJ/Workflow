@@ -7,6 +7,7 @@ import Entity from '@/core/types/entity.type'
 import Query from '@/core/types/query.type'
 import { priorities, Priority, Status, statuses } from '@/modules/goals/models/goal.type'
 import { router } from '@/core'
+import { Message } from 'element-ui'
 
 export default class TableService {
   protected progressBar: ProgressBar
@@ -75,12 +76,16 @@ export default class TableService {
     this.progressBar.start()
     if (this.projectId) this.extendQuery({ projectId: this.projectId })
     if (this.teamId) this.extendQuery({ teamId: this.teamId })
-    const data: Entity[] = await fetchMethod(fetchPayload || this.query)
-    if (data.length) {
-      tableStore.increasePage()
-      tableStore.appendData(data)
-      this.tableLoader?.loaded()
-    } else this.tableLoader?.complete()
+    try {
+      const data: Entity[] = await fetchMethod(fetchPayload || this.query)
+      if (data.length) {
+        tableStore.increasePage()
+        tableStore.appendData(data)
+        this.tableLoader?.loaded()
+      } else this.tableLoader?.complete()
+    } catch (e) {
+      Message.error('Ошибка загрузки данных')
+    }
     this.progressBar.finish()
   }
 
