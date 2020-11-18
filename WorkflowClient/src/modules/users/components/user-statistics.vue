@@ -62,7 +62,6 @@ export default class UserStatistics extends Vue {
     const dateEnd: string = moment.utc(moment().add('1', 'day')).format()
     const statistics: Statistics = await usersStore.getStatistics({ userId, dateBegin, dateEnd })
     this.goalsPieChartData = statistics.goalsCountForState
-    console.log(this.goalsPieChartData)
     this.goalsPieChartLoading = false
   }
 

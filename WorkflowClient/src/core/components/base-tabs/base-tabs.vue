@@ -41,7 +41,7 @@ export default class BaseTabs extends Vue {
 
 <style lang="scss">
 .el-tabs {
-  margin-top: -10px !important;
+  margin-top: -11px !important;
   padding: 0 30px;
   margin: 0 -30px;
   width: calc(100% + 60px);
