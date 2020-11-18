@@ -8,7 +8,7 @@ export default class Goal extends Entity {
   goalNumber?: number
   title?: string
   description?: string
-  projectId?: number
+  projectId?: number | null = null
   projectName?: string
   parentGoalId?: number
   ownerId?: string

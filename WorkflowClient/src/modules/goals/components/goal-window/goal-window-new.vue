@@ -327,7 +327,7 @@ export default class GoalWindow extends Mixins(DialogMixin) {
     }
     this.form.projectId = this.$route.params.projectId
       ? parseInt(this.$route.params.projectId)
-      : undefined
+      : null
 
     await this.searchUsers()
     await this.searchProjects()

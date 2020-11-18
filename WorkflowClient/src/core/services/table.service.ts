@@ -19,6 +19,7 @@ export default class TableService {
 
   constructor(progressBar: ProgressBar) {
     this.progressBar = progressBar
+    this.resetTable()
   }
 
   public get route(): Route {
