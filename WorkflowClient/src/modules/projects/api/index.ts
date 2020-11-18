@@ -6,7 +6,7 @@ import Project from '@/modules/projects/models/project.type'
 import Team from '@/modules/teams/models/team.type'
 import { UserRole } from '@/modules/users/models/user-role.type'
 import { TeamRole } from '@/modules/teams/models/team-role.type'
-import { ProjectStatistics } from '@/modules/projects/models/project-statistics.type'
+import { Statistics } from '@/core/types/statistics.model'
 
 export default {
   get: (id: number): Promise<AxiosResponse<Project>> => {
@@ -164,7 +164,7 @@ export default {
     projectId: number,
     dateBegin: string,
     dateEnd: string
-  ): Promise<AxiosResponse<ProjectStatistics>> => {
+  ): Promise<AxiosResponse<Statistics>> => {
     return api.request({
       url: `/api/Projects/GetProjectStatistic/${projectId}`,
       method: 'POST',

@@ -1,6 +1,4 @@
-import { Status } from '@/modules/goals/models/goal.type'
-
-export type ProjectStatistics = {
+export type Statistics = {
   goalsCountForState: number[]
   byDateStatistics: { date: string; goalCountForState: number[] }[]
 }

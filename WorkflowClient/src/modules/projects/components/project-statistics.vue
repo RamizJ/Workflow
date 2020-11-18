@@ -23,7 +23,7 @@ import moment from 'moment'
 import projectsModule from '@/modules/projects/store/projects.store'
 import ReportTasksOverview from '@/modules/projects/components/project-goals-overview.vue'
 import ReportDailyStatistics from '@/modules/projects/components/project-daily-statistics.vue'
-import { ProjectStatistics } from '@/modules/projects/models/project-statistics.type'
+import { Statistics } from '@/core/types/statistics.model'
 
 @Component({ components: { ReportDailyStatistics, ReportTasksOverview } })
 export default class ProjectReports extends Vue {
@@ -50,7 +50,7 @@ export default class ProjectReports extends Vue {
     const dateBegin: string = moment.utc(moment().subtract('5', 'years')).format()
     const dateEnd: string = moment.utc(moment().add('1', 'day')).format()
     this.tasksOverviewLoading = true
-    const statistics: ProjectStatistics = await projectsModule.getStatistics({
+    const statistics: Statistics = await projectsModule.getStatistics({
       projectId: this.projectId,
       dateBegin,
       dateEnd,
@@ -63,7 +63,7 @@ export default class ProjectReports extends Vue {
     const dateBegin: string = this.dailyStatisticsRange[0]
     const dateEnd: string = this.dailyStatisticsRange[1]
     this.dailyStatisticsLoading = true
-    const statistics: ProjectStatistics = await projectsModule.getStatistics({
+    const statistics: Statistics = await projectsModule.getStatistics({
       projectId: this.projectId,
       dateBegin,
       dateEnd,

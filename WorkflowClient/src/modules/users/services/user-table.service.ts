@@ -5,6 +5,7 @@ import teamsStore from '@/modules/teams/store/teams.store'
 import usersStore from '../store/users.store'
 import User from '../models/user.type'
 import Entity from '@/core/types/entity.type'
+import { router } from '@/core'
 
 export default class UserTableService extends TableService {
   public async load(tableLoader: StateChanger): Promise<void> {
@@ -12,6 +13,11 @@ export default class UserTableService extends TableService {
     if (this.teamId) fetchMethod = teamsStore.findUsers
     else fetchMethod = usersStore.findAll
     await this.loadData(tableLoader, fetchMethod)
+  }
+
+  public async openEntity(row?: Entity): Promise<void> {
+    row = row || (tableStore.selectedRow as User)
+    if (!row.isRemoved && !this.teamId) await router.push(`/users/${row.id}`)
   }
 
   public async createEntity(): Promise<void> {

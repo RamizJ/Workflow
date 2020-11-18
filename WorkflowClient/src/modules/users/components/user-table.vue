@@ -2,7 +2,7 @@
   <BaseTable
     ref="baseTable"
     :data="tableService.tableData"
-    @double-click.capture="tableService.editEntity"
+    @double-click.capture="tableService.openEntity"
     @right-click.capture="tableService.openContextMenu"
     @load.capture="tableService.load"
     infinite
@@ -17,7 +17,7 @@
     <UserContextMenu
       slot="footer"
       ref="contextMenu"
-      @open.capture="tableService.editEntity"
+      @open.capture="tableService.openEntity"
       @edit.capture="tableService.editEntity"
       @create.capture="tableService.createEntity"
       @remove.capture="tableService.deleteEntities"
