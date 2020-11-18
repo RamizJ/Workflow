@@ -341,9 +341,9 @@ namespace WorkflowService.Controllers
         /// <returns></returns>
         [HttpPost("{projectId}")]
         public async Task<ActionResult<ProjectStatistic>> GetProjectStatistic(int projectId, 
-            [FromBody] ProjectStatisticOptions options)
+            [FromBody] StatisticOptions options)
         {
-            var statistic = await _statisticService.GetStatistic(projectId, options);
+            var statistic = await _statisticService.GetStatisticForProject(projectId, options);
             return Ok(statistic);
         }
 

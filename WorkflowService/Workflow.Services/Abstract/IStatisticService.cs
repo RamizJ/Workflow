@@ -5,6 +5,10 @@ namespace Workflow.Services.Abstract
 {
     public interface IStatisticService
     {
-        Task<ProjectStatistic> GetStatistic(int projectId, ProjectStatisticOptions options);
+        Task<ProjectStatistic> GetStatisticForProject(int projectId, StatisticOptions options);
+
+        Task<ProjectStatistic> GetStatisticForUser(string userId, StatisticOptions options);
+
+        Task<ProjectStatistic> GetStatisticForUserAndProject(string userId, int projectId, StatisticOptions options);
     }
 }
