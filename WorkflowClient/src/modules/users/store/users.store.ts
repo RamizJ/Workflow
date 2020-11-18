@@ -12,6 +12,7 @@ import store from '@/core/store'
 import api from '../api'
 import User from '@/modules/users/models/user.type'
 import Query from '@/core/types/query.type'
+import { Statistics } from '@/core/types/statistics.model'
 
 @Module({
   dynamic: true,
@@ -131,8 +132,19 @@ class UsersStore extends VuexModule {
   }
 
   @Action
-  async resetPassword({ userId, newPassword }: { userId: string; newPassword: string }) {
-    await api.resetPassword(userId, newPassword)
+  async resetPassword({
+    userId,
+    newPassword,
+  }: {
+    userId: string
+    newPassword: string
+  }): Promise<boolean> {
+    try {
+      const response = await api.resetPassword(userId, newPassword)
+      return !!response
+    } catch (e) {
+      return false
+    }
   }
 
   @Action
@@ -155,6 +167,38 @@ class UsersStore extends VuexModule {
       Message.warning('Не удалось проверить уникальность эл. почты')
       return false
     }
+  }
+
+  @Action
+  async getStatistics({
+    userId,
+    dateBegin,
+    dateEnd,
+  }: {
+    userId: string
+    dateBegin: string
+    dateEnd: string
+  }): Promise<Statistics> {
+    const response = await api.getStatistics(userId, dateBegin, dateEnd)
+    const statistics: Statistics = response.data
+    return statistics
+  }
+
+  @Action
+  async getProjectStatistics({
+    userId,
+    projectId,
+    dateBegin,
+    dateEnd,
+  }: {
+    userId: string
+    projectId: number
+    dateBegin: string
+    dateEnd: string
+  }): Promise<Statistics> {
+    const response = await api.getProjectStatistics(userId, projectId, dateBegin, dateEnd)
+    const statistics: Statistics = response.data
+    return statistics
   }
 }
 

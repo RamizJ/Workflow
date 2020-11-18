@@ -17,7 +17,7 @@ import User from '@/modules/users/models/user.type'
 import { Status } from '@/modules/goals/models/goal.type'
 import { TeamRole } from '@/modules/teams/models/team-role.type'
 import { UserRole } from '@/modules/users/models/user-role.type'
-import { ProjectStatistics } from '@/modules/projects/models/project-statistics.type'
+import { Statistics } from '@/core/types/statistics.model'
 
 @Module({
   dynamic: true,
@@ -260,7 +260,7 @@ class ProjectsStore extends VuexModule {
     projectId: number
     dateBegin: string
     dateEnd: string
-  }): Promise<ProjectStatistics> {
+  }): Promise<Statistics> {
     const response = await api.getProjectStatistics(projectId, dateBegin, dateEnd)
     return response.data
   }

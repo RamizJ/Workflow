@@ -1,5 +1,11 @@
 <template>
   <BaseContextMenu ref="baseContextMenu">
+    <BaseContextMenuItem
+      v-if="active && !$route.params.teamId && !$route.params.projectId"
+      @click="openAction"
+    >
+      Открыть
+    </BaseContextMenuItem>
     <BaseContextMenuItem v-if="!$route.params.teamId && !$route.params.projectId" @click="edit">
       {{ active ? 'Изменить' : 'Информация' }}
     </BaseContextMenuItem>
