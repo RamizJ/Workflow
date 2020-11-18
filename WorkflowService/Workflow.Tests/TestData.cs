@@ -68,6 +68,7 @@ namespace Workflow.Tests
             Projects = Builder<Project>.CreateListOfSize(10)
                 .All()
                 .With(x => x.GroupId = null)
+                .With((x,i) => x.CreationDate = DateTime.Now - TimeSpan.FromMinutes(i))
                 .With(s => s.OwnerId = Users.First().Id)
                 .TheFirst(6).With((s, i) => { 
                     s.Name = $"Scope1{i}"; 

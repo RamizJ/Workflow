@@ -31,6 +31,7 @@ namespace Workflow.VM.ViewModelConverters
                 return;
 
             viewModel.Id = model.Id;
+            viewModel.CreationDate = model.CreationDate;
             viewModel.Name = model.Name;
             viewModel.Description = model.Description;
             viewModel.ParentGroupId = model.ParentGroupId;

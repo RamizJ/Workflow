@@ -15,12 +15,40 @@ namespace Workflow.Services
             _dataContext = dataContext;
         }
 
-        public async Task<ProjectStatistic> GetStatistic(int projectId, ProjectStatisticOptions options)
+        public async Task<ProjectStatistic> GetStatisticForProject(int projectId, StatisticOptions options)
         {
             var query = _dataContext.Goals
                 .Where(g => g.ProjectId == projectId
                             && !g.IsRemoved);
 
+            return await GetStatistic(query, options);
+        }
+
+
+        public async Task<ProjectStatistic> GetStatisticForUser(string userId, StatisticOptions options)
+        {
+            var query = _dataContext.Goals
+                .Include(g => g.Project)
+                .Where(g => g.PerformerId == userId
+                            && !g.IsRemoved);
+
+            return await GetStatistic(query, options);
+        }
+
+        public async Task<ProjectStatistic> GetStatisticForUserAndProject(string userId, int projectId, StatisticOptions options)
+        {
+            var query = _dataContext.Goals
+                .Include(g => g.Project)
+                .Where(g => g.PerformerId == userId
+                            && g.ProjectId == projectId
+                            && !g.IsRemoved);
+
+            return await GetStatistic(query, options);
+        }
+
+
+        private async Task<ProjectStatistic> GetStatistic(IQueryable<Goal> query, StatisticOptions options)
+        {
             if (options != null)
             {
                 query = query.Where(g => g.CreationDate >= options.DateBegin
