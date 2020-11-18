@@ -22,10 +22,14 @@ namespace WorkflowService.Controllers
         /// </summary>
         /// <param name="service"></param>
         /// <param name="currentUserService"></param>
-        public UsersController(IUsersService service, ICurrentUserService currentUserService)
+        /// <param name="statisticService"></param>
+        public UsersController(IUsersService service, 
+            ICurrentUserService currentUserService,
+            IStatisticService statisticService)
         {
             _service = service;
             _currentUserService = currentUserService;
+            _statisticService = statisticService;
         }
 
         /// <summary>
@@ -218,9 +222,38 @@ namespace WorkflowService.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Получение статистики пользователя по задачам
+        /// </summary>
+        /// <param name="userId">Идентификатор пользователя</param>
+        /// <param name="options">Параметры статистики</param>
+        /// <returns></returns>
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<UserStatistic>> GetStatistic(string userId,
+            [FromBody] StatisticOptions options)
+        {
+            var statistic = await _statisticService.GetStatisticForUser(userId, options);
+            return Ok(statistic);
+        }
+
+        /// <summary>
+        /// Получение статистики пользователя по задачам конкретного проекта
+        /// </summary>
+        /// <param name="userId">Идентификатор пользователя</param>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="options">Параметры статистики</param>
+        /// <returns></returns>
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<UserStatistic>> GetProjectStatistic(string userId, int projectId,
+            [FromBody] StatisticOptions options)
+        {
+            var statistic = await _statisticService.GetStatisticForUserAndProject(userId, projectId, options);
+            return Ok(statistic);
+        }
 
 
         private readonly IUsersService _service;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IStatisticService _statisticService;
     }
 }

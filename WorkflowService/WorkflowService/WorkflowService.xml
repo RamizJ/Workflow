@@ -456,7 +456,7 @@
             <param name="userRoles">Роли пользователей в проекте</param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Controllers.ProjectsController.GetProjectStatistic(System.Int32,Workflow.VM.ViewModels.ProjectStatisticOptions)">
+        <member name="M:WorkflowService.Controllers.ProjectsController.GetProjectStatistic(System.Int32,Workflow.VM.ViewModels.StatisticOptions)">
             <summary>
             Получение статистики по проекту
             </summary>
@@ -639,12 +639,13 @@
             API работы с пользователями системы
             </summary>
         </member>
-        <member name="M:WorkflowService.Controllers.UsersController.#ctor(Workflow.Services.Abstract.IUsersService,WorkflowService.Services.Abstract.ICurrentUserService)">
+        <member name="M:WorkflowService.Controllers.UsersController.#ctor(Workflow.Services.Abstract.IUsersService,WorkflowService.Services.Abstract.ICurrentUserService,Workflow.Services.Abstract.IStatisticService)">
             <summary>
             Конструктор 
             </summary>
             <param name="service"></param>
             <param name="currentUserService"></param>
+            <param name="statisticService"></param>
         </member>
         <member name="M:WorkflowService.Controllers.UsersController.Get(System.String)">
             <summary>
@@ -750,6 +751,23 @@
             </summary>
             <param name="id">Идентификатор пользователя</param>
             <param name="newPassword">Новый пароль</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.GetStatistic(System.String,Workflow.VM.ViewModels.StatisticOptions)">
+            <summary>
+            Получение статистики пользователя по задачам
+            </summary>
+            <param name="userId">Идентификатор пользователя</param>
+            <param name="options">Параметры статистики</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.GetProjectStatistic(System.String,System.Int32,Workflow.VM.ViewModels.StatisticOptions)">
+            <summary>
+            Получение статистики пользователя по проекту
+            </summary>
+            <param name="userId">Идентификатор пользователя</param>
+            <param name="projectId">Идентификатор проекта</param>
+            <param name="options">Параметры статистики</param>
             <returns></returns>
         </member>
         <member name="T:WorkflowService.Extensions.DefaultDataInitialization">
