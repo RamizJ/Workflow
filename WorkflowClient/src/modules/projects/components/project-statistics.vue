@@ -9,7 +9,7 @@
           v-if="!dailyStatisticsLoading"
           :data="dailyStatistics"
           :date-range="dailyStatisticsRange"
-          @rangeChange="onRangeChange"
+          @range-change="onRangeChange"
         />
       </el-col>
     </el-row>
@@ -21,8 +21,8 @@ import { Component, Vue } from 'vue-property-decorator'
 import moment from 'moment'
 
 import projectsModule from '@/modules/projects/store/projects.store'
-import ReportTasksOverview from '@/modules/projects/components/project-goals-overview.vue'
-import ReportDailyStatistics from '@/modules/projects/components/project-daily-statistics.vue'
+import ReportTasksOverview from '@/modules/goals/components/goals-pie-chart.vue'
+import ReportDailyStatistics from '@/modules/goals/components/goals-line-chart.vue'
 import { Statistics } from '@/core/types/statistics.model'
 
 @Component({ components: { ReportDailyStatistics, ReportTasksOverview } })

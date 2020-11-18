@@ -1,17 +1,19 @@
 <template>
-  <el-card class="card daily-statistics" shadow="never">
-    <div class="card__title">Статистика по дням</div>
-    <el-date-picker
-      v-model="range"
-      type="daterange"
-      format="dd.MM.yyyy"
-      range-separator="-"
-      start-placeholder="Начальная дата"
-      end-placeholder="Конечная дата"
-      @change="onDateRangeChange"
-    >
-    </el-date-picker>
-    <chart-line
+  <el-card class="card card-line-chart" shadow="never">
+    <div class="card__title">{{ title || 'Статистика по дням' }}</div>
+    <div class="card-toolbar">
+      <ProjectSelect v-if="withProject" v-model="selectedProjectId" @change="emitProject" />
+      <el-date-picker
+        v-model="range"
+        type="daterange"
+        format="dd.MM.yyyy"
+        range-separator="-"
+        start-placeholder="Начальная дата"
+        end-placeholder="Конечная дата"
+        @change="onDateRangeChange"
+      />
+    </div>
+    <ChartLine
       class="chart-container"
       v-if="!loading"
       :data="chartPieData"
@@ -26,14 +28,19 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import ChartLine from '@/core/components/base-chart/base-chart-line.vue'
 import moment from 'moment'
 import { ChartData, ChartDataSets, ChartOptions } from 'chart.js'
+import ProjectSelect from '@/modules/projects/components/project-select.vue'
 
-@Component({ components: { ChartLine } })
-export default class ReportDailyStatistics extends Vue {
+@Component({ components: { ProjectSelect, ChartLine } })
+export default class GoalsLineChart extends Vue {
+  @Prop() readonly title?: string
   @Prop() readonly data!: { date: string; goalCountForState: number[] }[]
   @Prop() readonly dateRange!: string[]
+  @Prop() readonly projectId?: number | null
+  @Prop() readonly withProject?: boolean
 
   private loading = true
   private statistics: { date: string; goalCountForState: number[] }[] = []
+  private selectedProjectId: number | null = null
   private range: Date[] = [moment().subtract(1, 'week').toDate(), moment().toDate()]
   private chartPieData: ChartData = {}
   private chartPieOptions: ChartOptions = {
@@ -48,31 +55,44 @@ export default class ReportDailyStatistics extends Vue {
     '#ca0000',
   ]
 
-  protected mounted(): void {
+  protected async mounted(): Promise<void> {
     this.range = [moment(this.dateRange[0]).toDate(), moment(this.dateRange[1]).toDate()]
     this.statistics = [...this.data]
-    this.renderChart()
+    this.selectedProjectId = this.projectId || null
+    await this.renderChart()
+  }
+
+  @Watch('projectId')
+  private async onProjectChanged(value: number | null): Promise<void> {
+    this.selectedProjectId = value
+    await this.renderChart()
   }
 
   @Watch('data')
-  private onDataChanged(data: { date: string; goalCountForState: number[] }[]): void {
+  private async onDataChanged(
+    data: { date: string; goalCountForState: number[] }[]
+  ): Promise<void> {
     this.statistics = [...data]
-    this.renderChart()
+    await this.renderChart()
   }
 
   @Watch('dateRange')
-  private onRangeChanged(range: string[]): void {
+  private async onRangeChanged(range: string[]): Promise<void> {
     this.range = [moment(range[0]).toDate(), moment(range[1]).toDate()]
-    this.renderChart()
+    await this.renderChart()
+  }
+
+  private emitProject(id: number): void {
+    this.$emit('project-change', id)
   }
 
   private onDateRangeChange(dateRange: Date[]): void {
     const dateBegin: string = moment.utc(dateRange[0]).format()
     const dateEnd: string = moment.utc(dateRange[1]).format()
-    this.$emit('rangeChange', [dateBegin, dateEnd])
+    this.$emit('range-change', [dateBegin, dateEnd])
   }
 
-  private renderChart(): void {
+  private async renderChart(): Promise<void> {
     this.loading = true
     const labels: string[] = []
     for (let stat of this.statistics) {
@@ -96,6 +116,7 @@ export default class ReportDailyStatistics extends Vue {
       datasets,
       labels,
     }
+    await new Promise((resolve) => setTimeout(() => resolve(), 10))
     this.loading = false
   }
 
@@ -139,16 +160,21 @@ export default class ReportDailyStatistics extends Vue {
 </style>
 
 <style lang="scss">
-.daily-statistics {
-  .el-input__inner:hover,
+.card-line-chart {
+  .card-toolbar > div {
+    margin-right: 20px;
+    margin-bottom: 15px;
+  }
   .el-range-input:hover {
     background-color: transparent;
+    border: none;
+    box-shadow: none;
   }
   .el-range-editor {
     width: 290px;
   }
   .el-range-editor.is-active {
-    border-color: transparent;
+    border: var(--input-focus-border);
   }
 }
 </style>

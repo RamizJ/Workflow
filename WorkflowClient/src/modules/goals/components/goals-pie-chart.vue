@@ -1,6 +1,6 @@
 <template>
   <el-card class="card" shadow="never">
-    <div class="card__title">Обзор задач</div>
+    <div class="card__title">{{ title || 'Статус задач' }}</div>
     <chart-doughnut v-if="!loading" :data="chartPieData" :options="chartPieOptions" />
   </el-card>
 </template>
@@ -11,7 +11,8 @@ import ChartDoughnut from '@/core/components/base-chart/base-chart-doughnut.vue'
 import { ChartData, ChartOptions } from 'chart.js'
 
 @Component({ components: { ChartDoughnut } })
-export default class ReportTasksOverview extends Vue {
+export default class GoalsPieChart extends Vue {
+  @Prop() readonly title?: string
   @Prop() readonly data!: number[]
 
   private loading = true
@@ -50,7 +51,6 @@ export default class ReportTasksOverview extends Vue {
       '#00cf3a',
       '#ca0000',
     ]
-
     const emptyIndexes: number[] = []
     this.data.forEach((value, index) => {
       if (!value) emptyIndexes.push(index)
