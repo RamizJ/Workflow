@@ -3,10 +3,16 @@ import TableService from '@/core/services/table.service'
 import tableStore from '@/core/store/table.store'
 import groupsStore from '@/modules/groups/store/groups.store'
 import Group from '@/modules/groups/models/group.model'
+import { router } from '@/core'
 
 export default class GroupTableService extends TableService {
   public async load(tableLoader: StateChanger): Promise<void> {
     await this.loadData(tableLoader, groupsStore.getPage)
+  }
+
+  public async openEntity(row?: Group): Promise<void> {
+    row = row || (tableStore.selectedRow as Group)
+    if (!row.isRemoved) await router.push(`/groups/${row.id}`)
   }
 
   public async createEntity(): Promise<void> {
