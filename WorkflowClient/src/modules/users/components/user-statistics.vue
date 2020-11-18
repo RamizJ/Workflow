@@ -4,7 +4,7 @@
       <el-col :span="8">
         <GoalsPieChart
           title="Статус задач по всем проектам"
-          v-if="!goalsPieChartLoading"
+          v-if="!goalsPieChartLoading && !isPieChartEmpty"
           :data="goalsPieChartData"
         />
       </el-col>
@@ -47,6 +47,10 @@ export default class UserStatistics extends Vue {
     return this.$route.params.userId
   }
 
+  private get isPieChartEmpty(): boolean {
+    return !this.goalsPieChartData.some((n: number) => n > 0)
+  }
+
   protected async mounted(): Promise<void> {
     await this.loadGoalsPieChart()
   }
@@ -58,6 +62,7 @@ export default class UserStatistics extends Vue {
     const dateEnd: string = moment.utc(moment().add('1', 'day')).format()
     const statistics: Statistics = await usersStore.getStatistics({ userId, dateBegin, dateEnd })
     this.goalsPieChartData = statistics.goalsCountForState
+    console.log(this.goalsPieChartData)
     this.goalsPieChartLoading = false
   }
 
