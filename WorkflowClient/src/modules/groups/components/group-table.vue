@@ -9,7 +9,12 @@
   >
     <BaseTableColumn prop="name" label="Название" />
     <BaseTableColumn prop="ownerFio" label="Создатель" width="250" />
-    <BaseTableColumn prop="creationDate" label="Дата создания" width="180" />
+    <BaseTableColumn
+      prop="creationDate"
+      label="Дата создания"
+      width="180"
+      :formatter="tableService.dateFormatter"
+    />
     <GroupContextMenu
       slot="footer"
       ref="contextMenu"

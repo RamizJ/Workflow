@@ -3,6 +3,7 @@ import WindowService from '@/core/services/window.service'
 import Group from '@/modules/groups/models/group.model'
 import groupsStore from '../store/groups.store'
 import { Message } from 'element-ui'
+import tableStore from '@/core/store/table.store'
 
 export default class GroupWindowService extends WindowService {
   public entity: Group
@@ -16,6 +17,7 @@ export default class GroupWindowService extends WindowService {
   public async submit(): Promise<void> {
     const isFormValid = await this.validateForm()
     if (isFormValid) await this.saveEntity()
+    tableStore.requireReload()
   }
 
   public async validateForm(): Promise<boolean> {

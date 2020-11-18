@@ -8,7 +8,7 @@
       v-loading="windowService.loading"
       :model="windowService.entity"
       :disabled="windowService.entity.id && windowService.entity.isRemoved"
-      @submit.native.prevent.capture="windowService.submit"
+      @submit.native.prevent.capture="submit"
     >
       <el-row :gutter="20">
         <el-col :span="24">
@@ -17,7 +17,6 @@
               ref="title"
               v-model="windowService.entity.name"
               placeholder="Название"
-              @keyup.enter.native="windowService.submit"
             ></el-input>
           </el-form-item>
         </el-col>
@@ -28,7 +27,6 @@
               type="textarea"
               v-model="windowService.entity.description"
               placeholder="Описание"
-              @keyup.enter.native="windowService.submit"
             ></el-input>
           </el-form-item>
         </el-col>
@@ -48,7 +46,7 @@
           :visible-arrow="false"
           :open-delay="500"
         >
-          <el-button type="text" @click.capture="windowService.submit" circle="circle">
+          <el-button type="text" @click.capture="submit" circle="circle">
             <unicon name="save" />
           </el-button>
         </el-tooltip>
@@ -62,7 +60,6 @@ import { Component, Ref, Vue } from 'vue-property-decorator'
 import BaseWindow from '@/core/components/base-window.vue'
 import GroupWindowService from '@/modules/groups/services/group-window.service'
 import { ElForm } from 'element-ui/types/form'
-import Group from '@/modules/groups/models/group.model'
 
 @Component({
   components: { BaseWindow },
@@ -78,6 +75,12 @@ export default class GroupWindow extends Vue {
 
   protected async mounted(): Promise<void> {
     this.windowService.form = await this.getFormComponent()
+  }
+
+  private async submit(): Promise<void> {
+    await this.windowService.submit()
+    this.$emit('submit')
+    this.$emit('close')
   }
 
   private async getFormComponent(): Promise<ElForm> {
