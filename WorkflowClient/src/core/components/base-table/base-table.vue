@@ -118,7 +118,6 @@ export default class BaseTable extends Vue {
     this.selectedRows.map((entity) => {
       this.table.toggleRowSelection(entity, true)
     })
-    // this.selectedRows = [row]
     this.$emit('click', row)
   }
 

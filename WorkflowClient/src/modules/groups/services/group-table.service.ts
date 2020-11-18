@@ -14,9 +14,11 @@ export default class GroupTableService extends TableService {
     await groupsStore.openGroupWindow()
   }
 
-  public async editEntity(): Promise<void> {
-    if (!tableStore.selectedRow) return
-    await groupsStore.openGroupWindow(tableStore.selectedRow as Group)
+  public async editEntity(row?: Group): Promise<void> {
+    const entity = row || (tableStore.selectedRow as Group)
+    if (!entity) return
+    groupsStore.setGroup(entity)
+    await groupsStore.openGroupWindow(entity)
   }
 
   public async deleteEntities(): Promise<void> {
