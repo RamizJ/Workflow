@@ -7,6 +7,12 @@
         v-autowidth="{ maxWidth: '960px', minWidth: '20px', comfortZone: 0 }"
         @change="updateEntity"
       />
+      <GroupActions
+        slot="action"
+        v-if="!loading"
+        @add-project="addProject"
+        @delete-group="deleteGroup"
+      />
     </BasePageHeader>
     <BasePageSubheader>
       <input
@@ -20,6 +26,11 @@
       <BaseTabs v-model="currentTab" :tabs="tabs" @tab-click="setTab" :routing="true" />
     </BasePageSubheader>
     <RouterView />
+    <GroupAddProjectDialog
+      v-if="dialogAddProjectVisible"
+      @close="dialogAddProjectVisible = false"
+      @submit="reloadTable"
+    />
   </BasePage>
 </template>
 
@@ -31,9 +42,19 @@ import BasePageSubheader from '@/core/components/base-page/base-page-subheader.v
 import Group from '@/modules/groups/models/group.model'
 import groupsStore from '../store/groups.store'
 import BaseTabs from '@/core/components/base-tabs/base-tabs.vue'
+import GroupActions from '@/modules/groups/components/group-actions.vue'
+import GroupAddProjectDialog from '@/modules/groups/components/group-add-project-dialog.vue'
+import tableStore from '@/core/store/table.store'
 
 @Component({
-  components: { BaseTabs, BasePageSubheader, BasePageHeader, BasePage },
+  components: {
+    GroupAddProjectDialog,
+    GroupActions,
+    BaseTabs,
+    BasePageSubheader,
+    BasePageHeader,
+    BasePage,
+  },
 })
 export default class GroupPage extends Vue {
   private loading = true
@@ -42,6 +63,7 @@ export default class GroupPage extends Vue {
   private tabs: Array<{ label: string; name: string; component?: any }> = [
     { label: 'Проекты', name: 'projects' },
   ]
+  private dialogAddProjectVisible = false
 
   protected async mounted(): Promise<void> {
     this.loading = true
@@ -87,6 +109,19 @@ export default class GroupPage extends Vue {
 
   private async updateEntity(): Promise<void> {
     await groupsStore.update(this.entity)
+  }
+
+  private async addProject(): Promise<void> {
+    this.dialogAddProjectVisible = true
+  }
+
+  private async deleteGroup(): Promise<void> {
+    await groupsStore.remove(this.entity.id!)
+    await this.$router.push({ name: 'groups' })
+  }
+
+  private reloadTable(): void {
+    tableStore.requireReload()
   }
 }
 </script>

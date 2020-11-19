@@ -12,6 +12,7 @@ export default class GroupTableService extends TableService {
 
   public async openEntity(row?: Group): Promise<void> {
     row = row || (tableStore.selectedRow as Group)
+    groupsStore.setGroup(row)
     if (!row.isRemoved) await router.push(`/groups/${row.id}`)
   }
 
