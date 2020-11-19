@@ -46,6 +46,10 @@ export default class TableService {
     else return parseInt(goalId)
   }
 
+  public get groupId(): number {
+    return this.route.params.groupId ? parseInt(this.route.params.groupId) : 0
+  }
+
   public get projectId(): number {
     return this.route.params.projectId ? parseInt(this.route.params.projectId) : 0
   }

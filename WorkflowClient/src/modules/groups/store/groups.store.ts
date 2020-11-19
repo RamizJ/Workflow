@@ -107,6 +107,28 @@ class GroupsStore extends VuexModule {
   async restoreRange(ids: number[]): Promise<void> {
     await api.restoreRange(ids)
   }
+
+  @Action
+  async addProjects({
+    groupId,
+    projectIds,
+  }: {
+    groupId: number
+    projectIds: Array<number>
+  }): Promise<void> {
+    await api.addProjects(groupId, projectIds)
+  }
+
+  @Action
+  async deleteProjects({
+    groupId,
+    projectIds,
+  }: {
+    groupId: number
+    projectIds: Array<number>
+  }): Promise<void> {
+    await api.deleteProjects(groupId, projectIds)
+  }
 }
 
 export default getModule(GroupsStore)

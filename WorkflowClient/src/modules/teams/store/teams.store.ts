@@ -187,7 +187,7 @@ class TeamsStore extends VuexModule {
   }
 
   @Action
-  async findProjects(query: Query): Promise<Project[]> {
+  async findProjects(query: Query): Promise<Array<Project>> {
     const response = await api.getProjectsPage(query)
     const results = response.data as Project[]
     this.context.commit('setTeamProjects', results)

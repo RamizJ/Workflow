@@ -2,10 +2,10 @@
   <BaseTable
     ref="baseTable"
     :data="tableService.tableData"
+    :infinite="!tableService.groupId"
     @double-click.capture="tableService.openEntity"
     @right-click.capture="tableService.openContextMenu"
     @load.capture="tableService.load"
-    infinite
   >
     <BaseTableColumn prop="name" label="Название" />
     <BaseTableColumn prop="ownerFio" label="Руководитель" width="250"></BaseTableColumn>
@@ -22,6 +22,7 @@
       @edit.capture="tableService.editEntity"
       @create.capture="tableService.createEntity"
       @remove.capture="tableService.deleteEntities"
+      @remove-from-group.capture="tableService.deleteEntitiesFromGroup"
       @restore.capture="tableService.restoreEntities"
     />
   </BaseTable>
