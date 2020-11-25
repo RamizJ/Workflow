@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Workflow.DAL.Models
 {
     public class GoalMessage
     {
         public int Id { get; set; }
+        public DateTime CreationDate { get; set; }
         public string Text { get; set; }
 
         public int GoalId { get; set; }
