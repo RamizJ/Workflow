@@ -13,4 +13,8 @@ import ProjectTable from '@/modules/projects/components/project-table.vue'
 export default class GroupProjects extends Vue {}
 </script>
 
-<style scoped></style>
+<style scoped>
+.group-projects {
+  height: 100%;
+}
+</style>
