@@ -68,8 +68,10 @@ export default class ProjectContextMenu extends Vue {
     else this.$emit('remove')
   }
 
-  private removeFromGroup(): void {
-    this.$emit('remove-from-group')
+  private async removeFromGroup(): Promise<void> {
+    const allowDelete = await this.baseContextMenu.confirmDelete()
+    if (!allowDelete) return
+    else this.$emit('remove-from-group')
   }
 
   private restore(): void {

@@ -1,6 +1,5 @@
 <template>
   <div class="group-projects">
-    <!--    <BasePageHeader size="small" height="45" :no-border="true"></BasePageHeader>-->
     <ProjectTable />
   </div>
 </template>
