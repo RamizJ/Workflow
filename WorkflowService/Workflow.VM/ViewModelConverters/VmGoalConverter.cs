@@ -69,6 +69,7 @@ namespace Workflow.VM.ViewModelConverters
             viewModel.Priority = model.Priority;
             viewModel.ExpectedCompletedDate = model.ExpectedCompletedDate;
             viewModel.EstimatedPerformingTime = model.EstimatedPerformingTime;
+            viewModel.ActualPerformingTime = model.ActualPerformingTime;
             viewModel.IsRemoved = model.IsRemoved;
             viewModel.HasChildren = model.ChildGoals.Any();
             viewModel.IsAttachmentsExist = model.Attachments.Any();
