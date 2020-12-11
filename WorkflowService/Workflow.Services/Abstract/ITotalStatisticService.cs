@@ -8,7 +8,7 @@ namespace Workflow.Services.Abstract
 {
     public interface ITotalStatisticService
     {
-        Task<IDictionary<string, VmTotalStatistic>> GetTotal(
+        Task<VmTotalStatistic> GetTotal(
             ApplicationUser currentUser, 
             StatisticOptions options);
     }

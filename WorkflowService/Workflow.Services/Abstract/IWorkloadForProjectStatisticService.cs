@@ -8,8 +8,10 @@ namespace Workflow.Services.Abstract
 {
     public interface IWorkloadForProjectStatisticService
     {
-        Task<IDictionary<string, VmWorkloadByProjectsStatistic>> GetWorkloadByProject(
+        Task<VmWorkloadByProjectsStatistic> GetWorkloadByProject(
             ApplicationUser currentUser, 
             StatisticOptions options);
+
+        VmWorkloadByProjectsStatistic GetWorkloadByProject(IDictionary<string, Goal[]> usersGoals);
     }
 }

@@ -8,8 +8,12 @@ namespace Workflow.Services.Abstract
 {
     public interface IGoalCompletionStatisticService
     {
-        Task<IDictionary<string, VmGoalCompletionStatistic>> GetGoalCompletion(
+        Task<VmGoalCompletionStatistic> GetGoalCompletion(
             ApplicationUser currentUser,
             StatisticOptions options);
+
+
+        VmGoalCompletionStatistic GetGoalCompletion(
+            IDictionary<string, Goal[]> userGoals);
     }
 }

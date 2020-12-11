@@ -42,10 +42,10 @@ namespace WorkflowService.Controllers
         /// Получение статистики выполненеия задач по пользователям
         /// </summary>
         /// <param name="options">Параметры статистики</param>
-        /// <returns></returns>
+        /// <returns>Словарь, где ключ - идентификатор пользователя, значение - статистика по пользователю</returns>
         /// <exception cref="NotImplementedException"></exception>
         [HttpPost]
-        public async Task<IDictionary<string, VmGoalCompletionStatistic>> GetGoalCompletion([FromBody]StatisticOptions options)
+        public async Task<VmGoalCompletionStatistic> GetGoalCompletion([FromBody]StatisticOptions options)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
             return await _goalCompletionStatisticService.GetGoalCompletion(currentUser, options);
@@ -55,9 +55,9 @@ namespace WorkflowService.Controllers
         /// Получение статистики загрузки пользователей по проектам 
         /// </summary>
         /// <param name="options">Параметры статистики</param>
-        /// <returns></returns>
+        /// <returns>Словарь, где ключ - идентификатор пользователя, значение - статистика по пользователю</returns>
         [HttpPost]
-        public async Task<IDictionary<string, VmWorkloadByProjectsStatistic>> GetWorkloadByProject([FromBody] StatisticOptions options)
+        public async Task<VmWorkloadByProjectsStatistic> GetWorkloadByProject([FromBody] StatisticOptions options)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
             return await _projectWorkloadStatisticService.GetWorkloadByProject(currentUser, options);
@@ -67,7 +67,7 @@ namespace WorkflowService.Controllers
         /// Получение статистики загрузки пользователей по дням
         /// </summary>
         /// <param name="options">Параметры статистики</param>
-        /// <returns></returns>
+        /// <returns>Словарь, где ключ - идентификатор пользователя, значение - статистика по пользователю</returns>
         [HttpPost]
         public async Task<IDictionary<string, VmWorkloadByDaysStatistic>> GetWorkloadByDays([FromBody] StatisticOptions options)
         {
@@ -79,9 +79,9 @@ namespace WorkflowService.Controllers
         /// Получение полной статистики
         /// </summary>
         /// <param name="options">Параметры статистики</param>
-        /// <returns></returns>
+        /// <returns>Словарь, где ключ - идентификатор пользователя, значение - статистика по пользователю</returns>
         [HttpPost]
-        public async Task<IDictionary<string, VmTotalStatistic>> GetTotal([FromBody] StatisticOptions options)
+        public async Task<VmTotalStatistic> GetTotal([FromBody] StatisticOptions options)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
             return await _totalStatisticService.GetTotal(currentUser, options);
