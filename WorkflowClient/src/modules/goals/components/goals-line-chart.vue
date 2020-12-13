@@ -16,15 +16,14 @@
     <ChartLine
       class="chart-container"
       v-if="!loading"
-      :data="chartPieData"
-      :options="chartPieOptions"
+      :chart-data="chartPieData"
+      :chart-options="chartPieOptions"
     />
   </el-card>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
-
 import ChartLine from '@/core/components/base-chart/base-chart-line.vue'
 import moment from 'moment'
 import { ChartData, ChartDataSets, ChartOptions } from 'chart.js'
