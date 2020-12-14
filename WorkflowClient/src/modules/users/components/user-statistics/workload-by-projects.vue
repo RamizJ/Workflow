@@ -13,7 +13,7 @@ import { WorkloadByProjectsStatistics } from '@/modules/users/models/workload-by
 
 @Component({ components: { BaseChartDoughnut } })
 export default class WorkloadByProjects extends Vue {
-  @Prop() readonly data!: WorkloadByProjectsStatistics
+  @Prop() readonly data?: WorkloadByProjectsStatistics
   private statisticsData?: WorkloadByProjectsStatistics
   private chartData: ChartData = {}
   private chartOptions: ChartOptions = {}
@@ -23,7 +23,7 @@ export default class WorkloadByProjects extends Vue {
   }
 
   @Watch('data', { deep: true })
-  refreshChart(data: WorkloadByProjectsStatistics): void {
+  refreshChart(data?: WorkloadByProjectsStatistics): void {
     this.statisticsData = data
     this.chartData = this.getChartData()
   }
@@ -31,8 +31,8 @@ export default class WorkloadByProjects extends Vue {
   private getChartData(): ChartData {
     const statistics = this.getStatistics()
     const dataUnit: 'hours' | 'percentage' = 'percentage'
-    const dataValues = Array.from(statistics, ([key, value]) => value[dataUnit])
-    const labelsValues = Array.from(statistics.keys())
+    const dataValues: number[] = Array.from(statistics, ([key, value]) => value[dataUnit])
+    const labelsValues: string[] = Array.from(statistics.keys())
 
     return {
       datasets: [
@@ -54,16 +54,24 @@ export default class WorkloadByProjects extends Vue {
     if (!this.statisticsData) return statistics
 
     for (let projectName of Object.keys(this.statisticsData.projectHours)) {
-      const hours = this.statisticsData.projectHours[projectName]
-      const percentage =
+      const hours: number = this.statisticsData.projectHours[projectName]
+      const percentage: number = Math.round(
         (this.statisticsData.projectHours[projectName] * 100) / this.statisticsData.totalHours
+      )
       statistics.set(projectName, { hours, percentage })
     }
 
-    const hoursValues = Array.from(statistics, ([key, value]) => value.hours)
-    const percentageValues = Array.from(statistics, ([key, value]) => value.percentage)
-    const hoursOther = this.statisticsData.totalHours - hoursValues.reduce((a, b) => a + b, 0)
-    const percentageOther = 100 - percentageValues.reduce((a, b) => a + b, 0)
+    const topHours: number[] = Object.values(this.statisticsData.projectHours)
+      .sort((a, b) => b - a)
+      .slice(0, 3)
+
+    for (let [key, value] of statistics) if (!topHours.includes(value.hours)) statistics.delete(key)
+
+    const hoursValues: number[] = Array.from(statistics, ([key, value]) => value.hours)
+    const percentageValues: number[] = Array.from(statistics, ([key, value]) => value.percentage)
+    const hoursOther: number =
+      this.statisticsData.totalHours - hoursValues.reduce((a, b) => a + b, 0)
+    const percentageOther: number = 100 - percentageValues.reduce((a, b) => a + b, 0)
     statistics.set('Прочее', { hours: hoursOther, percentage: percentageOther })
 
     return statistics

@@ -104,11 +104,12 @@ export default class UserStatistics extends Vue {
   private get workloadByProjects(): WorkloadByProjectsStatistics {
     // return statisticsStore.workloadByProjects[this.userId]
     return {
-      totalHours: 100,
+      totalHours: 108,
       projectHours: {
         ['ВГВ']: 28,
         ['Девон']: 29,
         ['ВВН']: 29,
+        ['АДС']: 22,
       },
     }
   }
@@ -189,6 +190,10 @@ export default class UserStatistics extends Vue {
 <style lang="scss">
 .user-statistics {
   overflow-y: auto;
+  overflow-x: hidden;
+  &::-webkit-scrollbar {
+    display: none;
+  }
   .el-row {
     margin-bottom: 20px;
     &:last-child {
@@ -206,6 +211,17 @@ export default class UserStatistics extends Vue {
       letter-spacing: 0.3px;
       text-transform: uppercase;
       margin-bottom: 15px;
+    }
+    &__content {
+      width: 100%;
+      display: flex;
+      position: relative;
+    }
+    &__aside {
+      width: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
 }

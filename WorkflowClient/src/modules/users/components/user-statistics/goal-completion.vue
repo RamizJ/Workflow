@@ -13,7 +13,7 @@ import { GoalCompletionStatistics } from '@/modules/users/models/goal-completion
 
 @Component({ components: { BaseChartDoughnut } })
 export default class GoalCompletion extends Vue {
-  @Prop() readonly data!: GoalCompletionStatistics
+  @Prop() readonly data?: GoalCompletionStatistics
   private statisticsData?: GoalCompletionStatistics
   private chartData: ChartData = {}
   private chartOptions: ChartOptions = {}
@@ -23,17 +23,17 @@ export default class GoalCompletion extends Vue {
   }
 
   @Watch('data', { deep: true })
-  refreshChart(data: GoalCompletionStatistics): void {
+  refreshChart(data?: GoalCompletionStatistics): void {
     this.statisticsData = data
     this.chartData = this.getChartData()
   }
 
   private getChartData(): ChartData {
-    const valuesPcs = this.statisticsData ? Object.values(this.statisticsData) : []
-    const totalPcs = valuesPcs.reduce((a, b) => a + b, 0)
-    const valuesPercents = valuesPcs.map((value) => Math.round((value * 100) / totalPcs))
-    const data = valuesPcs
-    const labels = [
+    const valuesPcs: number[] = this.statisticsData ? Object.values(this.statisticsData) : []
+    const totalPcs: number = valuesPcs.reduce((a, b) => a + b, 0)
+    const valuesPercents: number[] = valuesPcs.map((value) => Math.round((value * 100) / totalPcs))
+    const data: number[] = valuesPcs
+    const labels: string[] = [
       'Выполнены вовремя',
       'Выполнены с отклонением',
       'В процессе выполнения',
