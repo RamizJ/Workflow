@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using PageLoading;
 using Workflow.Services.Abstract;
 using Workflow.VM.ViewModels;
+using Workflow.VM.ViewModels.Statistic;
 using WorkflowService.Services.Abstract;
 
 namespace WorkflowService.Controllers
@@ -340,7 +341,7 @@ namespace WorkflowService.Controllers
         /// <param name="options">Параметры статистики</param>
         /// <returns></returns>
         [HttpPost("{projectId}")]
-        public async Task<ActionResult<ProjectStatistic>> GetProjectStatistic(int projectId, 
+        public async Task<ActionResult<VmProjectStatistic>> GetProjectStatistic(int projectId, 
             [FromBody] StatisticOptions options)
         {
             var statistic = await _statisticService.GetStatisticForProject(projectId, options);

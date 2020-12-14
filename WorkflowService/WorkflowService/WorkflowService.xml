@@ -464,6 +464,50 @@
             <param name="options">Параметры статистики</param>
             <returns></returns>
         </member>
+        <member name="T:WorkflowService.Controllers.StatisticController">
+            <summary>
+            API работы со статистикой
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Controllers.StatisticController.#ctor(Workflow.Services.Abstract.IGoalCompletionStatisticService,Workflow.Services.Abstract.IWorkloadForProjectStatisticService,Workflow.Services.Abstract.IWorkloadByDaysStatisticService,Workflow.Services.Abstract.ITotalStatisticService,WorkflowService.Services.Abstract.ICurrentUserService)">
+            <summary>
+            
+            </summary>
+            <param name="goalCompletionStatisticService"></param>
+            <param name="projectWorkloadStatisticService"></param>
+            <param name="daysWorkloadStatisticService"></param>
+            <param name="totalStatisticService"></param>
+            <param name="currentUserService"></param>
+        </member>
+        <member name="M:WorkflowService.Controllers.StatisticController.GetGoalCompletion(Workflow.VM.ViewModels.StatisticOptions)">
+            <summary>
+            Получение статистики выполненеия задач по пользователям
+            </summary>
+            <param name="options">Параметры статистики</param>
+            <returns>Словарь, где ключ - идентификатор пользователя, значение - статистика по пользователю</returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:WorkflowService.Controllers.StatisticController.GetWorkloadByProject(Workflow.VM.ViewModels.StatisticOptions)">
+            <summary>
+            Получение статистики загрузки пользователей по проектам 
+            </summary>
+            <param name="options">Параметры статистики</param>
+            <returns>Словарь, где ключ - идентификатор пользователя, значение - статистика по пользователю</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.StatisticController.GetWorkloadByDays(Workflow.VM.ViewModels.StatisticOptions)">
+            <summary>
+            Получение статистики загрузки пользователей по дням
+            </summary>
+            <param name="options">Параметры статистики</param>
+            <returns>Словарь, где ключ - идентификатор пользователя, значение - статистика по пользователю</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.StatisticController.GetTotal(Workflow.VM.ViewModels.StatisticOptions)">
+            <summary>
+            Получение полной статистики
+            </summary>
+            <param name="options">Параметры статистики</param>
+            <returns>Словарь, где ключ - идентификатор пользователя, значение - статистика по пользователю</returns>
+        </member>
         <member name="T:WorkflowService.Controllers.TeamsController">
             <summary>
             API-методы работы с командами
@@ -763,7 +807,7 @@
         </member>
         <member name="M:WorkflowService.Controllers.UsersController.GetProjectStatistic(System.String,System.Int32,Workflow.VM.ViewModels.StatisticOptions)">
             <summary>
-            Получение статистики пользователя по проекту
+            Получение статистики пользователя по задачам конкретного проекта
             </summary>
             <param name="userId">Идентификатор пользователя</param>
             <param name="projectId">Идентификатор проекта</param>

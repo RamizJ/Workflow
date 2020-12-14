@@ -11,7 +11,6 @@ using Workflow.Services.Exceptions;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 using static System.Net.HttpStatusCode;
-using QuerableExtension = Workflow.Share.Extensions.QuerableExtension;
 
 namespace Workflow.Services
 {
@@ -282,13 +281,13 @@ namespace Workflow.Services
                 var isAcending = field.SortType == SortType.Ascending;
 
                 if (field.Is(nameof(VmTeam.Name)))
-                    query = QuerableExtension.SortBy(query, t => t.Name, isAcending);
+                    query = query.SortBy(t => t.Name, isAcending);
 
                 else if (field.Is(nameof(VmTeam.Description)))
-                    query = QuerableExtension.SortBy(query, t => t.Description, isAcending);
+                    query = query.SortBy(t => t.Description, isAcending);
 
                 else if (field.Is(nameof(VmTeam.IsRemoved))) 
-                    query = QuerableExtension.SortBy(query, t => t.IsRemoved, isAcending);
+                    query = query.SortBy(t => t.IsRemoved, isAcending);
             }
 
             return query;

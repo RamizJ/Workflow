@@ -6,6 +6,7 @@ using PageLoading;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
 using Workflow.VM.ViewModels;
+using Workflow.VM.ViewModels.Statistic;
 using WorkflowService.Services.Abstract;
 
 namespace WorkflowService.Controllers
@@ -229,7 +230,7 @@ namespace WorkflowService.Controllers
         /// <param name="options">Параметры статистики</param>
         /// <returns></returns>
         [HttpPost("{userId}")]
-        public async Task<ActionResult<UserStatistic>> GetStatistic(string userId,
+        public async Task<ActionResult<VmProjectStatistic>> GetStatistic(string userId,
             [FromBody] StatisticOptions options)
         {
             var statistic = await _statisticService.GetStatisticForUser(userId, options);
@@ -244,7 +245,7 @@ namespace WorkflowService.Controllers
         /// <param name="options">Параметры статистики</param>
         /// <returns></returns>
         [HttpPost("{userId}")]
-        public async Task<ActionResult<UserStatistic>> GetProjectStatistic(string userId, int projectId,
+        public async Task<ActionResult<VmProjectStatistic>> GetProjectStatistic(string userId, int projectId,
             [FromBody] StatisticOptions options)
         {
             var statistic = await _statisticService.GetStatisticForUserAndProject(userId, projectId, options);

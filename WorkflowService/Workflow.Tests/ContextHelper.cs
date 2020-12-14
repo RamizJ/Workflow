@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
+using Workflow.DAL.Repositories.Abstract;
 using Workflow.Services;
 using Workflow.Services.Abstract;
 using Workflow.Services.PageLoading;
@@ -128,8 +129,8 @@ namespace Workflow.Tests
             services.AddTransient<IProjectUserRolesService, ProjectUserRolesService>();
             services.AddTransient<IStatisticService, StatisticService>();
             services.AddTransient<IRolesService, RolesService>();
-
             services.AddTransient<IPageLoadService<Group>, GroupsPageLoadService>();
+            services.AddTransient<IGoalsRepository, GoalsRepository>();
 
             return services.BuildServiceProvider();
         }

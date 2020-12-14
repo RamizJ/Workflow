@@ -17,6 +17,8 @@ using Newtonsoft.Json.Converters;
 using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
+using Workflow.DAL.Repositories;
+using Workflow.DAL.Repositories.Abstract;
 using Workflow.Services;
 using Workflow.Services.Abstract;
 using Workflow.Services.PageLoading;
@@ -178,6 +180,11 @@ namespace WorkflowService
             services.AddTransient<IStatisticService, StatisticService>();
             services.AddTransient<IRolesService, RolesService>();
             services.AddTransient<IPageLoadService<Group>, GroupsPageLoadService>();
+            services.AddTransient<IGoalsRepository, GoalsRepository>();
+            services.AddTransient<IGoalCompletionStatisticService, GoalCompletionStatisticService>();
+            services.AddTransient<IWorkloadForProjectStatisticService, WorkloadForProjectStatisticService>();
+            services.AddTransient<IWorkloadByDaysStatisticService, WorkloadByDaysStatisticService>();
+            services.AddTransient<ITotalStatisticService, TotalStatisticService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

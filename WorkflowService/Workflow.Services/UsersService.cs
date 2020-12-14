@@ -9,11 +9,9 @@ using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
-using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 using static System.Net.HttpStatusCode;
-using QuerableExtension = Workflow.Share.Extensions.QuerableExtension;
 
 namespace Workflow.Services
 {
@@ -307,31 +305,31 @@ namespace Workflow.Services
                 var isAcending = field.SortType == SortType.Ascending;
 
                 if (field.Is(nameof(VmUser.Email)))
-                    query = QuerableExtension.SortBy(query, u => u.Email, isAcending);
+                    query = query.SortBy(u => u.Email, isAcending);
 
                 else if (field.Is(nameof(VmUser.UserName)))
-                    query = QuerableExtension.SortBy(query, u => u.UserName, isAcending);
+                    query = query.SortBy(u => u.UserName, isAcending);
 
                 else if (field.Is(nameof(VmUser.Phone)))
-                    query = QuerableExtension.SortBy(query, u => u.PhoneNumber, isAcending);
+                    query = query.SortBy(u => u.PhoneNumber, isAcending);
 
                 else if (field.Is(nameof(VmUser.Position)))
                 {
-                    query = QuerableExtension.SortBy(query, u => u.Position.Name, isAcending);
-                    query = QuerableExtension.SortBy(query, u => u.PositionCustom, isAcending);
+                    query = query.SortBy(u => u.Position.Name, isAcending);
+                    query = query.SortBy(u => u.PositionCustom, isAcending);
                 }
 
                 else if (field.Is(nameof(VmUser.LastName)))
-                    query = QuerableExtension.SortBy(query, u => u.LastName, isAcending);
+                    query = query.SortBy(u => u.LastName, isAcending);
 
                 else if (field.Is(nameof(VmUser.FirstName)))
-                    query = QuerableExtension.SortBy(query, u => u.FirstName, isAcending);
+                    query = query.SortBy(u => u.FirstName, isAcending);
 
                 else if (field.Is(nameof(VmUser.MiddleName)))
-                    query = QuerableExtension.SortBy(query, u => u.MiddleName, isAcending);
+                    query = query.SortBy(u => u.MiddleName, isAcending);
 
                 else if (field.Is(nameof(VmUser.IsRemoved))) 
-                    query = QuerableExtension.SortBy(query, u => u.IsRemoved, isAcending);
+                    query = query.SortBy(u => u.IsRemoved, isAcending);
             }
 
             return query;
