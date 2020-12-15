@@ -1,12 +1,15 @@
 <template>
   <el-select
-    v-model="selectedProjectId"
+    v-bind="$attrs"
+    v-model="selected"
     :placeholder="placeholder || 'Найти проект...'"
     :remote="true"
     :remote-method="doProjectSearch"
     :clearable="true"
     :filterable="true"
     :default-first-option="true"
+    :loading="loading"
+    :class="fullWidth ? 'full-width' : ''"
     @change="onProjectChange"
   >
     <el-option
@@ -26,28 +29,40 @@ import projectsStore from '../store/projects.store'
 @Component
 export default class ProjectSelect extends Vue {
   @Prop() private readonly placeholder?: string
-  @Prop() private readonly value!: number
-  private projects: Array<Project> = []
-  private selectedProjectId: number | null = null
+  @Prop() private readonly value!: number | number[]
+  @Prop() private readonly fullWidth: boolean = false
+  private loading = false
+  private projects: Project[] = []
+  private selected: number | number[] | null = null
 
   protected async mounted(): Promise<void> {
-    this.selectedProjectId = this.value
+    this.selected = this.value
     await this.doProjectSearch()
   }
 
   private async doProjectSearch(searchText?: string): Promise<void> {
+    this.loading = true
     this.projects = await projectsStore.findAll({
       filter: searchText,
       pageNumber: 0,
       pageSize: 10,
     })
+    this.loading = false
   }
 
-  private onProjectChange(projectId: number) {
-    this.$emit('value', projectId)
-    this.$emit('change', projectId)
+  private onProjectChange(selected: number | number[]) {
+    this.$emit('value', selected)
+    let selectedProjects =
+      this.$attrs.multiple !== undefined
+        ? this.projects.filter((project) => (selected as number[]).includes(project.id || 0))
+        : this.projects.find((project) => project.id === (selected as number))
+    this.$emit('change', selectedProjects)
   }
 }
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+.full-width {
+  width: 100%;
+}
+</style>

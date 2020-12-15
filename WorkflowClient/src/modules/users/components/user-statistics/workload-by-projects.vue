@@ -9,12 +9,12 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import { ChartData, ChartOptions } from 'chart.js'
 import BaseChartDoughnut from '@/core/components/base-chart/base-chart-doughnut.vue'
-import { WorkloadByProjectsStatistics } from '@/modules/users/models/workload-by-projects-statistics.interface'
+import { ProjectHours } from '@/modules/users/models/workload-by-projects-statistics.interface'
 
 @Component({ components: { BaseChartDoughnut } })
 export default class WorkloadByProjects extends Vue {
-  @Prop() readonly data?: WorkloadByProjectsStatistics
-  private statisticsData?: WorkloadByProjectsStatistics
+  @Prop() readonly data: ProjectHours | null = null
+  private statisticsData: ProjectHours | null = null
   private chartData: ChartData = {}
   private chartOptions: ChartOptions = {}
 
@@ -23,14 +23,14 @@ export default class WorkloadByProjects extends Vue {
   }
 
   @Watch('data', { deep: true })
-  refreshChart(data?: WorkloadByProjectsStatistics): void {
-    this.statisticsData = data
+  refreshChart(data?: ProjectHours | null): void {
+    this.statisticsData = data || null
     this.chartData = this.getChartData()
   }
 
   private getChartData(): ChartData {
     const statistics = this.getStatistics()
-    const dataUnit: 'hours' | 'percentage' = 'percentage'
+    const dataUnit: 'hours' | 'percentage' = 'hours'
     const dataValues: number[] = Array.from(statistics, ([key, value]) => value[dataUnit])
     const labelsValues: string[] = Array.from(statistics.keys())
 
@@ -53,15 +53,16 @@ export default class WorkloadByProjects extends Vue {
     const statistics = new Map<string, { hours: number; percentage: number }>()
     if (!this.statisticsData) return statistics
 
-    for (let projectName of Object.keys(this.statisticsData.projectHours)) {
-      const hours: number = this.statisticsData.projectHours[projectName]
+    for (let projectData of this.statisticsData.hoursForProject) {
+      const hours: number = projectData.hours
       const percentage: number = Math.round(
-        (this.statisticsData.projectHours[projectName] * 100) / this.statisticsData.totalHours
+        (projectData.hours * 100) / this.statisticsData.totalHours
       )
-      statistics.set(projectName, { hours, percentage })
+      statistics.set(projectData.projectName, { hours, percentage })
     }
 
-    const topHours: number[] = Object.values(this.statisticsData.projectHours)
+    const topHours: number[] = this.statisticsData.hoursForProject
+      .map((item) => item.hours)
       .sort((a, b) => b - a)
       .slice(0, 3)
 

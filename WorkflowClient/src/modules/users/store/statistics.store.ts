@@ -15,15 +15,13 @@ import { Message } from 'element-ui'
 })
 class StatisticsStore extends VuexModule {
   _total: {
-    [userId: string]: {
-      goalCompletion: GoalCompletionStatistics
-      workloadByProjects: WorkloadByProjectsStatistics
-      workloadByDays: WorkloadByDaysStatistics
-    }
-  } = {}
-  _goalCompletion: { [userId: string]: GoalCompletionStatistics } = {}
-  _workloadByProjects: { [userId: string]: WorkloadByProjectsStatistics } = {}
-  _workloadByDays: { [userId: string]: WorkloadByDaysStatistics } = {}
+    goalCompletion: GoalCompletionStatistics
+    workloadByProjects: WorkloadByProjectsStatistics
+    workloadByDays: WorkloadByDaysStatistics
+  } | null = null
+  _goalCompletion: GoalCompletionStatistics | null = null
+  _workloadByProjects: WorkloadByProjectsStatistics | null = null
+  _workloadByDays: WorkloadByDaysStatistics | null = null
 
   public get total() {
     return this._total

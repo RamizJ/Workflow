@@ -9,12 +9,12 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import { ChartData, ChartOptions } from 'chart.js'
 import BaseChartDoughnut from '@/core/components/base-chart/base-chart-doughnut.vue'
-import { GoalCompletionStatistics } from '@/modules/users/models/goal-completion-statistics.interface'
+import { GoalsCompletion } from '@/modules/users/models/goal-completion-statistics.interface'
 
 @Component({ components: { BaseChartDoughnut } })
 export default class GoalCompletion extends Vue {
-  @Prop() readonly data?: GoalCompletionStatistics
-  private statisticsData?: GoalCompletionStatistics
+  @Prop() readonly data: GoalsCompletion | null = null
+  private statisticsData: GoalsCompletion | null = null
   private chartData: ChartData = {}
   private chartOptions: ChartOptions = {}
 
@@ -23,8 +23,8 @@ export default class GoalCompletion extends Vue {
   }
 
   @Watch('data', { deep: true })
-  refreshChart(data?: GoalCompletionStatistics): void {
-    this.statisticsData = data
+  refreshChart(data?: GoalsCompletion | null): void {
+    this.statisticsData = data || null
     this.chartData = this.getChartData()
   }
 
@@ -33,12 +33,9 @@ export default class GoalCompletion extends Vue {
     const totalPcs: number = valuesPcs.reduce((a, b) => a + b, 0)
     const valuesPercents: number[] = valuesPcs.map((value) => Math.round((value * 100) / totalPcs))
     const data: number[] = valuesPcs
-    const labels: string[] = [
-      'Выполнены вовремя',
-      'Выполнены с отклонением',
-      'В процессе выполнения',
-      'Не выполнены',
-    ]
+    const labels: string[] = data.length
+      ? ['Выполнены вовремя', 'Выполнены с отклонением', 'В процессе выполнения', 'Не выполнены']
+      : []
     return { datasets: [{ backgroundColor: this.getChartDataColors(), data }], labels }
   }
 

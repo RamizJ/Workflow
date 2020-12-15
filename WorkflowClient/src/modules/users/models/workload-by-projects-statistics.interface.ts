@@ -1,6 +1,12 @@
 export interface WorkloadByProjectsStatistics {
   totalHours: number
-  projectHours: {
-    [projectName: string]: number
-  }
+  projectHoursForUsers: {
+    userId: string
+    hoursForProject: { projectId: number; hours: number }[]
+  }[]
+}
+
+export interface ProjectHours {
+  totalHours: number
+  hoursForProject: { projectName: string; hours: number }[]
 }

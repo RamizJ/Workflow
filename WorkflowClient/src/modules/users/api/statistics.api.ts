@@ -9,11 +9,9 @@ export default {
   getTotal: (
     query: StatisticsQuery
   ): AxiosPromise<{
-    [userId: string]: {
-      goalCompletion: GoalCompletionStatistics
-      workloadByProjects: WorkloadByProjectsStatistics
-      workloadByDays: WorkloadByDaysStatistics
-    }
+    goalCompletion: GoalCompletionStatistics
+    workloadByProjects: WorkloadByProjectsStatistics
+    workloadByDays: WorkloadByDaysStatistics
   }> => {
     return api.request({
       url: `/api/Statistic/GetTotal`,
@@ -21,27 +19,21 @@ export default {
       data: query,
     })
   },
-  getGoalCompletion: (
-    query: StatisticsQuery
-  ): AxiosPromise<{ [userId: string]: GoalCompletionStatistics }> => {
+  getGoalCompletion: (query: StatisticsQuery): AxiosPromise<GoalCompletionStatistics> => {
     return api.request({
       url: `/api/Statistic/GetGoalCompletion`,
       method: 'POST',
       data: query,
     })
   },
-  getWorkloadByProjects: (
-    query: StatisticsQuery
-  ): AxiosPromise<{ [userId: string]: WorkloadByProjectsStatistics }> => {
+  getWorkloadByProjects: (query: StatisticsQuery): AxiosPromise<WorkloadByProjectsStatistics> => {
     return api.request({
       url: `/api/Statistic/GetWorkloadByProject`,
       method: 'POST',
       data: query,
     })
   },
-  getWorkloadByDays: (
-    query: StatisticsQuery
-  ): AxiosPromise<{ [userId: string]: WorkloadByDaysStatistics }> => {
+  getWorkloadByDays: (query: StatisticsQuery): AxiosPromise<WorkloadByDaysStatistics> => {
     return api.request({
       url: `/api/Statistic/GetWorkloadByDays`,
       method: 'POST',
