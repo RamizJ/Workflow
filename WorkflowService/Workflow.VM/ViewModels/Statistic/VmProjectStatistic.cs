@@ -1,14 +1,14 @@
 ﻿using System;
 using Workflow.DAL.Models;
 
-namespace Workflow.VM.ViewModels
+namespace Workflow.VM.ViewModels.Statistic
 {
-    public class UserStatistic
+    public class VmProjectStatistic
     {
         public int[] GoalsCountForState { get; set; }
-        public ByDateStatistic[] ByDateStatistics { get; set; }
+        public ByDateGoalStatistic[] ByDateStatistics { get; set; }
 
-        public UserStatistic()
+        public VmProjectStatistic()
         {
             var statesCount = Enum.GetValues(typeof(GoalState)).Length;
             GoalsCountForState = new int[statesCount];

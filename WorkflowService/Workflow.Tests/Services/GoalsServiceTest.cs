@@ -10,6 +10,7 @@ using NUnit.Framework;
 using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
+using Workflow.DAL.Repositories.Abstract;
 using Workflow.Services;
 using Workflow.Services.Exceptions;
 using Workflow.VM.ViewModelConverters;
@@ -35,7 +36,8 @@ namespace Workflow.Tests.Services
             _serviceProvider = ContextHelper.Initialize(_dbConnection, true);
             _dataContext = _serviceProvider.GetService<DataContext>();
             _userManager = _serviceProvider.GetService<UserManager<ApplicationUser>>();
-            _service = new GoalsService(_dataContext, _userManager);
+            _goalsRepository = _serviceProvider.GetService<IGoalsRepository>();
+            _service = new GoalsService(_dataContext, _userManager, _goalsRepository);
             _usersService = new UsersService(_dataContext, _userManager);
             _currentUser = _testData.Users.First();
             _vmConverter = new VmGoalConverter();
@@ -602,5 +604,6 @@ namespace Workflow.Tests.Services
         private ApplicationUser _currentUser;
         private UserManager<ApplicationUser> _userManager;
         private VmGoalConverter _vmConverter;
+        private IGoalsRepository _goalsRepository;
     }
 }
