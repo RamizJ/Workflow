@@ -43,8 +43,10 @@ export default class Chat extends Vue {
   }
 
   private emitMessage(): void {
-    this.$emit('new-message', this.newMessage)
-    this.newMessage = ''
+    if (this.newMessage.trim()) {
+      this.$emit('new-message', this.newMessage)
+      this.newMessage = ''
+    }
   }
 
   private scrollToBottom(): void {
