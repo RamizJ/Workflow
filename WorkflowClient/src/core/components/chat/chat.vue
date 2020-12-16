@@ -39,7 +39,7 @@ export default class Chat extends Vue {
   @Watch('messages')
   onMessagesChange(newMessagesList: Message[]) {
     this.list = newMessagesList
-    setTimeout(() => this.scrollToBottom(), 15)
+    setTimeout(() => this.scrollToBottom(), 1)
   }
 
   private emitMessage(): void {

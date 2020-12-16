@@ -1,5 +1,5 @@
 import request from './request'
-import { setToken, setBaseURL, setHeaders } from './config'
+import { setToken, setBaseURL, setHeaders, baseUrl } from './config'
 import { AxiosPromise, AxiosRequestConfig } from 'axios'
 
 interface API {
@@ -7,6 +7,7 @@ interface API {
   setToken: (token: string) => void
   setBaseURL: (baseURL: string) => void
   setHeaders: (headers: { [key: string]: string }) => void
+  baseUrl?: string
 }
 
 const api: API = {
@@ -14,6 +15,7 @@ const api: API = {
   setToken,
   setBaseURL,
   setHeaders,
+  baseUrl,
 }
 
 export default api

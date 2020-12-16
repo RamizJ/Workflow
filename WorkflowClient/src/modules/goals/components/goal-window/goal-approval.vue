@@ -29,11 +29,13 @@ export default class GoalApproval extends Vue {
     return this.me?.id || ''
   }
 
+  protected async mounted(): Promise<void> {
+    // TODO: Загрузить существующие сообщения
+  }
+
   private async sendNewMessage(text: string): Promise<void> {
     const message = new Message(text, new Date(), this.senderName, this.senderId)
-
     // TODO: Отправка сообщения на сервер
-
     this.messages.push(message)
   }
 }

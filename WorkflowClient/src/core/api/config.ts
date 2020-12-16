@@ -10,6 +10,8 @@ const config: Config = {
   },
 }
 
+export const baseUrl = config.baseURL
+
 export const setToken = (token: string): void => {
   config.headers = { ...config.headers, authorization: `Bearer ${token}` }
 }
