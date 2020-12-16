@@ -11,125 +11,139 @@
       :disabled="form.id && form.isRemoved"
       @submit.native.prevent="submit"
     >
-      <el-row :gutter="20">
-        <el-col :span="$route.params.projectId ? 15 : 24">
-          <el-form-item label="Название" prop="title">
-            <el-input
-              ref="title"
-              v-model="form.title"
-              placeholder="Название"
-              @keyup.enter.native="submit"
-            ></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col v-if="!$route.params.projectId" :span="12">
-          <el-form-item label="Проект" prop="projectId">
-            <el-select
-              v-model="form.projectId"
-              placeholder="Проект"
-              :remote-method="searchProjects"
-              filterable="filterable"
-              remote="remote"
-              clearable="clearable"
-              default-first-option="default-first-option"
-              @change="onProjectChange"
-            >
-              <el-option
-                v-for="item in projects"
-                :key="item.id"
-                :label="item.value"
-                :value="item.id"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col v-if="priorityVisible || form.priority" :span="$route.params.projectId ? 9 : 12">
-          <el-form-item label="Приоритет" prop="priority">
-            <el-select v-model="form.priority" placeholder="Приоритет">
-              <el-option
-                v-for="item in priorities"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20">
-        <transition name="fade">
-          <el-col v-if="descriptionVisible || form.description" :span="24">
-            <el-form-item label="Описание" prop="description">
-              <el-input
-                v-model="form.description"
-                :autosize="{ minRows: 2 }"
-                type="textarea"
-                placeholder="Описание"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-        </transition>
-        <!--        <transition name="fade">-->
-        <!--          <el-col v-if="checklistVisible || (form.children && form.children.length)" :span="24">-->
-        <!--            <el-form-item>-->
-        <!--              <checklist-->
-        <!--                :items="form.children"-->
-        <!--                :goal="form"-->
-        <!--                @change="onChecklistChange"-->
-        <!--              ></checklist>-->
-        <!--            </el-form-item>-->
-        <!--          </el-col>-->
-        <!--        </transition>-->
-        <transition name="fade">
-          <el-col v-if="performerVisible || form.performerId" :span="7">
-            <el-form-item label="Исполнитель" prop="performerId">
-              <el-select
-                v-model="form.performerId"
-                placeholder="Исполнитель"
-                :remote-method="searchUsers"
-                @blur="searchUsers()"
-                default-first-option
-                filterable
-                clearable
-                remote
-              >
-                <el-option
-                  v-if="form.performerId && !users.some((user) => user.id === form.performerId)"
-                  :key="form.performerId"
-                  :label="shortenFullName(form.performerFio)"
-                  :value="form.performerId"
-                ></el-option>
-                <el-option
-                  v-for="item in users"
-                  :key="item.id"
-                  :label="item.value"
-                  :value="item.id"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </transition>
-        <transition name="fade">
-          <el-col v-if="expectedCompletedDateVisible || form.expectedCompletedDate" :span="8">
-            <el-form-item label="Крайний срок" prop="expectedCompletedDate">
-              <el-date-picker
-                v-model="form.expectedCompletedDate"
-                :picker-options="{ disabledDate: validateDate }"
-                type="datetime"
-                prefix-icon="el-icon-arrow-down"
-                format="dd.MM.yyyy HH:mm"
-                default-time="12:00:00"
-                placeholder="Крайний срок"
-              ></el-date-picker>
-            </el-form-item>
-          </el-col>
-        </transition>
-        <transition name="fade">
-          <el-col
-            v-if="attachmentsVisible || (form.attachments && form.attachments.length)"
-            :span="24"
-          >
-            <el-form-item label="Вложения">
+      <el-tabs v-model="activeTab">
+        <el-tab-pane label="Описание" name="description">
+          <el-row :gutter="20">
+            <el-col :span="$route.params.projectId ? 15 : 24">
+              <el-form-item label="Название" prop="title">
+                <el-input
+                  ref="title"
+                  v-model="form.title"
+                  placeholder="Введите название"
+                  @keyup.enter.native="submit"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col v-if="!$route.params.projectId" :span="12">
+              <el-form-item label="Проект" prop="projectId">
+                <el-select
+                  v-model="form.projectId"
+                  placeholder="Найти проект..."
+                  :remote-method="searchProjects"
+                  filterable="filterable"
+                  remote="remote"
+                  clearable="clearable"
+                  default-first-option="default-first-option"
+                  @change="onProjectChange"
+                >
+                  <el-option
+                    v-for="item in projects"
+                    :key="item.id"
+                    :label="item.value"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="$route.params.projectId ? 9 : 12">
+              <el-form-item label="Приоритет" prop="priority">
+                <el-select v-model="form.priority" placeholder="Приоритет">
+                  <el-option
+                    v-for="item in priorities"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <el-form-item label="Детали" prop="description">
+                <el-input
+                  v-model="form.description"
+                  :autosize="{ minRows: 2 }"
+                  type="textarea"
+                  placeholder="Дополнительная информация..."
+                ></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-tab-pane>
+        <el-tab-pane label="Исполнение" name="execution">
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="Ответственный" prop="ownerId" required>
+                <el-select
+                  v-model="form.ownerId"
+                  placeholder="Ответственный"
+                  :remote-method="searchUsers"
+                  @blur="searchUsers()"
+                  default-first-option
+                  filterable
+                  clearable
+                  remote
+                  disabled
+                >
+                  <el-option
+                    v-if="form.ownerId && !users.some((user) => user.id === form.ownerId)"
+                    :key="form.ownerId"
+                    :label="shortenFullName(form.ownerFio)"
+                    :value="form.ownerId"
+                  ></el-option>
+                  <el-option
+                    v-for="item in users"
+                    :key="item.id"
+                    :label="item.value"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="Исполнитель" prop="performerId">
+                <el-select
+                  v-model="form.performerId"
+                  placeholder="Исполнитель"
+                  :remote-method="searchUsers"
+                  @blur="searchUsers()"
+                  default-first-option
+                  filterable
+                  clearable
+                  remote
+                >
+                  <el-option
+                    v-if="form.performerId && !users.some((user) => user.id === form.performerId)"
+                    :key="form.performerId"
+                    :label="shortenFullName(form.performerFio)"
+                    :value="form.performerId"
+                  ></el-option>
+                  <el-option
+                    v-for="item in users"
+                    :key="item.id"
+                    :label="item.value"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="Крайний срок" prop="expectedCompletedDate">
+                <el-date-picker
+                  v-model="form.expectedCompletedDate"
+                  :picker-options="{ disabledDate: validateDate }"
+                  type="datetime"
+                  prefix-icon="el-icon-arrow-down"
+                  format="dd.MM.yyyy HH:mm"
+                  default-time="12:00:00"
+                  placeholder="Крайний срок"
+                ></el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-tab-pane>
+        <el-tab-pane label="Вложения" name="attachments" :lazy="true">
+          <el-col :span="24">
+            <el-form-item>
               <el-upload
                 ref="upload"
                 action="https://demo.girngm.ru/workflow_dev/api/Goals/AddAttachments/"
@@ -149,114 +163,14 @@
               </el-upload>
             </el-form-item>
           </el-col>
-        </transition>
-      </el-row>
+        </el-tab-pane>
+        <el-tab-pane label="Согласование" name="approval" :lazy="true">
+          <goal-approval />
+        </el-tab-pane>
+      </el-tabs>
     </el-form>
     <template v-if="!loading && (!form.id || !form.isRemoved)" slot="footer">
-      <div class="extra">
-        <el-tooltip
-          content="Описание"
-          effect="dark"
-          placement="top"
-          transition="fade"
-          :visible-arrow="false"
-          :open-delay="500"
-        >
-          <el-button
-            v-if="!form.description"
-            type="text"
-            @click="descriptionVisible = !descriptionVisible"
-            circle="circle"
-          >
-            <unicon name="file-alt" />
-          </el-button>
-        </el-tooltip>
-        <!--        <el-tooltip-->
-        <!--          content="Чек-лист"-->
-        <!--          effect="dark"-->
-        <!--          placement="top"-->
-        <!--          transition="fade"-->
-        <!--          :visible-arrow="false"-->
-        <!--          :open-delay="500"-->
-        <!--        >-->
-        <!--          <el-button-->
-        <!--            v-if="!(form.children && form.children.length)"-->
-        <!--            type="text"-->
-        <!--            @click="checklistVisible = !checklistVisible"-->
-        <!--            circle="circle"-->
-        <!--          >-->
-        <!--            <unicon name="list-ul" />-->
-        <!--          </el-button>-->
-        <!--        </el-tooltip>-->
-        <el-tooltip
-          content="Приоритет"
-          effect="dark"
-          placement="top"
-          transition="fade"
-          :visible-arrow="false"
-          :open-delay="500"
-        >
-          <el-button
-            v-if="!form.priority"
-            type="text"
-            @click="priorityVisible = !priorityVisible"
-            circle="circle"
-          >
-            <feather type="zap"></feather>
-          </el-button>
-        </el-tooltip>
-        <el-tooltip
-          content="Исполнитель"
-          effect="dark"
-          placement="top"
-          transition="fade"
-          :visible-arrow="false"
-          :open-delay="500"
-        >
-          <el-button
-            v-if="!form.performerId"
-            type="text"
-            @click="performerVisible = !performerVisible"
-            circle="circle"
-          >
-            <unicon name="user" />
-          </el-button>
-        </el-tooltip>
-        <el-tooltip
-          content="Крайний срок"
-          effect="dark"
-          placement="top"
-          transition="fade"
-          :visible-arrow="false"
-          :open-delay="500"
-        >
-          <el-button
-            v-if="!form.expectedCompletedDate"
-            type="text"
-            @click="expectedCompletedDateVisible = !expectedCompletedDateVisible"
-            circle="circle"
-          >
-            <unicon name="calendar-alt" />
-          </el-button>
-        </el-tooltip>
-        <el-tooltip
-          content="Вложения"
-          effect="dark"
-          placement="top"
-          transition="fade"
-          :visible-arrow="false"
-          :open-delay="500"
-        >
-          <el-button
-            v-if="!(form.attachments && form.attachments.length)"
-            type="text"
-            @click="attachmentsVisible = !attachmentsVisible"
-            circle="circle"
-          >
-            <unicon name="paperclip" />
-          </el-button>
-        </el-tooltip>
-      </div>
+      <div class="extra"></div>
       <div class="send">
         <el-tooltip
           content="Сохранить"
@@ -282,23 +196,28 @@ import { Input, Message, Upload } from 'element-ui'
 import { ElForm } from 'element-ui/types/form'
 import tableStore from '@/core/store/table.store'
 import goalsStore from '@/modules/goals/store/goals.store'
+import authStore from '@/modules/users/store/auth.store'
 import BaseWindow from '../../../../core/components/base-window.vue'
 import DialogMixin from '../../../../core/mixins/dialog.mixin'
-import Goal, { Priority, Status } from '@/modules/goals/models/goal.type'
+import Goal, { Priority } from '@/modules/goals/models/goal.type'
 import Attachment from '@/modules/goals/models/attachment.type'
+import User from '@/modules/users/models/user.type'
+import GoalApproval from '@/modules/goals/components/goal-window/goal-approval.vue'
 
-@Component({ components: { BaseWindow } })
+@Component({ components: { GoalApproval, BaseWindow } })
 export default class GoalWindow extends Mixins(DialogMixin) {
   @Prop() readonly id: number | undefined
   @Ref() readonly title?: Input
 
-  private windowTitle = 'Задача'
+  private activeTab = 'description'
+
   private form: Goal = new Goal()
 
   private rules = {
     title: [{ required: true, message: '!', trigger: 'blur' }],
     performerId: [{ required: true, message: '!', trigger: 'blur' }],
     projectId: [{ required: true, message: '!', trigger: 'blur' }],
+    priority: [{ required: true }],
   }
   private priorities = [
     { value: Priority.High, label: 'Высокий приоритет' },
@@ -306,14 +225,11 @@ export default class GoalWindow extends Mixins(DialogMixin) {
     { value: Priority.Low, label: 'Низкий приоритет' },
   ]
 
-  private descriptionVisible = null
-  private checklistVisible = null
-  private priorityVisible = null
-  private performerVisible = null
-  private expectedCompletedDateVisible = null
-  private attachmentsVisible = null
-
   private isReloadRequested = false
+
+  private get me(): User | null {
+    return authStore.me
+  }
 
   protected async mounted(): Promise<void> {
     this.visible = true
@@ -323,6 +239,8 @@ export default class GoalWindow extends Mixins(DialogMixin) {
     this.form.projectId = this.$route.params.projectId
       ? parseInt(this.$route.params.projectId)
       : null
+    this.form.ownerId = this.me?.id
+    this.form.ownerFio = `${this.me?.lastName} ${this.me?.firstName} ${this.me?.middleName}`
     if (goalsStore.goal) this.form = { ...goalsStore.goal }
     if (goalsStore.goal?.id) {
       const fullGoal = await goalsStore.findOneById(goalsStore.goal.id)
@@ -360,7 +278,7 @@ export default class GoalWindow extends Mixins(DialogMixin) {
     const hasAttachments = this.form.isAttachmentsExist
     const hasChildren = this.form.hasChildren
     const entity: Goal = { ...this.form } as Goal
-    if (!this.performerVisible && !this.form.performerId) delete entity.performerId
+    if (!this.form.performerId) delete entity.performerId
     if (this.id || this.form.id) await goalsStore.updateOne(entity)
     else this.form = await goalsStore.createOne(entity)
     this.form.isAttachmentsExist = hasAttachments
@@ -379,12 +297,6 @@ export default class GoalWindow extends Mixins(DialogMixin) {
     this.form.children?.forEach((item) => {
       item.projectId = this.form.projectId
     })
-  }
-
-  private onChecklistChange(checklist: Goal[]): void {
-    this.form.children = checklist
-    this.form.hasChildren = checklist.some((goal: Goal) => !goal.isRemoved)
-    this.$forceUpdate()
   }
 
   private validateDate(date: Date): boolean {

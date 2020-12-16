@@ -30,7 +30,7 @@ import projectsStore from '../store/projects.store'
 export default class ProjectSelect extends Vue {
   @Prop() private readonly placeholder?: string
   @Prop() private readonly value!: number | number[]
-  @Prop() private readonly fullWidth: boolean = false
+  @Prop() private readonly fullWidth?: boolean
   private loading = false
   private projects: Project[] = []
   private selected: number | number[] | null = null
