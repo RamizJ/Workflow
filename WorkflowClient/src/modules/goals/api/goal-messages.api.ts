@@ -4,14 +4,14 @@ import Query from '@/core/types/query.type'
 import GoalMessage from '@/modules/goals/models/goal-message.model'
 
 export default {
-  getPage: (goalId: number, query: Query): Promise<AxiosResponse<GoalMessage[]>> => {
+  getPage: (query: Query, goalId?: number): Promise<AxiosResponse<GoalMessage[]>> => {
     return api.request({
       url: `/api/GoalMessages/GetPage?goalId=${goalId}`,
       method: 'POST',
       data: query,
     })
   },
-  getUnreadedPage: (goalId, query: Query): Promise<AxiosResponse<GoalMessage[]>> => {
+  getUnreadedPage: (query: Query, goalId?: number): Promise<AxiosResponse<GoalMessage[]>> => {
     return api.request({
       url: `/api/GoalMessages/GetUnreadedPage?goalId=${goalId}`,
       method: 'POST',

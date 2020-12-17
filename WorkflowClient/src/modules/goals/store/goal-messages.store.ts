@@ -24,9 +24,9 @@ class GoalMessagesStore extends VuexModule {
   }
 
   @MutationAction({ mutate: ['_messages'] })
-  public async getMessages(goalId: number) {
+  public async getMessages(goalId?: number) {
     try {
-      const response = await goalMessagesApi.getPage(goalId, new Query())
+      const response = await goalMessagesApi.getPage(new Query(), goalId)
       return {
         _messages: response.data,
       }
@@ -39,9 +39,9 @@ class GoalMessagesStore extends VuexModule {
   }
 
   @MutationAction({ mutate: ['_unreadMessages'] })
-  public async getUnreadMessages(goalId: number) {
+  public async getUnreadMessages(goalId?: number) {
     try {
-      const response = await goalMessagesApi.getUnreadedPage(goalId, new Query())
+      const response = await goalMessagesApi.getUnreadedPage(new Query(), goalId)
       return {
         _unreadMessages: response.data,
       }

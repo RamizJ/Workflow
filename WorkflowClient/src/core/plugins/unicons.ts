@@ -3,6 +3,7 @@ import Unicon from 'vue-unicons'
 import {
   uniApps,
   uniArrowRight,
+  uniBell,
   uniCalendarAlt,
   uniPlus,
   uniPlusCircle,
@@ -41,6 +42,7 @@ import {
 Unicon.add([
   uniApps,
   uniArrowRight,
+  uniBell,
   uniCalendarAlt,
   uniPlus,
   uniPlusCircle,

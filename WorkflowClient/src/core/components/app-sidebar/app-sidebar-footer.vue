@@ -1,108 +1,56 @@
 <template>
   <div class="sidebar-footer">
     <Popover>
-      <PopoverButton icon="cube">Новая область</PopoverButton>
-      <PopoverButton icon="user-arrows" @click="openTeamWindow">Новая команда</PopoverButton>
-      <PopoverButton icon="users-alt" @click="openUserWindow">Новый пользователь</PopoverButton>
-      <PopoverButton icon="layer-group" @click="openProjectWindow">Новый проект</PopoverButton>
-      <PopoverButton icon="edit-alt" @click="openGoalWindow">Новая задача</PopoverButton>
-      <IconButton slot="reference" icon="plus" />
+      <div class="notifications">
+        <div class="notifications__title">Уведомления</div>
+        <div v-if="isEmpty" class="empty-text">Нет уведомлений</div>
+        <transition-group name="message" tag="p">
+          <notification
+            v-for="item in notifications"
+            :key="item.id"
+            :title="item.goalTitle"
+            :subtitle="item.ownerFio"
+            :content="item.text"
+            :date="item.fullDate"
+          />
+        </transition-group>
+      </div>
+      <IconButton
+        slot="reference"
+        icon="bell"
+        :badge="notifications.length"
+        @click="updateNotifications"
+      />
     </Popover>
-    <IconButton icon="sliders-v-alt" @click="openSettings" />
-
-    <!--    <TeamDialog v-if="isTeamWindowOpened" @close="closeTeamWindow" />-->
-    <!--    <UserDialog v-if="isUserWindowOpened" @close="closeUserWindow" />-->
-    <!--    <ProjectDialog v-if="isProjectWindowOpened" @close="closeProjectWindow" />-->
-    <!--    <GoalWindowNew v-if="isGoalWindowOpened" @close="closeGoalWindow" />-->
-    <!--    <SettingsWindow v-if="isSettingsOpened" @closed="closeSettings" />-->
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import projectsStore from '@/modules/projects/store/projects.store'
-import goalsStore from '@/modules/goals/store/goals.store'
-import teamsStore from '@/modules/teams/store/teams.store'
-import usersStore from '@/modules/users/store/users.store'
-import settingsStore from '@/modules/settings/store/settings.store'
-
 import Popover from '@/core/components/base-popover/base-popover.vue'
-import PopoverButton from '@/core/components/base-popover/base-popover-button.vue'
 import IconButton from '@/core/components/base-icon-button.vue'
-import ProjectDialog from '@/modules/projects/components/project-window.vue'
-import GoalWindow from '@/modules/goals/components/goal-window/goal-window.vue'
-import TeamDialog from '@/modules/teams/components/team-dialog.vue'
-import UserDialog from '@/modules/users/components/user-dialog.vue'
-import SettingsWindow from '@/modules/settings/components/settings-window.vue'
-import GoalWindowNew from '@/modules/goals/components/goal-window/goal-window-new.vue'
+import goalMessagesStore from '@/modules/goals/store/goal-messages.store'
+import GoalMessage from '@/modules/goals/models/goal-message.model'
+import Notification from '@/core/components/notification/notification.vue'
 
 @Component({
   components: {
-    GoalWindowNew,
-    GoalWindow,
-    UserDialog,
-    TeamDialog,
-    ProjectDialog,
-    SettingsWindow,
-    IconButton,
-    PopoverButton,
+    Notification,
     Popover,
+    IconButton,
   },
 })
 export default class SidebarFooter extends Vue {
-  private get isProjectWindowOpened(): boolean {
-    return projectsStore.isProjectWindowOpened
+  private get notifications(): GoalMessage[] {
+    return goalMessagesStore.messages
   }
 
-  private get isGoalWindowOpened(): boolean {
-    return goalsStore.isGoalWindowOpened
+  private get isEmpty(): boolean {
+    return this.notifications.length === 0
   }
 
-  private get isTeamWindowOpened(): boolean {
-    return teamsStore.isTeamWindowOpened
-  }
-
-  private get isUserWindowOpened(): boolean {
-    return usersStore.isUserWindowOpened
-  }
-
-  private get isSettingsOpened(): boolean {
-    return settingsStore.isSettingsOpened
-  }
-
-  private openProjectWindow(): void {
-    projectsStore.openProjectWindow()
-  }
-  private closeProjectWindow(): void {
-    projectsStore.closeProjectWindow()
-  }
-
-  private openGoalWindow(): void {
-    goalsStore.openGoalWindow()
-  }
-  private closeGoalWindow(): void {
-    goalsStore.closeGoalWindow()
-  }
-
-  private openTeamWindow(): void {
-    teamsStore.openTeamWindow()
-  }
-  private closeTeamWindow(): void {
-    teamsStore.closeTeamWindow()
-  }
-
-  private openUserWindow(): void {
-    usersStore.openUserWindow()
-  }
-  private closeUserWindow(): void {
-    usersStore.closeUserWindow()
-  }
-
-  private openSettings(): void {
-    settingsStore.openSettings()
-  }
-  private closeSettings(): void {
-    settingsStore.closeSettings()
+  private async updateNotifications(): Promise<void> {
+    await goalMessagesStore.getUnreadMessages()
   }
 }
 </script>
@@ -111,5 +59,24 @@ export default class SidebarFooter extends Vue {
 .sidebar-footer {
   display: flex;
   justify-content: space-between;
+}
+.notifications {
+  height: 350px;
+  width: 250px;
+  overflow: auto;
+  scroll-behavior: smooth;
+  .empty-text {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  &__title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
 }
 </style>

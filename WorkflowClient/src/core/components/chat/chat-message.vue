@@ -13,7 +13,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
 import Message from '@/core/types/message.model'
 
 @Component
-export default class Chat extends Vue {
+export default class ChatMessage extends Vue {
   @Prop() readonly message!: Message
 }
 </script>
