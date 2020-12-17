@@ -10,5 +10,7 @@
 
         public string OwnerId { get; set; }
         public string OwnerOwnerFio { get; set; }
+
+        public bool IsRead { get; set; }
     }
 }
