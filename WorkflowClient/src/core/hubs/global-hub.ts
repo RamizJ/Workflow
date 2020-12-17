@@ -9,11 +9,8 @@ export default class GlobalHub {
   public active = false
 
   private initialize(): void {
-    console.log('hub: initialize')
     const url = `${baseUrl}/entity-state-observer`
     const token = tokenStore.token || ''
-    console.log(url)
-    console.log(token)
     this.connection = new SignalR.HubConnectionBuilder()
       .withUrl(url, { accessTokenFactory: () => token })
       .withAutomaticReconnect()
@@ -22,11 +19,15 @@ export default class GlobalHub {
   }
 
   public async start(): Promise<void> {
-    console.log('hub: open')
+    if (this.active) return
     this.initialize()
     this.connection.on(HUB_METHOD, (message) => this.onMessageReceived(message))
-    await this.connection.start()
-    this.active = true
+    try {
+      await this.connection.start()
+      this.active = true
+    } catch (e) {
+      console.error('Failed to start SignalR global hub')
+    }
   }
 
   public async stop(): Promise<void> {
