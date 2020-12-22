@@ -36,7 +36,7 @@ namespace Workflow.VM.ViewModelConverters
             viewModel.Description = model.Description;
             viewModel.ParentGroupId = model.ParentGroupId;
             viewModel.OwnerId = model.OwnerId;
-            viewModel.OwnerFio = model.Owner?.Fio;
+            viewModel.OwnerFio = model.Owner?.FullName;
             viewModel.Projects = model.Projects?
                 .Select(_vmProjectConverter.ToViewModel)
                 .ToList();

@@ -172,7 +172,7 @@ namespace Workflow.DAL
 
             builder.Entity<UserGoalMessage>()
                 .HasOne(x => x.User)
-                .WithMany(o => o.UnreadMessages)
+                .WithMany(o => o.GoalMessages)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

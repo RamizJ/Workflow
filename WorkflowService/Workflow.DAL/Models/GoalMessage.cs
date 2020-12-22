@@ -14,7 +14,10 @@ namespace Workflow.DAL.Models
 
         public string OwnerId { get; set; }
         public ApplicationUser Owner { get; set; }
+        public DateTime? LastEditDate { get; set; }
 
-        public List<UserGoalMessage> UnreadUsers { get; set; } = new List<UserGoalMessage>();
+        public bool IsRemoved { get; set; }
+
+        public List<UserGoalMessage> MessageSubscribers { get; set; } = new List<UserGoalMessage>();
     }
 }

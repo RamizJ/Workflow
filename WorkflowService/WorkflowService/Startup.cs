@@ -158,6 +158,12 @@ namespace WorkflowService
             services.AddTransient<IViewModelConverter<ProjectTeam, VmProjectTeamRole>, VmProjectTeamRoleConverter>();
             services.AddTransient<IViewModelConverter<Group, VmGroup>, VmGroupConverter>();
             services.AddTransient<IViewModelConverter<Metadata, VmMetadata>, VmMetadataConverter>();
+            services.AddTransient<IViewModelConverter<GoalMessage, VmGoalMessage>, VmGoalMessageConverter>();
+            services.AddTransient<IViewModelConverter<UserGoalMessage, VmUserGoalMessage>, VmUserGoalMessageConverter>();
+
+            //Page loaders
+            services.AddTransient<IPageLoadService<Group>, GroupsPageLoadService>();
+            services.AddTransient<IPageLoadService<GoalMessage>, GoalMessagesPageLoadService>();
 
             //Services
             services.AddTransient<ICurrentUserService, CurrentUserService>();
@@ -177,7 +183,6 @@ namespace WorkflowService
             services.AddTransient<IProjectUserRolesService, ProjectUserRolesService>();
             services.AddTransient<IStatisticService, StatisticService>();
             services.AddTransient<IRolesService, RolesService>();
-            services.AddTransient<IPageLoadService<Group>, GroupsPageLoadService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
