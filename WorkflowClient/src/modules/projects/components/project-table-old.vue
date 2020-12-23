@@ -15,7 +15,7 @@
     >
       <el-table-column type="selection" width="42"></el-table-column>
       <el-table-column prop="name" label="Проект"></el-table-column>
-      <el-table-column prop="ownerFio" label="Руководитель" width="250"></el-table-column>
+      <el-table-column prop="ownerFullName" label="Руководитель" width="250"></el-table-column>
       <el-table-column
         prop="creationDate"
         label="Дата создания"

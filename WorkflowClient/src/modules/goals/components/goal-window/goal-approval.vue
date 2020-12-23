@@ -17,6 +17,7 @@ import goalMessagesStore from '@/modules/goals/store/goal-messages.store'
 })
 export default class GoalApproval extends Vue {
   @Prop() readonly goalId?: number
+  @Prop() readonly goalTitle?: string
 
   private get messages(): GoalMessage[] {
     return goalMessagesStore.messages
@@ -26,7 +27,7 @@ export default class GoalApproval extends Vue {
     return authStore.me
   }
 
-  private get ownerFio(): string {
+  private get ownerFullName(): string {
     return `${this.me?.lastName} ${this.me?.firstName} ${this.me?.middleName}`
   }
 
@@ -41,8 +42,10 @@ export default class GoalApproval extends Vue {
   private async sendNewMessage(text: string): Promise<void> {
     const message = new GoalMessage({
       text,
-      date: new Date().toUTCString(),
-      ownerFio: this.ownerFio,
+      goalId: this.goalId,
+      goalTitle: this.goalTitle,
+      creationDate: new Date().toISOString(),
+      ownerFullName: this.ownerFullName,
       ownerId: this.ownerId,
     })
     await goalMessagesStore.sendMessage(message)

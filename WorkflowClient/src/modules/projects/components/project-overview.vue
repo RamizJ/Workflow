@@ -14,7 +14,7 @@
         <el-card class="card" shadow="never">
           <div class="card__title">Информация</div>
           <div class="card__body">
-            <div>Руководитель проекта: {{ project.ownerFio }}</div>
+            <div>Руководитель проекта: {{ project.ownerFullName }}</div>
           </div>
         </el-card>
       </el-col>

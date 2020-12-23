@@ -1,7 +1,7 @@
 <template>
   <div class="chat-message">
     <div class="chat-message__caption">
-      {{ message.ownerFio }}
+      {{ message.ownerFullName }}
       <span class="chat-message__date" :title="message.fullDate">{{ message.shortDate }}</span>
     </div>
     <div class="chat-message__body">{{ message.text }}</div>

@@ -2,19 +2,18 @@ export default class Message {
   public id: number
   public text: string
 
-  public date: string
-  public ownerFio = 'Аноним'
+  public creationDate: string
+  public lastEditDate?: string
+  public ownerFullName = 'Аноним'
   public ownerId?: string
-
-  public isRead: boolean
 
   constructor(data: MessageData) {
     this.id = this.getId()
     this.text = data.text || ''
-    this.date = data.date
-    this.ownerFio = data.ownerFio
+    this.creationDate = data.creationDate
+    this.lastEditDate = data.lastEditDate
+    this.ownerFullName = data.ownerFullName
     this.ownerId = data.ownerId
-    this.isRead = data.isRead || true
   }
 
   private getId(): number {
@@ -22,7 +21,7 @@ export default class Message {
   }
 
   public get shortDate(): string {
-    return new Date(this.date).toLocaleString('ru', {
+    return new Date(this.creationDate).toLocaleString('ru', {
       timeZone: 'UTC',
       hour: '2-digit',
       minute: '2-digit',
@@ -30,7 +29,7 @@ export default class Message {
   }
 
   public get fullDate(): string {
-    return new Date(this.date).toLocaleString('ru', {
+    return new Date(this.creationDate).toLocaleString('ru', {
       timeZone: 'UTC',
       day: '2-digit',
       month: '2-digit',
@@ -45,9 +44,16 @@ export interface MessageData {
   id?: number
   text?: string
 
-  date: string
+  creationDate: string
+  lastEditDate?: string
   ownerId: string
-  ownerFio: string
+  ownerFullName: string
 
-  isRead?: boolean
+  messageSubscribers?: MessageSubscriber[]
+}
+
+export interface MessageSubscriber {
+  userId: string
+  userFullName: string
+  lastReadingDate: string
 }

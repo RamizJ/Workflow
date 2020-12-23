@@ -8,7 +8,7 @@
     @load.capture="tableService.load"
   >
     <BaseTableColumn prop="name" label="Название" />
-    <BaseTableColumn prop="ownerFio" label="Руководитель" width="250"></BaseTableColumn>
+    <BaseTableColumn prop="ownerFullName" label="Руководитель" width="250"></BaseTableColumn>
     <BaseTableColumn
       prop="creationDate"
       label="Дата создания"

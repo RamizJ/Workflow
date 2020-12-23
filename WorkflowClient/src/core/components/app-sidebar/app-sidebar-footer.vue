@@ -9,7 +9,7 @@
             v-for="item in notifications"
             :key="item.id"
             :title="item.goalTitle"
-            :subtitle="item.ownerFio"
+            :subtitle="item.ownerFullName"
             :content="item.text"
             :date="item.fullDate"
           />

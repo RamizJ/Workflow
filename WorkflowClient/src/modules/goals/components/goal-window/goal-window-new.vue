@@ -164,8 +164,8 @@
             </el-form-item>
           </el-col>
         </el-tab-pane>
-        <el-tab-pane v-if="this.form.id" label="Согласование" name="approval" :lazy="true">
-          <goal-approval :goal-id="this.form.id" />
+        <el-tab-pane v-if="form.id" label="Согласование" name="approval" :lazy="true">
+          <goal-approval :goal-id="form.id" :goal-title="form.title" />
         </el-tab-pane>
       </el-tabs>
     </el-form>
