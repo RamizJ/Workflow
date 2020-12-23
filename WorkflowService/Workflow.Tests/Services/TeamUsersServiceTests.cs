@@ -9,6 +9,7 @@ using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
+using Workflow.Services.Exceptions;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 
@@ -129,7 +130,7 @@ namespace Workflow.Tests.Services
         [Test]
         public void RemoveNotExistedTest()
         {
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Remove(0, string.Empty));
+            Assert.ThrowsAsync<HttpResponseException>(async () => await _service.Remove(0, string.Empty));
         }
     }
 }

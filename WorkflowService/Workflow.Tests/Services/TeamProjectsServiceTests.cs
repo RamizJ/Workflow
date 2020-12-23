@@ -10,6 +10,7 @@ using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
+using Workflow.Services.Exceptions;
 using Workflow.VM.Common;
 using Workflow.VM.ViewModels;
 
@@ -174,7 +175,7 @@ namespace Workflow.Tests.Services
             context.SaveChanges();
 
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => 
+            Assert.ThrowsAsync<HttpResponseException>(async () => 
                 await _service.Add(teamProject.TeamId, teamProject.ProjectId));
         }
 
@@ -182,7 +183,7 @@ namespace Workflow.Tests.Services
         public void AddNotExistedTest()
         {
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            Assert.ThrowsAsync<HttpResponseException>(async () =>
                 await _service.Add(1, 100));
         }
 
@@ -212,7 +213,7 @@ namespace Workflow.Tests.Services
             context.SaveChanges();
 
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            Assert.ThrowsAsync<HttpResponseException>(async () =>
                 await _service.Remove(1, 1));
         }
 

@@ -465,7 +465,7 @@ namespace Workflow.Services
             goal.Id = 0;
             goal.CreationDate = DateTime.Now;
             goal.OwnerId = creatorId;
-            goal.MetadataList = vmGoal.MetadataList.Select(m => new Metadata
+            goal.MetadataList = vmGoal.MetadataList?.Select(m => new Metadata
             {
                 Key = m.Key,
                 Value = m.Value
@@ -529,7 +529,7 @@ namespace Workflow.Services
                     .Select(observerId => new GoalObserver(vmGoal.Id, observerId))
                     .ToList();
 
-                model.MetadataList = vmGoal.MetadataList
+                model.MetadataList = vmGoal.MetadataList?
                     .Select(x => new Metadata(x.Key, x.Value))
                     .ToList();
 

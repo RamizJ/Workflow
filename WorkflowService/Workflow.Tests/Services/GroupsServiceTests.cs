@@ -122,15 +122,15 @@ namespace Workflow.Tests.Services
         {
             //Arrange 
             int groupId = _testData.Groups.First().Id;
-            var project1 = _testData.Projects[0].Id;
-            var project2 = _testData.Projects[1].Id;
+            var project3 = _testData.Projects[3].Id;
+            var project4 = _testData.Projects[4].Id;
 
             //Act
-            await _service.AddProjects(_currentUser, groupId, new[] {project1, project2});
+            await _service.AddProjects(_currentUser, groupId, new[] {project3, project4});
             var groupProjectsCount = await _dataContext.Projects.Where(p => p.GroupId == groupId).CountAsync();
 
             //Assert
-            Assert.AreEqual(2, groupProjectsCount);
+            Assert.AreEqual(5, groupProjectsCount);
         }
 
         [Test]

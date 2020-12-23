@@ -11,6 +11,7 @@ using NUnit.Framework;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
+using Workflow.Services.Exceptions;
 
 namespace Workflow.Tests.Services
 {
@@ -125,7 +126,7 @@ namespace Workflow.Tests.Services
         public void AddFoNotExistedGoalTest(int goalId)
         {
 
-            Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            Assert.ThrowsAsync<HttpResponseException>(async () =>
                 await _service.Add(_currentUser, goalId, new List<Attachment>()));
         }
 

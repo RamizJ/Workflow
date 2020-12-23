@@ -37,10 +37,12 @@ namespace Workflow.DAL
             SetupGoal(builder);
             SetupAttachment(builder);
             SetupPosition(builder);
+            SetupGoalMessages(builder);
             SetupUserGoalMessages(builder);
 
             base.OnModelCreating(builder);
         }
+
 
         private void SetupGroup(ModelBuilder builder)
         { }
@@ -102,16 +104,6 @@ namespace Workflow.DAL
                 .HasMaxLength(100)
                 .IsRequired();
 
-            //var projectTeamRoleEntity = builder.Entity<ProjectTeamRole>();
-            //projectTeamRoleEntity
-            //    .HasKey(ptr => new {ptr.ProjectId, ptr.TeamId});
-            //projectTeamRoleEntity
-            //    .HasOne(ptr => ptr.Project)
-            //    .WithMany(p => p.TeamsRoles);
-            //projectTeamRoleEntity
-            //    .HasOne(ptr => ptr.Team)
-            //    .WithMany(t => t.ProjectsRoles);
-
             var projectUserRole = builder.Entity<ProjectUserRole>();
             projectUserRole
                 .HasKey(ptr => new { ptr.ProjectId, ptr.UserId });
@@ -129,20 +121,21 @@ namespace Workflow.DAL
             //entity.Property(t => t.OwnerId).IsRequired();
             entity.Property(t => t.CreationDate).IsRequired();
             entity.Property(t => t.Title).IsRequired();
+            entity.Property(t => t.Title).HasMaxLength(512);
+            entity.Property(t => t.Description).HasMaxLength(4096);
         }
 
         private void SetupGoalObserver(ModelBuilder builder)
         {
-            builder.Entity<GoalObserver>()
-                .HasKey(go => new { go.GoalId, go.ObserverId });
+            var entity = builder.Entity<GoalObserver>();
 
-            builder.Entity<GoalObserver>()
-                .HasOne(go => go.Goal)
+            entity.HasKey(go => new {go.GoalId, go.ObserverId});
+
+            entity.HasOne(go => go.Goal)
                 .WithMany(g => g.Observers)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<GoalObserver>()
-                .HasOne(go => go.Observer)
+            entity.HasOne(go => go.Observer)
                 .WithMany(o => o.GoalObserver)
                 .OnDelete(DeleteBehavior.Cascade);
         }
@@ -162,18 +155,26 @@ namespace Workflow.DAL
 
         private void SetupUserGoalMessages(ModelBuilder builder)
         {
-            builder.Entity<UserGoalMessage>()
-                .HasKey(x => new { x.GoalId, x.UserId });
+            var entity = builder.Entity<UserGoalMessage>();
 
-            builder.Entity<UserGoalMessage>()
-                .HasOne(x => x.Goal)
-                .WithMany(x => x.UnreadMessages)
+            entity.HasKey(x => new { x.GoalMessageId, x.UserId });
+
+            entity.HasOne(x => x.GoalMessage)
+                .WithMany(x => x.MessageSubscribers)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<UserGoalMessage>()
-                .HasOne(x => x.User)
+            entity.HasOne(x => x.User)
                 .WithMany(o => o.GoalMessages)
                 .OnDelete(DeleteBehavior.Cascade);
+        }
+
+        private void SetupGoalMessages(ModelBuilder builder)
+        {
+            var entity = builder.Entity<GoalMessage>();
+
+            entity.Property(x => x.Text).HasMaxLength(2048);
+            entity.HasOne(x => x.Goal)
+                .WithMany(x => x.Messages);
         }
     }
 }
