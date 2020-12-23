@@ -38,6 +38,13 @@
             
             </summary>
         </member>
+        <member name="M:WorkflowService.Controllers.GoalMessagesController.#ctor(WorkflowService.Services.Abstract.ICurrentUserService,Workflow.Services.Abstract.IGoalMessageService)">
+            <summary>
+            
+            </summary>
+            <param name="currentUserService"></param>
+            <param name="goalMessageService"></param>
+        </member>
         <member name="M:WorkflowService.Controllers.GoalMessagesController.Get(System.Int32)">
             <summary>
             Получить сообщение по идентификатору
@@ -45,17 +52,19 @@
             <param name="id">Идентификатор сообщения</param>
             <returns>Сообщение</returns>
         </member>
-        <member name="M:WorkflowService.Controllers.GoalMessagesController.GetPage(PageLoading.PageOptions)">
+        <member name="M:WorkflowService.Controllers.GoalMessagesController.GetPage(System.Nullable{System.Int32},PageLoading.PageOptions)">
             <summary>
             Постраничная загрузка сообщений с фильтрацией и сортировкой
             </summary>
+            <param name="goalId">Идентификатор задачи</param>
             <param name="pageOptions">Параметры загружаемой страницы</param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Controllers.GoalMessagesController.GetUnreadPage(PageLoading.PageOptions)">
+        <member name="M:WorkflowService.Controllers.GoalMessagesController.GetUnreadPage(System.Nullable{System.Int32},PageLoading.PageOptions)">
             <summary>
             Постраничная загрузка непрочитанных сообщений с фильтрацией и сортировкой
             </summary>
+            <param name="goalId">Идентификатор задачи</param>
             <param name="pageOptions">Параметры загружаемой страницы</param>
             <returns></returns>
         </member>
@@ -80,11 +89,11 @@
             <param name="message">Обновляемое сообщение</param>
             <returns></returns>
         </member>
-        <member name="M:WorkflowService.Controllers.GoalMessagesController.UpdateRange(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmGoalMessage})">
+        <member name="M:WorkflowService.Controllers.GoalMessagesController.MarkAsRead(System.Collections.Generic.IEnumerable{System.Int32})">
             <summary>
-            Обновление сообщений
+            Пометить как прочитанные
             </summary>
-            <param name="messages">Обновляемые сообщения</param>
+            <param name="messageIds"></param>
             <returns></returns>
         </member>
         <member name="M:WorkflowService.Controllers.GoalMessagesController.Delete(System.Int32)">
@@ -97,6 +106,20 @@
         <member name="M:WorkflowService.Controllers.GoalMessagesController.DeleteRange(System.Collections.Generic.IEnumerable{System.Int32})">
             <summary>
             Удаление сообщений
+            </summary>
+            <param name="ids">Идентификаторы сообщений</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalMessagesController.Restore(System.Int32)">
+            <summary>
+            Восстановление сообщения
+            </summary>
+            <param name="id">Иденитфикатор сообщения</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalMessagesController.RestoreRange(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Восстановление сообщений
             </summary>
             <param name="ids">Идентификаторы сообщений</param>
             <returns></returns>

@@ -40,7 +40,7 @@ namespace Workflow.VM.ViewModelConverters
             viewModel.GoalNumber = model.GoalNumber;
             viewModel.PerformerId = model.PerformerId;
             //PerformerFio = model.Performer.LastName + " " + model.Performer.FirstName + " " + model.Performer.MiddleName,
-            viewModel.PerformerFio = model.Performer?.Fio;
+            viewModel.PerformerFio = model.Performer?.FullName;
             viewModel.ProjectId = model.ProjectId;
             viewModel.ProjectName = model.Project?.Name;
             viewModel.State = model.State;

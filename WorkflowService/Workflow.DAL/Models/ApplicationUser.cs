@@ -11,19 +11,19 @@ namespace Workflow.DAL.Models
 
         public bool IsRemoved { get; set; }
 
-        public List<TeamUser> TeamUsers { get; set; } = new List<TeamUser>();
-        public List<GoalObserver> GoalObserver { get; set; } = new List<GoalObserver>();
-        public List<ProjectUserRole> ProjectsRoles { get; set; } = new List<ProjectUserRole>();
+        public List<TeamUser> TeamUsers { get; set; } = new();
+        public List<GoalObserver> GoalObserver { get; set; } = new();
+        public List<ProjectUserRole> ProjectsRoles { get; set; } = new();
 
         public int? PositionId { get; set; }
         public Position Position { get; set; }
         public string PositionCustom { get; set; }
 
-		public List<UserGoalMessage> GoalMessages { get; set; } = new List<UserGoalMessage>();
+		public List<UserGoalMessage> GoalMessages { get; set; } = new();
 
-		public string FullName => ApplicationUser.GetFio(this.FirstName, this.MiddleName, this.LastName);
+		public string FullName => GetFullName(FirstName, MiddleName, LastName);
 
-        public static string GetFio(string firstName, string middleName, string lastName)
+        public static string GetFullName(string firstName, string middleName, string lastName)
         {
             return string.Join(" ", lastName?.Trim() ?? string.Empty,
                 firstName?.Trim() ?? string.Empty,
