@@ -110,11 +110,11 @@ namespace Workflow.Services
         public async Task Update(VmUser user)
         {
             if (user == null)
-                throw new ArgumentNullException(nameof(user));
+                throw new HttpResponseException(BadRequest, nameof(user));
 
             var model = await _userManager.FindByIdAsync(user.Id);
             if (model == null)
-                throw new HttpResponseException(NotFound, $"User with id='{user.Id}' not found");
+                throw new HttpResponseException(BadRequest, $"User with id='{user.Id}' not found");
 
             model.UserName = user.UserName;
             model.NormalizedUserName = user.UserName.ToUpper();

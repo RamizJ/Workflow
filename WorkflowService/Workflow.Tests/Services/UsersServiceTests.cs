@@ -10,6 +10,7 @@ using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
+using Workflow.Services.Exceptions;
 using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
@@ -320,7 +321,7 @@ namespace Workflow.Tests.Services
         [Test]
         public void UpdateForNullInputTest()
         {
-            Assert.ThrowsAsync<ArgumentNullException>(async () => await _service.Update(null));
+            Assert.ThrowsAsync<HttpResponseException>(async () => await _service.Update(null));
         }
 
         [TestCase(null)]
@@ -334,7 +335,7 @@ namespace Workflow.Tests.Services
             var vmUser = _vmConverter.ToViewModel(user);
 
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.Update(vmUser));
+            Assert.ThrowsAsync<HttpResponseException>(async () => await _service.Update(vmUser));
         }
 
         [TestCase("UserNameNew1", "EmailNew1@email", "PhoneNew1", "LastNameNew1", "FirstNameNew1", "MiddleNameNew1", null, "Pos1")]

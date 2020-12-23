@@ -35,7 +35,7 @@ namespace Workflow.DAL.Models
 
         public List<GoalObserver> Observers { get; set; } = new List<GoalObserver>();
         public List<Attachment> Attachments { get; set; } = new List<Attachment>();
-        public List<UserGoalMessage> UnreadMessages { get; set; } = new List<UserGoalMessage>();
+        public List<GoalMessage> Messages { get; set; } = new List<GoalMessage>();
         public List<Metadata> MetadataList { get; set; } = new List<Metadata>();
 
         public bool IsRemoved { get; set; }

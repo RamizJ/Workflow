@@ -1,21 +1,27 @@
-﻿namespace Workflow.DAL.Models
+﻿using System;
+
+namespace Workflow.DAL.Models
 {
     public class UserGoalMessage
     {
-        public int GoalId { get; set; }
-        public Goal Goal { get; set; }
-
         public string UserId { get; set; }
+
         public ApplicationUser User { get; set; }
 
+        public int GoalMessageId { get; set; }
+
+        public GoalMessage GoalMessage { get; set; }
+
+        public DateTime? LastReadingDate { get; set; }
 
         public UserGoalMessage()
-        { }
-
-        public UserGoalMessage(int goalId, string userId)
         {
-            GoalId = goalId;
-            UserId = userId;
+        }
+
+        public UserGoalMessage(int goalMessageId, string userId)
+        {
+            this.GoalMessageId = goalMessageId;
+            this.UserId = userId;
         }
     }
 }

@@ -10,6 +10,7 @@ using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
+using Workflow.Services.Exceptions;
 using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
@@ -206,7 +207,7 @@ namespace Workflow.Tests.Services
             //Act
 
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => 
+            Assert.ThrowsAsync<HttpResponseException>(async () => 
                 await _service.Create(_currentUser, vmTeam));
         }
 
@@ -226,7 +227,7 @@ namespace Workflow.Tests.Services
             //Act
 
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            Assert.ThrowsAsync<HttpResponseException>(async () =>
                 await _service.CreateByForm(_currentUser, new VmTeamForm
                 {
                     Team = vmTeam

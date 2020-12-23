@@ -69,9 +69,16 @@ namespace Workflow.Services
         /// <inheritdoc />
         public async Task Remove(int teamId, string userId)
         {
-            var model = new TeamUser(teamId, userId);
-            _dataContext.Entry(model).State = EntityState.Deleted;
-            await _dataContext.SaveChangesAsync();
+            try
+            {
+                var model = new TeamUser(teamId, userId);
+                _dataContext.Entry(model).State = EntityState.Deleted;
+                await _dataContext.SaveChangesAsync();
+            }
+            catch (DbUpdateException e)
+            {
+                throw new HttpResponseException(HttpStatusCode.BadRequest, e.Message);
+            }
         }
 
         public async Task RemoveRange(int teamId, IEnumerable<string> userIds)

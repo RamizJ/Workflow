@@ -50,7 +50,7 @@ namespace Workflow.VM.ViewModelConverters
             viewModel.Name = model.Name;
             viewModel.Description = model.Description;
             viewModel.OwnerId = model.OwnerId;
-            viewModel.OwnerFio = model.Owner?.Fio;
+            viewModel.OwnerFio = model.Owner?.FullName;
             viewModel.GroupId = model.GroupId;
             viewModel.GroupName = model.Group?.Name;
             viewModel.CreationDate = model.CreationDate;

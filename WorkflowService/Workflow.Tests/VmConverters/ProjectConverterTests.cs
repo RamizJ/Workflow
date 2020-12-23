@@ -48,7 +48,7 @@ namespace Workflow.Tests.VmConverters
             Assert.AreEqual(scope.Name, vm.Name);
             Assert.AreEqual(scope.Description, vm.Description);
             Assert.AreEqual(scope.OwnerId, vm.OwnerId);
-            Assert.AreEqual(scope.Owner.Fio, vm.OwnerFio);
+            Assert.AreEqual(scope.Owner.FullName, vm.OwnerFio);
             Assert.AreEqual(scope.GroupId, vm.GroupId);
             Assert.AreEqual(scope.Group.Name, vm.GroupName);
             Assert.AreEqual(scope.CreationDate, vm.CreationDate);
