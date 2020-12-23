@@ -5,21 +5,6 @@ using Workflow.VM.ViewModels;
 
 namespace Workflow.VM.ViewModelConverters
 {
-    public class VmGoalMessageConverter : ViewModelConverter<GoalMessage, VmGoalMessage>
-    {
-        public override void SetModel(VmGoalMessage viewModel, GoalMessage model)
-        {
-            model.Id = viewModel.Id;
-            model.Text = viewModel.Text;
-        }
-
-        public override void SetViewModel(GoalMessage model, VmGoalMessage viewModel)
-        {
-            throw new System.NotImplementedException();
-        }
-    }
-
-
     public class VmGoalConverter : ViewModelConverter<Goal, VmGoal>
     {
         public override void SetModel(VmGoal viewModel, Goal model)
