@@ -28,11 +28,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:WorkflowService.Controllers.GoalJournalController">
-            <summary>
-            API-методы работы с журналом сообщений задачи
-            </summary>
-        </member>
         <member name="T:WorkflowService.Controllers.GoalMessagesController">
             <summary>
             
