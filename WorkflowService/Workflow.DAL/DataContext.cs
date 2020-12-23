@@ -12,13 +12,13 @@ namespace Workflow.DAL
         public DbSet<TeamUser> TeamUsers { get; set; }
         public DbSet<ProjectTeam> ProjectTeams { get; set; }
         public DbSet<Goal> Goals { get; set; }
+        public DbSet<GoalMessage> GoalMessages { get; set; }
+        public DbSet<UserGoalMessage> UserGoalMessages { get; set; }
         public DbSet<GoalObserver> GoalObservers { get; set; }
         public DbSet<Attachment> Attachments { get; set; }
         public DbSet<FileData> FileData { get; set; }
         public DbSet<Position> Positions { get; set; }
         public DbSet<Metadata> Metadata { get; set; }
-
-
         public DbSet<ProjectUserRole> ProjectUserRoles { get; set; }
 
 
@@ -37,6 +37,7 @@ namespace Workflow.DAL
             SetupGoal(builder);
             SetupAttachment(builder);
             SetupPosition(builder);
+            SetupUserGoalMessages(builder);
 
             base.OnModelCreating(builder);
         }
@@ -157,6 +158,22 @@ namespace Workflow.DAL
         {
             var entity = builder.Entity<Position>();
             entity.Property(x => x.Name).HasMaxLength(100).IsRequired();
+        }
+
+        private void SetupUserGoalMessages(ModelBuilder builder)
+        {
+            builder.Entity<UserGoalMessage>()
+                .HasKey(x => new { x.GoalId, x.UserId });
+
+            builder.Entity<UserGoalMessage>()
+                .HasOne(x => x.Goal)
+                .WithMany(x => x.UnreadMessages)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<UserGoalMessage>()
+                .HasOne(x => x.User)
+                .WithMany(o => o.UnreadMessages)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -5,31 +5,24 @@ using Workflow.VM.ViewModels;
 
 namespace Workflow.VM.ViewModelConverters
 {
-    public class VmGoalConverter : IViewModelConverter<Goal, VmGoal>
+    public class VmGoalMessageConverter : ViewModelConverter<GoalMessage, VmGoalMessage>
     {
-        public Goal ToModel(VmGoal viewModel)
+        public override void SetModel(VmGoalMessage viewModel, GoalMessage model)
         {
-            if (viewModel == null)
-                return null;
-
-            var model = new Goal();
-            SetModel(viewModel, model);
-
-            return model;
+            model.Id = viewModel.Id;
+            model.Text = viewModel.Text;
         }
 
-        public VmGoal ToViewModel(Goal model)
+        public override void SetViewModel(GoalMessage model, VmGoalMessage viewModel)
         {
-            if (model == null)
-                return null;
-
-            var viewModel = new VmGoal();
-            SetViewModel(model, viewModel);
-
-            return viewModel;
+            throw new System.NotImplementedException();
         }
+    }
 
-        public void SetModel(VmGoal viewModel, Goal model)
+
+    public class VmGoalConverter : ViewModelConverter<Goal, VmGoal>
+    {
+        public override void SetModel(VmGoal viewModel, Goal model)
         {
             model.Id = viewModel.Id;
             model.ParentGoalId = viewModel.ParentGoalId == 0 ? null : viewModel.ParentGoalId;
@@ -48,7 +41,7 @@ namespace Workflow.VM.ViewModelConverters
             model.IsRemoved = viewModel.IsRemoved;
         }
 
-        public void SetViewModel(Goal model, VmGoal viewModel)
+        public override void SetViewModel(Goal model, VmGoal viewModel)
         {
             if (model == null || viewModel == null)
                 return;
