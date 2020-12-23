@@ -7,6 +7,8 @@ export default class Message {
   public ownerFullName = 'Аноним'
   public ownerId?: string
 
+  public messageSubscribers: MessageSubscriber[]
+
   constructor(data: MessageData) {
     this.id = this.getId()
     this.text = data.text || ''
@@ -14,6 +16,7 @@ export default class Message {
     this.lastEditDate = data.lastEditDate
     this.ownerFullName = data.ownerFullName
     this.ownerId = data.ownerId
+    this.messageSubscribers = data.messageSubscribers || []
   }
 
   private getId(): number {
