@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
+using Workflow.DAL.Repositories.Abstract;
 using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 using static System.Net.HttpStatusCode;
-using QuerableExtension = Workflow.Share.Extensions.QuerableExtension;
 
 namespace Workflow.Services
 {
@@ -23,12 +22,12 @@ namespace Workflow.Services
         /// Конструктор
         /// </summary>
         /// <param name="dataContext"></param>
-        /// <param name="userManager"></param>
-        public GoalsService(DataContext dataContext, 
-            UserManager<ApplicationUser> userManager)
+        /// <param name="repository"></param>
+        public GoalsService(DataContext dataContext,
+            IGoalsRepository repository)
         {
             _dataContext = dataContext;
-            _userManager = userManager;
+            _repository = repository;
             _vmConverter = new VmGoalConverter();
         }
 
@@ -204,26 +203,19 @@ namespace Workflow.Services
             bool withChildren = false,
             bool withParent = false)
         {
-            bool isAdmin = await _userManager.IsInRoleAsync(currentUser, RoleNames.ADMINISTRATOR_ROLE);
-            var query = _dataContext.Goals.AsNoTracking()
+            var query = await _repository.GetGoalsForUser(currentUser);
+            query = query
                 .Include(x => x.Owner)
                 .Include(x => x.Observers)
                 .Include(x => x.Performer)
                 .Include(x => x.Project)
-                .Include(x => x.MetadataList)
-                .AsQueryable();
+                .Include(x => x.MetadataList);
 
             if (withChildren)
                 query = query.Include(g => g.ChildGoals);
 
             if (withParent)
                 query = query.Include(g => g.ParentGoal);
-
-            query = query.Where(x => isAdmin
-                                     || x.Project.OwnerId == currentUser.Id
-                                     || x.Project.ProjectTeams
-                                         .SelectMany(pt => pt.Team.TeamUsers)
-                                         .Any(tu => tu.UserId == currentUser.Id));
 
             if (!withRemoved)
                 query = query.Where(x => x.IsRemoved == false);
@@ -365,41 +357,43 @@ namespace Workflow.Services
                 var isAcending = field.SortType == SortType.Ascending;
 
                 if (field.Is(nameof(VmGoal.Title)))
-                    query = QuerableExtension.SortBy(query, g => g.Title, isAcending);
+                    query = query.SortBy(g => g.Title, isAcending);
 
                 else if (field.Is(nameof(VmGoal.Description))) 
-                    query = QuerableExtension.SortBy(query, g => g.Description, isAcending);
+                    query = query.SortBy(g => g.Description, isAcending);
                 
                 if (field.Is(nameof(VmGoal.ProjectName))) 
-                    query = QuerableExtension.SortBy(query, g => g.Project.Name, isAcending);
+                    query = query.SortBy(g => g.Project.Name, isAcending);
                 
                 if(field.Is(nameof(VmGoal.CreationDate))) 
-                    query = QuerableExtension.SortBy(query, g => g.CreationDate, isAcending);
+                    query = query.SortBy(g => g.CreationDate, isAcending);
 
                 if (field.Is(nameof(VmGoal.ExpectedCompletedDate)))
-                    query = QuerableExtension.SortBy(query, g => g.ExpectedCompletedDate, isAcending);
+                    query = query.SortBy(g => g.ExpectedCompletedDate, isAcending);
 
                 else if (field.Is(nameof(VmGoal.GoalNumber)))
-                    query = QuerableExtension.SortBy(query, g => g.GoalNumber, isAcending);
+                    query = query.SortBy(g => g.GoalNumber, isAcending);
 
                 else if (field.Is(nameof(VmGoal.State)))
-                    query = QuerableExtension.SortBy(query, g => g.State, isAcending);
+                    query = query.SortBy(g => g.State, isAcending);
 
                 else if (field.Is(nameof(VmGoal.Priority)))
-                    query = QuerableExtension.SortBy(query, g => g.Priority, isAcending);
+                    query = query.SortBy(g => g.Priority, isAcending);
 
                 else if (field.Is(nameof(VmGoal.OwnerFio)))
-                    query = QuerableExtension.SortBy(query
-                            .SortBy(p => p.Owner.LastName, isAcending)
-                            .SortBy(p => p.Owner.FirstName, isAcending), p => p.Owner.MiddleName, isAcending);
+                    query = query
+                        .SortBy(p => p.Owner.LastName, isAcending)
+                        .SortBy(p => p.Owner.FirstName, isAcending)
+                        .SortBy(p => p.Owner.MiddleName, isAcending);
 
                 else if (field.Is(nameof(VmGoal.PerformerFio)))
-                    query = QuerableExtension.SortBy(query
-                            .SortBy(p => p.Performer.LastName, isAcending)
-                            .SortBy(p => p.Performer.FirstName, isAcending), p => p.Performer.MiddleName, isAcending);
+                    query = query
+                        .SortBy(p => p.Performer.LastName, isAcending)
+                        .SortBy(p => p.Performer.FirstName, isAcending)
+                        .SortBy(p => p.Performer.MiddleName, isAcending);
 
                 else if (field.Is(nameof(VmGoal.IsRemoved)))
-                    query = QuerableExtension.SortBy(query, g => g.IsRemoved, isAcending);
+                    query = query.SortBy(g => g.IsRemoved, isAcending);
             }
 
             return query;
@@ -594,7 +588,7 @@ namespace Workflow.Services
 
 
         private readonly DataContext _dataContext;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IGoalsRepository _repository;
         private readonly VmGoalConverter _vmConverter;
     }
 }

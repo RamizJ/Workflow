@@ -1,6 +1,5 @@
 <template>
   <div class="group-projects">
-    <!--    <BasePageHeader size="small" height="45" :no-border="true"></BasePageHeader>-->
     <ProjectTable />
   </div>
 </template>
@@ -14,4 +13,8 @@ import ProjectTable from '@/modules/projects/components/project-table.vue'
 export default class GroupProjects extends Vue {}
 </script>
 
-<style scoped></style>
+<style scoped>
+.group-projects {
+  height: 100%;
+}
+</style>

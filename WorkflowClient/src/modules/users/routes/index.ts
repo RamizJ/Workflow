@@ -33,8 +33,12 @@ export default [
       {
         name: 'user-statistics',
         path: 'statistics',
-        component: (): Promise<typeof import('../components/user-statistics.vue')> =>
-          import(/* webpackChunkName: "user-statistics" */ '../components/user-statistics.vue'),
+        component: (): Promise<
+          typeof import('../components/user-statistics/user-statistics.vue')
+        > =>
+          import(
+            /* webpackChunkName: "user-statistics" */ '../components/user-statistics/user-statistics.vue'
+          ),
         meta: { layout: MainLayout },
       },
     ],

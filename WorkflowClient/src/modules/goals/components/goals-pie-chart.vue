@@ -1,7 +1,7 @@
 <template>
   <el-card class="card" shadow="never">
     <div class="card__title">{{ title || 'Статус задач' }}</div>
-    <chart-doughnut v-if="!loading" :data="chartPieData" :options="chartPieOptions" />
+    <chart-doughnut v-if="!loading" :chart-data="chartPieData" :chart-options="chartPieOptions" />
   </el-card>
 </template>
 

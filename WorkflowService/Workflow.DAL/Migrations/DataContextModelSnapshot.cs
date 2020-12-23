@@ -304,6 +304,9 @@ namespace Workflow.DAL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<TimeSpan?>("ActualPerformingTime")
+                        .HasColumnType("time");
+
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 

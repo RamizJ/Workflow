@@ -5,6 +5,7 @@ using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
 using Workflow.VM.ViewModels;
+using Workflow.VM.ViewModels.Statistic;
 
 namespace Workflow.Services
 {
@@ -15,7 +16,7 @@ namespace Workflow.Services
             _dataContext = dataContext;
         }
 
-        public async Task<ProjectStatistic> GetStatisticForProject(int projectId, StatisticOptions options)
+        public async Task<VmProjectStatistic> GetStatisticForProject(int projectId, StatisticOptions options)
         {
             var query = _dataContext.Goals
                 .Where(g => g.ProjectId == projectId
@@ -25,7 +26,7 @@ namespace Workflow.Services
         }
 
 
-        public async Task<ProjectStatistic> GetStatisticForUser(string userId, StatisticOptions options)
+        public async Task<VmProjectStatistic> GetStatisticForUser(string userId, StatisticOptions options)
         {
             var query = _dataContext.Goals
                 .Include(g => g.Project)
@@ -35,7 +36,7 @@ namespace Workflow.Services
             return await GetStatistic(query, options);
         }
 
-        public async Task<ProjectStatistic> GetStatisticForUserAndProject(string userId, int projectId, StatisticOptions options)
+        public async Task<VmProjectStatistic> GetStatisticForUserAndProject(string userId, int projectId, StatisticOptions options)
         {
             var query = _dataContext.Goals
                 .Include(g => g.Project)
@@ -47,7 +48,7 @@ namespace Workflow.Services
         }
 
 
-        private async Task<ProjectStatistic> GetStatistic(IQueryable<Goal> query, StatisticOptions options)
+        private async Task<VmProjectStatistic> GetStatistic(IQueryable<Goal> query, StatisticOptions options)
         {
             if (options != null)
             {
@@ -79,7 +80,7 @@ namespace Workflow.Services
                 })
                 .ToArray();
 
-            var vm = new ProjectStatistic
+            var vm = new VmProjectStatistic
             {
                 GoalsCountForState = new[]
                 {
@@ -91,7 +92,7 @@ namespace Workflow.Services
                     commonStatistic.FirstOrDefault(s => s.State == GoalState.Rejected)?.Count ?? 0
                 },
                 ByDateStatistics = byDayStatistic
-                    .Select(x => new ByDateStatistic(x.Date, new[]
+                    .Select(x => new ByDateGoalStatistic(x.Date, new[]
                     {
                         x.Statistic.FirstOrDefault(s => s.State == GoalState.New)?.Count ?? 0,
                         x.Statistic.FirstOrDefault(s => s.State == GoalState.Perform)?.Count ?? 0,

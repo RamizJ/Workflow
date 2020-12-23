@@ -21,6 +21,8 @@
     <Compile Remove="Migrations\20200715192436_NullableExpectedCompleteTime.Designer.cs" />
     <Compile Remove="Migrations\20200922062214_TeamUserRoles.cs" />
     <Compile Remove="Migrations\20200922062214_TeamUserRoles.Designer.cs" />
+    <Compile Remove="Migrations\20201209031727_a123.cs" />
+    <Compile Remove="Migrations\20201209031727_a123.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
