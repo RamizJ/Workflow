@@ -8,6 +8,7 @@ using NUnit.Framework;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services;
+using Workflow.Services.Exceptions;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 
@@ -46,7 +47,7 @@ namespace Workflow.Tests.Services
         [Test]
         public void LoginWithNullInputTest()
         {
-            Assert.ThrowsAsync<ArgumentNullException>(async () => await _authenticationService.Login(null));
+            Assert.ThrowsAsync<HttpResponseException>(async () => await _authenticationService.Login(null));
         }
 
         [TestCase("user@email.com", "")]
@@ -57,7 +58,7 @@ namespace Workflow.Tests.Services
             var userInput = new VmAuthInput { UserName = userName, Password = password };
 
             //Assert
-            Assert.ThrowsAsync<ArgumentException>(async () => await _authenticationService.Login(userInput));
+            Assert.ThrowsAsync<HttpResponseException>(async () => await _authenticationService.Login(userInput));
         }
 
         [Test]
@@ -66,11 +67,8 @@ namespace Workflow.Tests.Services
             //Arrange
             var userInput = new VmAuthInput { UserName = "unknown", Password = "pwd" };
 
-            //Act
-            var output = await _authenticationService.Login(userInput);
-
             //Assert
-            Assert.IsNull(output);
+            Assert.ThrowsAsync<HttpResponseException>(async () => await _authenticationService.Login(userInput));
         }
 
 

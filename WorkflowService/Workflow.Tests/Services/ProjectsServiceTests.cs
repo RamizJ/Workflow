@@ -94,8 +94,7 @@ namespace Workflow.Tests.Services
         }
 
         [TestCase(0, 5, null, "Name", new object[] { "scope1" }, 5)]
-        [TestCase(0, 5, null, "GroupName", new object[] { "Group 2" }, 5)]
-        [TestCase(1, 5, null, "GroupName", new object[] { "Group 2" }, 1)]
+        [TestCase(0, 5, null, "GroupName", new object[] { "Group1" }, 3)]
         [TestCase(1, 5, null, "OwnerFio", new object[] { "Firstname1" }, 4)]
         [TestCase(1, 5, null, "OwnerFio", new object[] { "lastname1" }, 4)]
         [TestCase(1, 5, null, "OwnerFio", new object[] { "middlename1" }, 4)]
