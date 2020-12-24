@@ -1,0 +1,84 @@
+.page-fade-enter-active,
+.page-fade-leave-active {
+  transition: .2s;
+  opacity: 1;
+  transform: scale(1);
+}
+.page-fade-enter {
+  opacity: 0;
+  transform: scale(0.998);
+}
+.page-fade-leave-to {
+  opacity: 0;
+  transform: scale(1);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: .22s;
+}
+.fade-enter {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-2px);
+}
+
+.message-enter-active,
+.message-leave-active {
+  transition: .3s;
+}
+.message-enter {
+  opacity: 0;
+  transform: scale(0.996) translateY(15px);
+}
+.message-leave-to {
+  opacity: 0;
+  transform: translateY(-15px);
+}
+
+.fade-left-top-enter-active,
+.fade-left-top-leave-active {
+  transition: .25s;
+  opacity: 1;
+  transform: scale(1);
+}
+.fade-left-top-enter {
+  opacity: 0;
+  transform: scale(0.8);
+}
+.fade-left-top-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: .25s;
+}
+.slide-fade-enter {
+  transform: scale(0.996) translateX(-10px);
+  opacity: 0;
+}
+.slide-fade-leave-to {
+  transform: scale(0.996) translateX(10px);
+  opacity: 0;
+}
+
+.el-zoom-in-top-enter-active,
+.el-zoom-in-top-leave-active {
+  opacity: 1;
+  transition: .22s;
+  transform-origin: unset;
+  transform: translateY(0);
+}
+.el-zoom-in-top-enter {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+.el-zoom-in-top-leave-to {
+  opacity: 0;
+  transform: translateY(-2);
+}

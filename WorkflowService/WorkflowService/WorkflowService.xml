@@ -1,0 +1,990 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>WorkflowService</name>
+    </assembly>
+    <members>
+        <member name="T:WorkflowService.Controllers.AuthenticationController">
+            <summary>
+            API аутентификации пользователей в системе
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Controllers.AuthenticationController.#ctor(Workflow.Services.Abstract.IAuthenticationService)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="service"></param>
+        </member>
+        <member name="M:WorkflowService.Controllers.AuthenticationController.Login(Workflow.VM.ViewModels.VmAuthInput)">
+            <summary>
+            Вход в систему
+            </summary>
+            <param name="input">Данные аутентификации</param>
+            <returns>JWT-токен и данные пользователя</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.AuthenticationController.Logout">
+            <summary>
+            Выход пользователя из системы
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:WorkflowService.Controllers.GoalMessagesController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalMessagesController.#ctor(WorkflowService.Services.Abstract.ICurrentUserService,Workflow.Services.Abstract.IGoalMessageService)">
+            <summary>
+            
+            </summary>
+            <param name="currentUserService"></param>
+            <param name="goalMessageService"></param>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalMessagesController.Get(System.Int32)">
+            <summary>
+            Получить сообщение по идентификатору
+            </summary>
+            <param name="id">Идентификатор сообщения</param>
+            <returns>Сообщение</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalMessagesController.GetPage(System.Nullable{System.Int32},PageLoading.PageOptions)">
+            <summary>
+            Постраничная загрузка сообщений с фильтрацией и сортировкой
+            </summary>
+            <param name="goalId">Идентификатор задачи</param>
+            <param name="pageOptions">Параметры загружаемой страницы</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalMessagesController.GetUnreadCount(System.Nullable{System.Int32})">
+            <summary>
+            Получение кол-ва непрочитанных сообщений
+            </summary>
+            <param name="goalId">Идентификатор задачи</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalMessagesController.GetUnreadPage(System.Nullable{System.Int32},PageLoading.PageOptions)">
+            <summary>
+            Постраничная загрузка непрочитанных сообщений с фильтрацией и сортировкой
+            </summary>
+            <param name="goalId">Идентификатор задачи</param>
+            <param name="pageOptions">Параметры загружаемой страницы</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalMessagesController.GetRange(System.Int32[])">
+            <summary>
+            Получение сообщений по идентификаторам
+            </summary>
+            <param name="ids">Идентификаторы сообщений</param>
+            <returns>Коллекция сообщений</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalMessagesController.Create(Workflow.VM.ViewModels.VmGoalMessage)">
+            <summary>
+            Создание сообщения
+            </summary>
+            <param name="message">Создаваемое сообщение</param>
+            <returns>Созданная сообщение</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalMessagesController.Update(Workflow.VM.ViewModels.VmGoalMessage)">
+            <summary>
+            Обновление сообщения
+            </summary>
+            <param name="message">Обновляемое сообщение</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalMessagesController.MarkAsRead(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Пометить как прочитанные
+            </summary>
+            <param name="messageIds"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalMessagesController.Delete(System.Int32)">
+            <summary>
+            Удаление сообщения
+            </summary>
+            <param name="id">Идентификатор удаляемого сообщения</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalMessagesController.DeleteRange(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Удаление сообщений
+            </summary>
+            <param name="ids">Идентификаторы сообщений</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalMessagesController.Restore(System.Int32)">
+            <summary>
+            Восстановление сообщения
+            </summary>
+            <param name="id">Иденитфикатор сообщения</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalMessagesController.RestoreRange(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Восстановление сообщений
+            </summary>
+            <param name="ids">Идентификаторы сообщений</param>
+            <returns></returns>
+        </member>
+        <member name="T:WorkflowService.Controllers.GoalsController">
+            <summary>
+            API-методы работы с задачами
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.#ctor(WorkflowService.Services.Abstract.ICurrentUserService,Workflow.Services.Abstract.IGoalsService,Workflow.Services.Abstract.IGoalAttachmentsService,WorkflowService.Services.Abstract.IFormFilesService)">
+            <summary>
+            Конструктор
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.Get(System.Int32)">
+            <summary>
+            Получить задачу по идентификатору, если она доступна пользователю
+            </summary>
+            <param name="id">Идентификатор задачи</param>
+            <returns>Задача</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.GetPage(System.Nullable{System.Int32},PageLoading.PageOptions)">
+            <summary>
+            Постраничная загрузка задач с фильтрацией и сортировкой
+            </summary>
+            <param name="projectId">Идентификатор проекта</param>
+            <param name="pageOptions">Параметры загружаемой страницы</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.GetRange(System.Int32[])">
+            <summary>
+            Получение задач по идентификаторам. Возвращаются только задачи доступные пользователю
+            </summary>
+            <param name="ids">Идентификаторы задач</param>
+            <returns>Коллекция задач</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.GetTotalProjectGoalsCount(System.Int32)">
+            <summary>
+            Получение кол-ва задач проекта
+            </summary>
+            <param name="projectId">Идентификатор проекта</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.GetProjectGoalsByStateCount(System.Int32,Workflow.DAL.Models.GoalState)">
+            <summary>
+            Получение кол-ва задач проекта по состоянию задачи
+            </summary>
+            <param name="projectId">Идентификатор проекта</param>
+            <param name="goalState">Состояние задачи</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.Create(Workflow.VM.ViewModels.VmGoal)">
+            <summary>
+            Создание задачи
+            </summary>
+            <param name="goal">Создаваемая задача</param>
+            <returns>Созданная задача</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.Update(Workflow.VM.ViewModels.VmGoal)">
+            <summary>
+            Обновление задачи
+            </summary>
+            <param name="goal">Обновляемая задача</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.UpdateRange(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmGoal})">
+            <summary>
+            Обновление задач
+            </summary>
+            <param name="goals">Обновляемые задачи</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.Delete(System.Int32)">
+            <summary>
+            Удаление задачи
+            </summary>
+            <param name="id">Идентификатор удаляемой задачи</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.DeleteRange(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Удаление задач
+            </summary>
+            <param name="ids">Идентификаторы задач</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.Restore(System.Int32)">
+            <summary>
+            Восстановление задачи
+            </summary>
+            <param name="id">Идентификатор восстанавливаемой задачи</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.RestoreRange(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Восстановление задач
+            </summary>
+            <param name="ids">Идентификаторы задач</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.GetAttachments(System.Int32)">
+            <summary>
+            Получение вложений задачи
+            </summary>
+            <param name="goalId">Идентификатор задачи</param>
+            <returns>Коллекция вложений</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.AddAttachments(System.Int32,Microsoft.AspNetCore.Http.IFormFileCollection)">
+            <summary>
+            Добавление вложения
+            </summary>
+            <param name="goalId">Идентификатор задачи</param>
+            <param name="files">Коллекция файлов</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.RemoveAttachments(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Удаление вложений. Удаляются только те вложения тех задач, которые доступны пользователю
+            </summary>
+            <param name="attachmentIds">Идентификаторы вложений</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.DownloadAttachmentFile(System.Int32)">
+            <summary>
+            Загрузка файла вложения
+            </summary>
+            <param name="attachmentId">Идентификатор вложения</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.GetParentGoal(System.Int32)">
+            <summary>
+            Получение родительской задачи
+            </summary>
+            <param name="goalId">Идентификатор задачи</param>
+            <returns>Родительская задача</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.GetChildGoals(System.Int32,PageLoading.PageOptions)">
+            <summary>
+            Получение дочерних задач
+            </summary>
+            <param name="parentGoalId">Идентификатор родительской задачи</param>
+            <param name="pageOptions"></param>
+            <returns>Родительская задача</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.AddChildGoals(System.Int32,System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Добавление дочерних задач
+            </summary>
+            <param name="parentGoalId">Родительская задача</param>
+            <param name="childGoalIds">Идентификаторы дочерних задач</param>
+            <returns></returns>
+        </member>
+        <member name="T:WorkflowService.Controllers.GroupsController">
+            <summary>
+            API-методы работы с группами проектов
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.#ctor(Workflow.Services.Abstract.IGroupsService,WorkflowService.Services.Abstract.ICurrentUserService)">
+            <summary>
+            
+            </summary>
+            <param name="groupsService"></param>
+            <param name="currentUserService"></param>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.Get(System.Int32)">
+            <summary>
+            Получить группу проектов по идентификатору, если она доступна пользователю
+            </summary>
+            <param name="id">Идентификатор задачи</param>
+            <returns>Группа</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.GetAll">
+            <summary>
+            Получить все группы проектов
+            </summary>
+            <returns>Группа</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.GetPage(System.Nullable{System.Int32},PageLoading.PageOptions)">
+            <summary>
+            Постраничная загрузка группы проектов с фильтрацией и сортировкой
+            </summary>
+            <param name="parentGroupId">Идентификатор родительской группы</param>
+            <param name="pageOptions">Параметры загружаемой страницы</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.Create(Workflow.VM.ViewModels.VmGroup)">
+            <summary>
+            Создание группы проектов
+            </summary>
+            <param name="group">Создаваемая группа проектов</param>
+            <returns>Созданная группа проектов</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.Update(Workflow.VM.ViewModels.VmGroup)">
+            <summary>
+            Обновление группы проектов
+            </summary>
+            <param name="group">Обновляемая группа проектов</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.UpdateRange(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmGroup})">
+            <summary>
+            Обновление группы проектов
+            </summary>
+            <param name="groups">Обновляемые группы проектов</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.Delete(System.Int32)">
+            <summary>
+            Удаление группы проектов
+            </summary>
+            <param name="id">Идентификатор удаляемой группы проектов</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.DeleteRange(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Удаление групп проектов
+            </summary>
+            <param name="ids">Идентификаторы групп проектов</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.Restore(System.Int32)">
+            <summary>
+            Восстановление группы проектов
+            </summary>
+            <param name="id">Идентификатор восстанавливаемой группы проектов</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.RestoreRange(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Восстановление групп проектов
+            </summary>
+            <param name="ids">Идентификаторы групп проектов</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.AddProjects(System.Int32,System.Collections.Generic.ICollection{System.Int32})">
+            <summary>
+            Добавление проектов в группу
+            </summary>
+            <param name="groupId">Идентификатор группы</param>
+            <param name="projectIds">Идентификаторы проектов</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.GroupsController.DeleteProjects(System.Int32,System.Collections.Generic.ICollection{System.Int32})">
+            <summary>
+            Удаление проектов из группы
+            </summary>
+            <param name="groupId">Идентификатор группы</param>
+            <param name="projectIds">Идентификаторы проектов</param>
+            <returns></returns>
+        </member>
+        <member name="T:WorkflowService.Controllers.ProjectsController">
+            <summary>
+            API-методы работы с проектами
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.#ctor(WorkflowService.Services.Abstract.ICurrentUserService,Workflow.Services.Abstract.IProjectsService,Workflow.Services.Abstract.IProjectTeamsService,Workflow.Services.Abstract.IProjectUserRolesService,Workflow.Services.Abstract.IStatisticService)">
+            <summary>
+            Конструктор
+            </summary>
+            <param name="currentUserService"></param>
+            <param name="projectsService"></param>
+            <param name="teamsService"></param>
+            <param name="userRolesService"></param>
+            <param name="statisticService"></param>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.Get(System.Int32)">
+            <summary>
+            Получение проекта по идентификатору
+            </summary>
+            <param name="id">Идентификатор проекта</param>
+            <returns>Проект. Только если доступен пользователю</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.GetPage(PageLoading.PageOptions)">
+            <summary>
+            Постраничная загрузка проектов с фильтрацией и сортировкой
+            </summary>
+            <param name="pageOptions">Параметры страницы</param>
+            <returns>Коллекция проектов</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.GetTeamsPage(System.Int32,PageLoading.PageOptions)">
+            <summary>
+            Постраничная загрузка списка команд проекта с фильтрацией и сортировкой
+            </summary>
+            <param name="projectId">Идентификатор проекта</param>
+            <param name="pageOptions">Параметры страницы</param>
+            <returns>Коллекция команд</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.GetRange(System.Int32[])">
+            <summary>
+            Получение 
+            </summary>
+            <param name="ids">Идентификаторы проектов</param>
+            <returns>Коллекция проектов</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.Create(Workflow.VM.ViewModels.VmProject)">
+            <summary>
+            Создание проекта
+            </summary>
+            <param name="project">Проект</param>
+            <returns>Результат выполнения операции</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.CreateByForm(Workflow.VM.ViewModels.VmProjectForm)">
+            <summary>
+            Создание проекта по форме
+            </summary>
+            <param name="projectForm">Форма создаваемого проекта</param>
+            <returns>Результат выполнения операции</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.Update(Workflow.VM.ViewModels.VmProject)">
+            <summary>
+            Обновление проекта
+            </summary>
+            <param name="project">Обновляемый проект</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.UpdateByForm(Workflow.VM.ViewModels.VmProjectForm)">
+            <summary>
+            Обновление проекта по форме
+            </summary>
+            <param name="projectForm">Форма обновляемого проекта</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.UpdateRange(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmProject})">
+            <summary>
+            Обновление проектов
+            </summary>
+            <param name="projects">Обновляемый проект</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.UpdateRange(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmProjectForm})">
+            <summary>
+            Обновление проектов по формам
+            </summary>
+            <param name="projectForms">Формы обновляемых проектов</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.Delete(System.Int32)">
+            <summary>
+            Удаление проекта
+            </summary>
+            <param name="id">Идентификатор проекта</param>
+            <returns>Результат выполнения операции</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.DeleteRange(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Удаление проектов
+            </summary>
+            <param name="ids">Идентификаторы проектов</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.Restore(System.Int32)">
+            <summary>
+            Восстановление проекта
+            </summary>
+            <param name="id">Идентификатор проекта</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.RestoreRange(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Восстановление проектов
+            </summary>
+            <param name="ids">Идентификаторы проектов</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.AddTeam(System.Int32,System.Int32)">
+            <summary>
+            Добавление команды в список команд проекта
+            </summary>
+            <param name="projectId">Идентификатор проекта</param>
+            <param name="teamId">Идентификатор команды</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.RemoveTeam(System.Int32,System.Int32)">
+            <summary>
+            Удаление команды из списка команд проекта
+            </summary>
+            <param name="projectId">Идентификатор проекта</param>
+            <param name="teamId">Идентификатор команды</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.GetTeamRole(System.Int32,System.Int32)">
+            <summary>
+            Получение ролей команды в проекте
+            </summary>
+            <param name="projectId"></param>
+            <param name="teamId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.UpdateTeamRole(Workflow.VM.ViewModels.VmProjectTeamRole)">
+            <summary>
+            Обновление ролей команды в проекте
+            </summary>
+            <param name="projectTeamRole">Роли команды в проекте</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.UpdateTeamsRoles(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmProjectTeamRole})">
+            <summary>
+            Обновление ролей команд в проектах
+            </summary>
+            <param name="roles">Роли команд в проектах</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.GetUserRole(System.Int32,System.String)">
+            <summary>
+            Получение ролей пользователя в проекте
+            </summary>
+            <param name="projectId">Идентификатор проекта</param>
+            <param name="userId">Идентификатор пользователя</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.GetUsersRoles(System.Int32,System.Int32)">
+            <summary>
+            Получение ролей пользователей команды в проекте
+            </summary>
+            <param name="projectId">Идентификатор проекта</param>
+            <param name="teamId">Идентификатор команды</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.UpdateUserRole(Workflow.VM.ViewModels.VmProjectUserRole)">
+            <summary>
+            Обновление ролей пользователя
+            </summary>
+            <param name="userRole">Роли пользователя в проекте</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.UpdateUsersRoles(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmProjectUserRole})">
+            <summary>
+            Обновление ролей пользователей
+            </summary>
+            <param name="userRoles">Роли пользователей в проекте</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.GetProjectStatistic(System.Int32,Workflow.VM.ViewModels.StatisticOptions)">
+            <summary>
+            Получение статистики по проекту
+            </summary>
+            <param name="projectId">Идентификатор проекта</param>
+            <param name="options">Параметры статистики</param>
+            <returns></returns>
+        </member>
+        <member name="T:WorkflowService.Controllers.StatisticController">
+            <summary>
+            API работы со статистикой
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Controllers.StatisticController.#ctor(Workflow.Services.Abstract.IGoalCompletionStatisticService,Workflow.Services.Abstract.IWorkloadForProjectStatisticService,Workflow.Services.Abstract.IWorkloadByDaysStatisticService,Workflow.Services.Abstract.ITotalStatisticService,WorkflowService.Services.Abstract.ICurrentUserService)">
+            <summary>
+            
+            </summary>
+            <param name="goalCompletionStatisticService"></param>
+            <param name="projectWorkloadStatisticService"></param>
+            <param name="daysWorkloadStatisticService"></param>
+            <param name="totalStatisticService"></param>
+            <param name="currentUserService"></param>
+        </member>
+        <member name="M:WorkflowService.Controllers.StatisticController.GetGoalCompletion(Workflow.VM.ViewModels.StatisticOptions)">
+            <summary>
+            Получение статистики выполненеия задач по пользователям
+            </summary>
+            <param name="options">Параметры статистики</param>
+            <returns>Словарь, где ключ - идентификатор пользователя, значение - статистика по пользователю</returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:WorkflowService.Controllers.StatisticController.GetWorkloadByProject(Workflow.VM.ViewModels.StatisticOptions)">
+            <summary>
+            Получение статистики загрузки пользователей по проектам 
+            </summary>
+            <param name="options">Параметры статистики</param>
+            <returns>Словарь, где ключ - идентификатор пользователя, значение - статистика по пользователю</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.StatisticController.GetWorkloadByDays(Workflow.VM.ViewModels.StatisticOptions)">
+            <summary>
+            Получение статистики загрузки пользователей по дням
+            </summary>
+            <param name="options">Параметры статистики</param>
+            <returns>Словарь, где ключ - идентификатор пользователя, значение - статистика по пользователю</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.StatisticController.GetTotal(Workflow.VM.ViewModels.StatisticOptions)">
+            <summary>
+            Получение полной статистики
+            </summary>
+            <param name="options">Параметры статистики</param>
+            <returns>Словарь, где ключ - идентификатор пользователя, значение - статистика по пользователю</returns>
+        </member>
+        <member name="T:WorkflowService.Controllers.TeamsController">
+            <summary>
+            API-методы работы с командами
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.#ctor(WorkflowService.Services.Abstract.ICurrentUserService,Workflow.Services.Abstract.ITeamsService,Workflow.Services.Abstract.ITeamUsersService,Workflow.Services.Abstract.ITeamProjectsService,Workflow.Services.Abstract.IProjectUserRolesService)">
+            <summary>
+            Конструктор
+            </summary>
+            <param name="currentUserService"></param>
+            <param name="teamsService"></param>
+            <param name="teamUsersService"></param>
+            <param name="teamProjectsService"></param>
+            <param name="projectUserRolesService"></param>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.Get(System.Int32)">
+            <summary>
+            Получить команду по идентификатору
+            </summary>
+            <param name="id">Идентификатор команды</param>
+            <returns>Команда</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.GetPage(PageLoading.PageOptions)">
+            <summary>
+            Постраничная загрузка команд с фильтрацией и сортировкой
+            </summary>
+            <param name="pageOptions">Параметры страницы</param>
+            <returns>Коллекция команд</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.GetUsersPage(System.Int32,PageLoading.PageOptions)">
+            <summary>
+            Постраничная загрузка пользователей команды с фильтрацией и сортировкой
+            </summary>
+            <param name="teamId">Идентификатор команды</param>
+            <param name="pageOptions">Параметры страницы</param>
+            <returns>Коллекция пользователей команды</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.GetProjectsPage(System.Int32,PageLoading.PageOptions)">
+            <summary>
+            Постраничная загрузка проектов команды с фильтрацией и сортировкой
+            </summary>
+            <param name="teamId">Идентификатор команды</param>
+            <param name="pageOptions"></param>
+            <returns>Коллекция пользователей команды</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.GetRange(System.Int32[])">
+            <summary>
+            Получить команд по идентификаторам
+            </summary>
+            <param name="ids">Идентификаторы команд</param>
+            <returns>Коллецция команд</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.Create(Workflow.VM.ViewModels.VmTeam)">
+            <summary>
+            Создать команду
+            </summary>
+            <param name="team">Новая команда</param>
+            <returns>Команда</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.CreateByForm(Workflow.VM.ViewModels.VmTeamForm)">
+            <summary>
+            Создать команду по форме
+            </summary>
+            <param name="teamForm">Форма команды</param>
+            <returns>Команда</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.Update(Workflow.VM.ViewModels.VmTeam)">
+            <summary>
+            Обновление команды
+            </summary>
+            <param name="team">Команда</param>
+            <returns>Результат выполнения операции</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.UpdateByForm(Workflow.VM.ViewModels.VmTeamForm)">
+            <summary>
+            Обновление команды по форме
+            </summary>
+            <param name="teamForm">Форма команды</param>
+            <returns>Результат выполнения операции</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.UpdateRange(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmTeam})">
+            <summary>
+            Обновление команд
+            </summary>
+            <param name="teams">Обновляемые команды</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.UpdateByFormRange(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmTeamForm})">
+            <summary>
+            Обновление команд по формам
+            </summary>
+            <param name="teamForms">Формы команд</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.Delete(System.Int32)">
+            <summary>
+            Удаление команды
+            </summary>
+            <param name="id">Идентификатор команды</param>
+            <returns>Результат выполнения операции</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.Restore(System.Int32)">
+            <summary>
+            Восстановление команды
+            </summary>
+            <param name="id">Идентификатор команды</param>
+            <returns>Результат выполнения операции</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.DeleteRange(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Удаление команд
+            </summary>
+            <param name="ids">Идентификаторы команд</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.RestoreRange(System.Collections.Generic.IEnumerable{System.Int32})">
+            <summary>
+            Восстановление команд
+            </summary>
+            <param name="ids">Идентификаторы команд</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.AddUser(System.Int32,System.String)">
+            <summary>
+            Добавление пользователя в команду
+            </summary>
+            <param name="teamId">Идентификатор команнды</param>
+            <param name="userId">Идентификатор пользователя</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.AddUsers(System.Int32,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Добавление пользователей в команду
+            </summary>
+            <param name="teamId"></param>
+            <param name="userIds">Идентификаторы пользователей</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.RemoveUser(System.Int32,System.String)">
+            <summary>
+            Удаление пользователя из команды
+            </summary>
+            <param name="teamId">Идентификатор команды</param>
+            <param name="userId">Идентификатор пользователя</param>
+            <returns>Удаленный пользователь</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.RemoveUsers(System.Int32,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Удаление пользователя из команды
+            </summary>
+            <param name="teamId">Идентификатор команды</param>
+            <param name="userIds">Идентификаторы пользователей</param>
+            <returns>Удаленный пользователь</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.AddProject(System.Int32,System.Int32)">
+            <summary>
+            Добавление проекта в список проектов команды
+            </summary>
+            <param name="teamId"></param>
+            <param name="projectId">Идентификатор проекта</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.TeamsController.RemoveProject(System.Int32,System.Int32)">
+            <summary>
+            Удаление проекта из списка проектов команды
+            </summary>
+            <param name="teamId">Идентификатор команды</param>
+            <param name="projectId">Идентификатор проекта</param>
+            <returns></returns>
+        </member>
+        <member name="T:WorkflowService.Controllers.UsersController">
+            <summary>
+            API работы с пользователями системы
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.#ctor(Workflow.Services.Abstract.IUsersService,WorkflowService.Services.Abstract.ICurrentUserService,Workflow.Services.Abstract.IStatisticService)">
+            <summary>
+            Конструктор 
+            </summary>
+            <param name="service"></param>
+            <param name="currentUserService"></param>
+            <param name="statisticService"></param>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.Get(System.String)">
+            <summary>
+            Получение пользователя по идентификатору
+            </summary>
+            <param name="id">Идентификатор пользователя</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.GetCurrent">
+            <summary>
+            Получение параметров текущего пользователя
+            </summary>
+            <returns>Параметры текущего пользователя</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.GetPage(PageLoading.PageOptions)">
+            <summary>
+            Постраничная загрузка пользователей с фильтрацией и сортировкой
+            </summary>
+            <param name="pageOptions">Параметры страницы</param>
+            <returns>Коллекция пользователей</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.GetRange(System.String[])">
+            <summary>
+            Получение коллекции пользователей по идентификаторам
+            </summary>
+            <param name="ids">Идентификаторы пользователей</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.IsEmailExist(System.String)">
+            <summary>
+            Проверка существования пользователя с указанным email
+            </summary>
+            <param name="email">Email пользователя</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.IsUserNameExist(System.String)">
+            <summary>
+            Проверка существования пользователя с указанным именем пользователя
+            </summary>
+            <param name="userName">Имя пользователя</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.Create(Workflow.VM.ViewModels.VmNewUser)">
+            <summary>
+            Добавление нового пользователя
+            </summary>
+            <param name="user">Параметры пользователя. Пароль должен содержать не менее 6 символов, включая цифры</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.Update(Workflow.VM.ViewModels.VmUser)">
+            <summary>
+            Обновление пользователя
+            </summary>
+            <param name="user">Параметры пользователя</param>
+            <returns>Результат</returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.Delete(System.String)">
+            <summary>
+            Удаление пользователя
+            </summary>
+            <param name="id">Идентификатор пользователя</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.DeleteRange(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Удаление пользователей
+            </summary>
+            <param name="ids">Идентификаторы пользователей</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.Restore(System.String)">
+            <summary>
+            Удаление пользователя
+            </summary>
+            <param name="id">Идентификатор пользователя</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.RestoreRange(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Восстановление пользователей
+            </summary>
+            <param name="ids">Идентификаторы пользователей</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.Restore(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Восстановление пользователей
+            </summary>
+            <param name="ids">Идентификаторы пользователей</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.ChangePassword(System.String,System.String)">
+            <summary>
+            Изменение пароля пользователя. Доступно только текущему пользователю
+            </summary>
+            <param name="currentPassword">Текущий пароль</param>
+            <param name="newPassword">Новый пароль</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.ResetPassword(System.String,System.String)">
+            <summary>
+            Сброс пароля пользователя. Доступно только администраторам
+            </summary>
+            <param name="id">Идентификатор пользователя</param>
+            <param name="newPassword">Новый пароль</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.GetStatistic(System.String,Workflow.VM.ViewModels.StatisticOptions)">
+            <summary>
+            Получение статистики пользователя по задачам
+            </summary>
+            <param name="userId">Идентификатор пользователя</param>
+            <param name="options">Параметры статистики</param>
+            <returns></returns>
+        </member>
+        <member name="M:WorkflowService.Controllers.UsersController.GetProjectStatistic(System.String,System.Int32,Workflow.VM.ViewModels.StatisticOptions)">
+            <summary>
+            Получение статистики пользователя по задачам конкретного проекта
+            </summary>
+            <param name="userId">Идентификатор пользователя</param>
+            <param name="projectId">Идентификатор проекта</param>
+            <param name="options">Параметры статистики</param>
+            <returns></returns>
+        </member>
+        <member name="T:WorkflowService.Extensions.DefaultDataInitialization">
+            <summary>
+            Инициализация БД начальными данными
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Extensions.DefaultDataInitialization.InitializeDefaultData(Microsoft.Extensions.Hosting.IHost)">
+            <summary>
+            Инициализация БД начальными данными
+            </summary>
+            <param name="host"></param>
+            <returns></returns>
+        </member>
+        <member name="T:WorkflowService.Filters.HttpResponseExceptionFilter">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:WorkflowService.Filters.HttpResponseExceptionFilter.Order">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Filters.HttpResponseExceptionFilter.OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext)">
+            <summary>
+            
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:WorkflowService.Filters.HttpResponseExceptionFilter.OnActionExecuted(Microsoft.AspNetCore.Mvc.Filters.ActionExecutedContext)">
+            <summary>
+            
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="T:WorkflowService.Services.Abstract.ICurrentUserService">
+            <summary>
+            Сервис работы с текущим пользователем
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.ICurrentUserService.GetCurrentUser(System.Security.Claims.ClaimsPrincipal)">
+            <summary>
+            Получение текущего пользователя
+            </summary>
+            <param name="claimsPrincipal"></param>
+            <returns></returns>
+        </member>
+        <member name="T:WorkflowService.Services.Abstract.IFormFilesService">
+            <summary>
+            Преобразование файлов во вложения
+            </summary>
+        </member>
+        <member name="M:WorkflowService.Services.Abstract.IFormFilesService.GetAttachments(Microsoft.AspNetCore.Http.IFormFileCollection)">
+            <summary>Преобразование файлов во вложения</summary>
+            <param name="files">Файлы</param>
+            <returns>Коллекция вложений</returns>
+        </member>
+        <member name="T:WorkflowService.Services.CurrentUserService">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.CurrentUserService.#ctor(Microsoft.AspNetCore.Identity.UserManager{Workflow.DAL.Models.ApplicationUser})">
+            <summary>
+            
+            </summary>
+            <param name="userManager"></param>
+        </member>
+        <member name="M:WorkflowService.Services.CurrentUserService.GetCurrentUser(System.Security.Claims.ClaimsPrincipal)">
+            <inheritdoc />
+        </member>
+        <member name="T:WorkflowService.Services.FormFilesService">
+            <inheritdoc />
+        </member>
+        <member name="M:WorkflowService.Services.FormFilesService.GetAttachments(Microsoft.AspNetCore.Http.IFormFileCollection)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

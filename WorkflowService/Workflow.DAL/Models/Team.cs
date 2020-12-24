@@ -7,8 +7,15 @@ namespace Workflow.DAL.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public List<TeamUser> TeamUsers { get; set; }
 
-        private List<Metadata> Metadata { get; set; }
+        public string CreatorId { get; set; }
+        public ApplicationUser Creator { get; set; }
+
+        public List<TeamUser> TeamUsers { get; set; }
+        public List<ProjectTeam> TeamProjects { get; set; } = new List<ProjectTeam>();
+
+        public List<Project> Projects { get; set; } = new List<Project>();
+
+        public bool IsRemoved { get; set; }
     }
 }

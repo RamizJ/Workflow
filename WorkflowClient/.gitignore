@@ -19,3 +19,10 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+
+yarn.lock
+package-lock.json
+
+deploy.js
+deploy.staging.js
+deploy.production.js

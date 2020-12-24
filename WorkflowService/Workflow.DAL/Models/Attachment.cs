@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+
 
 namespace Workflow.DAL.Models
 {
@@ -8,12 +8,12 @@ namespace Workflow.DAL.Models
         public int Id { get; set; }
 
         public string FileName { get; set; }
+        public long FileSize { get; set; }
+        public string FileType { get; set; }
 
         public DateTime CreationDate { get; set; }
 
         public int FileDataId { get; set; }
         public FileData FileData { get; set; }
-
-        private List<Metadata> Metadata { get; set; }
     }
 }

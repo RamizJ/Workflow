@@ -7,5 +7,14 @@
 
         public string UserId { get; set; }
         public ApplicationUser User { get; set; }
+
+        public TeamUser()
+        { }
+
+        public TeamUser(int teamId, string userId)
+        {
+            TeamId = teamId;
+            UserId = userId;
+        }
     }
 }
