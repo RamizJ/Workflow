@@ -41,7 +41,7 @@ class GoalMessagesStore extends VuexModule {
   @MutationAction({ mutate: ['_unreadMessages'] })
   public async getUnreadMessages(goalId?: number) {
     try {
-      const response = await goalMessagesApi.getUnreadedPage(new Query(), goalId)
+      const response = await goalMessagesApi.getUnreadPage(new Query(), goalId)
       return {
         _unreadMessages: response.data,
       }

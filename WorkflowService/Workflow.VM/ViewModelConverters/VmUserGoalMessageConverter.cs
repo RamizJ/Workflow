@@ -15,7 +15,7 @@ namespace Workflow.VM.ViewModelConverters
         public override void SetViewModel(UserGoalMessage model, VmUserGoalMessage viewModel)
         {
             viewModel.UserId = model.UserId;
-            viewModel.UserFullName = model.User.FullName;
+            viewModel.UserFullName = model.User?.FullName;
             viewModel.LastReadingDate = model.LastReadingDate;
         }
     }

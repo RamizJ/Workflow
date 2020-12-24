@@ -19,7 +19,7 @@ namespace WorkflowService.Extensions
             using var scope = host.Services.CreateScope();
 
             var defaultDataInitializationService = scope.ServiceProvider
-                .GetService<IDefaultDataInitializationService>();
+                .GetRequiredService<IDefaultDataInitializationService>();
 
             defaultDataInitializationService.InitializeRoles().Wait();
             defaultDataInitializationService.InitializeAdmin().Wait();

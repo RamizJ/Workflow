@@ -47,5 +47,7 @@ namespace Workflow.Services.Abstract
     Task<IEnumerable<VmGoalMessage>> RestoreRange(
       ApplicationUser currentUser,
       IEnumerable<int> ids);
+
+    Task<int> GetUnreadCount(ApplicationUser currentUser, int? goalId);
   }
 }

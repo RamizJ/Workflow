@@ -48,13 +48,26 @@ namespace WorkflowService.Controllers
         /// <param name="goalId">Идентификатор задачи</param>
         /// <param name="pageOptions">Параметры загружаемой страницы</param>
         /// <returns></returns>
-        [HttpPost("{goalId}")]
+        [HttpPost]
         public async Task<IEnumerable<VmGoalMessage>> GetPage(
-            int? goalId,
+            [FromQuery]int? goalId,
             [FromBody] PageOptions pageOptions)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
             return await _goalMessageService.GetPage(currentUser, goalId, pageOptions);
+        }
+
+        /// <summary>
+        /// Получение кол-ва непрочитанных сообщений
+        /// </summary>
+        /// <param name="goalId">Идентификатор задачи</param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<int> GetUnreadCount(
+            [FromQuery] int? goalId)
+        {
+            var currentUser = await _currentUserService.GetCurrentUser(User);
+            return await _goalMessageService.GetUnreadCount(currentUser, goalId);
         }
 
         /// <summary>
@@ -63,9 +76,9 @@ namespace WorkflowService.Controllers
         /// <param name="goalId">Идентификатор задачи</param>
         /// <param name="pageOptions">Параметры загружаемой страницы</param>
         /// <returns></returns>
-        [HttpPost("{goalId}")]
+        [HttpPost]
         public async Task<IEnumerable<VmGoalMessage>> GetUnreadPage(
-            int? goalId,
+            [FromQuery] int? goalId,
             [FromBody] PageOptions pageOptions)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);

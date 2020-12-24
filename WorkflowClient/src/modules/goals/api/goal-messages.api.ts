@@ -5,15 +5,23 @@ import GoalMessage from '@/modules/goals/models/goal-message.model'
 
 export default {
   getPage: (query: Query, goalId?: number): Promise<AxiosResponse<GoalMessage[]>> => {
+    const url = goalId 
+      ? `/api/GoalMessages/GetPage?goalId=${goalId}` 
+      : '/api/GoalMessages/GetPage'
+
     return api.request({
       url: `/api/GoalMessages/GetPage?goalId=${goalId}`,
       method: 'POST',
       data: query,
     })
   },
-  getUnreadedPage: (query: Query, goalId?: number): Promise<AxiosResponse<GoalMessage[]>> => {
+  getUnreadPage: (query: Query, goalId?: number): Promise<AxiosResponse<GoalMessage[]>> => {
+    const url = goalId 
+      ? `/api/GoalMessages/GetUnreadPage?goalId=${goalId}` 
+      : '/api/GoalMessages/GetUnreadPage'
+
     return api.request({
-      url: `/api/GoalMessages/GetUnreadedPage?goalId=${goalId}`,
+      url: url,
       method: 'POST',
       data: query,
     })

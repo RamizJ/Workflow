@@ -55,6 +55,13 @@
             <param name="pageOptions">Параметры загружаемой страницы</param>
             <returns></returns>
         </member>
+        <member name="M:WorkflowService.Controllers.GoalMessagesController.GetUnreadCount(System.Nullable{System.Int32})">
+            <summary>
+            Получение кол-ва непрочитанных сообщений
+            </summary>
+            <param name="goalId">Идентификатор задачи</param>
+            <returns></returns>
+        </member>
         <member name="M:WorkflowService.Controllers.GoalMessagesController.GetUnreadPage(System.Nullable{System.Int32},PageLoading.PageOptions)">
             <summary>
             Постраничная загрузка непрочитанных сообщений с фильтрацией и сортировкой

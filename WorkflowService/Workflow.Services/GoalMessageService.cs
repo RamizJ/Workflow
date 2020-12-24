@@ -52,6 +52,17 @@ namespace Workflow.Services
             return messages;
         }
 
+        public async Task<int> GetUnreadCount(ApplicationUser currentUser, int? goalId)
+        {
+            var count = await GetQuery(currentUser, goalId)
+                .Where(gm => gm.MessageSubscribers
+                    .Any(um => um.UserId == currentUser.Id
+                               && um.LastReadingDate == new DateTime?()))
+                .CountAsync();
+
+            return count;
+        }
+        
         public async Task<IEnumerable<VmGoalMessage>> GetUnreadPage(
             ApplicationUser currentUser,
             int? goalId,
@@ -88,7 +99,7 @@ namespace Workflow.Services
             ApplicationUser currentUser,
             VmGoalMessage message)
         {
-            Goal goal = await _dataContext.Goals.AsNoTracking()
+            Goal goal = await _dataContext.Goals
                 .Include(x => x.Performer)
                 .Include(x => x.Observers)
                 .SingleOrDefaultAsync(x => x.Id == message.GoalId);
@@ -106,12 +117,19 @@ namespace Workflow.Services
             var observers = goal.Observers
                 .Select(x => new UserGoalMessage
                 {
-                    UserId = x.ObserverId
+                    UserId = x.ObserverId,
+                    User = x.Observer,
+                    GoalMessage = model
                 });
             
             model.MessageSubscribers = new List<UserGoalMessage>(observers)
             {
-                new() {UserId = goal.PerformerId}
+                new()
+                {
+                    UserId = goal.PerformerId,
+                    User = goal.Performer,
+                    GoalMessage = model
+                }
             };
             
             await _dataContext.AddAsync(model);
@@ -178,6 +196,7 @@ namespace Workflow.Services
         {
             return await RemoveRestore(currentUser, ids, false);
         }
+        
 
         private IQueryable<GoalMessage> GetQuery(
             ApplicationUser currentUser,
