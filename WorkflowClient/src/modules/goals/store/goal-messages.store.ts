@@ -14,6 +14,7 @@ import { Message } from 'element-ui'
 class GoalMessagesStore extends VuexModule {
   _messages: GoalMessage[] = []
   _unreadMessages: GoalMessage[] = []
+  _unreadMessagesCount = 0
 
   public get messages(): GoalMessage[] {
     return this._messages
@@ -23,12 +24,16 @@ class GoalMessagesStore extends VuexModule {
     return this._messages
   }
 
+  public get unreadMessagesCount(): number {
+    return this._unreadMessagesCount
+  }
+
   @MutationAction({ mutate: ['_messages'] })
   public async getMessages(goalId?: number) {
     try {
       const response = await goalMessagesApi.getPage(new Query(), goalId)
       return {
-        _messages: response.data,
+        _messages: response.data.map((data) => new GoalMessage(data)),
       }
     } catch (e) {
       Message.error('Ошибка получения списка сообщений')
@@ -49,6 +54,21 @@ class GoalMessagesStore extends VuexModule {
       Message.error('Ошибка получения списка непрочитанных сообщений')
       return {
         _unreadMessages: [],
+      }
+    }
+  }
+
+  @MutationAction({ mutate: ['_unreadMessagesCount'] })
+  public async getUnreadMessagesCount(goalId?: number) {
+    try {
+      const response = await goalMessagesApi.getUnreadCount(goalId)
+      return {
+        _unreadMessagesCount: response.data,
+      }
+    } catch (e) {
+      Message.error('Ошибка получения списка непрочитанных сообщений')
+      return {
+        _unreadMessagesCount: 0,
       }
     }
   }
