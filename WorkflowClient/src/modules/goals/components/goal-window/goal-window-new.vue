@@ -146,7 +146,7 @@
             <el-form-item>
               <el-upload
                 ref="upload"
-                action="https://demo.girngm.ru/workflow_dev/api/Goals/AddAttachments/"
+                action="https://demo.girngm.ru/workflow/api/Goals/AddAttachments/"
                 :http-request="uploadAttachment"
                 :on-preview="onAttachmentClick"
                 :on-remove="onAttachmentRemove"
