@@ -42,6 +42,7 @@ namespace Workflow.VM.ViewModelConverters
             viewModel.CreationDate = model.CreationDate;
             viewModel.LastEditDate = model.LastEditDate;
             viewModel.IsRemoved = model.IsRemoved;
+            viewModel.OwnerFullName = model.Owner?.FullName;
             
             viewModel.MessageSubscribers = model.MessageSubscribers?
                 .Select(x => _vmUserMessageConverter.ToViewModel(x))
