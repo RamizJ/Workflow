@@ -6,7 +6,7 @@ const config = {
   host: '10.62.20.8',
   port: 21,
   localRoot: __dirname + '/dist/',
-  remoteRoot: '/workflow/wwwroot/',
+  remoteRoot: '/workflow_dev/wwwroot/',
   include: ['*', '**/*'],
   deleteRemote: true,
   forcePasv: true,

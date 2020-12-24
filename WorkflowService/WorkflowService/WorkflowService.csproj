@@ -50,6 +50,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="web.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="wwwroot\Put client here.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
