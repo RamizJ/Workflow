@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using WorkflowService.Extensions;
 
+#pragma warning disable 1591
+
 namespace WorkflowService
 {
     public class Program
