@@ -107,7 +107,8 @@ namespace WorkflowService.Controllers
         public async Task<ActionResult<VmGoal>> Create([FromBody]VmGoal goal)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
-            return await _service.Create(currentUser, goal);
+            goal = await _service.Create(currentUser, goal);
+            return CreatedAtAction("Get", new { id = goal.Id }, goal);
         }
 
         /// <summary>
