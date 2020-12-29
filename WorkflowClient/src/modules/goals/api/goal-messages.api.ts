@@ -37,7 +37,7 @@ export default {
       data: message,
     })
   },
-  addMessage: (message: GoalMessage): Promise<AxiosResponse<GoalMessage>> => {
+  addMessage: (message: GoalMessage): Promise<AxiosResponse<GoalMessageData>> => {
     return api.request({
       url: `/api/GoalMessages/Create`,
       method: 'POST',

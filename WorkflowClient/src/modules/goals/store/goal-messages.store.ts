@@ -21,7 +21,7 @@ class GoalMessagesStore extends VuexModule {
   }
 
   public get unreadMessages(): GoalMessage[] {
-    return this._messages
+    return this._unreadMessages
   }
 
   public get unreadMessagesCount(): number {
@@ -86,8 +86,9 @@ class GoalMessagesStore extends VuexModule {
   public async sendMessage(message: GoalMessage): Promise<GoalMessage | undefined> {
     try {
       const response = await goalMessagesApi.addMessage(message)
-      this._messages.push(response.data)
-      return response.data
+      const createdMessage = new GoalMessage(response.data)
+      this._messages.push(createdMessage)
+      return createdMessage
     } catch (e) {
       Message.error('Ошибка отправки сообщения')
     }
