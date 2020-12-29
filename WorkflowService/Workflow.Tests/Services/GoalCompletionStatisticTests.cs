@@ -9,7 +9,7 @@ using NUnit.Framework;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.DAL.Repositories.Abstract;
-using Workflow.Services;
+using Workflow.Services.Abstract;
 using Workflow.VM.ViewModels;
 
 namespace Workflow.Tests.Services
@@ -31,8 +31,8 @@ namespace Workflow.Tests.Services
 
             _serviceProvider = ContextHelper.Initialize(_dbConnection, true);
             _dataContext = _serviceProvider.GetService<DataContext>();
-            _goalsRepository = _serviceProvider.GetService<IGoalsRepository>();
-            _service = new GoalCompletionStatisticService(_dataContext, _goalsRepository);
+            _serviceProvider.GetService<IGoalsRepository>();
+            _service = _serviceProvider.GetRequiredService<IGoalCompletionStatisticService>();
             _currentUser = _testData.Users.First();
         }
 
@@ -69,8 +69,7 @@ namespace Workflow.Tests.Services
         private TestData _testData;
         private DataContext _dataContext;
         private ServiceProvider _serviceProvider;
-        private GoalCompletionStatisticService _service;
+        private IGoalCompletionStatisticService _service;
         private ApplicationUser _currentUser;
-        private IGoalsRepository _goalsRepository;
     }
 }

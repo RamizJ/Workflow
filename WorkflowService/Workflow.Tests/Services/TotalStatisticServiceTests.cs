@@ -15,7 +15,7 @@ using Workflow.VM.ViewModels;
 namespace Workflow.Tests.Services
 {
     [TestFixture]
-    public class ProjectWorkloadStatisticTests
+    public class TotalStatisticServiceTests
     {
         [SetUp]
         public void Setup()
@@ -32,7 +32,7 @@ namespace Workflow.Tests.Services
             _serviceProvider = ContextHelper.Initialize(_dbConnection, true);
             _dataContext = _serviceProvider.GetService<DataContext>();
             _serviceProvider.GetService<IGoalsRepository>();
-            _service = _serviceProvider.GetRequiredService<IWorkloadForProjectStatisticService>();
+            _service = _serviceProvider.GetRequiredService<ITotalStatisticService>();
             _currentUser = _testData.Users.First();
         }
 
@@ -58,7 +58,7 @@ namespace Workflow.Tests.Services
             };
 
             //Act
-            var result = await _service.GetWorkloadByProject(_currentUser, options);
+            var result = await _service.GetTotal(_currentUser, options);
 
             //Assert
             Assert.NotNull(result);
@@ -69,7 +69,7 @@ namespace Workflow.Tests.Services
         private TestData _testData;
         private DataContext _dataContext;
         private ServiceProvider _serviceProvider;
-        private IWorkloadForProjectStatisticService _service;
+        private ITotalStatisticService _service;
         private ApplicationUser _currentUser;
     }
 }
