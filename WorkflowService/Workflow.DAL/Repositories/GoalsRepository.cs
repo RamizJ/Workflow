@@ -33,7 +33,7 @@ namespace Workflow.DAL.Repositories
         public IQueryable<Goal> GetPerformerGoalsForPeriod(ICollection<string> userIds, 
             DateTime dateBegin, DateTime dateEnd)
         {
-            if (userIds == null || !userIds.Any() || dateBegin <= dateEnd)
+            if (userIds == null || !userIds.Any() || dateBegin >= dateEnd)
             {
                 throw new ArgumentException();
             }
