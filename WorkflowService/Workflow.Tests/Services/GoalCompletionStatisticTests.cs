@@ -32,7 +32,7 @@ namespace Workflow.Tests.Services
             _serviceProvider = ContextHelper.Initialize(_dbConnection, true);
             _dataContext = _serviceProvider.GetService<DataContext>();
             _goalsRepository = _serviceProvider.GetService<IGoalsRepository>();
-            _service = new GoalCompletionStatisticService(_goalsRepository);
+            _service = new GoalCompletionStatisticService(_dataContext, _goalsRepository);
             _currentUser = _testData.Users.First();
         }
 

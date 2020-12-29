@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.DAL.Repositories.Abstract;
 using Workflow.Services.Abstract;
@@ -15,8 +16,11 @@ namespace Workflow.Services
 {
     public class WorkloadForProjectStatisticService : IWorkloadForProjectStatisticService
     {
-        public WorkloadForProjectStatisticService(IGoalsRepository goalsRepository)
+        public WorkloadForProjectStatisticService(
+            DataContext dataContext,
+            IGoalsRepository goalsRepository)
         {
+            _dataContext = dataContext;
             _goalsRepository = goalsRepository;
         }
 
@@ -27,8 +31,9 @@ namespace Workflow.Services
             IQueryable<Goal> query;
             try
             {
-                query = _goalsRepository.GetPerformerGoalsForPeriod(options.UserIds,
-                    options.DateBegin, options.DateEnd);
+                query = _goalsRepository.GetPerformerGoals(_dataContext.Goals, options.UserIds);
+                query = _goalsRepository.GetGoalsForProjects(query, options.ProjectIds);
+                query = _goalsRepository.GetGoalsForPeriod(query, options.DateBegin, options.DateEnd);
             }
             catch (ArgumentException)
             {
@@ -56,14 +61,23 @@ namespace Workflow.Services
             var result = new VmWorkloadByProjectsStatistic();
             foreach (var userGoals in usersGoals)
             {
-                var projectHoursForUser = new VmProjectHoursForUser(userGoals.Key);
-                foreach (var projectHours in userGoals.Value)
+                var projectsHoursDictionary = new Dictionary<int, double>();
+                foreach (var userGoal in userGoals.Value)
                 {
-                    double hours = projectHours.EstimatedPerformingTime?.TotalHours ?? 0;
-                    result.TotalHours += hours;
-                    var hoursForProject = new VmHoursForProject(projectHours.ProjectId, hours);
-                    projectHoursForUser.HoursForProject.Add(hoursForProject);
+                    if (projectsHoursDictionary.TryGetValue(userGoal.ProjectId, out var projectHours))
+                        projectsHoursDictionary[userGoal.ProjectId] = projectHours + 1;
+                    else
+                        projectsHoursDictionary[userGoal.ProjectId] = 1;
                 }
+
+                var projectHoursForUser = new VmProjectHoursForUser(userGoals.Key);
+                foreach (var projectHours in projectsHoursDictionary)
+                {
+                    result.TotalHours += projectHours.Value;
+                    projectHoursForUser.HoursForProject
+                        .Add(new VmHoursForProject(projectHours.Key, projectHours.Value));
+                }
+                
                 result.ProjectHoursForUsers.Add(projectHoursForUser);
             }
 
@@ -71,6 +85,7 @@ namespace Workflow.Services
         }
 
 
+        private readonly DataContext _dataContext;
         private readonly IGoalsRepository _goalsRepository;
     }
 }

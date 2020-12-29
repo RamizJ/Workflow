@@ -203,7 +203,7 @@ namespace Workflow.Services
             bool withChildren = false,
             bool withParent = false)
         {
-            var query = await _repository.GetGoalsForUser(currentUser);
+            var query = await _repository.GetGoalsForUser(_dataContext.Goals, currentUser);
             query = query
                 .Include(x => x.Owner)
                 .Include(x => x.Observers)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.DAL.Repositories.Abstract;
 using Workflow.Services.Abstract;
@@ -16,8 +17,11 @@ namespace Workflow.Services
     /// <inheritdoc />
     public class GoalCompletionStatisticService : IGoalCompletionStatisticService
     {
-        public GoalCompletionStatisticService(IGoalsRepository goalsRepository)
+        public GoalCompletionStatisticService(
+            DataContext dataContext,
+            IGoalsRepository goalsRepository)
         {
+            _dataContext = dataContext;
             _goalsRepository = goalsRepository;
         }
 
@@ -29,8 +33,9 @@ namespace Workflow.Services
             IQueryable<Goal> query;
             try
             {
-                query = _goalsRepository.GetPerformerGoalsForPeriod(options.UserIds,
-                    options.DateBegin, options.DateEnd);
+                query = _goalsRepository.GetPerformerGoals(_dataContext.Goals, options.UserIds);
+                query = _goalsRepository.GetGoalsForProjects(query, options.ProjectIds);
+                query = _goalsRepository.GetGoalsForPeriod(query, options.DateBegin, options.DateEnd);
             }
             catch (ArgumentException)
             {
@@ -83,6 +88,7 @@ namespace Workflow.Services
         }
 
 
+        private readonly DataContext _dataContext;
         private readonly IGoalsRepository _goalsRepository;
     }
 }
