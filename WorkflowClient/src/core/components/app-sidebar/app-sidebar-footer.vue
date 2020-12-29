@@ -74,6 +74,15 @@ export default class SidebarFooter extends Vue {
   width: 250px;
   overflow: auto;
   scroll-behavior: smooth;
+  &::-webkit-scrollbar {
+    width: 6px;
+    background-color: var(--sidebar-background);
+    border-radius: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--text-muted);
+    border-radius: 6px;
+  }
   .empty-text {
     height: 100%;
     width: 100%;
