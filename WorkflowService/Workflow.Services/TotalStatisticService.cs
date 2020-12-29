@@ -44,7 +44,7 @@ namespace Workflow.Services
                 throw new HttpResponseException(BadRequest, "Wrong options");
             }
 
-            var usersGoals = await query
+            var goalsArray = await query
                 .Select(g => new Goal
                 {
                     PerformerId = g.PerformerId,
@@ -54,8 +54,11 @@ namespace Workflow.Services
                     StateChangedDate = g.StateChangedDate,
                     ExpectedCompletedDate = g.ExpectedCompletedDate
                 })
+                .ToArrayAsync();
+
+            var usersGoals = goalsArray
                 .GroupBy(g => g.PerformerId)
-                .ToDictionaryAsync(g => g.Key, g => g.ToArray());
+                .ToDictionary(g => g.Key, g => g.ToArray());
 
             var result = new VmTotalStatistic
             {
