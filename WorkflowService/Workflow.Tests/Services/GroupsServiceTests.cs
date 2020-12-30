@@ -165,7 +165,7 @@ namespace Workflow.Tests.Services
             //Assert
             Assert.NotNull(result);
             Assert.AreEqual(vmGroup.Name, result.Name);
-            Assert.AreEqual(0, (DateTime.Now - result.CreationDate).TotalSeconds, 10);
+            Assert.AreEqual(0, (DateTime.Now.ToUniversalTime() - result.CreationDate).TotalSeconds, 10);
             Assert.AreNotEqual(0, result.Id);
         }
 

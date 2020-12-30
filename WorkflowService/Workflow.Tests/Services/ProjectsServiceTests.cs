@@ -265,7 +265,7 @@ namespace Workflow.Tests.Services
 
             //Act
             var result = await _service.Create(_currentUser, vmProject);
-            var delta = Math.Abs((DateTime.Now - result.CreationDate).TotalSeconds);
+            var delta = Math.Abs((DateTime.Now.ToUniversalTime() - result.CreationDate).TotalSeconds);
 
             //Assert
             Assert.AreEqual(0, delta, 10);
