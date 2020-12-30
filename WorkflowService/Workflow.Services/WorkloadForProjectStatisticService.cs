@@ -28,10 +28,11 @@ namespace Workflow.Services
             ApplicationUser currentUser, 
             StatisticOptions options)
         {
-            IQueryable<Goal> query;
+            IQueryable<Goal> query = _dataContext.Goals
+                .Include(g => g.Project);
             try
             {
-                query = _goalsRepository.GetPerformerGoals(_dataContext.Goals, options.UserIds);
+                query = _goalsRepository.GetPerformerGoals(query, options.UserIds);
                 query = _goalsRepository.GetGoalsForProjects(query, options.ProjectIds);
                 query = _goalsRepository.GetGoalsForPeriod(query, options.DateBegin, options.DateEnd);
             }
@@ -43,6 +44,7 @@ namespace Workflow.Services
             var goalsArray = await query
                 .Select(g => new Goal
                 {
+                    Project = new Project {Name = g.Project.Name},
                     PerformerId = g.PerformerId,
                     ProjectId = g.ProjectId,
                     EstimatedPerformingTime = g.EstimatedPerformingTime,
@@ -61,24 +63,29 @@ namespace Workflow.Services
             var result = new VmWorkloadByProjectsStatistic();
             foreach (var userGoals in usersGoals)
             {
-                var projectsHoursDictionary = new Dictionary<int, double>();
-                foreach (var userGoal in userGoals.Value)
-                {
-                    if (projectsHoursDictionary.TryGetValue(userGoal.ProjectId, out var projectHours))
-                        projectsHoursDictionary[userGoal.ProjectId] = projectHours + 1;
-                    else
-                        projectsHoursDictionary[userGoal.ProjectId] = 1;
-                }
+                var userProjectsHours = userGoals.Value
+                    .GroupBy(x => (x.ProjectId, x.Project.Name))
+                    .ToDictionary(x => x.Key, x => x
+                        .Sum(y => y.EstimatedPerformingTime?.TotalHours ?? 0));
 
-                var projectHoursForUser = new VmProjectHoursForUser(userGoals.Key);
-                foreach (var projectHours in projectsHoursDictionary)
+
+                var vmUserProjectsHours = new VmProjectHoursForUser
                 {
-                    result.TotalHours += projectHours.Value;
-                    projectHoursForUser.HoursForProject
-                        .Add(new VmHoursForProject(projectHours.Key, projectHours.Value));
+                    UserId = userGoals.Key,
+                    HoursForProject = new List<VmHoursForProject>()
+                };
+                result.ProjectHoursForUsers.Add(vmUserProjectsHours);
+
+                foreach (var userProjectHours in userProjectsHours)
+                {
+                    result.TotalHours += userProjectHours.Value;
+                    vmUserProjectsHours.HoursForProject.Add(new VmHoursForProject
+                    {
+                        ProjectId = userProjectHours.Key.ProjectId,
+                        ProjectName = userProjectHours.Key.Name,
+                        Hours = userProjectHours.Value
+                    });
                 }
-                
-                result.ProjectHoursForUsers.Add(projectHoursForUser);
             }
 
             return result;
