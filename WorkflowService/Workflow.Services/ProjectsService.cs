@@ -342,7 +342,7 @@ namespace Workflow.Services
 
             var model = _vmConverter.ToModel(project);
             model.Id = 0;
-            model.CreationDate = DateTime.Now;
+            model.CreationDate = DateTime.Now.ToUniversalTime();
             model.OwnerId = user.Id;
             await _dataContext.Projects.AddAsync(model);
 
