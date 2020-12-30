@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "vue-cli-service serve --mode development",
     "staging": "vue-cli-service build --mode staging",
-    "deploy": "yarn staging && node deploy.staging.js",
     "prod": "vue-cli-service build --mode production",
+    "deploy:staging": "yarn staging && node deploy.staging.js",
+    "deploy:prod": "yarn prod && node deploy.production.js",
     "debug": "vue-cli-service serve --mode debug",
     "lint": "vue-cli-service lint"
   },

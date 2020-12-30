@@ -48,12 +48,12 @@ export const priorities = [
 ]
 
 export enum Status {
-  New = 'New',
-  Perform = 'Perform',
-  Delay = 'Delay',
-  Testing = 'Testing',
-  Succeed = 'Succeed',
-  Rejected = 'Rejected',
+  New = 'new',
+  Perform = 'perform',
+  Delay = 'delay',
+  Testing = 'testing',
+  Succeed = 'succeed',
+  Rejected = 'rejected',
 }
 
 export const statuses = [
