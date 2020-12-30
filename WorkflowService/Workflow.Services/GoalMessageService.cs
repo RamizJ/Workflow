@@ -112,7 +112,7 @@ namespace Workflow.Services
             
             var model = _vmConverter.ToModel(message);
             model.Id = 0;
-            model.CreationDate = DateTime.Now;
+            model.CreationDate = DateTime.Now.ToUniversalTime();
 
             var observers = goal.Observers
                 .Select(x => new UserGoalMessage
@@ -151,7 +151,7 @@ namespace Workflow.Services
             }
             
             msg.Text = message.Text;
-            msg.LastEditDate = DateTime.Now;
+            msg.LastEditDate = DateTime.Now.ToUniversalTime();
             
             _dataContext.Entry(msg).State = EntityState.Modified;
             await _dataContext.SaveChangesAsync();
@@ -165,7 +165,7 @@ namespace Workflow.Services
             
             foreach (var msg in messages)
             {
-                msg.LastReadingDate = DateTime.Now;
+                msg.LastReadingDate = DateTime.Now.ToUniversalTime();
                 _dataContext.Entry(msg).State = EntityState.Modified;
             }
 

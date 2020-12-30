@@ -74,7 +74,7 @@ namespace Workflow.Tests.Services
             //Arrange
             var dataContext = ContextHelper.CreateContext(_dbConnection, false);
 
-            var creationDate = DateTime.Now;
+            var creationDate = DateTime.Now.ToUniversalTime();
             var fileData = Builder<FileData>.CreateNew()
                 .With(f => f.Id = 0)
                 .With(f => f.Data = new byte[] {1,2,3})
@@ -135,7 +135,7 @@ namespace Workflow.Tests.Services
         {
             //Arrange
             //var goal = _dataContext.Goals.First();
-            var creationDate = DateTime.Now;
+            var creationDate = DateTime.Now.ToUniversalTime();
             var fileData = Builder<FileData>.CreateNew()
                 .With(f => f.Id = 0)
                 .With(f => f.Data = new byte[] { 1, 2, 3 })
@@ -182,7 +182,7 @@ namespace Workflow.Tests.Services
             //Arrange
             var dataContext = ContextHelper.CreateContext(_dbConnection, false);
 
-            var creationDate = DateTime.Now;
+            var creationDate = DateTime.Now.ToUniversalTime();
             var fileData = Builder<FileData>.CreateNew()
                 .With(f => f.Id = 0)
                 .With(f => f.Data = new byte[] { 1, 2, 3 })

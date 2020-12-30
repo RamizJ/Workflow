@@ -27,7 +27,7 @@ namespace WorkflowService.Services
                     FileSize = file.Length,
                     FileType = file.ContentType,
                     FileData = fileData,
-                    CreationDate = DateTime.Now
+                    CreationDate = DateTime.Now.ToUniversalTime()
                 };
             }
         }

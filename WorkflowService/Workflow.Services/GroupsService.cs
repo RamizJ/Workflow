@@ -70,7 +70,7 @@ namespace Workflow.Services
                 throw new HttpResponseException(BadRequest);
 
             var group = _vmConverter.ToModel(vmGroup);
-            group.CreationDate = DateTime.Now;
+            group.CreationDate = DateTime.Now.ToUniversalTime();
             group.OwnerId = currentUser.Id;
             group.MetadataList = vmGroup.MetadataList?
                 .Select(x => new Metadata(x.Key, x.Value))
