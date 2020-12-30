@@ -59,7 +59,7 @@ namespace Workflow.Services
                     "Cannot add attachments to goal. Goal for current user not found");
 
             foreach (var attachment in attachments) 
-                attachment.CreationDate = DateTime.Now;
+                attachment.CreationDate = DateTime.Now.ToUniversalTime();
 
             goal.Attachments.AddRange(attachments);
             await _dataContext.SaveChangesAsync();

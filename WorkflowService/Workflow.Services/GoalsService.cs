@@ -457,7 +457,7 @@ namespace Workflow.Services
         {
             var goal = _vmConverter.ToModel(vmGoal);
             goal.Id = 0;
-            goal.CreationDate = DateTime.Now;
+            goal.CreationDate = DateTime.Now.ToUniversalTime();
             goal.OwnerId = creatorId;
             goal.MetadataList = vmGoal.MetadataList?.Select(m => new Metadata
             {
@@ -506,7 +506,7 @@ namespace Workflow.Services
                     throw new HttpResponseException(NotFound, $"Goal with id='{vmGoal.Id}' not found");
 
                 if (model.State != vmGoal.State) 
-                    model.StateChangedDate = DateTime.Now;
+                    model.StateChangedDate = DateTime.Now.ToUniversalTime();
 
                 model.Id = vmGoal.Id;
                 model.ProjectId = vmGoal.ProjectId;
