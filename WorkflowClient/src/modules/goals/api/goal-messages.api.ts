@@ -1,13 +1,11 @@
 import { AxiosResponse } from 'axios'
 import api from '@/core/api'
 import Query from '@/core/types/query.type'
-import GoalMessage from '@/modules/goals/models/goal-message.model'
+import GoalMessage, { GoalMessageData } from '@/modules/goals/models/goal-message.model'
 
 export default {
-  getPage: (query: Query, goalId?: number): Promise<AxiosResponse<GoalMessage[]>> => {
-    const url = goalId 
-      ? `/api/GoalMessages/GetPage?goalId=${goalId}` 
-      : '/api/GoalMessages/GetPage'
+  getPage: (query: Query, goalId?: number): Promise<AxiosResponse<GoalMessageData[]>> => {
+    const url = goalId ? `/api/GoalMessages/GetPage?goalId=${goalId}` : '/api/GoalMessages/GetPage'
 
     return api.request({
       url: `/api/GoalMessages/GetPage?goalId=${goalId}`,
@@ -15,9 +13,9 @@ export default {
       data: query,
     })
   },
-  getUnreadPage: (query: Query, goalId?: number): Promise<AxiosResponse<GoalMessage[]>> => {
-    const url = goalId 
-      ? `/api/GoalMessages/GetUnreadPage?goalId=${goalId}` 
+  getUnreadPage: (query: Query, goalId?: number): Promise<AxiosResponse<GoalMessageData[]>> => {
+    const url = goalId
+      ? `/api/GoalMessages/GetUnreadPage?goalId=${goalId}`
       : '/api/GoalMessages/GetUnreadPage'
 
     return api.request({
@@ -26,6 +24,12 @@ export default {
       data: query,
     })
   },
+  getUnreadCount: (goalId?: number): Promise<AxiosResponse<number>> => {
+    const url = goalId
+      ? `/api/GoalMessages/GetUnreadCount?goalId=${goalId}`
+      : '/api/GoalMessages/GetUnreadCount'
+    return api.request({ url, method: 'POST' })
+  },
   updateMessage: (message: GoalMessage): Promise<AxiosResponse<void>> => {
     return api.request({
       url: `/api/GoalMessages/UpdateMessage`,
@@ -33,7 +37,7 @@ export default {
       data: message,
     })
   },
-  addMessage: (message: GoalMessage): Promise<AxiosResponse<GoalMessage>> => {
+  addMessage: (message: GoalMessage): Promise<AxiosResponse<GoalMessageData>> => {
     return api.request({
       url: `/api/GoalMessages/Create`,
       method: 'POST',

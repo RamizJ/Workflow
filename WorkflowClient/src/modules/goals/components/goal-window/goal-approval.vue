@@ -44,7 +44,6 @@ export default class GoalApproval extends Vue {
       text,
       goalId: this.goalId,
       goalTitle: this.goalTitle,
-      creationDate: new Date().toISOString(),
       ownerFullName: this.ownerFullName,
       ownerId: this.ownerId,
     })

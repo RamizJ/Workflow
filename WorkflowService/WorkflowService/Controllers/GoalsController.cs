@@ -52,13 +52,13 @@ namespace WorkflowService.Controllers
         /// <param name="pageOptions">Параметры загружаемой страницы</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IEnumerable<VmGoal>> GetPage(
+        public async Task<ActionResult<IEnumerable<VmGoal>>> GetPage(
             [FromQuery]int? projectId,
             [FromBody] PageOptions pageOptions)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
             var page = await _service.GetPage(currentUser, projectId, pageOptions);
-            return page;
+            return Ok(page);
         }
 
         /// <summary>
@@ -107,7 +107,9 @@ namespace WorkflowService.Controllers
         public async Task<ActionResult<VmGoal>> Create([FromBody]VmGoal goal)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
-            return await _service.Create(currentUser, goal);
+            var vmGoal = await _service.Create(currentUser, goal);
+            //return Ok(vmGoal);
+            return CreatedAtAction("Get", new { id = vmGoal.Id }, vmGoal);
         }
 
         /// <summary>

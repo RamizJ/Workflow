@@ -2,7 +2,7 @@ export default class Message {
   public id: number
   public text: string
 
-  public creationDate: string
+  public creationDate?: string
   public lastEditDate?: string
   public ownerFullName = 'Аноним'
   public ownerId?: string
@@ -24,22 +24,26 @@ export default class Message {
   }
 
   public get shortDate(): string {
-    return new Date(this.creationDate).toLocaleString('ru', {
-      timeZone: 'UTC',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
+    if (this.creationDate)
+      return new Date(this.creationDate).toLocaleString('ru', {
+        timeZone: 'UTC',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    else return '--:--'
   }
 
   public get fullDate(): string {
-    return new Date(this.creationDate).toLocaleString('ru', {
-      timeZone: 'UTC',
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
+    if (this.creationDate)
+      return new Date(this.creationDate).toLocaleString('ru', {
+        timeZone: 'UTC',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    else return '--.--.-- --:--'
   }
 }
 
@@ -47,7 +51,7 @@ export interface MessageData {
   id?: number
   text?: string
 
-  creationDate: string
+  creationDate?: string
   lastEditDate?: string
   ownerId: string
   ownerFullName: string

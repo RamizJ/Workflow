@@ -18,7 +18,7 @@
       <IconButton
         slot="reference"
         icon="bell"
-        :badge="notifications.length"
+        :badge="notificationsCount"
         @click="updateNotifications"
       />
     </Popover>
@@ -42,15 +42,24 @@ import Notification from '@/core/components/notification/notification.vue'
 })
 export default class SidebarFooter extends Vue {
   private get notifications(): GoalMessage[] {
-    return goalMessagesStore.messages
+    return goalMessagesStore.unreadMessages
+  }
+
+  private get notificationsCount(): number {
+    return goalMessagesStore.unreadMessagesCount
   }
 
   private get isEmpty(): boolean {
     return this.notifications.length === 0
   }
 
+  protected async mounted(): Promise<void> {
+    await this.updateNotifications()
+  }
+
   private async updateNotifications(): Promise<void> {
     await goalMessagesStore.getUnreadMessages()
+    await goalMessagesStore.getUnreadMessagesCount()
   }
 }
 </script>
@@ -65,6 +74,15 @@ export default class SidebarFooter extends Vue {
   width: 250px;
   overflow: auto;
   scroll-behavior: smooth;
+  &::-webkit-scrollbar {
+    width: 6px;
+    background-color: var(--sidebar-background);
+    border-radius: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--text-muted);
+    border-radius: 6px;
+  }
   .empty-text {
     height: 100%;
     width: 100%;

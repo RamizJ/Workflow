@@ -15,6 +15,11 @@ import Message from '@/core/types/message.model'
 @Component
 export default class ChatMessage extends Vue {
   @Prop() readonly message!: Message
+
+  protected mounted(): void {
+    console.log(this.message.fullDate)
+    console.log(this.message.shortDate)
+  }
 }
 </script>
 
