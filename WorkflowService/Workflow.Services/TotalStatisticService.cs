@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.DAL.Repositories.Abstract;
 using Workflow.Services.Abstract;
@@ -14,11 +15,14 @@ namespace Workflow.Services
 {
     public class TotalStatisticService : ITotalStatisticService
     {
-        public TotalStatisticService(IGoalsRepository goalsRepository,
+        public TotalStatisticService(
+            DataContext dataContext,
+            IGoalsRepository goalsRepository,
             IGoalCompletionStatisticService goalCompletionStatisticService,
             IWorkloadForProjectStatisticService workloadForProjectStatisticService,
             IWorkloadByDaysStatisticService workloadByDaysStatisticService)
         {
+            _dataContext = dataContext;
             _goalsRepository = goalsRepository;
             _goalCompletionStatisticService = goalCompletionStatisticService;
             _workloadForProjectStatisticService = workloadForProjectStatisticService;
@@ -31,15 +35,16 @@ namespace Workflow.Services
             IQueryable<Goal> query;
             try
             {
-                query = _goalsRepository.GetPerformerGoalsForPeriod(options.UserIds,
-                    options.DateBegin, options.DateEnd);
+                query = _goalsRepository.GetPerformerGoals(_dataContext.Goals, options.UserIds);
+                query = _goalsRepository.GetGoalsForProjects(query, options.ProjectIds);
+                query = _goalsRepository.GetGoalsForPeriod(query, options.DateBegin, options.DateEnd);
             }
             catch (ArgumentException)
             {
                 throw new HttpResponseException(BadRequest, "Wrong options");
             }
 
-            var usersGoals = await query
+            var goalsArray = await query
                 .Select(g => new Goal
                 {
                     PerformerId = g.PerformerId,
@@ -49,8 +54,11 @@ namespace Workflow.Services
                     StateChangedDate = g.StateChangedDate,
                     ExpectedCompletedDate = g.ExpectedCompletedDate
                 })
+                .ToArrayAsync();
+
+            var usersGoals = goalsArray
                 .GroupBy(g => g.PerformerId)
-                .ToDictionaryAsync(g => g.Key, g => g.ToArray());
+                .ToDictionary(g => g.Key, g => g.ToArray());
 
             var result = new VmTotalStatistic
             {
@@ -62,6 +70,7 @@ namespace Workflow.Services
         }
 
 
+        private readonly DataContext _dataContext;
         private readonly IGoalsRepository _goalsRepository;
         private readonly IGoalCompletionStatisticService _goalCompletionStatisticService;
         private readonly IWorkloadForProjectStatisticService _workloadForProjectStatisticService;

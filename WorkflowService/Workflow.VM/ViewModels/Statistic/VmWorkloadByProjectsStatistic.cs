@@ -47,6 +47,11 @@ namespace Workflow.VM.ViewModels.Statistic
         public int ProjectId { get; set; }
 
         /// <summary>
+        /// Имя проекта
+        /// </summary>
+        public string ProjectName { get; set; }
+
+        /// <summary>
         /// Кол-во часов
         /// </summary>
         public double Hours { get; set; }
@@ -55,9 +60,10 @@ namespace Workflow.VM.ViewModels.Statistic
         public VmHoursForProject()
         { }
 
-        public VmHoursForProject(int projectId, double hours)
+        public VmHoursForProject(int projectId, string projectName, double hours)
         {
             ProjectId = projectId;
+            ProjectName = projectName;
             Hours = hours;
         }
     }

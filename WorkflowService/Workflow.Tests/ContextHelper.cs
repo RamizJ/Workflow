@@ -132,6 +132,10 @@ namespace Workflow.Tests
             services.AddTransient<IRolesService, RolesService>();
             services.AddTransient<IPageLoadService<Group>, GroupsPageLoadService>();
             services.AddTransient<IGoalsRepository, GoalsRepository>();
+            services.AddTransient<IGoalCompletionStatisticService, GoalCompletionStatisticService>();
+            services.AddTransient<IWorkloadForProjectStatisticService, WorkloadForProjectStatisticService>();
+            services.AddTransient<IWorkloadByDaysStatisticService, WorkloadByDaysStatisticService>();
+            services.AddTransient<ITotalStatisticService, TotalStatisticService>();
 
             return services.BuildServiceProvider();
         }

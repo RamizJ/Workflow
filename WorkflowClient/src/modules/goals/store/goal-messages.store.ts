@@ -14,13 +14,18 @@ import { Message } from 'element-ui'
 class GoalMessagesStore extends VuexModule {
   _messages: GoalMessage[] = []
   _unreadMessages: GoalMessage[] = []
+  _unreadMessagesCount = 0
 
   public get messages(): GoalMessage[] {
     return this._messages
   }
 
   public get unreadMessages(): GoalMessage[] {
-    return this._messages
+    return this._unreadMessages
+  }
+
+  public get unreadMessagesCount(): number {
+    return this._unreadMessagesCount
   }
 
   @MutationAction({ mutate: ['_messages'] })
@@ -28,7 +33,7 @@ class GoalMessagesStore extends VuexModule {
     try {
       const response = await goalMessagesApi.getPage(new Query(), goalId)
       return {
-        _messages: response.data,
+        _messages: response.data.map((data) => new GoalMessage(data)),
       }
     } catch (e) {
       Message.error('Ошибка получения списка сообщений')
@@ -53,6 +58,21 @@ class GoalMessagesStore extends VuexModule {
     }
   }
 
+  @MutationAction({ mutate: ['_unreadMessagesCount'] })
+  public async getUnreadMessagesCount(goalId?: number) {
+    try {
+      const response = await goalMessagesApi.getUnreadCount(goalId)
+      return {
+        _unreadMessagesCount: response.data,
+      }
+    } catch (e) {
+      Message.error('Ошибка получения списка непрочитанных сообщений')
+      return {
+        _unreadMessagesCount: 0,
+      }
+    }
+  }
+
   @Action
   public async updateMessage(message: GoalMessage): Promise<void> {
     try {
@@ -66,8 +86,9 @@ class GoalMessagesStore extends VuexModule {
   public async sendMessage(message: GoalMessage): Promise<GoalMessage | undefined> {
     try {
       const response = await goalMessagesApi.addMessage(message)
-      this._messages.push(response.data)
-      return response.data
+      const createdMessage = new GoalMessage(response.data)
+      this._messages.push(createdMessage)
+      return createdMessage
     } catch (e) {
       Message.error('Ошибка отправки сообщения')
     }

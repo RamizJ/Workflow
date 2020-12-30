@@ -7,8 +7,7 @@ namespace Workflow.VM.ViewModels.Statistic
     /// </summary>
     public class VmGoalCompletionStatistic
     {
-        public List<VmUserGoalsCompletion> UserGoalsCompletions { get; set; }
-            = new List<VmUserGoalsCompletion>();
+        public List<VmUserGoalsCompletion> UserGoalsCompletions { get; set; } = new();
     }
 
     /// <summary>

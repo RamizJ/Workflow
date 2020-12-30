@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -16,11 +17,13 @@ namespace Workflow.DAL.Repositories
             _dataContext = dataContext;
         }
 
-        public async Task<IQueryable<Goal>> GetGoalsForUser(ApplicationUser user)
+        public async Task<IQueryable<Goal>> GetGoalsForUser(
+            IQueryable<Goal> goalsQuery, 
+            ApplicationUser user)
         {
             bool isAdmin = await _userManager.IsInRoleAsync(user, RoleNames.ADMINISTRATOR_ROLE);
 
-            var query = _dataContext.Goals
+            var query = goalsQuery
                 .Where(x => isAdmin
                             || x.Project.OwnerId == user.Id
                             || x.Project.ProjectTeams
@@ -30,19 +33,51 @@ namespace Workflow.DAL.Repositories
             return query;
         }
 
-        public IQueryable<Goal> GetPerformerGoalsForPeriod(ICollection<string> userIds, 
-            DateTime dateBegin, DateTime dateEnd)
+        public IQueryable<Goal> GetPerformerGoals(
+            IQueryable<Goal> goalsQuery,
+            ICollection<string> userIds)
         {
-            if (userIds == null || !userIds.Any() || dateBegin <= dateEnd)
+            if (userIds == null || !userIds.Any())
             {
                 throw new ArgumentException();
             }
 
-            var userGoals = _dataContext.Goals
+            var userGoals = goalsQuery
                 .Where(g => userIds.Any(uId => g.Performer.Id == uId)
-                            && (g.CreationDate >= dateBegin
-                                && g.CreationDate <= dateEnd
-                                || g.State != GoalState.Succeed));
+                            && g.State != GoalState.Succeed);
+
+            return userGoals;
+        }
+
+        public IQueryable<Goal> GetGoalsForPeriod(
+            IQueryable<Goal> goalsQuery,
+            DateTime dateBegin, DateTime dateEnd)
+        {
+            if (dateBegin >= dateEnd)
+            {
+                throw new ArgumentException();
+            }
+
+            var userGoals = goalsQuery
+                .Where(g => g.CreationDate >= dateBegin
+                            && g.CreationDate <= dateEnd);
+
+            return userGoals;
+        }
+
+        public IQueryable<Goal> GetGoalsForProjects(
+            IQueryable<Goal> goalsQuery,
+            ICollection<int> projectIds)
+        {
+            if (projectIds == null)
+                throw new ArgumentNullException(nameof(projectIds));
+            
+            if (!projectIds.Any())
+                return goalsQuery;
+
+            var userGoals = goalsQuery
+                .Where(g => projectIds
+                    .Any(pId => g.ProjectId == pId));
 
             return userGoals;
         }

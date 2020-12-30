@@ -1,6 +1,8 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -12,8 +14,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+//using Newtonsoft.Json;
+//using Newtonsoft.Json.Converters;
 using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
@@ -103,13 +105,22 @@ namespace WorkflowService
                         .AllowAnyMethod()));
             }
 
-            services.AddControllers(options => options.Filters.Add(new HttpResponseExceptionFilter()))
-                .AddNewtonsoftJson(options =>
+            services.AddControllers(options =>
                 {
-                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                    options.Filters.Add(new HttpResponseExceptionFilter());
+                })
+                .AddJsonOptions(configure =>
+                {
+                    configure.JsonSerializerOptions.IgnoreNullValues = true;
+                    configure.JsonSerializerOptions.Converters.Add(
+                        new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
                 });
+                //.AddNewtonsoftJson(options =>
+                //{
+                //    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                //    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+                //    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                //});
 
             services.AddSpaStaticFiles(configuration =>
             {
