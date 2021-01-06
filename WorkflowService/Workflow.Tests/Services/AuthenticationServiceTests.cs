@@ -62,7 +62,7 @@ namespace Workflow.Tests.Services
         }
 
         [Test]
-        public async Task LoginWithUserNotFoundTest()
+        public void LoginWithUserNotFoundTest()
         {
             //Arrange
             var userInput = new VmAuthInput { UserName = "unknown", Password = "pwd" };

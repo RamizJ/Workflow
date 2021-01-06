@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using PageLoading;
 using Workflow.DAL;
@@ -9,6 +10,7 @@ using Workflow.DAL.Models;
 using Workflow.DAL.Repositories.Abstract;
 using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
+using Workflow.Services.Hubs;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 using static System.Net.HttpStatusCode;
@@ -23,11 +25,14 @@ namespace Workflow.Services
         /// </summary>
         /// <param name="dataContext"></param>
         /// <param name="repository"></param>
+        /// <param name="hubContext"></param>
         public GoalsService(DataContext dataContext,
-            IGoalsRepository repository)
+            IGoalsRepository repository,
+            IHubContext<EntityStateHub> hubContext)
         {
             _dataContext = dataContext;
             _repository = repository;
+            _hubContext = hubContext;
             _vmConverter = new VmGoalConverter();
         }
 
@@ -589,6 +594,7 @@ namespace Workflow.Services
 
         private readonly DataContext _dataContext;
         private readonly IGoalsRepository _repository;
+        private readonly IHubContext<EntityStateHub> _hubContext;
         private readonly VmGoalConverter _vmConverter;
     }
 }

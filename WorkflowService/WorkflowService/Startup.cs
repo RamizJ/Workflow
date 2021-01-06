@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using BackgroundServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -14,8 +15,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-//using Newtonsoft.Json;
-//using Newtonsoft.Json.Converters;
 using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
@@ -23,6 +22,8 @@ using Workflow.DAL.Repositories;
 using Workflow.DAL.Repositories.Abstract;
 using Workflow.Services;
 using Workflow.Services.Abstract;
+using Workflow.Services.HostedServices;
+using Workflow.Services.Hubs;
 using Workflow.Services.PageLoading;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModelConverters.Absract;
@@ -202,6 +203,12 @@ namespace WorkflowService
             services.AddTransient<IWorkloadByDaysStatisticService, WorkloadByDaysStatisticService>();
             services.AddTransient<ITotalStatisticService, TotalStatisticService>();
             services.AddTransient<IGoalMessageService, GoalMessageService>();
+
+            //Singletons
+            services.AddSingleton<IBackgroundTaskQueue<EntityStateMessage>, BackgroundQueue<EntityStateMessage>>();
+
+            //Hosted services
+            services.AddHostedService<EntityStateHostedService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -232,6 +239,7 @@ namespace WorkflowService
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<EntityStateHub>("/entity-state-observer");
             });
 
             app.UseSpa(_ => { });

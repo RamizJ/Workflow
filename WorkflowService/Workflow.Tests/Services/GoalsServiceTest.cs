@@ -37,7 +37,7 @@ namespace Workflow.Tests.Services
             _dataContext = _serviceProvider.GetService<DataContext>();
             _userManager = _serviceProvider.GetService<UserManager<ApplicationUser>>();
             _goalsRepository = _serviceProvider.GetService<IGoalsRepository>();
-            _service = new GoalsService(_dataContext, _goalsRepository);
+            _service = new GoalsService(_dataContext, _goalsRepository, null);
             _usersService = new UsersService(_dataContext, _userManager);
             _currentUser = _testData.Users.First();
             _vmConverter = new VmGoalConverter();
