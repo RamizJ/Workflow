@@ -1,15 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using BackgroundServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Workflow.Services.Abstract;
+using Workflow.VM.ViewModels;
 
 namespace Workflow.Services.HostedServices
 {
     /// <inheritdoc />
-    public class EntityStateHostedService : QueuedHostedService<EntityStateMessage>
+    public class EntityStateHostedService : QueuedHostedService<VmEntityStateMessage>
     {
         /// <summary>
         /// 
@@ -18,36 +19,20 @@ namespace Workflow.Services.HostedServices
         /// <param name="serviceProvider"></param>
         /// <param name="logger"></param>
         public EntityStateHostedService(
-            IBackgroundTaskQueue<EntityStateMessage> queue, 
+            IBackgroundTaskQueue<VmEntityStateMessage> queue,
             IServiceProvider serviceProvider, 
-            ILogger<QueuedHostedService<EntityStateMessage>> logger)
+            ILogger<QueuedHostedService<VmEntityStateMessage>> logger)
             : base(queue, serviceProvider, logger)
         {
         }
 
         /// <inheritdoc />
         protected override async Task Process(IServiceScope scope, 
-            EntityStateMessage data, 
+            VmEntityStateMessage data, 
             CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var notifier = scope.ServiceProvider.GetRequiredService<IEntityStateNotifierService>();
+            await notifier.Notify(data);
         }
-    }
-    
-
-    public class EntityStateMessage
-    {
-        public string SenderId { get; set; }
-        public IEnumerable<object> EntityIds { get; set; }
-
-        public string EntityType { get; set; }
-        public EntityOperation Operation { get; set; }
-    }
-
-    public enum EntityOperation
-    {
-        Create,
-        Update,
-        Delete
     }
 }

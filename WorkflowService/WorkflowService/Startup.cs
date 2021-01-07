@@ -179,6 +179,10 @@ namespace WorkflowService
             services.AddTransient<IPageLoadService<Group>, GroupsPageLoadService>();
             services.AddTransient<IPageLoadService<GoalMessage>, GoalMessagesPageLoadService>();
 
+            //Repositories
+            services.AddTransient<IGoalsRepository, GoalsRepository>();
+            services.AddTransient<IUsersRepository, UsersRepository>();
+
             //Services
             services.AddTransient<ICurrentUserService, CurrentUserService>();
             services.AddTransient<IDefaultDataInitializationService, DefaultDataInitializationService>();
@@ -197,15 +201,14 @@ namespace WorkflowService
             services.AddTransient<IProjectUserRolesService, ProjectUserRolesService>();
             services.AddTransient<IStatisticService, StatisticService>();
             services.AddTransient<IRolesService, RolesService>();
-            services.AddTransient<IGoalsRepository, GoalsRepository>();
             services.AddTransient<IGoalCompletionStatisticService, GoalCompletionStatisticService>();
             services.AddTransient<IWorkloadForProjectStatisticService, WorkloadForProjectStatisticService>();
             services.AddTransient<IWorkloadByDaysStatisticService, WorkloadByDaysStatisticService>();
             services.AddTransient<ITotalStatisticService, TotalStatisticService>();
             services.AddTransient<IGoalMessageService, GoalMessageService>();
-
+            
             //Singletons
-            services.AddSingleton<IBackgroundTaskQueue<EntityStateMessage>, BackgroundQueue<EntityStateMessage>>();
+            services.AddSingleton<IBackgroundTaskQueue<VmEntityStateMessage>, BackgroundQueue<VmEntityStateMessage>>();
 
             //Hosted services
             services.AddHostedService<EntityStateHostedService>();
