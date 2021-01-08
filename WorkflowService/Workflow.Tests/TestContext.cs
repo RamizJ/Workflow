@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,30 +13,29 @@ namespace Workflow.Tests
         public SqliteConnection DbConnection { get; private set; }
         public TestData TestData { get; private set; }
         public ServiceProvider ServiceProvider { get; private set; }
-        public DataContext DataContext { get; private set; }
-        public UserManager<ApplicationUser> UserManager { get; private set; }
         public ApplicationUser CurrentUser { get; private set; }
 
-        public void Initialize()
+        public IServiceProvider Initialize(out TestData testData)
         {
             DbConnection = ContextHelper.OpenSqliteInMemoryConnection();
             using var serviceProvider = ContextHelper.Initialize(DbConnection, false);
             var dataContext = serviceProvider.GetRequiredService<DataContext>();
-            var userManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
             dataContext.Database.EnsureCreated();
-            TestData = new TestData();
+            testData = TestData = new TestData();
             TestData.Initialize(dataContext, userManager);
 
             ServiceProvider = ContextHelper.Initialize(DbConnection, true);
-            DataContext = ServiceProvider.GetService<DataContext>();
-            UserManager = ServiceProvider.GetService<UserManager<ApplicationUser>>();
             CurrentUser = TestData.Users.First();
+
+            return ServiceProvider;
         }
 
         public void Uninitialize()
         {
-            DataContext.Database.EnsureDeleted();
+            var dataContext = ServiceProvider.GetRequiredService<DataContext>();
+            dataContext.Database.EnsureDeleted();
             ServiceProvider.Dispose();
             DbConnection.Close();
         }

@@ -20,11 +20,11 @@ namespace Workflow.Tests.Services
         [SetUp]
         public void Setup()
         {
-            _testContext.Initialize();
+            var serviceProvider = _testContext.Initialize(out _testData);
+            
             _vmConverter = new VmGroupConverter(new VmProjectConverter(), new VmMetadataConverter());
-            _dataContext = _testContext.DataContext;
+            _dataContext = serviceProvider.GetRequiredService<DataContext>();
             _currentUser = _testContext.CurrentUser;
-            _testData = _testContext.TestData;
             _service = _testContext.ServiceProvider.GetService<IGroupsService>();
         }
 
@@ -275,7 +275,7 @@ namespace Workflow.Tests.Services
         }
 
 
-        private readonly TestContext _testContext = new TestContext();
+        private readonly TestContext _testContext = new();
         private IGroupsService _service;
         private VmGroupConverter _vmConverter;
         private TestData _testData;

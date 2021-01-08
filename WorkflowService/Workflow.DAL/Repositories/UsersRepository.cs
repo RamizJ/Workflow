@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Workflow.DAL.Models;
 using Workflow.DAL.Repositories.Abstract;
@@ -22,16 +23,19 @@ namespace Workflow.DAL.Repositories
             IQueryable<Goal> goals,
             IEnumerable<int> goalIds)
         {
+            if (goals == null)
+                throw new ArgumentNullException(nameof(goals));
+
+            if (goalIds == null)
+                throw new ArgumentNullException(nameof(goalIds));
+
             var userIds = goals
                 .Where(g => goalIds.Any(id => g.Id == id))
                 .SelectMany(g => g.Project.ProjectTeams)
                 .SelectMany(pt => pt.Team.TeamUsers)
                 .Select(tu => tu.UserId)
                 .Distinct()
-                .Union(_dataContext.UserRoles
-                    .Where(ur => ur.RoleId == _dataContext.Roles
-                        .First(r => r.Name == RoleNames.ADMINISTRATOR_ROLE).Name)
-                    .Select(r => r.UserId));
+                .Union(GetAdministratorsIds());
 
             return userIds;
         }
@@ -41,16 +45,19 @@ namespace Workflow.DAL.Repositories
             IQueryable<Project> projects, 
             IEnumerable<int> projectIds)
         {
+            if (projects == null)
+                throw new ArgumentNullException(nameof(projects));
+
+            if (projectIds == null)
+                throw new ArgumentNullException(nameof(projectIds));
+
             var userIds = projects
                 .Where(p => projectIds.Any(id => p.Id == id))
                 .SelectMany(p => p.ProjectTeams)
                 .SelectMany(pt => pt.Team.TeamUsers)
                 .Select(tu => tu.UserId)
                 .Distinct()
-                .Union(_dataContext.UserRoles
-                    .Where(ur => ur.RoleId == _dataContext.Roles
-                        .First(r => r.Name == RoleNames.ADMINISTRATOR_ROLE).Name)
-                    .Select(r => r.UserId));
+                .Union(GetAdministratorsIds());
 
             return userIds;
         }
@@ -60,15 +67,18 @@ namespace Workflow.DAL.Repositories
             IQueryable<ApplicationUser> users, 
             IEnumerable<string> userIds)
         {
+            if (users == null)
+                throw new ArgumentNullException(nameof(users));
+
+            if (userIds == null)
+                throw new ArgumentNullException(nameof(userIds));
+
             var teamMembersIds = users
                 .Where(u => userIds.Any(id => u.Id == id))
                 .SelectMany(p => p.TeamUsers)
                 .Select(tu => tu.UserId)
                 .Distinct()
-                .Union(_dataContext.UserRoles
-                    .Where(ur => ur.RoleId == _dataContext.Roles
-                        .First(r => r.Name == RoleNames.ADMINISTRATOR_ROLE).Name)
-                    .Select(r => r.UserId));
+                .Union(GetAdministratorsIds());
 
             return teamMembersIds;
         }
@@ -78,6 +88,12 @@ namespace Workflow.DAL.Repositories
             IQueryable<Group> groups, 
             IEnumerable<int> groupIds)
         {
+            if (groups == null)
+                throw new ArgumentNullException(nameof(groups));
+
+            if (groupIds == null)
+                throw new ArgumentNullException(nameof(groupIds));
+
             var userIds = groups
                 .Where(gr => groupIds.Any(id => gr.Id == id))
                 .SelectMany(g => g.Projects)
@@ -85,10 +101,7 @@ namespace Workflow.DAL.Repositories
                 .SelectMany(pt => pt.Team.TeamUsers)
                 .Select(tu => tu.UserId)
                 .Distinct()
-                .Union(_dataContext.UserRoles
-                    .Where(ur => ur.RoleId == _dataContext.Roles
-                        .First(r => r.Name == RoleNames.ADMINISTRATOR_ROLE).Name)
-                    .Select(r => r.UserId));
+                .Union(GetAdministratorsIds());
 
             return userIds;
         }
@@ -96,17 +109,33 @@ namespace Workflow.DAL.Repositories
         /// <inheritdoc />
         public IQueryable<string> GetUserIdsForTeams(IQueryable<Team> teams, IEnumerable<int> teamIds)
         {
+            if (teams == null)
+                throw new ArgumentNullException(nameof(teams));
+
+            if (teamIds == null)
+                throw new ArgumentNullException(nameof(teamIds));
+
             var teamMembersIds = teams
                 .Where(t => teamIds.Any(id => t.Id == id))
                 .SelectMany(t => t.TeamUsers)
                 .Select(tu => tu.UserId)
                 .Distinct()
-                .Union(_dataContext.UserRoles
-                    .Where(ur => ur.RoleId == _dataContext.Roles
-                        .First(r => r.Name == RoleNames.ADMINISTRATOR_ROLE).Name)
-                    .Select(r => r.UserId));
+                .Union(GetAdministratorsIds());
 
             return teamMembersIds;
+        }
+
+        public IQueryable<string> GetAdministratorsIds()
+        {
+            return _dataContext.UserRoles
+                .Where(ur => ur.RoleId == _dataContext.Roles
+                    .First(r => r.Name == RoleNames.ADMINISTRATOR_ROLE).Id)
+                .Select(r => r.UserId);
+        }
+
+        public bool IsAdmin(string userId)
+        {
+            return GetAdministratorsIds().Any(id => id == userId);
         }
 
 

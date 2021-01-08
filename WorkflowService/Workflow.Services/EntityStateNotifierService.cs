@@ -49,8 +49,9 @@ namespace Workflow.Services
             switch (message.EntityType)
             {
                 case nameof(Goal):
+                    var ids = message.EntityIds.Cast<int>();
                     receiverIds = await _usersRepository
-                        .GetUserIdsForGoalsProjects(_dataContext.Goals, message.EntityIds.Cast<int>())
+                        .GetUserIdsForGoalsProjects(_dataContext.Goals, ids.ToArray())
                         .ToArrayAsync();
                     break;
 

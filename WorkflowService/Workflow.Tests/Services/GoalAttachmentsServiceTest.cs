@@ -33,7 +33,7 @@ namespace Workflow.Tests.Services
             _serviceProvider = ContextHelper.Initialize(_dbConnection, true);
             _dataContext = _serviceProvider.GetService<DataContext>();
             _userManager = _serviceProvider.GetService<UserManager<ApplicationUser>>();
-            _service = new GoalAttachmentsService(_dataContext, _userManager, new FileService(_dataContext));
+            _service = new GoalAttachmentsService(_dataContext, _userManager);
             _currentUser = _testData.Users.First();
         }
 

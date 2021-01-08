@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
+using Workflow.DAL.Repositories.Abstract;
 using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
 using Workflow.VM.ViewModelConverters;
@@ -19,11 +19,11 @@ namespace Workflow.Services
     public class GoalAttachmentsService : IGoalAttachmentsService
     {
         public GoalAttachmentsService(DataContext dataContext, 
-            UserManager<ApplicationUser> userManager,
+            IUsersRepository usersRepository,
             IFileService fileService)
         {
             _dataContext = dataContext;
-            _userManager = userManager;
+            _usersRepository = usersRepository;
             _fileService = fileService;
             _vmConverter = new VmAttachmentConverter();
         }
@@ -35,10 +35,11 @@ namespace Workflow.Services
             if(currentUser == null)
                 throw new ArgumentNullException(nameof(currentUser));
 
-            var query = await GetQuery(currentUser, true);
-            var attachments = query
+            var query = GetQuery(currentUser, true);
+            var attachments = await query
                 .Where(g => g.Id == goalId)
-                .SelectMany(g => g.Attachments);
+                .SelectMany(g => g.Attachments)
+                .ToArrayAsync();
 
             return attachments.Select(a => _vmConverter.ToViewModel(a));
         }
@@ -51,7 +52,7 @@ namespace Workflow.Services
             if(currentUser == null)
                 throw new ArgumentNullException(nameof(currentUser));
 
-            var query = await GetQuery(currentUser, true);
+            var query = GetQuery(currentUser, true);
             var goal = await query.FirstOrDefaultAsync(g => g.Id == goalId);
 
             if (goal == null)
@@ -68,10 +69,11 @@ namespace Workflow.Services
         /// <inheritdoc />
         public async Task Remove(ApplicationUser currentUser, IEnumerable<int> attachmentIds)
         {
-            var query = await GetQuery(currentUser, true);
-            var attachments = query
+            var query = GetQuery(currentUser, true);
+            var attachments = await query
                 .SelectMany(g => g.Attachments)
-                .Where(a => attachmentIds.Any(aId => aId == a.Id));
+                .Where(a => attachmentIds.Any(aId => aId == a.Id))
+                .ToArrayAsync();
 
             if (attachments.Any())
             {
@@ -82,7 +84,7 @@ namespace Workflow.Services
 
         public async Task<Attachment> DownloadAttachmentFile(ApplicationUser currentUser, Stream stream, int attachmentId)
         {
-            var query = await GetQuery(currentUser, true);
+            var query = GetQuery(currentUser, true);
             var attachment = await query
                 .SelectMany(g => g.Attachments)
                 .FirstOrDefaultAsync(a => a.Id == attachmentId);
@@ -95,12 +97,11 @@ namespace Workflow.Services
             return attachment;
         }
 
-        private async Task<IQueryable<Goal>> GetQuery(ApplicationUser currentUser, bool withRemoved)
+        private IQueryable<Goal> GetQuery(ApplicationUser currentUser, bool withRemoved)
         {
-            bool isAdmin = await _userManager.IsInRoleAsync(currentUser, RoleNames.ADMINISTRATOR_ROLE);
             var query = _dataContext.Goals
                 .Include(g => g.Attachments)
-                .Where(x => isAdmin
+                .Where(x => _usersRepository.IsAdmin(currentUser.Id)
                             || x.Project.OwnerId == currentUser.Id
                             || x.Project.ProjectTeams
                                 .SelectMany(pt => pt.Team.TeamUsers)
@@ -114,7 +115,7 @@ namespace Workflow.Services
 
 
         private readonly DataContext _dataContext;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUsersRepository _usersRepository;
         private readonly IFileService _fileService;
         private readonly VmAttachmentConverter _vmConverter;
     }

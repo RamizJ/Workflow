@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using Workflow.DAL.Models;
 
 namespace Workflow.DAL.Repositories.Abstract
@@ -56,5 +55,19 @@ namespace Workflow.DAL.Repositories.Abstract
         IQueryable<string> GetUserIdsForTeams(
             IQueryable<Team> teams, 
             IEnumerable<int> teamIds);
+
+        
+        /// <summary>
+        /// Получение администраторов проекта
+        /// </summary>
+        /// <returns></returns>
+        IQueryable<string> GetAdministratorsIds();
+
+        /// <summary>
+        /// Проверка является ли пользователь администратором
+        /// </summary>
+        /// <param name="userId">Идентификатор пользователя</param>
+        /// <returns></returns>
+        bool IsAdmin(string userId);
     }
 }

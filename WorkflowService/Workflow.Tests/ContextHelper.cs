@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using BackgroundServices;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Moq;
 using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
@@ -112,6 +114,12 @@ namespace Workflow.Tests
             services.AddTransient<IViewModelConverter<Group, VmGroup>, VmGroupConverter>();
             services.AddTransient<IViewModelConverter<Metadata, VmMetadata>, VmMetadataConverter>();
 
+            //Repositories
+            services.AddTransient<IGoalsRepository, GoalsRepository>();
+            services.AddTransient<IUsersRepository, UsersRepository>();
+            
+            services.AddSingleton(_ => new Mock<IBackgroundTaskQueue<VmEntityStateMessage>>().Object);
+
             //Services
             services.AddTransient<ICurrentUserService, CurrentUserService>();
             services.AddTransient<IDefaultDataInitializationService, DefaultDataInitializationService>();
@@ -131,7 +139,6 @@ namespace Workflow.Tests
             services.AddTransient<IStatisticService, StatisticService>();
             services.AddTransient<IRolesService, RolesService>();
             services.AddTransient<IPageLoadService<Group>, GroupsPageLoadService>();
-            services.AddTransient<IGoalsRepository, GoalsRepository>();
             services.AddTransient<IGoalCompletionStatisticService, GoalCompletionStatisticService>();
             services.AddTransient<IWorkloadForProjectStatisticService, WorkloadForProjectStatisticService>();
             services.AddTransient<IWorkloadByDaysStatisticService, WorkloadByDaysStatisticService>();

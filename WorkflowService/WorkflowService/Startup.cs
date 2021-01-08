@@ -99,11 +99,11 @@ namespace WorkflowService
 
             if (Configuration.GetValue<bool>(IS_API_TEST_MODE))
             {
-                services.AddCors(options => options
-                    .AddDefaultPolicy(builder => builder
-                        .AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()));
+                //services.AddCors(options => options
+                //    .AddDefaultPolicy(builder => builder
+                //        .WithOrigins("http://localhost:64254/", "http://localhost:8080", "http://localhost:64254/entity-state-observer")
+                //        .AllowAnyHeader()
+                //        .AllowAnyMethod()));
             }
 
             services.AddControllers(options =>
@@ -206,7 +206,8 @@ namespace WorkflowService
             services.AddTransient<IWorkloadByDaysStatisticService, WorkloadByDaysStatisticService>();
             services.AddTransient<ITotalStatisticService, TotalStatisticService>();
             services.AddTransient<IGoalMessageService, GoalMessageService>();
-            
+            services.AddTransient<IEntityStateNotifierService, EntityStateNotifierService>();
+
             //Singletons
             services.AddSingleton<IBackgroundTaskQueue<VmEntityStateMessage>, BackgroundQueue<VmEntityStateMessage>>();
 
@@ -227,8 +228,21 @@ namespace WorkflowService
 
             app.UseRouting();
 
-            if(Configuration.GetValue<bool>(IS_API_TEST_MODE))
-                app.UseCors();
+            if (Configuration.GetValue<bool>(IS_API_TEST_MODE))
+            {
+                app.UseCors(builder => builder.WithOrigins(
+                        "http://localhost:64254/",
+                        //"http://localhost:64254/entity-state-observer",
+                        "http://localhost:8080")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials());
+
+                //app.UseCors(builder => builder.AllowAnyOrigin()
+                //    .AllowAnyHeader()
+                //    .AllowAnyMethod()
+                //    .AllowCredentials());
+            }
 
             app.UseSwagger();
             app.UseSwaggerUI(options =>

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR;
+using BackgroundServices;
 using Microsoft.EntityFrameworkCore;
 using PageLoading;
 using Workflow.DAL;
@@ -10,7 +10,7 @@ using Workflow.DAL.Models;
 using Workflow.DAL.Repositories.Abstract;
 using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
-using Workflow.Services.Hubs;
+using Workflow.Services.Extensions;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 using static System.Net.HttpStatusCode;
@@ -25,14 +25,14 @@ namespace Workflow.Services
         /// </summary>
         /// <param name="dataContext"></param>
         /// <param name="repository"></param>
-        /// <param name="hubContext"></param>
+        /// <param name="entityStateQueue"></param>
         public GoalsService(DataContext dataContext,
-            IGoalsRepository repository,
-            IHubContext<EntityStateHub> hubContext)
+            IGoalsRepository repository, 
+            IBackgroundTaskQueue<VmEntityStateMessage> entityStateQueue)
         {
             _dataContext = dataContext;
             _repository = repository;
-            _hubContext = hubContext;
+            _entityStateQueue = entityStateQueue;
             _vmConverter = new VmGoalConverter();
         }
 
@@ -43,7 +43,7 @@ namespace Workflow.Services
             if (currentUser == null)
                 throw new ArgumentNullException(nameof(currentUser));
 
-            var query = await GetQuery(currentUser, true);
+            var query = GetQuery(currentUser, true);
             query = query.Where(g => g.Id == id);
             var vmGoals = SelectViews(query);
             return await vmGoals.FirstOrDefaultAsync();
@@ -60,7 +60,7 @@ namespace Workflow.Services
                 throw new HttpResponseException(BadRequest,
                     $"Parameter '{nameof(pageOptions)}' cannot be null");
 
-            var query = await GetQuery(currentUser, pageOptions.WithRemoved);
+            var query = GetQuery(currentUser, pageOptions.WithRemoved);
             query = query.Where(x => (projectId == null || x.ProjectId == projectId)
                                      && x.ParentGoalId == null);
             query = Filter(pageOptions.Filter, query);
@@ -80,7 +80,7 @@ namespace Workflow.Services
             if (ids == null || ids.Length == 0)
                 return null;
 
-            var query = await GetQuery(currentUser, true);
+            var query = GetQuery(currentUser, true);
             query = query.Where(x => ids.Any(id => x.Id == id));
             var views = SelectViews(query);
 
@@ -90,14 +90,14 @@ namespace Workflow.Services
         /// <inheritdoc />
         public async Task<int> GetTotalProjectGoalsCount(ApplicationUser currentUser, int projectId)
         {
-            var query = await GetQuery(currentUser, false);
+            var query = GetQuery(currentUser, false);
             return await query.CountAsync(g => g.ProjectId == projectId 
                                                && g.ParentGoalId == null);
         }
 
         public async Task<int> GetProjectGoalsByStateCount(ApplicationUser currentUser, int projectId, GoalState goalState)
         {
-            var query = await GetQuery(currentUser, false);
+            var query = GetQuery(currentUser, false);
             return await query.CountAsync(g => g.ProjectId == projectId
                                                && g.ParentGoalId == null
                                                && g.State == goalState);
@@ -113,13 +113,13 @@ namespace Workflow.Services
         /// <inheritdoc />
         public async Task Update(ApplicationUser currentUser, VmGoal goal)
         {
-            await UpdateGoals(new[] {goal});
+            await UpdateGoals(currentUser, new[] {goal});
         }
         
         /// <inheritdoc />
         public async Task UpdateRange(ApplicationUser currentUser, IEnumerable<VmGoal> goals)
         {
-            await UpdateGoals(goals?.ToArray());
+            await UpdateGoals(currentUser, goals?.ToArray());
         } 
         
         /// <inheritdoc />
@@ -144,8 +144,8 @@ namespace Workflow.Services
         /// <inheritdoc />
         public async Task<VmGoal> GetParentGoal(ApplicationUser currentUser, int goalId)
         {
-            var query = await GetQuery(currentUser, true, false, true);
-            var goal = query.FirstOrDefault(g => g.Id == goalId);
+            var query = GetQuery(currentUser, true, false, true);
+            var goal = await query.FirstOrDefaultAsync(g => g.Id == goalId);
 
             if(goal == null)
                 throw new HttpResponseException(NotFound, "The vmGoal don't have parent");
@@ -164,7 +164,7 @@ namespace Workflow.Services
                 throw new HttpResponseException(BadRequest,
                     $"Parameter '{nameof(pageOptions)}' cannot be null");
 
-            var query = await GetQuery(currentUser, pageOptions.WithRemoved);
+            var query = GetQuery(currentUser, pageOptions.WithRemoved);
             query = query.Where(x => x.ParentGoalId == parentGoalId);
             query = Filter(pageOptions.Filter, query);
             query = FilterByFields(pageOptions.FilterFields, query);
@@ -181,7 +181,7 @@ namespace Workflow.Services
         public async Task AddChildGoals(ApplicationUser currentUser, 
             int? parentGoalId, IEnumerable<int> childGoalIds)
         {
-            var query = await GetQuery(currentUser, true, true);
+            var query = GetQuery(currentUser, true, true);
             var childGoals = await query.Where(g => childGoalIds.Any(cId => cId == g.Id))
                 .ToArrayAsync();
             var parentGoal = await query.FirstOrDefaultAsync(g => g.Id == parentGoalId);
@@ -203,12 +203,12 @@ namespace Workflow.Services
             return goals.FirstOrDefault();
         }
 
-        private async Task<IQueryable<Goal>> GetQuery(ApplicationUser currentUser, 
+        private IQueryable<Goal> GetQuery(ApplicationUser currentUser, 
             bool withRemoved, 
             bool withChildren = false,
             bool withParent = false)
         {
-            var query = await _repository.GetGoalsForUser(_dataContext.Goals, currentUser);
+            var query = _repository.GetGoalsForUser(_dataContext.Goals, currentUser);
             query = query
                 .Include(x => x.Owner)
                 .Include(x => x.Observers)
@@ -455,10 +455,13 @@ namespace Workflow.Services
             await _dataContext.Goals.AddRangeAsync(creatingGoals);
             await _dataContext.SaveChangesAsync();
 
+            var goalIds = creatingGoals.Select(x => x.Id);
+            _entityStateQueue.EnqueueIds(currentUser.Id, goalIds, nameof(Goal), EntityOperation.Create);
+
             return goal;
         }
 
-        private Goal CreateGoalHierarchy(VmGoal vmGoal, string creatorId, List<Goal> creatingGoals)
+        private Goal CreateGoalHierarchy(VmGoal vmGoal, string creatorId, ICollection<Goal> creatingGoals)
         {
             var goal = _vmConverter.ToModel(vmGoal);
             goal.Id = 0;
@@ -488,7 +491,7 @@ namespace Workflow.Services
             return goal;
         }
 
-        private async Task UpdateGoals(ICollection<VmGoal> vmGoals)
+        private async Task UpdateGoals(ApplicationUser currentUser, ICollection<VmGoal> vmGoals)
         {
             if (vmGoals == null)
                 throw new HttpResponseException(BadRequest, $"Parameter '{nameof(vmGoals)}' cannot be null");
@@ -537,6 +540,9 @@ namespace Workflow.Services
                 _dataContext.Entry(model).State = EntityState.Modified;
             }
 
+            _entityStateQueue.EnqueueIds(currentUser.Id, existedGoals.Select(x => x.Id), 
+                nameof(Goal), EntityOperation.Update);
+
             await _dataContext.SaveChangesAsync();
         }
 
@@ -560,7 +566,7 @@ namespace Workflow.Services
         private async Task<IEnumerable<VmGoal>> RemoveRestore(ApplicationUser currentUser, 
             IEnumerable<int> ids, bool isRemoved)
         {
-            var query = await GetQuery(currentUser, !isRemoved, true);
+            var query = GetQuery(currentUser, !isRemoved, true);
             var models = await query
                 .Where(t => ids.Any(tId => t.Id == tId))
                 .ToArrayAsync();
@@ -574,6 +580,10 @@ namespace Workflow.Services
                 vm.HasChildren = m.ChildGoals?.Any() ?? false;
                 return vm;
             });
+
+            _entityStateQueue.EnqueueIds(currentUser.Id, models.Select(x => x.Id),
+                nameof(Goal), isRemoved ? EntityOperation.Delete : EntityOperation.Restore);
+
             return vmGoals;
         }
 
@@ -594,7 +604,7 @@ namespace Workflow.Services
 
         private readonly DataContext _dataContext;
         private readonly IGoalsRepository _repository;
-        private readonly IHubContext<EntityStateHub> _hubContext;
+        private readonly IBackgroundTaskQueue<VmEntityStateMessage> _entityStateQueue;
         private readonly VmGoalConverter _vmConverter;
     }
 }

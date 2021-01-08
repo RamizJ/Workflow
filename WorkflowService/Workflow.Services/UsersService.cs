@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BackgroundServices;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PageLoading;
@@ -9,6 +10,7 @@ using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
+using Workflow.Services.Extensions;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 using static System.Net.HttpStatusCode;
@@ -23,10 +25,14 @@ namespace Workflow.Services
         /// </summary>
         /// <param name="dataContext"></param>
         /// <param name="userManager"></param>
-        public UsersService(DataContext dataContext, UserManager<ApplicationUser> userManager)
+        /// <param name="entityStateQueue"></param>
+        public UsersService(DataContext dataContext, 
+            UserManager<ApplicationUser> userManager,
+            IBackgroundTaskQueue<VmEntityStateMessage> entityStateQueue)
         {
             _dataContext = dataContext;
             _userManager = userManager;
+            _entityStateQueue = entityStateQueue;
             _vmConverter = new VmUserConverter();
         }
 
@@ -103,6 +109,10 @@ namespace Workflow.Services
             if (!result.Succeeded) 
                 throw new HttpResponseException(BadRequest, result.ToString());
 
+            _entityStateQueue.Enqueue(user.Id, model.Id, 
+                nameof(ApplicationUser), 
+                EntityOperation.Create);
+
             return _vmConverter.ToViewModel(model);
         }
 
@@ -130,31 +140,36 @@ namespace Workflow.Services
             var result = await _userManager.UpdateAsync(model);
             if (!result.Succeeded) 
                 throw new HttpResponseException(BadRequest, result.ToString());
+
+            _entityStateQueue.Enqueue(user.Id, model.Id,
+                nameof(ApplicationUser),
+                EntityOperation.Update);
         }
 
         /// <inheritdoc />
         public async Task<VmUser> Delete(ApplicationUser currentUser, string userId)
         {
-            var users = await RemoveRestore(new[] { userId }, true);
+            var users = await RemoveRestore(currentUser, new[] { userId }, true);
             return users.FirstOrDefault();
         }
 
         /// <inheritdoc />
         public async Task<IEnumerable<VmUser>> DeleteRange(ApplicationUser currentUser, IEnumerable<string> ids)
         {
-            return await RemoveRestore(ids, true);
+            return await RemoveRestore(currentUser, ids, true);
         }
 
         /// <inheritdoc />
         public async Task<VmUser> Restore(ApplicationUser currentUser, string userId)
         {
-            var users = await RemoveRestore(new[] { userId }, false);
+            var users = await RemoveRestore(currentUser, new[] { userId }, false);
             return users.FirstOrDefault();
         }
 
-        public async Task<IEnumerable<VmUser>> RestoreRange(ApplicationUser currentUser, IEnumerable<string> ids)
+        public async Task<IEnumerable<VmUser>> RestoreRange(
+            ApplicationUser currentUser, IEnumerable<string> ids)
         {
-            return await RemoveRestore(ids, false);
+            return await RemoveRestore(currentUser, ids, false);
         }
 
         /// <inheritdoc />
@@ -335,7 +350,8 @@ namespace Workflow.Services
             return query;
         }
 
-        private async Task<IEnumerable<VmUser>> RemoveRestore(IEnumerable<string> userIds, bool isRemoved)
+        private async Task<IEnumerable<VmUser>> RemoveRestore(ApplicationUser currentUser, 
+            IEnumerable<string> userIds, bool isRemoved)
         {
             var query = GetQuery(!isRemoved);
             var models = await query
@@ -347,14 +363,19 @@ namespace Workflow.Services
                 model.IsRemoved = isRemoved;
                 _dataContext.Entry(model).State = EntityState.Modified;
             }
-
             await _dataContext.SaveChangesAsync();
+
+            _entityStateQueue.EnqueueIds(currentUser.Id, userIds,
+                nameof(ApplicationUser),
+                EntityOperation.Create);
+            
             return models.Select(m => _vmConverter.ToViewModel(m));
         }
 
 
         private readonly DataContext _dataContext;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IBackgroundTaskQueue<VmEntityStateMessage> _entityStateQueue;
         private readonly VmUserConverter _vmConverter;
 
     }
