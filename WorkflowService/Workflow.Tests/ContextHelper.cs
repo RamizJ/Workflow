@@ -117,8 +117,10 @@ namespace Workflow.Tests
             //Repositories
             services.AddTransient<IGoalsRepository, GoalsRepository>();
             services.AddTransient<IUsersRepository, UsersRepository>();
-            
+
+            //Mocks
             services.AddSingleton(_ => new Mock<IBackgroundTaskQueue<VmEntityStateMessage>>().Object);
+            services.AddTransient(_ => new Mock<IFileService>().Object);
 
             //Services
             services.AddTransient<ICurrentUserService, CurrentUserService>();

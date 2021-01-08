@@ -69,6 +69,9 @@ namespace Workflow.Services
         /// <inheritdoc />
         public async Task Remove(ApplicationUser currentUser, IEnumerable<int> attachmentIds)
         {
+            if (currentUser == null)
+                throw new ArgumentNullException(nameof(currentUser));
+            
             var query = GetQuery(currentUser, true);
             var attachments = await query
                 .SelectMany(g => g.Attachments)

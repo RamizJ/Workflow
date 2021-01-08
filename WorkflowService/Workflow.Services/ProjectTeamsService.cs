@@ -12,7 +12,6 @@ using Workflow.Services.Exceptions;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModelConverters.Absract;
 using Workflow.VM.ViewModels;
-using QuerableExtension = Workflow.Share.Extensions.QuerableExtension;
 
 namespace Workflow.Services
 {
@@ -196,13 +195,13 @@ namespace Workflow.Services
                 var isAcending = field.SortType == SortType.Ascending;
 
                 if (field.Is(nameof(VmTeam.Name)))
-                    query = QuerableExtension.SortBy(query, pt => pt.Team.Name, isAcending);
+                    query = query.SortBy(pt => pt.Team.Name, isAcending);
 
                 else if (field.Is(nameof(VmTeam.Description)))
-                    query = QuerableExtension.SortBy(query, pt => pt.Team.Description, isAcending);
+                    query = query.SortBy(pt => pt.Team.Description, isAcending);
 
                 else if (field.Is(nameof(VmTeam.IsRemoved)))
-                    query = QuerableExtension.SortBy(query, pt => pt.Team.IsRemoved, isAcending);
+                    query = query.SortBy(pt => pt.Team.IsRemoved, isAcending);
             }
 
             return query;

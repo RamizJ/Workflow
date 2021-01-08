@@ -23,11 +23,14 @@ namespace Workflow.Services
         /// Конструктор
         /// </summary>
         /// <param name="dataContext"></param>
+        /// <param name="goalsService"></param>
         /// <param name="entityStateQueue"></param>
         public ProjectsService(DataContext dataContext,
+            IGoalsService goalsService,
             IBackgroundTaskQueue<VmEntityStateMessage> entityStateQueue)
         {
             _dataContext = dataContext;
+            _goalsService = goalsService;
             _entityStateQueue = entityStateQueue;
             _vmConverter = new VmProjectConverter();
         }
@@ -172,29 +175,8 @@ namespace Workflow.Services
         {
             return await RemoveRestore(currentUser, ids, false);
         }
-
-
-        private async Task<IEnumerable<VmProject>> RemoveRestore(ApplicationUser user, 
-            IEnumerable<int> projectIds, bool isRemoved)
-        {
-            var query = GetQuery(user, !isRemoved);
-            var models = await query
-                .Where(p => projectIds.Any(pId => p.Id == pId))
-                .ToArrayAsync();
-
-            foreach (var model in models)
-            {
-                model.IsRemoved = isRemoved;
-                _dataContext.Entry(model).State = EntityState.Modified;
-            }
-
-            await _dataContext.SaveChangesAsync();
-
-            _entityStateQueue.EnqueueIds(user.Id, projectIds, nameof(Project),
-                isRemoved ? EntityOperation.Delete : EntityOperation.Restore);
-            
-            return models.Select(m => _vmConverter.ToViewModel(m));
-        }
+        
+        
 
         private IQueryable<Project> GetQuery(ApplicationUser currentUser, bool withRemoved)
         {
@@ -397,8 +379,36 @@ namespace Workflow.Services
             await _dataContext.SaveChangesAsync();
         }
 
+        private async Task<IEnumerable<VmProject>> RemoveRestore(ApplicationUser user,
+            IEnumerable<int> projectIds, bool isRemoved)
+        {
+            var query = GetQuery(user, !isRemoved);
+            var projects = await query
+                .Include(p => p.Goals)
+                .ThenInclude(g => g.ChildGoals)
+                .Where(p => projectIds.Any(pId => p.Id == pId))
+                .ToArrayAsync();
+
+            foreach (var model in projects)
+            {
+                model.IsRemoved = isRemoved;
+                _dataContext.Entry(model).State = EntityState.Modified;
+            }
+
+            var goals = projects.SelectMany(p => p.Goals);
+            _goalsService.SetIsRemoved(goals, isRemoved);
+
+            await _dataContext.SaveChangesAsync();
+
+            _entityStateQueue.EnqueueIds(user.Id, projectIds, nameof(Project),
+                isRemoved ? EntityOperation.Delete : EntityOperation.Restore);
+
+            return projects.Select(m => _vmConverter.ToViewModel(m));
+        }
+
 
         private readonly DataContext _dataContext;
+        private readonly IGoalsService _goalsService;
         private readonly IBackgroundTaskQueue<VmEntityStateMessage> _entityStateQueue;
         private readonly VmProjectConverter _vmConverter;
     }

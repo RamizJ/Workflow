@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using Workflow.DAL;
 using Workflow.DAL.Models;
-using Workflow.Services;
+using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
 
 namespace Workflow.Tests.Services
@@ -31,9 +31,8 @@ namespace Workflow.Tests.Services
             _testData.Initialize(dataContext, userManager);
 
             _serviceProvider = ContextHelper.Initialize(_dbConnection, true);
-            _dataContext = _serviceProvider.GetService<DataContext>();
-            _userManager = _serviceProvider.GetService<UserManager<ApplicationUser>>();
-            _service = new GoalAttachmentsService(_dataContext, _userManager);
+            _dataContext = _serviceProvider.GetRequiredService<DataContext>();
+            _service = _serviceProvider.GetRequiredService<IGoalAttachmentsService>();
             _currentUser = _testData.Users.First();
         }
 
@@ -220,8 +219,7 @@ namespace Workflow.Tests.Services
         private TestData _testData;
         private DataContext _dataContext;
         private ServiceProvider _serviceProvider;
-        private GoalAttachmentsService _service;
+        private IGoalAttachmentsService _service;
         private ApplicationUser _currentUser;
-        private UserManager<ApplicationUser> _userManager;
     }
 }

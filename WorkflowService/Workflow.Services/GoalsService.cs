@@ -11,9 +11,11 @@ using Workflow.DAL.Repositories.Abstract;
 using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
 using Workflow.Services.Extensions;
+using Workflow.Share.Extensions;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 using static System.Net.HttpStatusCode;
+
 
 namespace Workflow.Services
 {
@@ -203,6 +205,16 @@ namespace Workflow.Services
             return goals.FirstOrDefault();
         }
 
+        public void SetIsRemoved(IEnumerable<Goal> goals, bool isRemoved)
+        {
+            goals?.TraverseTree(g => g.ChildGoals, g =>
+            {
+                g.IsRemoved = isRemoved;
+                _dataContext.Entry(g).State = EntityState.Modified;
+            });
+        }
+        
+
         private IQueryable<Goal> GetQuery(ApplicationUser currentUser, 
             bool withRemoved, 
             bool withChildren = false,
@@ -388,8 +400,7 @@ namespace Workflow.Services
                 else if (field.Is(nameof(VmGoal.OwnerFio)))
                     query = query
                         .SortBy(p => p.Owner.LastName, isAcending)
-                        .SortBy(p => p.Owner.FirstName, isAcending)
-                        .SortBy(p => p.Owner.MiddleName, isAcending);
+                        .SortBy(p => p.Owner.FirstName, isAcending).SortBy(p => p.Owner.MiddleName, isAcending);
 
                 else if (field.Is(nameof(VmGoal.PerformerFio)))
                     query = query
@@ -454,9 +465,8 @@ namespace Workflow.Services
 
             await _dataContext.Goals.AddRangeAsync(creatingGoals);
             await _dataContext.SaveChangesAsync();
-
-            var goalIds = creatingGoals.Select(x => x.Id);
-            _entityStateQueue.EnqueueIds(currentUser.Id, goalIds, nameof(Goal), EntityOperation.Create);
+            
+            NotifyChanged(currentUser, creatingGoals, EntityOperation.Create);
 
             return goal;
         }
@@ -540,8 +550,7 @@ namespace Workflow.Services
                 _dataContext.Entry(model).State = EntityState.Modified;
             }
 
-            _entityStateQueue.EnqueueIds(currentUser.Id, existedGoals.Select(x => x.Id), 
-                nameof(Goal), EntityOperation.Update);
+            NotifyChanged(currentUser, existedGoals, EntityOperation.Update);
 
             await _dataContext.SaveChangesAsync();
         }
@@ -567,37 +576,39 @@ namespace Workflow.Services
             IEnumerable<int> ids, bool isRemoved)
         {
             var query = GetQuery(currentUser, !isRemoved, true);
-            var models = await query
+            var goals = await query
                 .Where(t => ids.Any(tId => t.Id == tId))
                 .ToArrayAsync();
 
-            SetIsRemoved(models, isRemoved);
-
+            SetIsRemoved(goals, isRemoved);
             await _dataContext.SaveChangesAsync();
-            var vmGoals = models.Select(m =>
+
+            NotifyChanged(currentUser, goals, isRemoved ? EntityOperation.Delete : EntityOperation.Restore);
+
+            var vmGoals = goals.Select(m =>
             {
                 var vm = _vmConverter.ToViewModel(m);
                 vm.HasChildren = m.ChildGoals?.Any() ?? false;
                 return vm;
             });
-
-            _entityStateQueue.EnqueueIds(currentUser.Id, models.Select(x => x.Id),
-                nameof(Goal), isRemoved ? EntityOperation.Delete : EntityOperation.Restore);
-
             return vmGoals;
         }
 
-        private void SetIsRemoved(IEnumerable<Goal> goals, bool isRemoved)
+        private void NotifyChanged(ApplicationUser currentUser,
+            ICollection<Goal> goals,
+            EntityOperation operation,
+            bool wholeHierarchy = false)
         {
-            if(goals == null)
-                return;
+            _entityStateQueue.EnqueueIds(currentUser.Id, goals.Select(x => x.Id),
+                nameof(Goal), operation);
 
-            foreach (var goal in goals)
+            if (wholeHierarchy)
             {
-                goal.IsRemoved = isRemoved;
-                _dataContext.Entry(goal).State = EntityState.Modified;
-
-                SetIsRemoved(goal.ChildGoals, isRemoved);
+                goals.TraverseTree(g => g.ChildGoals, g =>
+                {
+                    _entityStateQueue.EnqueueIds(currentUser.Id, g.ChildGoals.Select(x => x.Id),
+                        nameof(Goal), operation);
+                });
             }
         }
 

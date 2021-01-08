@@ -137,5 +137,12 @@ namespace Workflow.Services.Abstract
         /// <param name="childGoalIds"></param>
         /// <returns></returns>
         Task AddChildGoals(ApplicationUser currentUser, int? parentGoalId, IEnumerable<int> childGoalIds);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="goals"></param>
+        /// <param name="isRemoved"></param>
+        void SetIsRemoved(IEnumerable<Goal> goals, bool isRemoved);
     }
 }
