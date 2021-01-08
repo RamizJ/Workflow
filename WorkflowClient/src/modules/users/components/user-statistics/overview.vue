@@ -4,15 +4,21 @@
     <div class="card__content">
       <div class="param">
         <div class="param__caption">Выполнено задач:</div>
-        <div class="param__value">20<span class="param__detail"> (на 5 больше)</span></div>
+        <div class="param__value">
+          {{ completed }}
+          <!--<span class="param__detail"> (на 5 больше)</span>-->
+        </div>
       </div>
       <div class="param">
         <div class="param__caption">Выполнено в срок:</div>
-        <div class="param__value">19<span class="param__detail"> (1 вне срока)</span></div>
+        <div class="param__value">
+          {{ completedOnTime }}
+          <span class="param__detail">{{ completedNotOnTime }}</span>
+        </div>
       </div>
       <div class="param">
         <div class="param__caption">Недельная загрузка:</div>
-        <div class="param__value">39,1 час</div>
+        <div class="param__value">--</div>
       </div>
     </div>
   </el-card>
@@ -20,19 +26,39 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
+import { GoalsCompletion } from '@/modules/users/models/goal-completion-statistics.interface'
 
 @Component
 export default class Overview extends Vue {
-  @Prop() readonly data?: { date: string; goalCountForState: number[] }[]
-  private statisticsData?: { date: string; goalCountForState: number[] }[]
+  @Prop() readonly data: GoalsCompletion | null = null
+  private statisticsData: GoalsCompletion | null = null
+
+  private get completed(): string {
+    if (this.statisticsData) {
+      const result = this.statisticsData.completedOnTime + this.statisticsData.completedNotOnTime
+      return result.toString()
+    } else return '--'
+  }
+
+  private get completedOnTime(): string {
+    if (this.statisticsData) {
+      return this.statisticsData.completedOnTime.toString()
+    } else return '--'
+  }
+
+  private get completedNotOnTime(): string {
+    if (this.statisticsData && this.statisticsData.completedNotOnTime > 0) {
+      return `(${this.statisticsData.completedNotOnTime} вне срока)`
+    } else return ''
+  }
 
   protected mounted(): void {
     this.refreshData(this.data)
   }
 
   @Watch('data', { deep: true })
-  refreshData(data?: { date: string; goalCountForState: number[] }[]): void {
-    this.statisticsData = data
+  refreshData(data?: GoalsCompletion | null): void {
+    this.statisticsData = data || null
   }
 }
 </script>

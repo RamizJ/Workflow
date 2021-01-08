@@ -31,7 +31,7 @@ export default class ProjectReports extends Vue {
   private dailyStatisticsLoading = true
 
   private tasksOverview: number[] = []
-  private dailyStatistics: { date: string; goalCountForState: number[] }[] = []
+  private dailyStatistics: { date: string; goalsCountForState: number[] }[] = []
   private dailyStatisticsRange: string[] = [
     moment.utc(moment().subtract('2', 'weeks')).format(),
     moment.utc(moment().add('1', 'day')).format(),

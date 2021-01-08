@@ -87,7 +87,7 @@
                   <el-option
                     v-if="form.ownerId && !users.some((user) => user.id === form.ownerId)"
                     :key="form.ownerId"
-                    :label="shortenFullName(form.ownerFio)"
+                    :label="form.ownerFio"
                     :value="form.ownerId"
                   ></el-option>
                   <el-option
@@ -215,7 +215,7 @@ export default class GoalWindow extends Mixins(DialogMixin) {
 
   private rules = {
     title: [{ required: true, message: '!', trigger: 'blur' }],
-    performerId: [{ required: true, message: '!', trigger: 'blur' }],
+    // performerId: [{ required: true, message: '!', trigger: 'blur' }],
     projectId: [{ required: true, message: '!', trigger: 'blur' }],
     priority: [{ required: true }],
   }
@@ -239,12 +239,13 @@ export default class GoalWindow extends Mixins(DialogMixin) {
     this.form.projectId = this.$route.params.projectId
       ? parseInt(this.$route.params.projectId)
       : null
-    this.form.ownerId = this.me?.id
-    this.form.ownerFio = `${this.me?.lastName} ${this.me?.firstName} ${this.me?.middleName}`
     if (goalsStore.goal) this.form = { ...goalsStore.goal }
     if (goalsStore.goal?.id) {
       const fullGoal = await goalsStore.findOneById(goalsStore.goal.id)
       this.form = { ...fullGoal, ...this.form }
+    } else {
+      this.form.ownerId = this.me?.id
+      this.form.ownerFio = `${this.me?.lastName} ${this.me?.firstName} ${this.me?.middleName}`
     }
 
     await this.searchUsers()

@@ -48,12 +48,12 @@ export default class GoalTableService extends TableService {
   public async editEntityStatus(status: string): Promise<void> {
     if (tableStore.isMultiselect) {
       const selection = tableStore.selectedRows as Goal[]
-      selection.forEach((goal: Goal) => (goal.state = status as Status))
+      selection.forEach((goal: Goal) => (goal.state = status.toLowerCase() as Status))
       await goalsStore.updateMany(selection)
     } else {
       if (!tableStore.selectedRow) return
       const row: Goal = tableStore.selectedRow as Goal
-      row.state = status as Status
+      row.state = status.toLowerCase() as Status
       await goalsStore.updateOne(row)
     }
   }
