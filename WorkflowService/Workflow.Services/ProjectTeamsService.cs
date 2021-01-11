@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
+using Workflow.DAL.Repositories.Abstract;
 using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
 using Workflow.VM.ViewModelConverters;
@@ -22,12 +23,18 @@ namespace Workflow.Services
         /// Конструктор
         /// </summary>
         /// <param name="dataContext"></param>
+        /// <param name="usersRepository"></param>
         /// <param name="vmTeamRoleConverter"></param>
-        public ProjectTeamsService(DataContext dataContext, 
-            IViewModelConverter<ProjectTeam, VmProjectTeamRole> vmTeamRoleConverter)
+        /// <param name="vmUserConverter"></param>
+        public ProjectTeamsService(DataContext dataContext,
+            IUsersRepository usersRepository,
+            IViewModelConverter<ProjectTeam, VmProjectTeamRole> vmTeamRoleConverter, 
+            IViewModelConverter<ApplicationUser, VmUser> vmUserConverter)
         {
             _dataContext = dataContext;
+            _usersRepository = usersRepository;
             _vmTeamRoleConverter = vmTeamRoleConverter;
+            _vmUserConverter = vmUserConverter;
             _vmConverter = new VmTeamConverter();
         }
 
@@ -51,6 +58,29 @@ namespace Workflow.Services
                 .Skip(pageOptions.PageNumber * pageOptions.PageSize)
                 .Take(pageOptions.PageSize)
                 .Select(pt => _vmConverter.ToViewModel(pt.Team))
+                .ToArrayAsync();
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<VmUser>> GetUsersPage(ApplicationUser currentUser, 
+            int projectId,
+            PageOptions pageOptions)
+        {
+            if (currentUser == null)
+                throw new ArgumentNullException(nameof(currentUser));
+
+            if (pageOptions == null)
+                throw new HttpResponseException(HttpStatusCode.BadRequest,
+                    $"Parameter '{nameof(pageOptions)}' cannot be null");
+            
+            var query = _usersRepository.GetUsersForProjects(
+                _dataContext.Projects, 
+                new[] {projectId});
+
+            return await query
+                .Skip(pageOptions.PageNumber * pageOptions.PageSize)
+                .Take(pageOptions.PageSize)
+                .Select(u => _vmUserConverter.ToViewModel(u))
                 .ToArrayAsync();
         }
 
@@ -209,7 +239,9 @@ namespace Workflow.Services
 
 
         private readonly DataContext _dataContext;
+        private readonly IUsersRepository _usersRepository;
         private readonly IViewModelConverter<ProjectTeam, VmProjectTeamRole> _vmTeamRoleConverter;
+        private readonly IViewModelConverter<ApplicationUser, VmUser> _vmUserConverter;
         private readonly VmTeamConverter _vmConverter;
     }
 }

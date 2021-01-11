@@ -17,13 +17,23 @@ namespace Workflow.DAL.Repositories.Abstract
             IEnumerable<int> goalIds);
 
         /// <summary>
-        /// Получение всех пользователей учавствующих в проектах
+        /// Получение идентификаторов всех пользователей учавствующих в проектах
         /// </summary>
         /// <param name="projects">Исходная коллекция проектов, по которой будет проводиться поиск</param>
         /// <param name="projectIds">Идентификаторы проектов для которых будут возвращаться пользователи</param>
         /// <returns></returns>
         IQueryable<string> GetUserIdsForProjects(
             IQueryable<Project> projects, 
+            IEnumerable<int> projectIds);
+
+        /// <summary>
+        /// Получение всех пользователей учавствующих в проектах
+        /// </summary>
+        /// <param name="projects">Исходная коллекция проектов, по которой будет проводиться поиск</param>
+        /// <param name="projectIds">Идентификаторы проектов для которых будут возвращаться пользователи</param>
+        /// <returns></returns>
+        IQueryable<ApplicationUser> GetUsersForProjects(
+            IQueryable<Project> projects,
             IEnumerable<int> projectIds);
 
         /// <summary>
@@ -58,10 +68,16 @@ namespace Workflow.DAL.Repositories.Abstract
 
         
         /// <summary>
-        /// Получение администраторов проекта
+        /// Получение идентификаторов администраторов проекта
         /// </summary>
         /// <returns></returns>
         IQueryable<string> GetAdministratorsIds();
+
+        /// <summary>
+        /// Получение администраторов проекта
+        /// </summary>
+        /// <returns></returns>
+        IQueryable<ApplicationUser> GetAdministrators();
 
         /// <summary>
         /// Проверка является ли пользователь администратором

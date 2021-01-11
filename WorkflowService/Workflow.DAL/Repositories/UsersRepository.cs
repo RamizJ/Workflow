@@ -33,9 +33,7 @@ namespace Workflow.DAL.Repositories
                 .Where(g => goalIds.Any(id => g.Id == id))
                 .SelectMany(g => g.Project.ProjectTeams)
                 .SelectMany(pt => pt.Team.TeamUsers)
-                .Select(tu => tu.UserId)
-                .Distinct()
-                .Union(GetAdministratorsIds());
+                .Select(tu => tu.UserId);
 
             return userIds;
         }
@@ -55,11 +53,28 @@ namespace Workflow.DAL.Repositories
                 .Where(p => projectIds.Any(id => p.Id == id))
                 .SelectMany(p => p.ProjectTeams)
                 .SelectMany(pt => pt.Team.TeamUsers)
-                .Select(tu => tu.UserId)
-                .Distinct()
-                .Union(GetAdministratorsIds());
+                .Select(tu => tu.UserId);
 
-            return userIds;
+            return userIds.Distinct();
+        }
+
+        public IQueryable<ApplicationUser> GetUsersForProjects(
+            IQueryable<Project> projects, 
+            IEnumerable<int> projectIds)
+        {
+            if (projects == null)
+                throw new ArgumentNullException(nameof(projects));
+
+            if (projectIds == null)
+                throw new ArgumentNullException(nameof(projectIds));
+
+            var users = projects
+                .Where(p => projectIds.Any(id => p.Id == id))
+                .SelectMany(p => p.ProjectTeams)
+                .SelectMany(pt => pt.Team.TeamUsers)
+                .Select(tu => tu.User);
+            
+            return users.Distinct();
         }
 
         /// <inheritdoc />
@@ -131,6 +146,13 @@ namespace Workflow.DAL.Repositories
                 .Where(ur => ur.RoleId == _dataContext.Roles
                     .First(r => r.Name == RoleNames.ADMINISTRATOR_ROLE).Id)
                 .Select(r => r.UserId);
+        }
+
+        public IQueryable<ApplicationUser> GetAdministrators()
+        {
+            return _dataContext.Users
+                .Where(u => GetAdministratorsIds()
+                    .Any(aId => aId == u.Id));
         }
 
         public bool IsAdmin(string userId)
