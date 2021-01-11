@@ -36,9 +36,9 @@ export default class Goal extends Entity {
 }
 
 export enum Priority {
-  Low = 'Low',
-  Normal = 'Normal',
-  High = 'High',
+  Low = 'low',
+  Normal = 'normal',
+  High = 'high',
 }
 
 export const priorities = [
