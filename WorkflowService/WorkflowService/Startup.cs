@@ -232,16 +232,11 @@ namespace WorkflowService
             {
                 app.UseCors(builder => builder.WithOrigins(
                         "http://localhost:64254/",
-                        //"http://localhost:64254/entity-state-observer",
+                        "http://localhost:64254/entity-state-observer",
                         "http://localhost:8080")
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials());
-
-                //app.UseCors(builder => builder.AllowAnyOrigin()
-                //    .AllowAnyHeader()
-                //    .AllowAnyMethod()
-                //    .AllowCredentials());
             }
 
             app.UseSwagger();

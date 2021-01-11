@@ -108,12 +108,18 @@ namespace Workflow.Services
         /// <inheritdoc />
         public async Task Update(ApplicationUser user, VmProject project)
         {
+            if (project == null || project.Id == 0)
+                throw new HttpResponseException(BadRequest, "Cannot update the project. Project cannot be empty");
+            
             await UpdateProjects(user, new[] { project });
         }
 
         /// <inheritdoc />
         public async Task UpdateByForm(ApplicationUser user, VmProjectForm projectForm)
         {
+            if (projectForm == null)
+                throw new HttpResponseException(BadRequest, "Cannot update the project. Project data cannot be empty");
+            
             await UpdateProjects(user, new[] {projectForm?.Project}, project =>
             {
                 project.ProjectTeams = projectForm?.TeamIds?
