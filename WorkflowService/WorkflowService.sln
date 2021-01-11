@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Workflow.Services", "Workfl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PageLoading", "PageLoading\PageLoading.csproj", "{52E5D3D8-3A16-4C06-A48A-2A6D7FFD0DB1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackgroundServices", "BackgroundServices\BackgroundServices.csproj", "{FC13ACB4-B942-42C6-AC5A-A5BA296850D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BackgroundServices", "BackgroundServices\BackgroundServices.csproj", "{FC13ACB4-B942-42C6-AC5A-A5BA296850D3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
