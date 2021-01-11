@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using System;
 using System.Linq;
@@ -9,9 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
-using Workflow.Services;
+using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
-using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 
@@ -20,29 +17,13 @@ namespace Workflow.Tests.Services
     [TestFixture]
     public class TeamsServiceTests
     {
-        private SqliteConnection _dbConnection;
-        private TestData _testData;
-        private DataContext _dataContext;
-        private ServiceProvider _serviceProvider;
-        private TeamsService _service;
-        private ApplicationUser _currentUser;
-        private VmTeamConverter _vmConverter;
-
         [SetUp]
         public void Setup()
         {
-            _dbConnection = ContextHelper.OpenSqliteInMemoryConnection();
-            using var serviceProvider = ContextHelper.Initialize(_dbConnection, false);
-            var dataContext = serviceProvider.GetRequiredService<DataContext>();
-            var userManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
-
-            dataContext.Database.EnsureCreated();
-            _testData = new TestData();
-            _testData.Initialize(dataContext, userManager);
-
-            _serviceProvider = ContextHelper.Initialize(_dbConnection, true);
-            _dataContext = _serviceProvider.GetService<DataContext>();
-            _service = new TeamsService(_dataContext);
+            var serviceProvider = _testContext.Initialize(out _testData);
+            
+            _dataContext = serviceProvider.GetRequiredService<DataContext>();
+            _service = serviceProvider.GetRequiredService<ITeamsService>();
             _currentUser = _testData.Users.First();
             _vmConverter = new VmTeamConverter();
         }
@@ -50,9 +31,7 @@ namespace Workflow.Tests.Services
         [TearDown]
         public void TearDown()
         {
-            _dataContext.Database.EnsureDeleted();
-            _serviceProvider.Dispose();
-            _dbConnection.Close();
+            _testContext.Uninitialize();
         }
 
         [TestCase(1)]
@@ -468,5 +447,13 @@ namespace Workflow.Tests.Services
             //Assert
             Assert.IsNull(result);
         }
+
+
+        private readonly TestContext _testContext = new();
+        private TestData _testData;
+        private DataContext _dataContext;
+        private ITeamsService _service;
+        private ApplicationUser _currentUser;
+        private VmTeamConverter _vmConverter;
     }
 }

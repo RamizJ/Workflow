@@ -409,6 +409,14 @@
             <param name="pageOptions">Параметры страницы</param>
             <returns>Коллекция команд</returns>
         </member>
+        <member name="M:WorkflowService.Controllers.ProjectsController.GetProjectUsers(System.Int32,PageLoading.PageOptions)">
+            <summary>
+            Постраничная загрузка пользователей команд проекта с фильтрацией и сортировкой
+            </summary>
+            <param name="projectId">Идентификатор проекта</param>
+            <param name="pageOptions">Параметры страницы</param>
+            <returns>Коллекция команд</returns>
+        </member>
         <member name="M:WorkflowService.Controllers.ProjectsController.GetRange(System.Int32[])">
             <summary>
             Получение 

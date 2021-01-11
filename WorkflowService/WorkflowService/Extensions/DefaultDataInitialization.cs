@@ -18,11 +18,11 @@ namespace WorkflowService.Extensions
         {
             using var scope = host.Services.CreateScope();
 
-            var defaultDataInitializationService = scope.ServiceProvider
+            var service = scope.ServiceProvider
                 .GetRequiredService<IDefaultDataInitializationService>();
 
-            defaultDataInitializationService.InitializeRoles().Wait();
-            defaultDataInitializationService.InitializeAdmin().Wait();
+            service.InitializeRoles().Wait();
+            service.InitializeAdmin().Wait();
 
             return host;
         }
