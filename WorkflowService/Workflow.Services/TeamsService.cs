@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BackgroundServices;
 using Microsoft.EntityFrameworkCore;
 using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
+using Workflow.DAL.Repositories.Abstract;
 using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
+using Workflow.Services.Extensions;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 using static System.Net.HttpStatusCode;
@@ -20,9 +23,13 @@ namespace Workflow.Services
         /// <summary>
         /// Конструктор
         /// </summary>
-        public TeamsService(DataContext dataContext)
+        public TeamsService(DataContext dataContext,
+            IUsersRepository usersRepository,
+            IBackgroundTaskQueue<VmEntityStateMessage> entityStateQueue)
         {
             _dataContext = dataContext;
+            _usersRepository = usersRepository;
+            _entityStateQueue = entityStateQueue;
             _vmConverter = new VmTeamConverter();
         }
 
@@ -195,19 +202,28 @@ namespace Workflow.Services
                 model.IsRemoved = isRemoved;
                 _dataContext.Entry(model).State = EntityState.Modified;
             }
-
+            
             await _dataContext.SaveChangesAsync();
+
+            _entityStateQueue.EnqueueIds(currentUser.Id,
+                models.Select(x => x.Id), nameof(Team),
+                isRemoved ? EntityOperation.Delete : EntityOperation.Restore);
+            
             return models.Select(m => _vmConverter.ToViewModel(m));
         }
 
         private IQueryable<Team> GetQuery(ApplicationUser currentUser, bool withRemoved)
         {
+            var isAdmin =_usersRepository
+                .GetAdministratorsIds()
+                .Any(id => currentUser.Id == id);
+
             var query = _dataContext.Teams
                 .Include(t => t.TeamUsers)
                 .Include(t => t.TeamProjects)
                 .Where(t => t.Creator.Id == currentUser.Id
-                            || t.TeamUsers.Any(tu => tu.UserId == currentUser.Id))
-                .AsQueryable();
+                            || t.TeamUsers.Any(tu => tu.UserId == currentUser.Id)
+                            || isAdmin);
 
             if (!withRemoved)
                 query = query.Where(t => t.IsRemoved == false);
@@ -310,6 +326,9 @@ namespace Workflow.Services
 
             await _dataContext.Teams.AddAsync(model);
             await _dataContext.SaveChangesAsync();
+
+            _entityStateQueue.Enqueue(currentUser.Id, model.Id, nameof(Team), EntityOperation.Create);
+
             return model;
         }
 
@@ -341,11 +360,17 @@ namespace Workflow.Services
                 _dataContext.Entry(model).State = EntityState.Modified;
             }
 
+            _entityStateQueue.EnqueueIds(currentUser.Id, 
+                models.Select(x => x.Id), nameof(Team), 
+                EntityOperation.Update);
+
             await _dataContext.SaveChangesAsync();
         }
 
 
         private readonly DataContext _dataContext;
+        private readonly IUsersRepository _usersRepository;
+        private readonly IBackgroundTaskQueue<VmEntityStateMessage> _entityStateQueue;
         private readonly VmTeamConverter _vmConverter;
     }
 }

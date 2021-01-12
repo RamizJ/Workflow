@@ -2,14 +2,14 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
-using Workflow.Services;
 using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
-using Workflow.VM.ViewModelConverters;
+using Workflow.VM.ViewModelConverters.Absract;
 using Workflow.VM.ViewModels;
 
 namespace Workflow.Tests.Services
@@ -20,12 +20,11 @@ namespace Workflow.Tests.Services
         [SetUp]
         public void Setup()
         {
-            _testContext.Initialize();
-            _service = new ProjectsService(_testContext.DataContext, _testContext.UserManager);
-            _vmConverter = new VmProjectConverter();
-            _dataContext = _testContext.DataContext;
+            var serviceProvider = _testContext.Initialize(out _testData);
+            _dataContext = serviceProvider.GetRequiredService<DataContext>();
+            _service = serviceProvider.GetRequiredService<IProjectsService>();
+            _vmConverter = serviceProvider.GetRequiredService<IViewModelConverter<Project, VmProject>>();
             _currentUser = _testContext.CurrentUser;
-            _testData = _testContext.TestData;
         }
 
         [TearDown]
@@ -585,9 +584,9 @@ namespace Workflow.Tests.Services
         }
 
         
-        private readonly TestContext _testContext = new TestContext();
+        private readonly TestContext _testContext = new();
         private IProjectsService _service;
-        private VmProjectConverter _vmConverter;
+        private IViewModelConverter<Project, VmProject> _vmConverter;
         private TestData _testData;
         private ApplicationUser _currentUser;
         private DataContext _dataContext;

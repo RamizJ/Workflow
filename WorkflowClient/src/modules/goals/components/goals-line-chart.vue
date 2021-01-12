@@ -32,13 +32,13 @@ import ProjectSelect from '@/modules/projects/components/project-select.vue'
 @Component({ components: { ProjectSelect, ChartLine } })
 export default class GoalsLineChart extends Vue {
   @Prop() readonly title?: string
-  @Prop() readonly data!: { date: string; goalCountForState: number[] }[]
+  @Prop() readonly data!: { date: string; goalsCountForState: number[] }[]
   @Prop() readonly dateRange!: string[]
   @Prop() readonly projectId?: number | null
   @Prop() readonly withProject?: boolean
 
   private loading = true
-  private statistics: { date: string; goalCountForState: number[] }[] = []
+  private statistics: { date: string; goalsCountForState: number[] }[] = []
   private selectedProjectId: number | null = null
   private range: Date[] = [moment().subtract(1, 'week').toDate(), moment().toDate()]
   private chartPieData: ChartData = {}
@@ -69,7 +69,7 @@ export default class GoalsLineChart extends Vue {
 
   @Watch('data')
   private async onDataChanged(
-    data: { date: string; goalCountForState: number[] }[]
+    data: { date: string; goalsCountForState: number[] }[]
   ): Promise<void> {
     this.statistics = [...data]
     await this.renderChart()
@@ -100,7 +100,7 @@ export default class GoalsLineChart extends Vue {
 
     let datasets: ChartDataSets[] = []
     for (let i = 0; i <= 5; i++) {
-      const data = this.statistics.map((item) => item.goalCountForState[i])
+      const data = this.statistics.map((item) => item.goalsCountForState[i])
       const isNotEmpty = data.some((item) => item !== 0)
       if (isNotEmpty)
         datasets.push({

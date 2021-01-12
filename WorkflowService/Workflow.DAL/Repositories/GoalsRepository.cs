@@ -11,20 +11,21 @@ namespace Workflow.DAL.Repositories
 {
     public class GoalsRepository : IGoalsRepository
     {
-        public GoalsRepository(UserManager<ApplicationUser> userManager, DataContext dataContext)
+        public GoalsRepository(UserManager<ApplicationUser> userManager, 
+            IUsersRepository usersRepository,
+            DataContext dataContext)
         {
             _userManager = userManager;
+            _usersRepository = usersRepository;
             _dataContext = dataContext;
         }
 
-        public async Task<IQueryable<Goal>> GetGoalsForUser(
+        public IQueryable<Goal> GetGoalsForUser(
             IQueryable<Goal> goalsQuery, 
             ApplicationUser user)
         {
-            bool isAdmin = await _userManager.IsInRoleAsync(user, RoleNames.ADMINISTRATOR_ROLE);
-
             var query = goalsQuery
-                .Where(x => isAdmin
+                .Where(x => _usersRepository.IsAdmin(user.Id)
                             || x.Project.OwnerId == user.Id
                             || x.Project.ProjectTeams
                                 .SelectMany(pt => pt.Team.TeamUsers)
@@ -84,6 +85,7 @@ namespace Workflow.DAL.Repositories
 
 
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUsersRepository _usersRepository;
         private readonly DataContext _dataContext;
     }
 }

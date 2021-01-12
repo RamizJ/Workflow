@@ -30,7 +30,7 @@ export default class DialogMixin extends Vue {
   public get users(): { value: string | undefined; id: string | undefined }[] {
     return usersModule.users.map((user) => {
       return {
-        value: this.shortenFullName(`${user.lastName} ${user.firstName} ${user.middleName}`),
+        value: `${user.lastName} ${user.firstName} ${user.middleName}`,
         id: user.id,
       }
     })

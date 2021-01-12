@@ -10,8 +10,7 @@ using NUnit.Framework;
 using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
-using Workflow.DAL.Repositories.Abstract;
-using Workflow.Services;
+using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
@@ -34,11 +33,9 @@ namespace Workflow.Tests.Services
             _testData.Initialize(dataContext, userManager);
 
             _serviceProvider = ContextHelper.Initialize(_dbConnection, true);
-            _dataContext = _serviceProvider.GetService<DataContext>();
-            _userManager = _serviceProvider.GetService<UserManager<ApplicationUser>>();
-            _goalsRepository = _serviceProvider.GetService<IGoalsRepository>();
-            _service = new GoalsService(_dataContext, _goalsRepository);
-            _usersService = new UsersService(_dataContext, _userManager);
+            _dataContext = _serviceProvider.GetRequiredService<DataContext>();
+            _service = _serviceProvider.GetRequiredService<IGoalsService>();
+            _usersService = _serviceProvider.GetRequiredService<IUsersService>();
             _currentUser = _testData.Users.First();
             _vmConverter = new VmGoalConverter();
         }
@@ -239,8 +236,8 @@ namespace Workflow.Tests.Services
                 IsRemoved = false,
                 MetadataList = new List<VmMetadata>
                 {
-                    new VmMetadata("Key1", "Val1"),
-                    new VmMetadata("Key2", "Val2")
+                    new("Key1", "Val1"),
+                    new("Key2", "Val2")
                 }
             };
 
@@ -291,7 +288,7 @@ namespace Workflow.Tests.Services
 
                 Children = new List<VmGoal>
                 {
-                    new VmGoal
+                    new()
                     {
                         Id = id,
                         Title = "Goal31",
@@ -381,9 +378,9 @@ namespace Workflow.Tests.Services
             vmGoal.ObserverIds = _testData.Users.Skip(4).Take(6).Select(u => u.Id).ToList();
             vmGoal.MetadataList = new List<VmMetadata>
             {
-                new VmMetadata("UpdKey1", "UpdVal1"),
-                new VmMetadata("UpdKey2", "UpdVal2"),
-                new VmMetadata("UpdKey3", "UpdVal3")
+                new("UpdKey1", "UpdVal1"),
+                new("UpdKey2", "UpdVal2"),
+                new("UpdKey3", "UpdVal3")
             };
 
             //Act
@@ -519,7 +516,7 @@ namespace Workflow.Tests.Services
         {
             //Arrange
             var serviceProvider = ContextHelper.Initialize(_dbConnection, false);
-            var context = serviceProvider.GetService<DataContext>();
+            var context = serviceProvider.GetRequiredService<DataContext>();
 
             var firstGoal = _testData.Goals.First();
             var lastGoal = _testData.Goals.Last();
@@ -599,11 +596,9 @@ namespace Workflow.Tests.Services
         private TestData _testData;
         private DataContext _dataContext;
         private ServiceProvider _serviceProvider;
-        private GoalsService _service;
-        private UsersService _usersService;
+        private IGoalsService _service;
+        private IUsersService _usersService;
         private ApplicationUser _currentUser;
-        private UserManager<ApplicationUser> _userManager;
         private VmGoalConverter _vmConverter;
-        private IGoalsRepository _goalsRepository;
     }
 }

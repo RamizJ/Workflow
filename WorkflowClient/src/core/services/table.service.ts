@@ -143,7 +143,7 @@ export default class TableService {
   }
 
   public statusFormatter(row: Entity, column: ElTableColumn, value: string): string {
-    return statuses.find((status) => status.value === (value as Status))?.label || ''
+    return statuses.find((status) => status.value.toLowerCase() === (value as Status))?.label || ''
   }
 
   public priorityFormatter(row: Entity, column: ElTableColumn, value: string): string {
