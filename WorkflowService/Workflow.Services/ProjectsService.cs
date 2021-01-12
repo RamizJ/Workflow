@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+using BackgroundServices;
 using Microsoft.EntityFrameworkCore;
 using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
+using Workflow.Services.Extensions;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 using static System.Net.HttpStatusCode;
@@ -22,11 +23,15 @@ namespace Workflow.Services
         /// Конструктор
         /// </summary>
         /// <param name="dataContext"></param>
-        /// <param name="userManager"></param>
-        public ProjectsService(DataContext dataContext, UserManager<ApplicationUser> userManager)
+        /// <param name="goalsService"></param>
+        /// <param name="entityStateQueue"></param>
+        public ProjectsService(DataContext dataContext,
+            IGoalsService goalsService,
+            IBackgroundTaskQueue<VmEntityStateMessage> entityStateQueue)
         {
             _dataContext = dataContext;
-            _userManager = userManager;
+            _goalsService = goalsService;
+            _entityStateQueue = entityStateQueue;
             _vmConverter = new VmProjectConverter();
         }
 
@@ -37,7 +42,7 @@ namespace Workflow.Services
             if(user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var query = await GetQuery(user, true);
+            var query = GetQuery(user, true);
             var project = await query.FirstOrDefaultAsync(s => s.Id == id);
 
             return _vmConverter.ToViewModel(project);
@@ -53,7 +58,7 @@ namespace Workflow.Services
                 throw new HttpResponseException(BadRequest,
                     $"Parameter '{nameof(pageOptions)}' cannot be null");
 
-            var query = await GetQuery(currentUser, pageOptions.WithRemoved);
+            var query = GetQuery(currentUser, pageOptions.WithRemoved);
             query = Filter(pageOptions.Filter, query);
             query = FilterByFields(pageOptions.FilterFields, query);
             query = SortByFields(pageOptions.SortFields, query);
@@ -71,7 +76,7 @@ namespace Workflow.Services
             if (ids == null || ids.Length == 0)
                 return null;
 
-            var query = await GetQuery(user, true);
+            var query = GetQuery(user, true);
             return await query.Where(s => ids.Any(id => s.Id == id))
                 .Select(s => _vmConverter.ToViewModel(s))
                 .ToArrayAsync();
@@ -103,12 +108,18 @@ namespace Workflow.Services
         /// <inheritdoc />
         public async Task Update(ApplicationUser user, VmProject project)
         {
+            if (project == null || project.Id == 0)
+                throw new HttpResponseException(BadRequest, "Cannot update the project. Project cannot be empty");
+            
             await UpdateProjects(user, new[] { project });
         }
 
         /// <inheritdoc />
         public async Task UpdateByForm(ApplicationUser user, VmProjectForm projectForm)
         {
+            if (projectForm == null)
+                throw new HttpResponseException(BadRequest, "Cannot update the project. Project data cannot be empty");
+            
             await UpdateProjects(user, new[] {projectForm?.Project}, project =>
             {
                 project.ProjectTeams = projectForm?.TeamIds?
@@ -170,29 +181,17 @@ namespace Workflow.Services
         {
             return await RemoveRestore(currentUser, ids, false);
         }
+        
+        
 
-
-        private async Task<IEnumerable<VmProject>> RemoveRestore(ApplicationUser user, 
-            IEnumerable<int> projectIds, bool isRemoved)
+        private IQueryable<Project> GetQuery(ApplicationUser currentUser, bool withRemoved)
         {
-            var query = await GetQuery(user, !isRemoved);
-            var models = await query
-                .Where(p => projectIds.Any(pId => p.Id == pId))
-                .ToArrayAsync();
+            //bool isAdmin = await _userManager.IsInRoleAsync(currentUser, RoleNames.ADMINISTRATOR_ROLE);
+            var isAdmin = _dataContext.UserRoles
+                .Where(ur => ur.RoleId == _dataContext.Roles
+                    .First(r => r.Name == RoleNames.ADMINISTRATOR_ROLE).Name)
+                .Any(ur => ur.UserId == currentUser.Id);
 
-            foreach (var model in models)
-            {
-                model.IsRemoved = isRemoved;
-                _dataContext.Entry(model).State = EntityState.Modified;
-            }
-
-            await _dataContext.SaveChangesAsync();
-            return models.Select(m => _vmConverter.ToViewModel(m));
-        }
-
-        private async Task<IQueryable<Project>> GetQuery(ApplicationUser currentUser, bool withRemoved)
-        {
-            bool isAdmin = await _userManager.IsInRoleAsync(currentUser, RoleNames.ADMINISTRATOR_ROLE);
             var query = _dataContext.Projects
                 .Include(s => s.Owner)
                 .Include(s => s.ProjectTeams)
@@ -346,6 +345,8 @@ namespace Workflow.Services
             model.OwnerId = user.Id;
             await _dataContext.Projects.AddAsync(model);
 
+            _entityStateQueue.Enqueue(user.Id, model.Id, nameof(Project), EntityOperation.Create);
+
             return model;
         }
 
@@ -357,7 +358,7 @@ namespace Workflow.Services
                 .Select(p => p.Id)
                 .ToArray();
 
-            var query = await GetQuery(currentUser, true);
+            var query = GetQuery(currentUser, true);
             var models = await query
                 .Where(p => projectIds.Any(pId => pId == p.Id))
                 .ToArrayAsync();
@@ -376,13 +377,45 @@ namespace Workflow.Services
 
                 _dataContext.Entry(model).State = EntityState.Modified;
             }
+            
+            _entityStateQueue.EnqueueIds(currentUser.Id, 
+                models.Select(x => x.Id), 
+                nameof(Project), EntityOperation.Update);
 
             await _dataContext.SaveChangesAsync();
         }
 
+        private async Task<IEnumerable<VmProject>> RemoveRestore(ApplicationUser user,
+            IEnumerable<int> projectIds, bool isRemoved)
+        {
+            var query = GetQuery(user, !isRemoved);
+            var projects = await query
+                .Include(p => p.Goals)
+                .ThenInclude(g => g.ChildGoals)
+                .Where(p => projectIds.Any(pId => p.Id == pId))
+                .ToArrayAsync();
+
+            foreach (var model in projects)
+            {
+                model.IsRemoved = isRemoved;
+                _dataContext.Entry(model).State = EntityState.Modified;
+            }
+
+            var goals = projects.SelectMany(p => p.Goals);
+            _goalsService.SetIsRemoved(goals, isRemoved);
+
+            await _dataContext.SaveChangesAsync();
+
+            _entityStateQueue.EnqueueIds(user.Id, projectIds, nameof(Project),
+                isRemoved ? EntityOperation.Delete : EntityOperation.Restore);
+
+            return projects.Select(m => _vmConverter.ToViewModel(m));
+        }
+
 
         private readonly DataContext _dataContext;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IGoalsService _goalsService;
+        private readonly IBackgroundTaskQueue<VmEntityStateMessage> _entityStateQueue;
         private readonly VmProjectConverter _vmConverter;
     }
 }

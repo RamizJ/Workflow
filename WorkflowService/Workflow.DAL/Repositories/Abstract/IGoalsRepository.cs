@@ -8,7 +8,7 @@ namespace Workflow.DAL.Repositories.Abstract
 {
     public interface IGoalsRepository
     {
-        Task<IQueryable<Goal>> GetGoalsForUser(
+        IQueryable<Goal> GetGoalsForUser(
             IQueryable<Goal> goalsQuery, 
             ApplicationUser user);
 

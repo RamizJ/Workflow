@@ -18,7 +18,22 @@ namespace Workflow.Services.Abstract
         /// <param name="projectId">Идентификатор проекта</param>
         /// <param name="pageOptions">Параметры страницы</param>
         /// <returns></returns>
-        Task<IEnumerable<VmTeam>> GetPage(ApplicationUser currentUser, int projectId, PageOptions pageOptions);
+        Task<IEnumerable<VmTeam>> GetPage(
+            ApplicationUser currentUser, 
+            int projectId, 
+            PageOptions pageOptions);
+
+        /// <summary>
+        /// Постраничная загрузка пользователей команд проекта
+        /// </summary>
+        /// <param name="currentUser">Текущий пользователь</param>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="pageOptions"></param>
+        /// <returns></returns>
+        Task<IEnumerable<VmUser>> GetUsersPage(
+            ApplicationUser currentUser,
+            int projectId,
+            PageOptions pageOptions);
 
         /// <summary>
         /// Добавление команды в список команд проект

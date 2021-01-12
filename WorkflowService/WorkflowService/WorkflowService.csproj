@@ -43,6 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BackgroundServices\BackgroundServices.csproj" />
     <ProjectReference Include="..\Workflow.DAL\Workflow.DAL.csproj" />
     <ProjectReference Include="..\Workflow.Services\Workflow.Services.csproj" />
     <ProjectReference Include="..\Workflow.Share\Workflow.Share.csproj" />

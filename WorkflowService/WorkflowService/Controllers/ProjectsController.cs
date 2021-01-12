@@ -57,7 +57,8 @@ namespace WorkflowService.Controllers
         /// <param name="pageOptions">Параметры страницы</param>
         /// <returns>Коллекция проектов</returns>
         [HttpPost]
-        public async Task<IEnumerable<VmProject>> GetPage([FromBody] PageOptions pageOptions)
+        public async Task<IEnumerable<VmProject>> GetPage(
+            [FromBody] PageOptions pageOptions)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
             return await _projectsService.GetPage(currentUser, pageOptions);
@@ -70,11 +71,27 @@ namespace WorkflowService.Controllers
         /// <param name="pageOptions">Параметры страницы</param>
         /// <returns>Коллекция команд</returns>
         [HttpPost]
-        public async Task<IEnumerable<VmTeam>> GetTeamsPage([FromQuery]int projectId, 
+        public async Task<IEnumerable<VmTeam>> GetTeamsPage(
+            [FromQuery]int projectId, 
             [FromBody]PageOptions pageOptions)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
             return await _teamsService.GetPage(currentUser, projectId, pageOptions);
+        }
+
+        /// <summary>
+        /// Постраничная загрузка пользователей команд проекта с фильтрацией и сортировкой
+        /// </summary>
+        /// <param name="projectId">Идентификатор проекта</param>
+        /// <param name="pageOptions">Параметры страницы</param>
+        /// <returns>Коллекция команд</returns>
+        [HttpPost]
+        public async Task<IEnumerable<VmUser>> GetProjectUsers(
+            [FromQuery] int projectId,
+            [FromBody] PageOptions pageOptions)
+        {
+            var currentUser = await _currentUserService.GetCurrentUser(User);
+            return await _teamsService.GetUsersPage(currentUser, projectId, pageOptions);
         }
 
         /// <summary>
@@ -95,7 +112,8 @@ namespace WorkflowService.Controllers
         /// <param name="project">Проект</param>
         /// <returns>Результат выполнения операции</returns>
         [HttpPost]
-        public async Task<ActionResult<VmProject>> Create([FromBody] VmProject project)
+        public async Task<ActionResult<VmProject>> Create(
+            [FromBody] VmProject project)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
             var result = await _projectsService.Create(currentUser, project);
@@ -108,7 +126,8 @@ namespace WorkflowService.Controllers
         /// <param name="projectForm">Форма создаваемого проекта</param>
         /// <returns>Результат выполнения операции</returns>
         [HttpPost]
-        public async Task<ActionResult<VmProject>> CreateByForm([FromBody] VmProjectForm projectForm)
+        public async Task<ActionResult<VmProject>> CreateByForm(
+            [FromBody] VmProjectForm projectForm)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
             var result = await _projectsService.CreateByForm(currentUser, projectForm);
@@ -121,7 +140,8 @@ namespace WorkflowService.Controllers
         /// <param name="project">Обновляемый проект</param>
         /// <returns></returns>
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody]VmProject project)
+        public async Task<IActionResult> Update(
+            [FromBody]VmProject project)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
             await _projectsService.Update(currentUser, project);
@@ -134,7 +154,8 @@ namespace WorkflowService.Controllers
         /// <param name="projectForm">Форма обновляемого проекта</param>
         /// <returns></returns>
         [HttpPut]
-        public async Task<IActionResult> UpdateByForm([FromBody] VmProjectForm projectForm)
+        public async Task<IActionResult> UpdateByForm(
+            [FromBody] VmProjectForm projectForm)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
             await _projectsService.UpdateByForm(currentUser, projectForm);
@@ -147,7 +168,8 @@ namespace WorkflowService.Controllers
         /// <param name="projects">Обновляемый проект</param>
         /// <returns></returns>
         [HttpPut]
-        public async Task<IActionResult> UpdateRange([FromBody] IEnumerable<VmProject> projects)
+        public async Task<IActionResult> UpdateRange(
+            [FromBody] IEnumerable<VmProject> projects)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
             await _projectsService.UpdateRange(currentUser, projects);
@@ -160,7 +182,8 @@ namespace WorkflowService.Controllers
         /// <param name="projectForms">Формы обновляемых проектов</param>
         /// <returns></returns>
         [HttpPut]
-        public async Task<IActionResult> UpdateRange([FromBody] IEnumerable<VmProjectForm> projectForms)
+        public async Task<IActionResult> UpdateRange(
+            [FromBody] IEnumerable<VmProjectForm> projectForms)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
             await _projectsService.UpdateByFormRange(currentUser, projectForms);
@@ -186,7 +209,8 @@ namespace WorkflowService.Controllers
         /// <param name="ids">Идентификаторы проектов</param>
         /// <returns></returns>
         [HttpPatch]
-        public async Task<IActionResult> DeleteRange([FromBody]IEnumerable<int> ids)
+        public async Task<IActionResult> DeleteRange(
+            [FromBody]IEnumerable<int> ids)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
             var projects = await _projectsService.DeleteRange(currentUser, ids);
@@ -212,7 +236,8 @@ namespace WorkflowService.Controllers
         /// <param name="ids">Идентификаторы проектов</param>
         /// <returns></returns>
         [HttpPatch]
-        public async Task<IActionResult> RestoreRange([FromBody] IEnumerable<int> ids)
+        public async Task<IActionResult> RestoreRange(
+            [FromBody] IEnumerable<int> ids)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
             var projects = await _projectsService.RestoreRange(currentUser, ids);
@@ -228,7 +253,9 @@ namespace WorkflowService.Controllers
         /// <param name="teamId">Идентификатор команды</param>
         /// <returns></returns>
         [HttpPatch("{projectId}/{teamId}")]
-        public async Task<IActionResult> AddTeam(int projectId, int teamId)
+        public async Task<IActionResult> AddTeam(
+            int projectId, 
+            int teamId)
         {
             await _teamsService.Add(projectId, teamId);
             return NoContent();
@@ -241,7 +268,9 @@ namespace WorkflowService.Controllers
         /// <param name="teamId">Идентификатор команды</param>
         /// <returns></returns>
         [HttpPatch("{projectId}/{teamId}")]
-        public async Task<IActionResult> RemoveTeam(int projectId, int teamId)
+        public async Task<IActionResult> RemoveTeam(
+            int projectId, 
+            int teamId)
         {
             await _teamsService.Remove(projectId, teamId);
             return NoContent();
@@ -254,7 +283,9 @@ namespace WorkflowService.Controllers
         /// <param name="teamId"></param>
         /// <returns></returns>
         [HttpGet("{projectId}/{teamId}")]
-        public async Task<ActionResult<VmProjectTeamRole>> GetTeamRole(int projectId, int teamId)
+        public async Task<ActionResult<VmProjectTeamRole>> GetTeamRole(
+            int projectId,
+            int teamId)
         {
             var teamRole = await _teamsService.GetRole(projectId, teamId);
             return Ok(teamRole);
@@ -266,7 +297,8 @@ namespace WorkflowService.Controllers
         /// <param name="projectTeamRole">Роли команды в проекте</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<NoContentResult> UpdateTeamRole([FromBody]VmProjectTeamRole projectTeamRole)
+        public async Task<NoContentResult> UpdateTeamRole(
+            [FromBody]VmProjectTeamRole projectTeamRole)
         {
             await _teamsService.UpdateTeamRole(projectTeamRole);
             return NoContent();
@@ -278,7 +310,8 @@ namespace WorkflowService.Controllers
         /// <param name="roles">Роли команд в проектах</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<NoContentResult> UpdateTeamsRoles([FromBody] IEnumerable<VmProjectTeamRole> roles)
+        public async Task<NoContentResult> UpdateTeamsRoles(
+            [FromBody] IEnumerable<VmProjectTeamRole> roles)
         {
             await _teamsService.UpdateTeamsRoles(roles);
             return NoContent();
@@ -291,7 +324,9 @@ namespace WorkflowService.Controllers
         /// <param name="userId">Идентификатор пользователя</param>
         /// <returns></returns>
         [HttpGet("{projectId}/{userId}")] 
-        public async Task<ActionResult<VmProjectUserRole>> GetUserRole(int projectId, string userId)
+        public async Task<ActionResult<VmProjectUserRole>> GetUserRole(
+            int projectId, 
+            string userId)
         {
             var userRole = await _userRolesService.Get(projectId, userId);
             return Ok(userRole);
@@ -304,7 +339,9 @@ namespace WorkflowService.Controllers
         /// <param name="teamId">Идентификатор команды</param>
         /// <returns></returns>
         [HttpGet("{projectId}/{teamId}")]
-        public async Task<IEnumerable<VmProjectUserRole>> GetUsersRoles(int projectId, int teamId)
+        public async Task<IEnumerable<VmProjectUserRole>> GetUsersRoles(
+            int projectId, 
+            int teamId)
         {
             return await _userRolesService.GetForTeam(projectId, teamId);
         }
@@ -315,7 +352,8 @@ namespace WorkflowService.Controllers
         /// <param name="userRole">Роли пользователя в проекте</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<NoContentResult> UpdateUserRole([FromBody]VmProjectUserRole userRole)
+        public async Task<NoContentResult> UpdateUserRole(
+            [FromBody]VmProjectUserRole userRole)
         {
             await _userRolesService.Update(userRole);
             return NoContent();
@@ -327,7 +365,8 @@ namespace WorkflowService.Controllers
         /// <param name="userRoles">Роли пользователей в проекте</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<NoContentResult> UpdateUsersRoles([FromBody] IEnumerable<VmProjectUserRole> userRoles)
+        public async Task<NoContentResult> UpdateUsersRoles(
+            [FromBody] IEnumerable<VmProjectUserRole> userRoles)
         {
             await _userRolesService.UpdateRange(userRoles);
             return NoContent();
@@ -341,7 +380,8 @@ namespace WorkflowService.Controllers
         /// <param name="options">Параметры статистики</param>
         /// <returns></returns>
         [HttpPost("{projectId}")]
-        public async Task<ActionResult<VmProjectStatistic>> GetProjectStatistic(int projectId, 
+        public async Task<ActionResult<VmProjectStatistic>> GetProjectStatistic(
+            int projectId, 
             [FromBody] StatisticOptions options)
         {
             var statistic = await _statisticService.GetStatisticForProject(projectId, options);

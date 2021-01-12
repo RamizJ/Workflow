@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using BackgroundServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -14,8 +15,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-//using Newtonsoft.Json;
-//using Newtonsoft.Json.Converters;
 using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
@@ -23,6 +22,8 @@ using Workflow.DAL.Repositories;
 using Workflow.DAL.Repositories.Abstract;
 using Workflow.Services;
 using Workflow.Services.Abstract;
+using Workflow.Services.HostedServices;
+using Workflow.Services.Hubs;
 using Workflow.Services.PageLoading;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModelConverters.Absract;
@@ -98,11 +99,11 @@ namespace WorkflowService
 
             if (Configuration.GetValue<bool>(IS_API_TEST_MODE))
             {
-                services.AddCors(options => options
-                    .AddDefaultPolicy(builder => builder
-                        .AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()));
+                //services.AddCors(options => options
+                //    .AddDefaultPolicy(builder => builder
+                //        .WithOrigins("http://localhost:64254/", "http://localhost:8080", "http://localhost:64254/entity-state-observer")
+                //        .AllowAnyHeader()
+                //        .AllowAnyMethod()));
             }
 
             services.AddControllers(options =>
@@ -178,6 +179,10 @@ namespace WorkflowService
             services.AddTransient<IPageLoadService<Group>, GroupsPageLoadService>();
             services.AddTransient<IPageLoadService<GoalMessage>, GoalMessagesPageLoadService>();
 
+            //Repositories
+            services.AddTransient<IGoalsRepository, GoalsRepository>();
+            services.AddTransient<IUsersRepository, UsersRepository>();
+
             //Services
             services.AddTransient<ICurrentUserService, CurrentUserService>();
             services.AddTransient<IDefaultDataInitializationService, DefaultDataInitializationService>();
@@ -196,12 +201,18 @@ namespace WorkflowService
             services.AddTransient<IProjectUserRolesService, ProjectUserRolesService>();
             services.AddTransient<IStatisticService, StatisticService>();
             services.AddTransient<IRolesService, RolesService>();
-            services.AddTransient<IGoalsRepository, GoalsRepository>();
             services.AddTransient<IGoalCompletionStatisticService, GoalCompletionStatisticService>();
             services.AddTransient<IWorkloadForProjectStatisticService, WorkloadForProjectStatisticService>();
             services.AddTransient<IWorkloadByDaysStatisticService, WorkloadByDaysStatisticService>();
             services.AddTransient<ITotalStatisticService, TotalStatisticService>();
             services.AddTransient<IGoalMessageService, GoalMessageService>();
+            services.AddTransient<IEntityStateNotifierService, EntityStateNotifierService>();
+
+            //Singletons
+            services.AddSingleton<IBackgroundTaskQueue<VmEntityStateMessage>, BackgroundQueue<VmEntityStateMessage>>();
+
+            //Hosted services
+            services.AddHostedService<EntityStateHostedService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -217,8 +228,16 @@ namespace WorkflowService
 
             app.UseRouting();
 
-            if(Configuration.GetValue<bool>(IS_API_TEST_MODE))
-                app.UseCors();
+            if (Configuration.GetValue<bool>(IS_API_TEST_MODE))
+            {
+                app.UseCors(builder => builder.WithOrigins(
+                        "http://localhost:64254/",
+                        "http://localhost:64254/entity-state-observer",
+                        "http://localhost:8080")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials());
+            }
 
             app.UseSwagger();
             app.UseSwaggerUI(options =>
@@ -232,6 +251,7 @@ namespace WorkflowService
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<EntityStateHub>("/entity-state-observer");
             });
 
             app.UseSpa(_ => { });

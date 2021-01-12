@@ -3,48 +3,35 @@ using System.Linq;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
-using Workflow.Services;
+using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
-using Workflow.VM.Common;
 using Workflow.VM.ViewModelConverters;
-using Workflow.VM.ViewModels;
 
 namespace Workflow.Tests.Services
 {
     [TestFixture]
     public class UsersServiceTests
     {
-        private SqliteConnection _dbConnection;
         private TestData _testData;
         private DataContext _dataContext;
-        private UsersService _service;
+        private IUsersService _service;
         private VmUserConverter _vmConverter;
         private UserManager<ApplicationUser> _userManager;
-        private ServiceProvider _serviceProvider;
         private ApplicationUser _currentUser;
 
         [SetUp]
         public void Setup()
         {
-            _dbConnection = ContextHelper.OpenSqliteInMemoryConnection();
-            using var serviceProvider = ContextHelper.Initialize(_dbConnection, false);
-            var dataContext = serviceProvider.GetRequiredService<DataContext>();
-            var userManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
-
-            dataContext.Database.EnsureCreated();
-            _testData = new TestData();
-            _testData.Initialize(dataContext, userManager);
-
-            _serviceProvider = ContextHelper.Initialize(_dbConnection, true);
-            _dataContext = _serviceProvider.GetService<DataContext>();
-            _userManager = _serviceProvider.GetService<UserManager<ApplicationUser>>();
-            _service = new UsersService(_dataContext, _userManager);
+            var serviceProvider = _testContext.Initialize(out _testData);
+            
+            _dataContext = serviceProvider.GetRequiredService<DataContext>();
+            _userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            _service = serviceProvider.GetRequiredService<IUsersService>();
             _vmConverter = new VmUserConverter();
             _currentUser = _testData.Users.First();
         }
@@ -52,9 +39,7 @@ namespace Workflow.Tests.Services
         [TearDown]
         public void TearDown()
         {
-            _dataContext.Database.EnsureDeleted();
-            _serviceProvider.Dispose();
-            _dbConnection.Close();
+            _testContext.Uninitialize();
         }
 
         [Test]
@@ -236,8 +221,8 @@ namespace Workflow.Tests.Services
         {
             //Arrange
             var ids = _testData.Users
-                .Where((u, i) => indexes.Any(idx => idx == i))
-                .Select((u,i) => u.Id).ToArray()
+                .Where((_, i) => indexes.Any(idx => idx == i))
+                .Select(u => u.Id).ToArray()
                 .OrderBy(id => id)
                 .ToArray();
 
@@ -446,5 +431,8 @@ namespace Workflow.Tests.Services
             //Assert
             Assert.AreEqual(isSucceed, result);
         }
+
+
+        private readonly TestContext _testContext = new();
     }
 }
