@@ -327,7 +327,7 @@ namespace Workflow.Services
             await _dataContext.Teams.AddAsync(model);
             await _dataContext.SaveChangesAsync();
 
-            _entityStateQueue.Enqueue(currentUser.Id, model.Id, nameof(Team), EntityOperation.Create);
+            _entityStateQueue.EnqueueId(currentUser.Id, model.Id, nameof(Team), EntityOperation.Create);
 
             return model;
         }

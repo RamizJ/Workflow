@@ -5,27 +5,41 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using BackgroundServices;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
+using Workflow.Services.Extensions;
 using Workflow.VM.ViewModelConverters.Absract;
 using Workflow.VM.ViewModels;
 
 namespace Workflow.Services
 {
+    /// <inheritdoc />
     public class GoalMessageService : IGoalMessageService
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dataContext"></param>
+        /// <param name="pageLoadService"></param>
+        /// <param name="entityStateQueue"></param>
+        /// <param name="vmConverter"></param>
         public GoalMessageService(
             DataContext dataContext,
             IPageLoadService<GoalMessage> pageLoadService,
+            IBackgroundTaskQueue<VmEntityStateMessage> entityStateQueue,
             IViewModelConverter<GoalMessage, VmGoalMessage> vmConverter)
         {
             _dataContext = dataContext;
             _pageLoadService = pageLoadService;
+            _entityStateQueue = entityStateQueue;
             _vmConverter = vmConverter;
         }
 
+        
+        /// <inheritdoc />
         public async Task<VmGoalMessage> Get(ApplicationUser currentUser, int id)
         {
             var msg = await GetQuery(currentUser, new int?())
@@ -34,6 +48,7 @@ namespace Workflow.Services
             return _vmConverter.ToViewModel(msg);
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<VmGoalMessage>> GetPage(
             ApplicationUser currentUser,
             int? goalId,
@@ -52,6 +67,7 @@ namespace Workflow.Services
             return messages;
         }
 
+        /// <inheritdoc />
         public async Task<int> GetUnreadCount(ApplicationUser currentUser, int? goalId)
         {
             var count = await GetQuery(currentUser, goalId)
@@ -62,7 +78,8 @@ namespace Workflow.Services
 
             return count;
         }
-        
+
+        /// <inheritdoc />
         public async Task<IEnumerable<VmGoalMessage>> GetUnreadPage(
             ApplicationUser currentUser,
             int? goalId,
@@ -83,6 +100,7 @@ namespace Workflow.Services
             return messages;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<VmGoalMessage>> GetRange(
             ApplicationUser currentUser,
             IEnumerable<int> ids)
@@ -95,6 +113,7 @@ namespace Workflow.Services
             return messages;
         }
 
+        /// <inheritdoc />
         public async Task<VmGoalMessage> Create(
             ApplicationUser currentUser,
             VmGoalMessage message)
@@ -134,10 +153,14 @@ namespace Workflow.Services
             
             await _dataContext.AddAsync(model);
             await _dataContext.SaveChangesAsync();
-            
+
+            _entityStateQueue.EnqueueId(currentUser.Id, model.Id,
+                nameof(GoalMessage), EntityOperation.Create);
+
             return _vmConverter.ToViewModel(model);
         }
 
+        /// <inheritdoc />
         public async Task Update(ApplicationUser currentUser, VmGoalMessage message)
         {
             var msg = await _dataContext.GoalMessages
@@ -155,8 +178,12 @@ namespace Workflow.Services
             
             _dataContext.Entry(msg).State = EntityState.Modified;
             await _dataContext.SaveChangesAsync();
+
+            _entityStateQueue.EnqueueId(currentUser.Id, msg.Id,
+                nameof(GoalMessage), EntityOperation.Update);
         }
 
+        /// <inheritdoc />
         public async Task MarkAsRead(ApplicationUser currentUser, IEnumerable<int> ids)
         {
             var messages = await _dataContext.UserGoalMessages
@@ -168,16 +195,23 @@ namespace Workflow.Services
                 msg.LastReadingDate = DateTime.Now.ToUniversalTime();
                 _dataContext.Entry(msg).State = EntityState.Modified;
             }
-
             await _dataContext.SaveChangesAsync();
+
+            _entityStateQueue.EnqueueId(currentUser.Id,
+                messages.Select(m => m.GoalMessageId),
+                nameof(GoalMessage), EntityOperation.Update);
         }
 
+        /// <inheritdoc />
         public async Task<VmGoalMessage> Delete(ApplicationUser currentUser, int id)
         {
             var messages = await RemoveRestore(currentUser, new[] {id}, true);
+            _entityStateQueue.EnqueueId(currentUser.Id, id, 
+                nameof(GoalMessage), EntityOperation.Delete);
             return messages.SingleOrDefault();
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<VmGoalMessage>> DeleteRange(
             ApplicationUser currentUser,
             IEnumerable<int> ids)
@@ -185,11 +219,13 @@ namespace Workflow.Services
             return await RemoveRestore(currentUser, ids, true);
         }
 
+        /// <inheritdoc />
         public async Task<VmGoalMessage> Restore(ApplicationUser currentUser, int id)
         {
             return (await RemoveRestore(currentUser, new[] {id}, false)).SingleOrDefault();
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<VmGoalMessage>> RestoreRange(
             ApplicationUser currentUser,
             IEnumerable<int> ids)
@@ -231,13 +267,21 @@ namespace Workflow.Services
                 _dataContext.Entry(model).State = EntityState.Modified;
             }
             await _dataContext.SaveChangesAsync();
+
+            var operationType = isRemoved
+                ? EntityOperation.Delete
+                : EntityOperation.Restore;
             
+            _entityStateQueue.EnqueueIds(currentUser.Id, models.Select(m => m.Id), 
+                nameof(GoalMessage), operationType);
+
             return models.Select(m => _vmConverter.ToViewModel(m));
         }
 
 
         private readonly DataContext _dataContext;
         private readonly IPageLoadService<GoalMessage> _pageLoadService;
+        private readonly IBackgroundTaskQueue<VmEntityStateMessage> _entityStateQueue;
         private readonly IViewModelConverter<GoalMessage, VmGoalMessage> _vmConverter;
     }
 }
