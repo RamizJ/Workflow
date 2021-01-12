@@ -2,7 +2,7 @@
 using Workflow.VM.ViewModels;
 
 namespace Workflow.Services.Abstract
-{
+{ 
     /// <summary>
     /// 
     /// </summary>

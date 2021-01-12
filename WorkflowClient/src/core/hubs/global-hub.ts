@@ -14,7 +14,7 @@ export default class GlobalHub {
     this.connection = new SignalR.HubConnectionBuilder()
       .withUrl(url, { accessTokenFactory: () => token })
       .withAutomaticReconnect()
-      .configureLogging(SignalR.LogLevel.Warning)
+      .configureLogging(SignalR.LogLevel.Trace)
       .build()
   }
 
