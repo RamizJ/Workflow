@@ -6,8 +6,11 @@
     >
       Открыть
     </BaseContextMenuItem>
-    <BaseContextMenuItem v-if="!$route.params.teamId && !$route.params.groupId" @click="edit">
-      {{ active ? 'Изменить' : 'Информация' }}
+    <BaseContextMenuItem
+      v-if="!$route.params.teamId && !$route.params.groupId && !active"
+      @click="edit"
+    >
+      {{ 'Информация' }}
     </BaseContextMenuItem>
     <BaseContextMenuDivider v-if="active && !$route.params.teamId && !$route.params.groupId" />
     <BaseContextMenuItem

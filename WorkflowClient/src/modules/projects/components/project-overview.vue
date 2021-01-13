@@ -10,11 +10,16 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :span="8">
+      <el-col :span="10">
         <el-card class="card" shadow="never">
           <div class="card__title">Информация</div>
           <div class="card__body">
-            <div>Руководитель проекта: {{ project.ownerFullName }}</div>
+            <div>
+              Руководитель проекта:
+              <router-link :to="`/users/${project.ownerId}`">
+                {{ project.ownerFio.trim() }}
+              </router-link>
+            </div>
           </div>
         </el-card>
       </el-col>

@@ -103,22 +103,23 @@
               <el-form-item label="Исполнитель" prop="performerId">
                 <el-select
                   v-model="form.performerId"
-                  placeholder="Исполнитель"
-                  :remote-method="searchUsers"
-                  @blur="searchUsers()"
+                  placeholder="Найти исполнителя..."
+                  :remote-method="findProjectUsers"
                   default-first-option
                   filterable
                   clearable
                   remote
                 >
                   <el-option
-                    v-if="form.performerId && !users.some((user) => user.id === form.performerId)"
+                    v-if="
+                      form.performerId && !projectUsers.some((user) => user.id === form.performerId)
+                    "
                     :key="form.performerId"
                     :label="shortenFullName(form.performerFio)"
                     :value="form.performerId"
                   ></el-option>
                   <el-option
-                    v-for="item in users"
+                    v-for="item in projectUsers"
                     :key="item.id"
                     :label="item.value"
                     :value="item.id"
@@ -135,7 +136,20 @@
                   prefix-icon="el-icon-arrow-down"
                   format="dd.MM.yyyy HH:mm"
                   default-time="12:00:00"
-                  placeholder="Крайний срок"
+                  placeholder="Выбрать крайний срок"
+                ></el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="Ориентировочное время выполнения" prop="expectedCompletedDate">
+                <el-date-picker
+                  v-model="form.estimatedPerformingTime"
+                  :picker-options="{ disabledDate: validateDate }"
+                  type="datetime"
+                  prefix-icon="el-icon-arrow-down"
+                  format="dd.MM.yyyy HH:mm"
+                  default-time="12:00:00"
+                  placeholder="Выбрать время выполнения"
                 ></el-date-picker>
               </el-form-item>
             </el-col>
@@ -197,12 +211,14 @@ import { ElForm } from 'element-ui/types/form'
 import tableStore from '@/core/store/table.store'
 import goalsStore from '@/modules/goals/store/goals.store'
 import authStore from '@/modules/users/store/auth.store'
+import projectsStore from '@/modules/projects/store/projects.store'
 import BaseWindow from '../../../../core/components/base-window.vue'
 import DialogMixin from '../../../../core/mixins/dialog.mixin'
 import Goal, { Priority } from '@/modules/goals/models/goal.type'
 import Attachment from '@/modules/goals/models/attachment.type'
 import User from '@/modules/users/models/user.type'
 import GoalApproval from '@/modules/goals/components/goal-window/goal-approval.vue'
+import usersModule from '@/modules/users/store/users.store'
 
 @Component({ components: { GoalApproval, BaseWindow } })
 export default class GoalWindow extends Mixins(DialogMixin) {
@@ -233,7 +249,6 @@ export default class GoalWindow extends Mixins(DialogMixin) {
 
   protected async mounted(): Promise<void> {
     this.visible = true
-
     this.loading = true
 
     this.form.projectId = this.$route.params.projectId
@@ -248,10 +263,31 @@ export default class GoalWindow extends Mixins(DialogMixin) {
       this.form.ownerFio = `${this.me?.lastName} ${this.me?.firstName} ${this.me?.middleName}`
     }
 
-    await this.searchUsers()
     await this.searchProjects()
     this.loading = false
     ;(this.$refs.title as Input).focus()
+  }
+
+  private get projectUsers(): { value: string | undefined; id: string | undefined }[] {
+    return projectsStore.projectUsers.map((user) => {
+      return {
+        value: `${user.lastName} ${user.firstName} ${user.middleName}`,
+        id: user.id,
+      }
+    })
+  }
+
+  private async findProjectUsers(filter = ''): Promise<void> {
+    try {
+      await projectsStore.findUsers({
+        filter,
+        projectId: this.form.projectId || undefined,
+        pageNumber: 0,
+        pageSize: 10,
+      })
+    } catch (e) {
+      Message.error('Ошибка загрузки списка пользователей')
+    }
   }
 
   private async submit(): Promise<void> {
@@ -294,10 +330,11 @@ export default class GoalWindow extends Mixins(DialogMixin) {
     this.$emit('close')
   }
 
-  private onProjectChange(): void {
+  private async onProjectChange(): Promise<void> {
     this.form.children?.forEach((item) => {
       item.projectId = this.form.projectId
     })
+    await this.findProjectUsers()
   }
 
   private validateDate(date: Date): boolean {

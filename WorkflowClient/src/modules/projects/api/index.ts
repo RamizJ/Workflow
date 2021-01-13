@@ -1,4 +1,4 @@
-import { AxiosResponse } from 'axios'
+import { AxiosPromise, AxiosResponse } from 'axios'
 import qs from 'qs'
 import api from '@/core/api'
 import Query from '@/core/types/query.type'
@@ -7,6 +7,7 @@ import Team from '@/modules/teams/models/team.type'
 import { UserRole } from '@/modules/users/models/user-role.type'
 import { TeamRole } from '@/modules/teams/models/team-role.type'
 import { Statistics } from '@/core/types/statistics.model'
+import User from '@/modules/users/models/user.type'
 
 export default {
   get: (id: number): Promise<AxiosResponse<Project>> => {
@@ -25,6 +26,15 @@ export default {
   getTeamsPage: (query: Query): Promise<AxiosResponse<Team[]>> => {
     return api.request({
       url: `/api/Projects/GetTeamsPage?projectId=${query.projectId}`,
+      method: 'POST',
+      data: query,
+    })
+  },
+  getProjectUsers: (query: Query): AxiosPromise<User[]> => {
+    const projectId = query.projectId
+    delete query.projectId
+    return api.request({
+      url: `/api/Projects/GetProjectUsers?projectId=${projectId}`,
       method: 'POST',
       data: query,
     })
