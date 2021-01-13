@@ -140,19 +140,19 @@
                 ></el-date-picker>
               </el-form-item>
             </el-col>
-            <el-col :span="12">
-              <el-form-item label="Ориентировочное время выполнения" prop="expectedCompletedDate">
-                <el-date-picker
-                  v-model="form.estimatedPerformingTime"
-                  :picker-options="{ disabledDate: validateDate }"
-                  type="datetime"
-                  prefix-icon="el-icon-arrow-down"
-                  format="dd.MM.yyyy HH:mm"
-                  default-time="12:00:00"
-                  placeholder="Выбрать время выполнения"
-                ></el-date-picker>
-              </el-form-item>
-            </el-col>
+            <!--            <el-col :span="12">-->
+            <!--              <el-form-item-->
+            <!--                label="Ориентировочное время выполнения (час.)"-->
+            <!--                prop="estimatedPerformingTime"-->
+            <!--              >-->
+            <!--                <el-input-number-->
+            <!--                  v-model="estimatedPerformingHours"-->
+            <!--                  controls-position="right"-->
+            <!--                  placeholder="Кол-во часов"-->
+            <!--                  :min="1"-->
+            <!--                />-->
+            <!--              </el-form-item>-->
+            <!--            </el-col>-->
           </el-row>
         </el-tab-pane>
         <el-tab-pane label="Вложения" name="attachments" :lazy="true">
@@ -219,6 +219,7 @@ import Attachment from '@/modules/goals/models/attachment.type'
 import User from '@/modules/users/models/user.type'
 import GoalApproval from '@/modules/goals/components/goal-window/goal-approval.vue'
 import usersModule from '@/modules/users/store/users.store'
+import moment from 'moment'
 
 @Component({ components: { GoalApproval, BaseWindow } })
 export default class GoalWindow extends Mixins(DialogMixin) {
@@ -228,6 +229,7 @@ export default class GoalWindow extends Mixins(DialogMixin) {
   private activeTab = 'description'
 
   private form: Goal = new Goal()
+  private estimatedPerformingHours: number | null = null
 
   private rules = {
     title: [{ required: true, message: '!', trigger: 'blur' }],
@@ -314,6 +316,11 @@ export default class GoalWindow extends Mixins(DialogMixin) {
     this.loading = true
     const hasAttachments = this.form.isAttachmentsExist
     const hasChildren = this.form.hasChildren
+    // TODO: Доработать формат ориентировочного времени
+    // if (this.estimatedPerformingHours)
+    //   this.form.estimatedPerformingTime = moment
+    //     .duration(`${this.estimatedPerformingHours}:00`)
+    //     .toJSON()
     const entity: Goal = { ...this.form } as Goal
     if (!this.form.performerId) delete entity.performerId
     if (this.id || this.form.id) await goalsStore.updateOne(entity)
