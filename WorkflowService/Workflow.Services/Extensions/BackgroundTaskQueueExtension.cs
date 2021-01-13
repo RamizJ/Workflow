@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using BackgroundServices;
-using Workflow.DAL.Models;
 using Workflow.VM.ViewModels;
 
 namespace Workflow.Services.Extensions
 {
     public static class BackgroundTaskQueueExtension
     {
-        public static void Enqueue<T>(this IBackgroundTaskQueue<VmEntityStateMessage> queue,
+        public static void EnqueueId<T>(this IBackgroundTaskQueue<VmEntityStateMessage> queue,
             string senderId, T entityId, string entityType, EntityOperation operation,
             RequireClass<T> ignore = null) 
             where T : class
@@ -22,7 +21,7 @@ namespace Workflow.Services.Extensions
             });
         }
 
-        public static void Enqueue<T>(this IBackgroundTaskQueue<VmEntityStateMessage> queue,
+        public static void EnqueueId<T>(this IBackgroundTaskQueue<VmEntityStateMessage> queue,
             string senderId, T entityId, string entityType, EntityOperation operation,
             RequireStruct<T> ignore = null)
             where T : struct
