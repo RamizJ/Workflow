@@ -109,7 +109,7 @@ namespace Workflow.Services
             if (!result.Succeeded) 
                 throw new HttpResponseException(BadRequest, result.ToString());
 
-            _entityStateQueue.Enqueue(user.Id, model.Id, 
+            _entityStateQueue.EnqueueId(user.Id, model.Id, 
                 nameof(ApplicationUser), 
                 EntityOperation.Create);
 
@@ -141,7 +141,7 @@ namespace Workflow.Services
             if (!result.Succeeded) 
                 throw new HttpResponseException(BadRequest, result.ToString());
 
-            _entityStateQueue.Enqueue(user.Id, model.Id,
+            _entityStateQueue.EnqueueId(user.Id, model.Id,
                 nameof(ApplicationUser),
                 EntityOperation.Update);
         }

@@ -12,6 +12,7 @@ import {
   MenuItem,
   MenuItemGroup,
   Input,
+  InputNumber,
   Radio,
   RadioButton,
   Checkbox,
@@ -73,6 +74,7 @@ Vue.use(Submenu)
 Vue.use(MenuItem)
 Vue.use(MenuItemGroup)
 Vue.use(Input)
+Vue.use(InputNumber)
 Vue.use(Radio)
 Vue.use(RadioButton)
 Vue.use(Checkbox)

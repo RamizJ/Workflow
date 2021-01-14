@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BackgroundServices;
 using Microsoft.EntityFrameworkCore;
 using PageLoading;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
+using Workflow.Services.Extensions;
 using Workflow.VM.ViewModelConverters.Absract;
 using Workflow.VM.ViewModels;
 using static System.Net.HttpStatusCode;
@@ -20,11 +22,13 @@ namespace Workflow.Services
         public GroupsService(DataContext dataContext, 
             IViewModelConverter<Group, VmGroup> vmConverter,
             IPageLoadService<Group> pageLoadService,
+            IBackgroundTaskQueue<VmEntityStateMessage> entityStateQueue,
             IRolesService rolesService)
         {
             _dataContext = dataContext;
             _vmConverter = vmConverter;
             _pageLoadService = pageLoadService;
+            _entityStateQueue = entityStateQueue;
             _rolesService = rolesService;
         }
 
@@ -78,6 +82,9 @@ namespace Workflow.Services
 
             await _dataContext.Groups.AddAsync(group);
             await _dataContext.SaveChangesAsync();
+
+            _entityStateQueue.EnqueueId(currentUser.Id, group.Id, nameof(Group), EntityOperation.Create);
+                
             return _vmConverter.ToViewModel(group);
         }
 
@@ -220,9 +227,16 @@ namespace Workflow.Services
                     .Select(x => new Metadata(x.Key, x.Value))
                     .ToList();
 
-                _dataContext.Metadata.RemoveRange(_dataContext.Metadata.Where(m => m.GroupId == vmGroup.Id));
+                _dataContext.Metadata
+                    .RemoveRange(_dataContext.Metadata
+                        .Where(m => m.GroupId == vmGroup.Id));
+                
                 _dataContext.Entry(group).State = EntityState.Modified;
             }
+
+            _entityStateQueue.EnqueueIds(currentUser.Id, 
+                existedGroups.Select(x => x.Id), 
+                nameof(Group), EntityOperation.Create);
 
             await _dataContext.SaveChangesAsync();
         }
@@ -260,6 +274,15 @@ namespace Workflow.Services
                 var vm = _vmConverter.ToViewModel(m);
                 return vm;
             });
+
+            var operationType = isRemoved
+                ? EntityOperation.Delete
+                : EntityOperation.Restore;
+            
+            _entityStateQueue.EnqueueIds(currentUser.Id,
+                models.Select(x => x.Id),
+                nameof(Group), operationType);
+
             return vmGroups;
         }
 
@@ -282,6 +305,7 @@ namespace Workflow.Services
         private readonly DataContext _dataContext;
         private readonly IViewModelConverter<Group, VmGroup> _vmConverter;
         private readonly IPageLoadService<Group> _pageLoadService;
+        private readonly IBackgroundTaskQueue<VmEntityStateMessage> _entityStateQueue;
         private readonly IRolesService _rolesService;
     }
 }

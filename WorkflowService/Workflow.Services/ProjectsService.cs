@@ -345,7 +345,7 @@ namespace Workflow.Services
             model.OwnerId = user.Id;
             await _dataContext.Projects.AddAsync(model);
 
-            _entityStateQueue.Enqueue(user.Id, model.Id, nameof(Project), EntityOperation.Create);
+            _entityStateQueue.EnqueueId(user.Id, model.Id, nameof(Project), EntityOperation.Create);
 
             return model;
         }

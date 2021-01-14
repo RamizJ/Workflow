@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using BackgroundServices;
 using Microsoft.EntityFrameworkCore;
 using Workflow.DAL;
 using Workflow.DAL.Models;
 using Workflow.DAL.Repositories.Abstract;
 using Workflow.Services.Abstract;
 using Workflow.Services.Exceptions;
+using Workflow.Services.Extensions;
 using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModels;
 using static System.Net.HttpStatusCode;
@@ -20,10 +22,12 @@ namespace Workflow.Services
     {
         public GoalAttachmentsService(DataContext dataContext, 
             IUsersRepository usersRepository,
+            IBackgroundTaskQueue<VmEntityStateMessage> entityStateQueue,
             IFileService fileService)
         {
             _dataContext = dataContext;
             _usersRepository = usersRepository;
+            _entityStateQueue = entityStateQueue;
             _fileService = fileService;
             _vmConverter = new VmAttachmentConverter();
         }
@@ -64,6 +68,10 @@ namespace Workflow.Services
 
             goal.Attachments.AddRange(attachments);
             await _dataContext.SaveChangesAsync();
+
+            _entityStateQueue.EnqueueIds(currentUser.Id, 
+                attachments.Select(x => x.Id), 
+                nameof(Attachment), EntityOperation.Create);
         }
 
         /// <inheritdoc />
@@ -82,6 +90,10 @@ namespace Workflow.Services
             {
                 _dataContext.Attachments.RemoveRange(attachments);
                 await _dataContext.SaveChangesAsync();
+
+                _entityStateQueue.EnqueueIds(currentUser.Id,
+                    attachments.Select(x => x.Id),
+                    nameof(Attachment), EntityOperation.Delete);
             }
         }
 
@@ -119,6 +131,7 @@ namespace Workflow.Services
 
         private readonly DataContext _dataContext;
         private readonly IUsersRepository _usersRepository;
+        private readonly IBackgroundTaskQueue<VmEntityStateMessage> _entityStateQueue;
         private readonly IFileService _fileService;
         private readonly VmAttachmentConverter _vmConverter;
     }
