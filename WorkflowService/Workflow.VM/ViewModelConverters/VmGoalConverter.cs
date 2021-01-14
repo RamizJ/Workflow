@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Workflow.DAL.Models;
 using Workflow.VM.ViewModelConverters.Absract;
 using Workflow.VM.ViewModels;
@@ -18,17 +17,12 @@ namespace Workflow.VM.ViewModelConverters
             model.Description = viewModel.Description;
             model.GoalNumber = viewModel.GoalNumber;
             model.PerformerId = viewModel.PerformerId;
-            //Observers = viewModel.Observers?.Select(oId => new GoalObserver(viewModel.Id, oId)).ToList(),
             model.ProjectId = viewModel.ProjectId;
             model.State = viewModel.State;
             model.Priority = viewModel.Priority;
             model.ExpectedCompletedDate = viewModel.ExpectedCompletedDate;
-            model.EstimatedPerformingTime = viewModel.EstimatedPerformingHours != null
-                ? TimeSpan.FromHours(viewModel.EstimatedPerformingHours.Value)
-                : null;
-            model.ActualPerformingTime = viewModel.ActualPerformingHours != null
-                ? TimeSpan.FromHours(viewModel.ActualPerformingHours.Value)
-                : null;
+            model.EstimatedPerformingHours = viewModel.EstimatedPerformingHours;
+            model.ActualPerformingHours = viewModel.ActualPerformingHours;
             model.IsRemoved = viewModel.IsRemoved;
         }
 
@@ -45,15 +39,14 @@ namespace Workflow.VM.ViewModelConverters
             viewModel.Description = model.Description;
             viewModel.GoalNumber = model.GoalNumber;
             viewModel.PerformerId = model.PerformerId;
-            //PerformerFio = model.Performer.LastName + " " + model.Performer.FirstName + " " + model.Performer.MiddleName,
             viewModel.PerformerFio = model.Performer?.FullName;
             viewModel.ProjectId = model.ProjectId;
             viewModel.ProjectName = model.Project?.Name;
             viewModel.State = model.State;
             viewModel.Priority = model.Priority;
             viewModel.ExpectedCompletedDate = model.ExpectedCompletedDate;
-            viewModel.EstimatedPerformingHours = model.EstimatedPerformingTime?.TotalHours;
-            viewModel.ActualPerformingHours = model.ActualPerformingTime?.TotalHours;
+            viewModel.EstimatedPerformingHours = model.EstimatedPerformingHours;
+            viewModel.ActualPerformingHours = model.ActualPerformingHours;
             viewModel.IsRemoved = model.IsRemoved;
             viewModel.HasChildren = model.ChildGoals.Any();
             viewModel.IsAttachmentsExist = model.Attachments.Any();

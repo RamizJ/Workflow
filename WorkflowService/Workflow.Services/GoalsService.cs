@@ -435,7 +435,8 @@ namespace Workflow.Services
                 State = goal.State,
                 Priority = goal.Priority,
                 ExpectedCompletedDate = goal.ExpectedCompletedDate,
-                EstimatedPerformingTime = goal.EstimatedPerformingTime,
+                EstimatedPerformingHours = goal.EstimatedPerformingHours,
+                ActualPerformingHours = goal.ActualPerformingHours,
                 HasChildren = _dataContext.Goals.Any(childGoal => childGoal.ParentGoalId == goal.Id),
                 IsAttachmentsExist = _dataContext.Goals
                     .Where(g => g.Id == goal.Id)
@@ -535,7 +536,8 @@ namespace Workflow.Services
                 model.GoalNumber = vmGoal.GoalNumber;
                 model.PerformerId = vmGoal.PerformerId;
                 model.ExpectedCompletedDate = vmGoal.ExpectedCompletedDate;
-                model.EstimatedPerformingTime = vmGoal.EstimatedPerformingTime;
+                model.EstimatedPerformingHours = vmGoal.EstimatedPerformingHours;
+                model.ActualPerformingHours = vmGoal.ActualPerformingHours;
 
                 model.Observers = vmGoal.ObserverIds?
                     .Select(observerId => new GoalObserver(vmGoal.Id, observerId))
