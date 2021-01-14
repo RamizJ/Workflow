@@ -17,8 +17,8 @@ export default class Goal extends Entity {
   performerFio?: string
   creationDate: string = moment.utc(moment()).format()
   expectedCompletedDate?: string
-  actualPerformingTime?: string
-  estimatedPerformingTime?: string
+  actualPerformingHours?: number
+  estimatedPerformingHours?: number
   state: Status = Status.New
   priority: Priority = Priority.Normal
   hasChildren = false
