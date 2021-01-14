@@ -145,6 +145,7 @@ namespace Workflow.Tests
             services.AddTransient<IWorkloadForProjectStatisticService, WorkloadForProjectStatisticService>();
             services.AddTransient<IWorkloadByDaysStatisticService, WorkloadByDaysStatisticService>();
             services.AddTransient<ITotalStatisticService, TotalStatisticService>();
+            services.AddTransient<IGoalStateNameProvider, GoalStateNameProvider>();
 
             return services.BuildServiceProvider();
         }

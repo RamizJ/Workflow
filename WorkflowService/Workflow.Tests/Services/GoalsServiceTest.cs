@@ -591,6 +591,31 @@ namespace Workflow.Tests.Services
             Assert.AreEqual(expectedCount, goals.Length);
         }
 
+        [Test]
+        public async Task ChangeStatesTest()
+        {
+            //Arrange
+            var goalState = new VmGoalState
+            {
+                GoalId = 1,
+                GoalState = GoalState.Perform,
+                Comment = "State changed comment"
+            };
+
+            //Act
+            await _service.ChangeStates(_currentUser, new[] {goalState});
+            var goal = await _dataContext.Goals
+                .Include(g => g.Messages)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(g => g.Id == goalState.GoalId);
+            var lastMessage = goal.Messages.Last();
+
+            //Assert
+            Assert.AreEqual(goalState.GoalState, goal.State);
+            Assert.AreEqual(_currentUser.Id, lastMessage.OwnerId);
+            Assert.IsTrue(lastMessage.Text.Contains(goalState.Comment));
+        }
+
 
         private SqliteConnection _dbConnection;
         private TestData _testData;

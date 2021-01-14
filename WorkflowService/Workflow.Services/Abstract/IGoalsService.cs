@@ -144,5 +144,13 @@ namespace Workflow.Services.Abstract
         /// <param name="goals"></param>
         /// <param name="isRemoved"></param>
         void SetIsRemoved(IEnumerable<Goal> goals, bool isRemoved);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="currentUser"></param>
+        /// <param name="goalStates"></param>
+        /// <returns></returns>
+        Task ChangeStates(ApplicationUser currentUser, ICollection<VmGoalState> goalStates);
     }
 }
