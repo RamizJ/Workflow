@@ -100,6 +100,17 @@ class ProjectsStore extends VuexModule {
   }
 
   @Action
+  async findUsers(query: Query): Promise<User[]> {
+    let results: User[] = []
+    if (query.projectId) {
+      const response = await api.getProjectUsers(query)
+      results = response.data as User[]
+    } else results = []
+    this.context.commit('setProjectUsers', results)
+    return results
+  }
+
+  @Action
   async findOneById(id: number): Promise<Project> {
     const response = await api.get(id)
     const result = response.data as Project
@@ -141,7 +152,7 @@ class ProjectsStore extends VuexModule {
       project: entity,
       teamIds: entity.teamIds || [],
     }
-    await api.update(request)
+    await api.updateByForm(request)
   }
 
   @Action
