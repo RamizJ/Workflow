@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Workflow.DAL.Models;
 using Workflow.VM.ViewModelConverters.Absract;
 using Workflow.VM.ViewModels;
@@ -22,7 +23,12 @@ namespace Workflow.VM.ViewModelConverters
             model.State = viewModel.State;
             model.Priority = viewModel.Priority;
             model.ExpectedCompletedDate = viewModel.ExpectedCompletedDate;
-            model.EstimatedPerformingTime = viewModel.EstimatedPerformingTime;
+            model.EstimatedPerformingTime = viewModel.EstimatedPerformingHours != null
+                ? TimeSpan.FromHours(viewModel.EstimatedPerformingHours.Value)
+                : null;
+            model.ActualPerformingTime = viewModel.ActualPerformingHours != null
+                ? TimeSpan.FromHours(viewModel.ActualPerformingHours.Value)
+                : null;
             model.IsRemoved = viewModel.IsRemoved;
         }
 
@@ -46,8 +52,8 @@ namespace Workflow.VM.ViewModelConverters
             viewModel.State = model.State;
             viewModel.Priority = model.Priority;
             viewModel.ExpectedCompletedDate = model.ExpectedCompletedDate;
-            viewModel.EstimatedPerformingTime = model.EstimatedPerformingTime;
-            viewModel.ActualPerformingTime = model.ActualPerformingTime;
+            viewModel.EstimatedPerformingHours = model.EstimatedPerformingTime?.TotalHours;
+            viewModel.ActualPerformingHours = model.ActualPerformingTime?.TotalHours;
             viewModel.IsRemoved = model.IsRemoved;
             viewModel.HasChildren = model.ChildGoals.Any();
             viewModel.IsAttachmentsExist = model.Attachments.Any();

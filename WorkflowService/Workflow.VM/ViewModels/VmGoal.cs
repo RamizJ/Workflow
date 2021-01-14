@@ -20,12 +20,34 @@ namespace Workflow.VM.ViewModels
         public List<VmGoal> Children { get; set; }
         public List<string> ObserverIds { get; set; }
 
+        /// <summary>
+        /// Дата создания
+        /// </summary>
         public DateTime CreationDate { get; set; }
+        
+        /// <summary>
+        /// Ожидаемые дата и время завершения
+        /// </summary>
         public DateTime? ExpectedCompletedDate { get; set; }
-        public TimeSpan? ActualPerformingTime { get; set; }
-        public TimeSpan? EstimatedPerformingTime { get; set; }
+        
+        /// <summary>
+        /// Фаактическое время выполнения в часах 
+        /// </summary>
+        public double? ActualPerformingHours { get; set; }
+        
+        /// <summary>
+        /// Примерное время выполнения в часах
+        /// </summary>
+        public double? EstimatedPerformingHours { get; set; }
 
+        /// <summary>
+        /// Статус задачи
+        /// </summary>
         public GoalState State { get; set; }
+        
+        /// <summary>
+        /// Приоритет задачи
+        /// </summary>
         public GoalPriority Priority { get; set; }
 
         public string OwnerId { get; set; }
