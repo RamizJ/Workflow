@@ -143,7 +143,7 @@
             <el-col :span="12">
               <el-form-item
                 label="Ориентировочное время выполнения (час.)"
-                prop="estimatedPerformingTime"
+                prop="estimatedPerformingHours"
               >
                 <el-input-number
                   v-model="form.estimatedPerformingHours"
