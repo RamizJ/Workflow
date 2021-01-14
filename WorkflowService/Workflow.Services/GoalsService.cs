@@ -422,21 +422,28 @@ namespace Workflow.Services
                 Id = goal.Id,
                 ParentGoalId = goal.ParentGoalId,
                 OwnerId = goal.OwnerId,
+                OwnerFio = string.Join(' ', 
+                    goal.Owner.LastName, 
+                    goal.Owner.FirstName, 
+                    goal.Owner.MiddleName),
                 CreationDate = goal.CreationDate,
                 Title = goal.Title,
                 Description = goal.Description,
                 GoalNumber = goal.GoalNumber,
                 PerformerId = goal.PerformerId,
-                PerformerFio = goal.Performer.LastName + " " +
-                               goal.Performer.FirstName + " " +
-                               goal.Performer.MiddleName,
+                PerformerFio = string.Join(' ', 
+                    goal.Performer.LastName, 
+                    goal.Performer.FirstName, 
+                    goal.Performer.MiddleName),
                 ProjectId = goal.ProjectId,
                 ProjectName = goal.Project.Name,
                 State = goal.State,
                 Priority = goal.Priority,
                 ExpectedCompletedDate = goal.ExpectedCompletedDate,
-                EstimatedPerformingTime = goal.EstimatedPerformingTime,
-                HasChildren = _dataContext.Goals.Any(childGoal => childGoal.ParentGoalId == goal.Id),
+                EstimatedPerformingHours = goal.EstimatedPerformingHours,
+                ActualPerformingHours = goal.ActualPerformingHours,
+                HasChildren = _dataContext.Goals
+                    .Any(childGoal => childGoal.ParentGoalId == goal.Id),
                 IsAttachmentsExist = _dataContext.Goals
                     .Where(g => g.Id == goal.Id)
                     .SelectMany(g => g.Attachments)
@@ -523,7 +530,7 @@ namespace Workflow.Services
                 if(model == null)
                     throw new HttpResponseException(NotFound, $"Goal with id='{vmGoal.Id}' not found");
 
-                if (model.State != vmGoal.State) 
+                if (model.State != vmGoal.State)
                     model.StateChangedDate = DateTime.Now.ToUniversalTime();
 
                 model.Id = vmGoal.Id;
@@ -535,7 +542,8 @@ namespace Workflow.Services
                 model.GoalNumber = vmGoal.GoalNumber;
                 model.PerformerId = vmGoal.PerformerId;
                 model.ExpectedCompletedDate = vmGoal.ExpectedCompletedDate;
-                model.EstimatedPerformingTime = vmGoal.EstimatedPerformingTime;
+                model.EstimatedPerformingHours = vmGoal.EstimatedPerformingHours;
+                model.ActualPerformingHours = vmGoal.ActualPerformingHours;
 
                 model.Observers = vmGoal.ObserverIds?
                     .Select(observerId => new GoalObserver(vmGoal.Id, observerId))

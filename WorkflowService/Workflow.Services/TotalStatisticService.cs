@@ -49,7 +49,7 @@ namespace Workflow.Services
                 {
                     PerformerId = g.PerformerId,
                     ProjectId = g.ProjectId,
-                    EstimatedPerformingTime = g.EstimatedPerformingTime,
+                    EstimatedPerformingHours = g.EstimatedPerformingHours,
                     State = g.State,
                     StateChangedDate = g.StateChangedDate,
                     ExpectedCompletedDate = g.ExpectedCompletedDate
