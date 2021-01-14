@@ -527,15 +527,10 @@ namespace Workflow.Tests.Services
             await context.SaveChangesAsync();
 
             //Act
-            var page = await _service.GetPage(_currentUser, null, new PageOptions
-            {
-                PageNumber = 0,
-                PageSize = int.MaxValue
-            });
-            var firstPageGoal = page.First();
+            var goal = await _service.Get(_currentUser, firstGoal.Id);
 
             //Assert
-            Assert.IsTrue(firstPageGoal.HasChildren);
+            Assert.IsTrue(goal.HasChildren);
         }
 
         [Test]
