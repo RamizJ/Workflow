@@ -207,6 +207,7 @@ namespace WorkflowService
             services.AddTransient<ITotalStatisticService, TotalStatisticService>();
             services.AddTransient<IGoalMessageService, GoalMessageService>();
             services.AddTransient<IEntityStateNotifierService, EntityStateNotifierService>();
+            services.AddTransient<IGoalStateNameProvider, GoalStateNameProvider>();
 
             //Singletons
             services.AddSingleton<IBackgroundTaskQueue<VmEntityStateMessage>, BackgroundQueue<VmEntityStateMessage>>();

@@ -303,6 +303,20 @@ namespace WorkflowService.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Изменение статусов задач
+        /// </summary>
+        /// <param name="goalStates"></param>
+        /// <returns></returns>
+        [HttpPatch]
+        public async Task<IActionResult> ChangeStates(
+            [FromBody] IEnumerable<VmGoalState> goalStates)
+        {
+            var currentUser = await _currentUserService.GetCurrentUser(User);
+            await _service.ChangeStates(currentUser, goalStates);
+            return NoContent();
+        }
+
 
         private readonly ICurrentUserService _currentUserService;
         private readonly IGoalsService _service;

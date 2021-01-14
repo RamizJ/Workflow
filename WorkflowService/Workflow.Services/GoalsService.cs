@@ -27,13 +27,16 @@ namespace Workflow.Services
         /// </summary>
         /// <param name="dataContext"></param>
         /// <param name="repository"></param>
+        /// <param name="stateNameProvider"></param>
         /// <param name="entityStateQueue"></param>
         public GoalsService(DataContext dataContext,
             IGoalsRepository repository, 
+            IGoalStateNameProvider stateNameProvider,
             IBackgroundTaskQueue<VmEntityStateMessage> entityStateQueue)
         {
             _dataContext = dataContext;
             _repository = repository;
+            _stateNameProvider = stateNameProvider;
             _entityStateQueue = entityStateQueue;
             _vmConverter = new VmGoalConverter();
         }
@@ -205,6 +208,7 @@ namespace Workflow.Services
             return goals.FirstOrDefault();
         }
 
+        /// <inheritdoc />
         public void SetIsRemoved(IEnumerable<Goal> goals, bool isRemoved)
         {
             goals?.TraverseTree(g => g.ChildGoals, g =>
@@ -213,8 +217,46 @@ namespace Workflow.Services
                 _dataContext.Entry(g).State = EntityState.Modified;
             });
         }
-        
 
+        /// <inheritdoc />
+        public async Task ChangeStates(
+            ApplicationUser currentUser, 
+            ICollection<VmGoalState> goalStates)
+        {
+            if (currentUser == null)
+                throw new HttpResponseException(Unauthorized);
+
+            if (goalStates == null || !goalStates.Any())
+                throw new HttpResponseException(BadRequest, 
+                    $"Argument '{nameof(goalStates)}' cannot be null or empty");
+            
+            var goals = await _repository.GetGoalsForUser(_dataContext.Goals, currentUser)
+                .Where(g => goalStates.Any(gs => gs.GoalId == g.Id))
+                .ToArrayAsync();
+
+            var messages = new List<GoalMessage>();
+            foreach (var goal in goals)
+            {
+                var goalState = goalStates.First(gs => gs.GoalId == goal.Id);
+                
+                goal.State = goalState.GoalState;
+                _dataContext.Entry(goal).State = EntityState.Modified;
+
+                var goalMessage = CreateGoalMessage(goal, goalState.Comment);
+                messages.Add(goalMessage);
+                await _dataContext.AddAsync(goalMessage);
+            }
+
+            await _dataContext.SaveChangesAsync();
+
+            _entityStateQueue.EnqueueIds(currentUser.Id, goals.Select(x => x.Id),
+                nameof(Goal), EntityOperation.Update);
+
+            _entityStateQueue.EnqueueIds(currentUser.Id, messages.Select(x => x.Id),
+                nameof(GoalMessage), EntityOperation.Create);
+        }
+        
+        
         private IQueryable<Goal> GetQuery(ApplicationUser currentUser, 
             bool withRemoved, 
             bool withChildren = false,
@@ -614,9 +656,44 @@ namespace Workflow.Services
             }
         }
 
+        private GoalMessage CreateGoalMessage(Goal goal, string comment)
+        {
+            //TODO localization
+            var message = new GoalMessage
+            {
+                CreationDate = DateTime.Now.ToUniversalTime(),
+                GoalId = goal.Id,
+                Goal = goal,
+                Text = $"Статус изменен: {_stateNameProvider.GetName(goal.State)}"
+            };
+
+            if (!string.IsNullOrWhiteSpace(comment))
+                message.Text += Environment.NewLine + comment;
+
+            var observerMessages = goal.Observers
+                .Select(x => new UserGoalMessage
+                {
+                    UserId = x.ObserverId,
+                    User = x.Observer,
+                    GoalMessage = message
+                });
+            message.MessageSubscribers = new List<UserGoalMessage>(observerMessages)
+            {
+                new()
+                {
+                    UserId = goal.PerformerId,
+                    User = goal.Performer,
+                    GoalMessage = message
+                }
+            };
+
+            return message;
+        }
+
 
         private readonly DataContext _dataContext;
         private readonly IGoalsRepository _repository;
+        private readonly IGoalStateNameProvider _stateNameProvider;
         private readonly IBackgroundTaskQueue<VmEntityStateMessage> _entityStateQueue;
         private readonly VmGoalConverter _vmConverter;
     }
