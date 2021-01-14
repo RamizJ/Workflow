@@ -151,9 +151,9 @@ export default class TableService {
   }
 
   public dateFormatter(row: Entity, column: ElTableColumn, value: string): string {
-    const date = new Date(value)
+    const dateString = value.replace('Z', '') + 'Z'
+    const date = new Date(Date.parse(dateString))
     return date.toLocaleString('ru', {
-      timeZone: 'UTC',
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
