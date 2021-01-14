@@ -55,7 +55,7 @@ namespace Workflow.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<VmGoal>> GetPage(ApplicationUser currentUser, 
+        public async Task<IEnumerable<VmGoal>> GetPage(ApplicationUser currentUser,
             int? projectId, PageOptions pageOptions)
         {
             if (currentUser == null)
@@ -72,6 +72,9 @@ namespace Workflow.Services
             query = FilterByFields(pageOptions.FilterFields, query);
             query = SortByFields(pageOptions.SortFields, query);
             var vmGoals = SelectViews(query);
+
+            if (!pageOptions.HasSortFields())
+                vmGoals = vmGoals.OrderByDescending(x => x.CreationDate);
 
             return await vmGoals
                 .Skip(pageOptions.PageNumber * pageOptions.PageSize)
@@ -229,9 +232,10 @@ namespace Workflow.Services
             if (goalStates == null || !goalStates.Any())
                 throw new HttpResponseException(BadRequest, 
                     $"Argument '{nameof(goalStates)}' cannot be null or empty");
-            
+
+            var goalIds = goalStates.Select(gs => gs.GoalId);
             var goals = await _repository.GetGoalsForUser(_dataContext.Goals, currentUser)
-                .Where(g => goalStates.Any(gs => gs.GoalId == g.Id))
+                .Where(g => goalIds.Any(gId => gId == g.Id))
                 .ToArrayAsync();
 
             var messages = new List<GoalMessage>();
@@ -242,7 +246,7 @@ namespace Workflow.Services
                 goal.State = goalState.GoalState;
                 _dataContext.Entry(goal).State = EntityState.Modified;
 
-                var goalMessage = CreateGoalMessage(goal, goalState.Comment);
+                var goalMessage = CreateGoalMessage(currentUser, goal, goalState.Comment);
                 messages.Add(goalMessage);
                 await _dataContext.AddAsync(goalMessage);
             }
@@ -656,19 +660,20 @@ namespace Workflow.Services
             }
         }
 
-        private GoalMessage CreateGoalMessage(Goal goal, string comment)
+        private GoalMessage CreateGoalMessage(ApplicationUser currentUser, Goal goal, string comment)
         {
             //TODO localization
             var message = new GoalMessage
             {
+                OwnerId = currentUser.Id,
                 CreationDate = DateTime.Now.ToUniversalTime(),
                 GoalId = goal.Id,
                 Goal = goal,
-                Text = $"Статус изменен: {_stateNameProvider.GetName(goal.State)}"
+                Text = $"Статус изменен: '{_stateNameProvider.GetName(goal.State)}'."
             };
 
             if (!string.IsNullOrWhiteSpace(comment))
-                message.Text += Environment.NewLine + comment;
+                message.Text += $"{Environment.NewLine}{comment}";
 
             var observerMessages = goal.Observers
                 .Select(x => new UserGoalMessage

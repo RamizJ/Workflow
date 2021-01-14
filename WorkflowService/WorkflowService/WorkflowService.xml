@@ -274,6 +274,13 @@
             <param name="childGoalIds">Идентификаторы дочерних задач</param>
             <returns></returns>
         </member>
+        <member name="M:WorkflowService.Controllers.GoalsController.ChangeStates(System.Collections.Generic.IEnumerable{Workflow.VM.ViewModels.VmGoalState})">
+            <summary>
+            Изменение статусов задач
+            </summary>
+            <param name="goalStates"></param>
+            <returns></returns>
+        </member>
         <member name="T:WorkflowService.Controllers.GroupsController">
             <summary>
             API-методы работы с группами проектов

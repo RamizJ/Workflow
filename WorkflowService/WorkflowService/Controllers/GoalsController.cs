@@ -313,7 +313,7 @@ namespace WorkflowService.Controllers
             [FromBody] IEnumerable<VmGoalState> goalStates)
         {
             var currentUser = await _currentUserService.GetCurrentUser(User);
-            await _service.ChangeStates(currentUser, goalStates);
+            await _service.ChangeStates(currentUser, goalStates.ToArray());
             return NoContent();
         }
 
