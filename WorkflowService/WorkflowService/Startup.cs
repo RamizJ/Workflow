@@ -29,6 +29,7 @@ using Workflow.VM.ViewModelConverters;
 using Workflow.VM.ViewModelConverters.Absract;
 using Workflow.VM.ViewModels;
 using WorkflowService.Filters;
+using WorkflowService.JsonConverters;
 using WorkflowService.Services;
 using WorkflowService.Services.Abstract;
 using static Workflow.Services.ConfigKeys;
@@ -113,8 +114,12 @@ namespace WorkflowService
                 .AddJsonOptions(configure =>
                 {
                     configure.JsonSerializerOptions.IgnoreNullValues = true;
-                    configure.JsonSerializerOptions.Converters.Add(
-                        new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+                    configure.JsonSerializerOptions.Converters
+                        .Add(new DateTimeConverter());
+                    configure.JsonSerializerOptions.Converters
+                        .Add(new NullableDateTimeConverter());
+                    configure.JsonSerializerOptions.Converters
+                        .Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
                 });
                 //.AddNewtonsoftJson(options =>
                 //{
@@ -207,6 +212,7 @@ namespace WorkflowService
             services.AddTransient<ITotalStatisticService, TotalStatisticService>();
             services.AddTransient<IGoalMessageService, GoalMessageService>();
             services.AddTransient<IEntityStateNotifierService, EntityStateNotifierService>();
+            services.AddTransient<IGoalStateNameProvider, GoalStateNameProvider>();
 
             //Singletons
             services.AddSingleton<IBackgroundTaskQueue<VmEntityStateMessage>, BackgroundQueue<VmEntityStateMessage>>();

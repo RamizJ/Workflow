@@ -16,12 +16,12 @@ namespace Workflow.DAL.Models
 
         public int? ParentGoalId { get; set; }
         public Goal ParentGoal { get; set; }
-        public List<Goal> ChildGoals { get; set; } = new List<Goal>();
+        public List<Goal> ChildGoals { get; set; } = new();
 
         public DateTime CreationDate { get; set; }
         public DateTime? ExpectedCompletedDate { get; set; }
-        public TimeSpan? EstimatedPerformingTime { get; set; }
-        public TimeSpan? ActualPerformingTime { get; set; }
+        public double? EstimatedPerformingHours { get; set; }
+        public double? ActualPerformingHours { get; set; }
         public DateTime? StateChangedDate { get; set; }
 
         public GoalState State { get; set; } = GoalState.New;
@@ -33,10 +33,10 @@ namespace Workflow.DAL.Models
         public string PerformerId { get; set; }
         public ApplicationUser Performer { get; set; }
 
-        public List<GoalObserver> Observers { get; set; } = new List<GoalObserver>();
-        public List<Attachment> Attachments { get; set; } = new List<Attachment>();
-        public List<GoalMessage> Messages { get; set; } = new List<GoalMessage>();
-        public List<Metadata> MetadataList { get; set; } = new List<Metadata>();
+        public List<GoalObserver> Observers { get; set; } = new();
+        public List<Attachment> Attachments { get; set; } = new();
+        public List<GoalMessage> Messages { get; set; } = new();
+        public List<Metadata> MetadataList { get; set; } = new();
 
         public bool IsRemoved { get; set; }
     }

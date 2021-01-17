@@ -2,6 +2,10 @@
   <div class="sidebar-header">
     <AppSidebarAdd />
     <GoalWindow v-if="isGoalWindowOpened" @close="closeGoalWindow" />
+    <GoalChangeStatusDialog
+      v-if="isGoalChangeStatusWindowOpened"
+      @close="closeGoalChangeStatusWindow"
+    />
     <ProjectWindow v-if="isProjectWindowOpened" @close="closeProjectWindow" />
     <GroupWindow v-if="isGroupWindowOpened" @close="closeGroupWindow" />
     <TeamDialog v-if="isTeamWindowOpened" @close="closeTeamWindow" />
@@ -25,9 +29,11 @@ import GoalWindow from '@/modules/goals/components/goal-window/goal-window-new.v
 import TeamDialog from '@/modules/teams/components/team-dialog.vue'
 import UserDialog from '@/modules/users/components/user-dialog.vue'
 import SettingsWindow from '@/modules/settings/components/settings-window.vue'
+import GoalChangeStatusDialog from '@/modules/goals/components/goal-change-status-dialog.vue'
 
 @Component({
   components: {
+    GoalChangeStatusDialog,
     AppSidebarAdd,
     GroupWindow,
     ProjectWindow,
@@ -40,6 +46,10 @@ import SettingsWindow from '@/modules/settings/components/settings-window.vue'
 export default class AppSidebarHeader extends Vue {
   private get isGoalWindowOpened(): boolean {
     return goalsStore.isGoalWindowOpened
+  }
+
+  private get isGoalChangeStatusWindowOpened(): boolean {
+    return goalsStore.isGoalChangeStatusWindowOpened
   }
 
   private get isProjectWindowOpened(): boolean {
@@ -64,6 +74,10 @@ export default class AppSidebarHeader extends Vue {
 
   private closeGoalWindow(): void {
     goalsStore.closeGoalWindow()
+  }
+
+  private closeGoalChangeStatusWindow(): void {
+    goalsStore.closeGoalChangeStatusWindow()
   }
 
   private closeProjectWindow(): void {

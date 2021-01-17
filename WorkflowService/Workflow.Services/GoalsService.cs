@@ -27,13 +27,16 @@ namespace Workflow.Services
         /// </summary>
         /// <param name="dataContext"></param>
         /// <param name="repository"></param>
+        /// <param name="stateNameProvider"></param>
         /// <param name="entityStateQueue"></param>
         public GoalsService(DataContext dataContext,
             IGoalsRepository repository, 
+            IGoalStateNameProvider stateNameProvider,
             IBackgroundTaskQueue<VmEntityStateMessage> entityStateQueue)
         {
             _dataContext = dataContext;
             _repository = repository;
+            _stateNameProvider = stateNameProvider;
             _entityStateQueue = entityStateQueue;
             _vmConverter = new VmGoalConverter();
         }
@@ -52,7 +55,7 @@ namespace Workflow.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<VmGoal>> GetPage(ApplicationUser currentUser, 
+        public async Task<IEnumerable<VmGoal>> GetPage(ApplicationUser currentUser,
             int? projectId, PageOptions pageOptions)
         {
             if (currentUser == null)
@@ -69,6 +72,9 @@ namespace Workflow.Services
             query = FilterByFields(pageOptions.FilterFields, query);
             query = SortByFields(pageOptions.SortFields, query);
             var vmGoals = SelectViews(query);
+
+            if (!pageOptions.HasSortFields())
+                vmGoals = vmGoals.OrderByDescending(x => x.CreationDate);
 
             return await vmGoals
                 .Skip(pageOptions.PageNumber * pageOptions.PageSize)
@@ -205,6 +211,7 @@ namespace Workflow.Services
             return goals.FirstOrDefault();
         }
 
+        /// <inheritdoc />
         public void SetIsRemoved(IEnumerable<Goal> goals, bool isRemoved)
         {
             goals?.TraverseTree(g => g.ChildGoals, g =>
@@ -213,8 +220,47 @@ namespace Workflow.Services
                 _dataContext.Entry(g).State = EntityState.Modified;
             });
         }
-        
 
+        /// <inheritdoc />
+        public async Task ChangeStates(
+            ApplicationUser currentUser, 
+            ICollection<VmGoalState> goalStates)
+        {
+            if (currentUser == null)
+                throw new HttpResponseException(Unauthorized);
+
+            if (goalStates == null || !goalStates.Any())
+                throw new HttpResponseException(BadRequest, 
+                    $"Argument '{nameof(goalStates)}' cannot be null or empty");
+
+            var goalIds = goalStates.Select(gs => gs.GoalId);
+            var goals = await _repository.GetGoalsForUser(_dataContext.Goals, currentUser)
+                .Where(g => goalIds.Any(gId => gId == g.Id))
+                .ToArrayAsync();
+
+            var messages = new List<GoalMessage>();
+            foreach (var goal in goals)
+            {
+                var goalState = goalStates.First(gs => gs.GoalId == goal.Id);
+                
+                goal.State = goalState.GoalState;
+                _dataContext.Entry(goal).State = EntityState.Modified;
+
+                var goalMessage = CreateGoalMessage(currentUser, goal, goalState.Comment);
+                messages.Add(goalMessage);
+                await _dataContext.AddAsync(goalMessage);
+            }
+
+            await _dataContext.SaveChangesAsync();
+
+            _entityStateQueue.EnqueueIds(currentUser.Id, goals.Select(x => x.Id),
+                nameof(Goal), EntityOperation.Update);
+
+            _entityStateQueue.EnqueueIds(currentUser.Id, messages.Select(x => x.Id),
+                nameof(GoalMessage), EntityOperation.Create);
+        }
+        
+        
         private IQueryable<Goal> GetQuery(ApplicationUser currentUser, 
             bool withRemoved, 
             bool withChildren = false,
@@ -422,21 +468,28 @@ namespace Workflow.Services
                 Id = goal.Id,
                 ParentGoalId = goal.ParentGoalId,
                 OwnerId = goal.OwnerId,
+                OwnerFio = string.Join(' ', 
+                    goal.Owner.LastName, 
+                    goal.Owner.FirstName, 
+                    goal.Owner.MiddleName),
                 CreationDate = goal.CreationDate,
                 Title = goal.Title,
                 Description = goal.Description,
                 GoalNumber = goal.GoalNumber,
                 PerformerId = goal.PerformerId,
-                PerformerFio = goal.Performer.LastName + " " +
-                               goal.Performer.FirstName + " " +
-                               goal.Performer.MiddleName,
+                PerformerFio = string.Join(' ', 
+                    goal.Performer.LastName, 
+                    goal.Performer.FirstName, 
+                    goal.Performer.MiddleName),
                 ProjectId = goal.ProjectId,
                 ProjectName = goal.Project.Name,
                 State = goal.State,
                 Priority = goal.Priority,
                 ExpectedCompletedDate = goal.ExpectedCompletedDate,
-                EstimatedPerformingTime = goal.EstimatedPerformingTime,
-                HasChildren = _dataContext.Goals.Any(childGoal => childGoal.ParentGoalId == goal.Id),
+                EstimatedPerformingHours = goal.EstimatedPerformingHours,
+                ActualPerformingHours = goal.ActualPerformingHours,
+                HasChildren = _dataContext.Goals
+                    .Any(childGoal => childGoal.ParentGoalId == goal.Id),
                 IsAttachmentsExist = _dataContext.Goals
                     .Where(g => g.Id == goal.Id)
                     .SelectMany(g => g.Attachments)
@@ -523,7 +576,7 @@ namespace Workflow.Services
                 if(model == null)
                     throw new HttpResponseException(NotFound, $"Goal with id='{vmGoal.Id}' not found");
 
-                if (model.State != vmGoal.State) 
+                if (model.State != vmGoal.State)
                     model.StateChangedDate = DateTime.Now.ToUniversalTime();
 
                 model.Id = vmGoal.Id;
@@ -535,7 +588,8 @@ namespace Workflow.Services
                 model.GoalNumber = vmGoal.GoalNumber;
                 model.PerformerId = vmGoal.PerformerId;
                 model.ExpectedCompletedDate = vmGoal.ExpectedCompletedDate;
-                model.EstimatedPerformingTime = vmGoal.EstimatedPerformingTime;
+                model.EstimatedPerformingHours = vmGoal.EstimatedPerformingHours;
+                model.ActualPerformingHours = vmGoal.ActualPerformingHours;
 
                 model.Observers = vmGoal.ObserverIds?
                     .Select(observerId => new GoalObserver(vmGoal.Id, observerId))
@@ -612,9 +666,45 @@ namespace Workflow.Services
             }
         }
 
+        private GoalMessage CreateGoalMessage(ApplicationUser currentUser, Goal goal, string comment)
+        {
+            //TODO localization
+            var message = new GoalMessage
+            {
+                OwnerId = currentUser.Id,
+                CreationDate = DateTime.Now.ToUniversalTime(),
+                GoalId = goal.Id,
+                Goal = goal,
+                Text = $"Статус изменен: '{_stateNameProvider.GetName(goal.State)}'."
+            };
+
+            if (!string.IsNullOrWhiteSpace(comment))
+                message.Text += $"{Environment.NewLine}{comment}";
+
+            var observerMessages = goal.Observers
+                .Select(x => new UserGoalMessage
+                {
+                    UserId = x.ObserverId,
+                    User = x.Observer,
+                    GoalMessage = message
+                });
+            message.MessageSubscribers = new List<UserGoalMessage>(observerMessages)
+            {
+                new()
+                {
+                    UserId = goal.PerformerId,
+                    User = goal.Performer,
+                    GoalMessage = message
+                }
+            };
+
+            return message;
+        }
+
 
         private readonly DataContext _dataContext;
         private readonly IGoalsRepository _repository;
+        private readonly IGoalStateNameProvider _stateNameProvider;
         private readonly IBackgroundTaskQueue<VmEntityStateMessage> _entityStateQueue;
         private readonly VmGoalConverter _vmConverter;
     }

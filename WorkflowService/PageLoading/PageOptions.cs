@@ -1,4 +1,6 @@
-﻿namespace PageLoading
+﻿using System.Linq;
+
+namespace PageLoading
 {
     /// <summary>
     /// Параметры загрузки страницы
@@ -43,6 +45,16 @@
         {
             PageNumber = pageNumber;
             PageSize = pageSize;
+        }
+
+        public bool HasFilterFields()
+        {
+            return FilterFields != null && FilterFields.Any();
+        }
+
+        public bool HasSortFields()
+        {
+            return SortFields != null && SortFields.Any();
         }
     }
 }

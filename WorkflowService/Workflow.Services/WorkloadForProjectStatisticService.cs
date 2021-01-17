@@ -47,7 +47,7 @@ namespace Workflow.Services
                     Project = new Project {Name = g.Project.Name},
                     PerformerId = g.PerformerId,
                     ProjectId = g.ProjectId,
-                    EstimatedPerformingTime = g.EstimatedPerformingTime,
+                    EstimatedPerformingHours = g.EstimatedPerformingHours,
                 })
                 .ToArrayAsync();
 
@@ -66,7 +66,7 @@ namespace Workflow.Services
                 var userProjectsHours = userGoals.Value
                     .GroupBy(x => (x.ProjectId, x.Project.Name))
                     .ToDictionary(x => x.Key, x => x
-                        .Sum(y => y.EstimatedPerformingTime?.TotalHours ?? 0));
+                        .Sum(y => y.EstimatedPerformingHours ?? 0));
 
 
                 var vmUserProjectsHours = new VmProjectHoursForUser
