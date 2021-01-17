@@ -32,10 +32,10 @@ namespace Workflow.Services
             ApplicationUser currentUser, 
             StatisticOptions options)
         {
-            IQueryable<Goal> query;
+            IQueryable<Goal> query = _dataContext.Goals;
             try
             {
-                query = _goalsRepository.GetPerformerGoals(_dataContext.Goals, options.UserIds);
+                query = _goalsRepository.GetPerformerGoals(query, options.UserIds);
                 query = _goalsRepository.GetGoalsForProjects(query, options.ProjectIds);
                 query = _goalsRepository.GetGoalsForPeriod(query, options.DateBegin, options.DateEnd);
             }
@@ -49,10 +49,12 @@ namespace Workflow.Services
                 {
                     PerformerId = g.PerformerId,
                     ProjectId = g.ProjectId,
-                    EstimatedPerformingHours = g.EstimatedPerformingHours,
+                    Project = g.Project,
                     State = g.State,
                     StateChangedDate = g.StateChangedDate,
-                    ExpectedCompletedDate = g.ExpectedCompletedDate
+                    ExpectedCompletedDate = g.ExpectedCompletedDate,
+                    EstimatedPerformingHours = g.EstimatedPerformingHours,
+                    ActualPerformingHours = g.ActualPerformingHours
                 })
                 .ToArrayAsync();
 
