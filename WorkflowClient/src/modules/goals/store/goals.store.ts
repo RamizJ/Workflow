@@ -23,6 +23,7 @@ class GoalsStore extends VuexModule {
   _goal: Goal | null = null
   _goals: Goal[] = []
   _goalWindowOpened = false
+  _goalChangeStatusWindowOpened = false
 
   public get goal() {
     return this._goal
@@ -32,6 +33,9 @@ class GoalsStore extends VuexModule {
   }
   public get isGoalWindowOpened(): boolean {
     return this._goalWindowOpened
+  }
+  public get isGoalChangeStatusWindowOpened(): boolean {
+    return this._goalChangeStatusWindowOpened
   }
 
   @Mutation
@@ -51,11 +55,26 @@ class GoalsStore extends VuexModule {
     }
   }
 
+  @MutationAction({ mutate: ['_goalChangeStatusWindowOpened'] })
+  public async closeGoalChangeStatusWindow() {
+    return {
+      _goalChangeStatusWindowOpened: false,
+    }
+  }
+
   @MutationAction({ mutate: ['_goalWindowOpened', '_goal'] })
   public async openGoalWindow(goal?: Goal) {
     return {
       _goal: goal || null,
       _goalWindowOpened: true,
+    }
+  }
+
+  @MutationAction({ mutate: ['_goalChangeStatusWindowOpened', '_goal'] })
+  public async openGoalChangeStatusWindow(goal?: Goal) {
+    return {
+      _goal: goal || null,
+      _goalChangeStatusWindowOpened: true,
     }
   }
 

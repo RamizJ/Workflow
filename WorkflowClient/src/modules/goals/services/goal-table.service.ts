@@ -54,7 +54,7 @@ export default class GoalTableService extends TableService {
       if (!tableStore.selectedRow) return
       const row: Goal = tableStore.selectedRow as Goal
       row.state = status.toLowerCase() as Status
-      await goalsStore.updateOne(row)
+      await goalsStore.openGoalChangeStatusWindow(row)
     }
   }
 

@@ -57,7 +57,7 @@ namespace Workflow.Services
             var query = GetQuery(currentUser, goalId);
             
             if (pageOptions.SortFields == null || pageOptions.SortFields.Length == 0)
-                query = query.OrderBy(x => x.CreationDate);
+                query = query.OrderByDescending(x => x.CreationDate);
             
             var messages = await _pageLoadService
                 .GetPage(query, pageOptions)
@@ -91,7 +91,7 @@ namespace Workflow.Services
                                && um.LastReadingDate == new DateTime?()));
             
             if (pageOptions.SortFields == null || pageOptions.SortFields.Length == 0)
-                query = query.OrderBy(x => x.CreationDate);
+                query = query.OrderByDescending(x => x.CreationDate);
             
             var messages = await query
                 .Select(x => _vmConverter.ToViewModel(x))
