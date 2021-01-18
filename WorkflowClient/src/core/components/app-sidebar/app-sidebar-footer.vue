@@ -77,7 +77,7 @@ export default class SidebarFooter extends Vue {
 }
 .notifications {
   height: 350px;
-  width: 350px;
+  width: 320px;
   &__title {
     font-size: 18px;
     font-weight: 600;

@@ -1,7 +1,14 @@
-import { Action, getModule, Module, MutationAction, VuexModule } from 'vuex-module-decorators'
+import {
+  Action,
+  getModule,
+  Module,
+  Mutation,
+  MutationAction,
+  VuexModule,
+} from 'vuex-module-decorators'
 import store from '@/core/store'
 import goalMessagesApi from '../api/goal-messages.api'
-import GoalMessage from '@/modules/goals/models/goal-message.model'
+import GoalMessage, { GoalMessageData } from '@/modules/goals/models/goal-message.model'
 import Query from '@/core/types/query.type'
 import { Message } from 'element-ui'
 
@@ -26,6 +33,17 @@ class GoalMessagesStore extends VuexModule {
 
   public get unreadMessagesCount(): number {
     return this._unreadMessagesCount
+  }
+
+  @Action
+  public async getMessage(id: number): Promise<GoalMessage | null> {
+    try {
+      const response = await goalMessagesApi.get(id)
+      return new GoalMessage(response.data)
+    } catch (e) {
+      Message.error('Ошибка получения списка сообщений')
+      return null
+    }
   }
 
   @MutationAction({ mutate: ['_messages'] })
@@ -87,11 +105,22 @@ class GoalMessagesStore extends VuexModule {
     try {
       const response = await goalMessagesApi.addMessage(message)
       const createdMessage = new GoalMessage(response.data)
-      this._messages.push(createdMessage)
+      this.pushMessage(createdMessage)
       return createdMessage
     } catch (e) {
       Message.error('Ошибка отправки сообщения')
     }
+  }
+
+  @Mutation
+  public pushMessage(message: GoalMessage): void {
+    this._messages.push(message)
+  }
+
+  @Mutation
+  public pushUnreadMessage(message: GoalMessage): void {
+    this._unreadMessages.push(message)
+    this._unreadMessagesCount++
   }
 
   @Action
