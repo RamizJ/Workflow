@@ -26,7 +26,6 @@ export default class Message {
   public get shortDate(): string {
     if (this.creationDate)
       return new Date(this.creationDate).toLocaleString('ru', {
-        timeZone: 'UTC',
         hour: '2-digit',
         minute: '2-digit',
       })
@@ -36,7 +35,6 @@ export default class Message {
   public get fullDate(): string {
     if (this.creationDate)
       return new Date(this.creationDate).toLocaleString('ru', {
-        timeZone: 'UTC',
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',

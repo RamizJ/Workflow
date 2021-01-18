@@ -1,6 +1,8 @@
 import * as SignalR from '@microsoft/signalr'
 import { baseUrl } from '@/core/api/config'
 import tokenStore from '@/modules/users/store/token.store'
+import authStore from '@/modules/users/store/auth.store'
+import goalMessagesStore from '@/modules/goals/store/goal-messages.store'
 
 export const HUB_METHOD = 'EntityStateChanged'
 
@@ -40,28 +42,41 @@ export default class GlobalHub {
     await this.connection.invoke(HUB_METHOD, message)
   }
 
-  private onMessageReceived(message: HubMessage) {
+  private async onMessageReceived(message: HubMessage): Promise<void> {
     console.log('hub: message received')
     console.log(message)
+    switch (message.entityType) {
+      case EntityType.GoalMessage:
+        if (message.operation === OperationType.Create) {
+          if (message.senderId === authStore.me?.id) return
+          for (const id of message.entityIds) {
+            const goalMessage = await goalMessagesStore.getMessage(id as number)
+            if (goalMessage) goalMessagesStore.pushUnreadMessage(goalMessage)
+          }
+        }
+        break
+      default:
+        break
+    }
   }
 }
 
 export class HubMessage {
-  public senderId: string
   public entityIds: (string | number)[]
   public entityType: EntityType
   public operation: OperationType
+  public senderId: string
 
   constructor(
-    senderId: string,
     entitiesId: (string | number)[],
     entityType: EntityType,
-    operation: OperationType
+    operation: OperationType,
+    senderId: string
   ) {
-    this.senderId = senderId
     this.entityIds = entitiesId
     this.entityType = entityType
     this.operation = operation
+    this.senderId = senderId
   }
 }
 
@@ -72,10 +87,10 @@ export enum OperationType {
 }
 
 export enum EntityType {
-  Goal,
-  Project,
-  Group,
-  Team,
-  User,
-  Message,
+  Goal = 'Goal',
+  Project = 'Project',
+  Group = 'Group',
+  Team = 'Team',
+  User = 'User',
+  GoalMessage = 'GoalMessage',
 }

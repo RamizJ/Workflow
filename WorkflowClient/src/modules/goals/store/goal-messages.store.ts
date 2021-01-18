@@ -1,7 +1,14 @@
-import { Action, getModule, Module, MutationAction, VuexModule } from 'vuex-module-decorators'
+import {
+  Action,
+  getModule,
+  Module,
+  Mutation,
+  MutationAction,
+  VuexModule,
+} from 'vuex-module-decorators'
 import store from '@/core/store'
 import goalMessagesApi from '../api/goal-messages.api'
-import GoalMessage from '@/modules/goals/models/goal-message.model'
+import GoalMessage, { GoalMessageData } from '@/modules/goals/models/goal-message.model'
 import Query from '@/core/types/query.type'
 import { Message } from 'element-ui'
 
@@ -28,6 +35,17 @@ class GoalMessagesStore extends VuexModule {
     return this._unreadMessagesCount
   }
 
+  @Action
+  public async getMessage(id: number): Promise<GoalMessage | null> {
+    try {
+      const response = await goalMessagesApi.get(id)
+      return new GoalMessage(response.data)
+    } catch (e) {
+      Message.error('Ошибка получения списка сообщений')
+      return null
+    }
+  }
+
   @MutationAction({ mutate: ['_messages'] })
   public async getMessages(goalId?: number) {
     try {
@@ -48,7 +66,7 @@ class GoalMessagesStore extends VuexModule {
     try {
       const response = await goalMessagesApi.getUnreadPage(new Query(), goalId)
       return {
-        _unreadMessages: response.data,
+        _unreadMessages: response.data.map((data) => new GoalMessage(data)),
       }
     } catch (e) {
       Message.error('Ошибка получения списка непрочитанных сообщений')
@@ -87,11 +105,22 @@ class GoalMessagesStore extends VuexModule {
     try {
       const response = await goalMessagesApi.addMessage(message)
       const createdMessage = new GoalMessage(response.data)
-      this._messages.push(createdMessage)
+      this.pushMessage(createdMessage)
       return createdMessage
     } catch (e) {
       Message.error('Ошибка отправки сообщения')
     }
+  }
+
+  @Mutation
+  public pushMessage(message: GoalMessage): void {
+    this._messages.push(message)
+  }
+
+  @Mutation
+  public pushUnreadMessage(message: GoalMessage): void {
+    this._unreadMessages.push(message)
+    this._unreadMessagesCount++
   }
 
   @Action
@@ -100,6 +129,15 @@ class GoalMessagesStore extends VuexModule {
       await goalMessagesApi.deleteMessage(id)
     } catch (e) {
       Message.error('Ошибка удаления сообщения')
+    }
+  }
+
+  @Action
+  public async markAsRead(ids: number[]): Promise<void> {
+    try {
+      await goalMessagesApi.markAsRead(ids)
+    } catch (e) {
+      Message.error('Ошибка обновления уведомлений')
     }
   }
 }
