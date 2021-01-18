@@ -102,6 +102,15 @@ class GoalMessagesStore extends VuexModule {
       Message.error('Ошибка удаления сообщения')
     }
   }
+
+  @Action
+  public async markAsRead(ids: number[]): Promise<void> {
+    try {
+      await goalMessagesApi.markAsRead(ids)
+    } catch (e) {
+      Message.error('Ошибка обновления уведомлений')
+    }
+  }
 }
 
 export default getModule(GoalMessagesStore)

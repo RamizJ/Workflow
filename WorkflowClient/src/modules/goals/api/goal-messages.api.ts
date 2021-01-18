@@ -50,11 +50,11 @@ export default {
       method: 'DELETE',
     })
   },
-  markAsRead: (message: GoalMessage): Promise<AxiosResponse<void>> => {
+  markAsRead: (ids: number[]): Promise<AxiosResponse<void>> => {
     return api.request({
       url: `/api/GoalMessages/MarkAsRead`,
-      method: 'POST',
-      data: message,
+      method: 'PUT',
+      data: ids,
     })
   },
 }
