@@ -1,7 +1,7 @@
 <template>
   <div class="notification" @mouseenter="hover">
     <div class="notification__title">
-      {{ title }}
+      {{ title || 'Новое сообщение' }}
       <span class="notification__date">{{ date }}</span>
     </div>
     <div class="notification__subtitle">

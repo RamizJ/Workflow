@@ -20,12 +20,7 @@
           </transition-group>
         </div>
       </div>
-      <IconButton
-        slot="reference"
-        icon="bell"
-        :badge="notificationsCount"
-        @click="updateNotifications"
-      />
+      <IconButton slot="reference" icon="bell" :badge="notificationsCount" />
     </Popover>
   </div>
 </template>

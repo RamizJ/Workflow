@@ -48,7 +48,7 @@ class GoalMessagesStore extends VuexModule {
     try {
       const response = await goalMessagesApi.getUnreadPage(new Query(), goalId)
       return {
-        _unreadMessages: response.data,
+        _unreadMessages: response.data.map((data) => new GoalMessage(data)),
       }
     } catch (e) {
       Message.error('Ошибка получения списка непрочитанных сообщений')
