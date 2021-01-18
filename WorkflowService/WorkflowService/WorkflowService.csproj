@@ -10,18 +10,8 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>C:\GIRNGM\Workflow\WorkflowService\WorkflowService\WorkflowService.xml</DocumentationFile>
+    <DocumentationFile>C:\Projects\GIRNGM\Workflow\WorkflowService\WorkflowService\WorkflowService.xml</DocumentationFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="WorkflowService.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="WorkflowService.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.1" />
