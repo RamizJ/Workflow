@@ -22,7 +22,7 @@
               :key="item.id"
               @contextmenu="onRowRightClick(item, null, $event)"
             >
-              <a class="item__header" @click="onRowDoubleClick(item)">{{ item.title }}</a>
+              <a class="item__header" @click="onGoalClick(item)">{{ item.title }}</a>
               <div class="item__footer">
                 <div class="item__performer">{{ shortenFullName(item.performerFio) }}</div>
                 <div class="item__date">{{ formatDate(null, null, item.creationDate) }}</div>
@@ -113,6 +113,7 @@ import { StateChanger } from 'vue-infinite-loading'
 import tasksModule from '@/modules/goals/store/goals.store'
 import Goal, { Status } from '@/modules/goals/models/goal.type'
 import Entity from '@/core/types/entity.type'
+import goalsStore from '@/modules/goals/store/goals.store'
 
 @Component({ components: { Draggable, TaskDialog } })
 export default class TaskBoard extends Mixins(TableMixin) {
@@ -141,13 +142,17 @@ export default class TaskBoard extends Mixins(TableMixin) {
     if (localStorage.boardLists) return JSON.parse(localStorage.boardLists)
     else
       return [
-        { label: 'Новое', name: 'New' },
-        { label: 'Выполняется', name: 'Perform' },
-        { label: 'Проверяется', name: 'Testing' },
-        { label: 'Отложено', name: 'Delay' },
-        { label: 'Выполнено', name: 'Succeed' },
-        { label: 'Отклонено', name: 'Rejected' },
+        { label: 'Новое', name: 'new' },
+        { label: 'Выполняется', name: 'perform' },
+        { label: 'Проверяется', name: 'testing' },
+        { label: 'Отложено', name: 'delay' },
+        { label: 'Выполнено', name: 'succeed' },
+        { label: 'Отклонено', name: 'rejected' },
       ]
+  }
+
+  private async onGoalClick(goal: Goal): Promise<void> {
+    await goalsStore.openGoalWindow(goal)
   }
 
   private async onListMove(): Promise<void> {
@@ -285,8 +290,8 @@ export default class TaskBoard extends Mixins(TableMixin) {
   cursor: grab;
   margin: 10px 0;
   padding: 12px 15px;
-  border: 1px solid var(--card-border);
-  background-color: var(--card-background);
+  border: var(--input-border);
+  background-color: var(--input-background);
   border-radius: 8px;
   &__header {
     cursor: pointer;
