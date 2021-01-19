@@ -395,4 +395,9 @@ export default class GoalWindow extends Mixins(DialogMixin) {
 }
 </script>
 
-<style scoped></style>
+<style lang="scss">
+.window .el-tabs__nav-wrap {
+  padding: 0;
+  margin: 0;
+}
+</style>
