@@ -262,6 +262,16 @@ export default class GoalWindow extends Mixins(DialogMixin) {
       this.form.ownerFio = `${this.me?.lastName} ${this.me?.firstName} ${this.me?.middleName}`
     }
 
+    if (this.form.expectedCompletedDate) {
+      const date = new Date(this.form.expectedCompletedDate)
+      const offsetMs = date.getTimezoneOffset() * 60 * 1000
+
+      const convertedTimestamp = date.getTime() + offsetMs
+      const convertedDate = new Date(convertedTimestamp)
+
+      this.form.expectedCompletedDate = convertedDate.toString()
+    }
+
     await this.searchProjects()
     this.loading = false
     ;(this.$refs.title as Input).focus()
