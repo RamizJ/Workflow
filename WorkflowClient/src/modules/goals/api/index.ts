@@ -31,7 +31,7 @@ export default {
     goalState: string
   ): Promise<AxiosResponse<number>> => {
     return api.request({
-      url: `/api/Goals/GetTotalProjectGoalsCount/${projectId}?goalState=${goalState}`,
+      url: `/api/Goals/GetProjectGoalsByStateCount/${projectId}?goalState=${goalState}`,
       method: 'GET',
     })
   },
