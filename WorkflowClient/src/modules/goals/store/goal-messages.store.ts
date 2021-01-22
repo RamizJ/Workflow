@@ -8,8 +8,8 @@ import {
 } from 'vuex-module-decorators'
 import store from '@/core/store'
 import goalMessagesApi from '../api/goal-messages.api'
-import GoalMessage, { GoalMessageData } from '@/modules/goals/models/goal-message.model'
-import Query from '@/core/types/query.type'
+import GoalMessage from '@/modules/goals/models/goal-message.model'
+import Query, { SortType } from '@/core/types/query.type'
 import { Message } from 'element-ui'
 
 @Module({
@@ -49,7 +49,10 @@ class GoalMessagesStore extends VuexModule {
   @MutationAction({ mutate: ['_messages'] })
   public async getMessages(goalId?: number) {
     try {
-      const response = await goalMessagesApi.getPage(new Query(), goalId)
+      const response = await goalMessagesApi.getPage(
+        new Query(100, { fieldName: 'creationDate', sortType: SortType.Ascending }),
+        goalId
+      )
       return {
         _messages: response.data.map((data) => new GoalMessage(data)),
       }
@@ -119,7 +122,7 @@ class GoalMessagesStore extends VuexModule {
 
   @Mutation
   public pushUnreadMessage(message: GoalMessage): void {
-    this._unreadMessages.push(message)
+    this._unreadMessages.unshift(message)
     this._unreadMessagesCount++
   }
 
