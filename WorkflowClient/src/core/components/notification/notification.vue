@@ -1,7 +1,7 @@
 <template>
-  <div class="notification">
+  <div class="notification" @mouseenter="hover">
     <div class="notification__title">
-      {{ title }}
+      {{ title || 'Новое сообщение' }}
       <span class="notification__date">{{ date }}</span>
     </div>
     <div class="notification__subtitle">
@@ -20,6 +20,10 @@ export default class Notification extends Vue {
   @Prop() readonly content!: string
   @Prop() readonly subtitle?: string
   @Prop() readonly date?: string
+
+  private hover(): void {
+    this.$emit('hover')
+  }
 }
 </script>
 

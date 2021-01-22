@@ -8,13 +8,18 @@
     @load.capture="tableService.load"
   >
     <BaseTableColumn prop="name" label="Название" />
-    <BaseTableColumn prop="ownerFullName" label="Руководитель" width="250"></BaseTableColumn>
+    <BaseTableColumn
+      prop="ownerFio"
+      label="Руководитель"
+      width="250"
+      :formatter="tableService.fioFormatter"
+    />
     <BaseTableColumn
       prop="creationDate"
       label="Дата создания"
       width="180"
       :formatter="tableService.dateFormatter"
-    ></BaseTableColumn>
+    />
     <ProjectContextMenu
       slot="footer"
       ref="contextMenu"

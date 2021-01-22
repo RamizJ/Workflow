@@ -236,7 +236,7 @@ export default class UserDialog extends Mixins(DialogMixin) {
   private async sendForm(): Promise<void> {
     this.loading = true
     const entity: User = { ...this.form } as User
-    if (this.id) await usersModule.updateOne(entity)
+    if (this.form.id) await usersModule.updateOne(entity)
     else await usersModule.createOne(entity)
     this.loading = false
   }
@@ -273,7 +273,7 @@ export default class UserDialog extends Mixins(DialogMixin) {
   private validatePassword(rule: ValidationRule, value: string, callback: CallableFunction): void {
     const length = value?.trim().length
     const symbolsLeft = 6 - length
-    if (!value && this.id) callback()
+    if (this.form.id && !value) callback()
     if (!value) callback(new Error('!'))
     else if (length < 6)
       callback(

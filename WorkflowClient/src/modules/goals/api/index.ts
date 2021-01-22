@@ -4,6 +4,7 @@ import api from '@/core/api'
 import Attachment from '@/modules/goals/models/attachment.type'
 import Query from '@/core/types/query.type'
 import Goal from '@/modules/goals/models/goal.type'
+import { ChangeStatusForm } from '@/modules/goals/models/change-status-form.interface'
 
 export default {
   get: (id: number): Promise<AxiosResponse<Goal>> => {
@@ -170,6 +171,13 @@ export default {
       url: `/api/Goals/AddChildGoals/${parentGoalId}`,
       method: 'PATCH',
       data: childGoalIds,
+    })
+  },
+  changeStates: (states: ChangeStatusForm[]): Promise<AxiosResponse<void>> => {
+    return api.request({
+      url: `/api/Goals/ChangeStates`,
+      method: 'PATCH',
+      data: states,
     })
   },
 }

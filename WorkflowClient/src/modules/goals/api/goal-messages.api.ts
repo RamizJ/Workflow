@@ -4,9 +4,13 @@ import Query from '@/core/types/query.type'
 import GoalMessage, { GoalMessageData } from '@/modules/goals/models/goal-message.model'
 
 export default {
+  get: (id: number): Promise<AxiosResponse<GoalMessageData>> => {
+    return api.request({
+      url: `/api/GoalMessages/Get/${id}`,
+      method: 'GET',
+    })
+  },
   getPage: (query: Query, goalId?: number): Promise<AxiosResponse<GoalMessageData[]>> => {
-    const url = goalId ? `/api/GoalMessages/GetPage?goalId=${goalId}` : '/api/GoalMessages/GetPage'
-
     return api.request({
       url: `/api/GoalMessages/GetPage?goalId=${goalId}`,
       method: 'POST',
@@ -50,11 +54,11 @@ export default {
       method: 'DELETE',
     })
   },
-  markAsRead: (message: GoalMessage): Promise<AxiosResponse<void>> => {
+  markAsRead: (ids: number[]): Promise<AxiosResponse<void>> => {
     return api.request({
       url: `/api/GoalMessages/MarkAsRead`,
-      method: 'POST',
-      data: message,
+      method: 'PUT',
+      data: ids,
     })
   },
 }

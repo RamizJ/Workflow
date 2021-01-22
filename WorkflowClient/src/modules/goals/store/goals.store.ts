@@ -12,6 +12,7 @@ import api from '../api'
 import Goal, { Status } from '@/modules/goals/models/goal.type'
 import Query, { FilterField, SortType } from '@/core/types/query.type'
 import Attachment from '@/modules/goals/models/attachment.type'
+import { ChangeStatusForm } from '@/modules/goals/models/change-status-form.interface'
 
 @Module({
   dynamic: true,
@@ -267,6 +268,11 @@ class GoalsStore extends VuexModule {
   }): Promise<number> {
     const response = await api.getProjectGoalsByStateCount(projectId, status)
     return response.data
+  }
+
+  @Action
+  async changeStates(states: ChangeStatusForm[]): Promise<void> {
+    await api.changeStates(states)
   }
 }
 
