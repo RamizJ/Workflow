@@ -98,15 +98,6 @@ namespace WorkflowService
             });
             services.AddAuthorization();
 
-            if (Configuration.GetValue<bool>(IS_API_TEST_MODE))
-            {
-                //services.AddCors(options => options
-                //    .AddDefaultPolicy(builder => builder
-                //        .WithOrigins("http://localhost:64254/", "http://localhost:8080", "http://localhost:64254/entity-state-observer")
-                //        .AllowAnyHeader()
-                //        .AllowAnyMethod()));
-            }
-
             services.AddControllers(options =>
                 {
                     options.Filters.Add(new HttpResponseExceptionFilter());
@@ -121,12 +112,6 @@ namespace WorkflowService
                     configure.JsonSerializerOptions.Converters
                         .Add(new NullableDateTimeConverter());
                 });
-                //.AddNewtonsoftJson(options =>
-                //{
-                //    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                //    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-                //    options.SerializerSettings.Converters.Add(new StringEnumConverter());
-                //});
 
             services.AddSpaStaticFiles(configuration =>
             {

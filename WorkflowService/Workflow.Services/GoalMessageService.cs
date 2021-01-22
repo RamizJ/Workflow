@@ -92,11 +92,12 @@ namespace Workflow.Services
             
             if (pageOptions.SortFields == null || pageOptions.SortFields.Length == 0)
                 query = query.OrderByDescending(x => x.CreationDate);
-            
-            var messages = await query
+
+            var messages = await _pageLoadService
+                .GetPage(query, pageOptions)
                 .Select(x => _vmConverter.ToViewModel(x))
                 .ToArrayAsync();
-            
+
             return messages;
         }
 
@@ -240,7 +241,7 @@ namespace Workflow.Services
             bool withRemoved = false)
         {
             var query = _dataContext.GoalMessages
-                .Include(x => x.MessageSubscribers)
+                //.Include(x => x.MessageSubscribers)
                 .Where(x => x.OwnerId == currentUser.Id
                             || x.MessageSubscribers.Any(um => um.UserId == currentUser.Id));
             

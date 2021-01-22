@@ -64,6 +64,29 @@ namespace Workflow.Services.PageLoading
         protected override IQueryable<GoalMessage> SortByField(IQueryable<GoalMessage> query, 
             FieldSort field, bool isAscending)
         {
+            if (field.Is(nameof(VmGoalMessage.CreationDate)))
+                query = query.SortBy(x => x.CreationDate, isAscending);
+
+            else if (field.Is(nameof(VmGoalMessage.Text)))
+                query = query.SortBy(x => x.Text, isAscending);
+
+            else if (field.Is(nameof(VmGoalMessage.GoalTitle)))
+                query = query.SortBy(x => x.Goal.Title, isAscending);
+
+            else if (field.Is(nameof(VmGoalMessage.LastEditDate)))
+                query = query.SortBy(x => x.LastEditDate, isAscending);
+
+            else if (field.Is(nameof(VmGoalMessage.OwnerFullName)))
+            { 
+                query = query
+                    .SortBy(x => x.Owner.LastName, isAscending)
+                    .SortBy(x => x.Owner.FirstName, isAscending)
+                    .SortBy(x => x.Owner.MiddleName, isAscending);
+            }
+
+            else if (field.Is(nameof(VmGoalMessage.IsRemoved)))
+                query = query.SortBy(x => x.IsRemoved, isAscending);
+
             return query;
         }
     }

@@ -82,9 +82,9 @@ namespace PageLoading
             var result = values.Select(v =>
             {
                 T? val = null;
-                if (Enum.TryParse<T>(v.ToString(), out var s))
+                if (Enum.TryParse<T>(v.ToString(), true, out var s)) 
                     val = s;
-
+                
                 return val;
             }).Where(s => s != null).Cast<T>();
 
