@@ -8,7 +8,12 @@
     infinite
   >
     <BaseTableColumn prop="name" label="Название" />
-    <BaseTableColumn prop="ownerFullName" label="Создатель" width="250" />
+    <BaseTableColumn
+      prop="ownerFio"
+      label="Создатель"
+      width="250"
+      :formatter="tableService.fioFormatter"
+    />
     <BaseTableColumn
       prop="creationDate"
       label="Дата создания"

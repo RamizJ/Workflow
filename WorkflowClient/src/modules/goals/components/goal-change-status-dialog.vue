@@ -12,7 +12,7 @@
       <el-row :gutter="20">
         <el-col :span="24">
           <el-form-item label="Статус" prop="state">
-            <el-select v-model="form.state" placeholder="Выбрать статус">
+            <el-select v-model="form.goalState" placeholder="Выбрать статус">
               <el-option
                 v-for="item in statuses"
                 :key="item.value"
@@ -23,7 +23,7 @@
           </el-form-item>
           <el-form-item label="Комментарий" prop="comment">
             <el-input
-              v-model="comment"
+              v-model="form.comment"
               :autosize="{ minRows: 2 }"
               type="textarea"
               placeholder="Напишите комментарий..."
@@ -68,17 +68,24 @@ import Goal, { Status, statuses } from '@/modules/goals/models/goal.type'
 import goalsStore from '@/modules/goals/store/goals.store'
 import { Message } from 'element-ui'
 import tableStore from '@/core/store/table.store'
+import { ChangeStatusForm } from '@/modules/goals/models/change-status-form.interface'
 
 @Component({
   components: { BaseWindow },
 })
 export default class GoalChangeStatus extends Mixins(DialogMixin) {
   @Prop() readonly goal!: Goal
-  private form: Goal = new Goal()
-  private comment = ''
+  private form: ChangeStatusForm = { comment: '' }
 
   protected mounted(): void {
-    this.form = goalsStore.goal ? { ...goalsStore.goal } : this.goal
+    const goal = goalsStore.goal ? { ...goalsStore.goal } : this.goal
+    this.form = {
+      goalId: goal.id,
+      goalState: goal.state,
+      comment: '',
+      estimatedPerformingHours: goal.estimatedPerformingHours,
+      actualPerformingHours: goal.actualPerformingHours,
+    }
   }
 
   private get statuses(): { value: Status; label: string }[] {
@@ -88,7 +95,7 @@ export default class GoalChangeStatus extends Mixins(DialogMixin) {
   private async submit(): Promise<void> {
     this.loading = true
     try {
-      await goalsStore.updateOne(this.form)
+      await goalsStore.changeStates([this.form])
       tableStore.requireReload()
       this.exit()
     } catch (e) {

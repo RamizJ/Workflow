@@ -244,6 +244,8 @@ namespace Workflow.Services
                 var goalState = goalStates.First(gs => gs.GoalId == goal.Id);
                 
                 goal.State = goalState.GoalState;
+                goal.ActualPerformingHours = goalState.ActualPerformingHours;
+                goal.EstimatedPerformingHours = goalState.EstimatedPerformingHours;
                 _dataContext.Entry(goal).State = EntityState.Modified;
 
                 var goalMessage = CreateGoalMessage(currentUser, goal, goalState.Comment);

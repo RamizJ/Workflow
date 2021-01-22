@@ -2,25 +2,25 @@
   <div class="sidebar-footer">
     <Popover>
       <div class="notifications">
-        <div class="notifications__title">Уведомления</div>
-        <div v-if="isEmpty" class="empty-text">Нет уведомлений</div>
-        <transition-group name="message" tag="p">
-          <notification
-            v-for="item in notifications"
-            :key="item.id"
-            :title="item.goalTitle"
-            :subtitle="item.ownerFullName"
-            :content="item.text"
-            :date="item.fullDate"
-          />
-        </transition-group>
+        <div class="notifications__title">
+          Уведомления
+          <span v-if="this.notifications.length" @click="readAll">Отметить все прочитанными</span>
+        </div>
+        <div class="notifications__list">
+          <div v-if="isEmpty" class="empty-text">Нет уведомлений</div>
+          <transition-group name="message" tag="p">
+            <notification
+              v-for="item in notifications"
+              :key="item.id"
+              :title="item.goalTitle"
+              :subtitle="item.ownerFullName"
+              :content="item.text"
+              :date="item.fullDate"
+            />
+          </transition-group>
+        </div>
       </div>
-      <IconButton
-        slot="reference"
-        icon="bell"
-        :badge="notificationsCount"
-        @click="updateNotifications"
-      />
+      <IconButton slot="reference" icon="bell" :badge="notificationsCount" />
     </Popover>
   </div>
 </template>
@@ -61,6 +61,12 @@ export default class SidebarFooter extends Vue {
     await goalMessagesStore.getUnreadMessages()
     await goalMessagesStore.getUnreadMessagesCount()
   }
+
+  private async readAll(): Promise<void> {
+    const ids = this.notifications.map((item) => item.id)
+    await goalMessagesStore.markAsRead(ids)
+    await this.updateNotifications()
+  }
 }
 </script>
 
@@ -71,9 +77,31 @@ export default class SidebarFooter extends Vue {
 }
 .notifications {
   height: 350px;
-  width: 250px;
-  overflow: auto;
-  scroll-behavior: smooth;
+  width: 320px;
+  &__title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    span {
+      color: var(--color-primary);
+      font-weight: 400;
+      font-size: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+      &:hover {
+        filter: brightness(80%);
+      }
+    }
+  }
+  &__list {
+    height: 90%;
+    overflow: auto;
+    scroll-behavior: smooth;
+  }
   &::-webkit-scrollbar {
     width: 6px;
     background-color: var(--sidebar-background);
@@ -89,12 +117,6 @@ export default class SidebarFooter extends Vue {
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-  &__title {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 6px;
   }
 }
 </style>

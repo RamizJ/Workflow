@@ -98,15 +98,6 @@ namespace WorkflowService
             });
             services.AddAuthorization();
 
-            if (Configuration.GetValue<bool>(IS_API_TEST_MODE))
-            {
-                //services.AddCors(options => options
-                //    .AddDefaultPolicy(builder => builder
-                //        .WithOrigins("http://localhost:64254/", "http://localhost:8080", "http://localhost:64254/entity-state-observer")
-                //        .AllowAnyHeader()
-                //        .AllowAnyMethod()));
-            }
-
             services.AddControllers(options =>
                 {
                     options.Filters.Add(new HttpResponseExceptionFilter());
@@ -115,18 +106,12 @@ namespace WorkflowService
                 {
                     configure.JsonSerializerOptions.IgnoreNullValues = true;
                     configure.JsonSerializerOptions.Converters
+                        .Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+                    configure.JsonSerializerOptions.Converters
                         .Add(new DateTimeConverter());
                     configure.JsonSerializerOptions.Converters
                         .Add(new NullableDateTimeConverter());
-                    configure.JsonSerializerOptions.Converters
-                        .Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
                 });
-                //.AddNewtonsoftJson(options =>
-                //{
-                //    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                //    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-                //    options.SerializerSettings.Converters.Add(new StringEnumConverter());
-                //});
 
             services.AddSpaStaticFiles(configuration =>
             {
@@ -135,6 +120,11 @@ namespace WorkflowService
 
             services.AddSwaggerGen(setup =>
             {
+                
+#pragma warning disable 618
+                setup.DescribeAllEnumsAsStrings();
+#pragma warning restore 618
+                
                 setup.SwaggerDoc("v1", new OpenApiInfo {Title = "Workflow API", Version = "31.08.2020"});
                 setup.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
 
