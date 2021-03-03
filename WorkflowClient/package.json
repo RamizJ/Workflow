@@ -58,7 +58,7 @@
     "ftp-deploy": "^2.3.8",
     "moment-locales-webpack-plugin": "^1.2.0",
     "prettier": "^2.1.2",
-    "pug": "^3.0.0",
+    "pug": "^3.0.1",
     "pug-plain-loader": "^1.0.0",
     "sass": "1.26.5",
     "sass-loader": "8.0.2",
